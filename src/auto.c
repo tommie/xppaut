@@ -14,7 +14,7 @@
 #include <wctype.h>
 #endif
 
-#include "auto.bitmap"
+#include "bitmap/auto.bitmap"
 #include "newhome.h"
 #include "mykeydef.h"
 #include "xpplim.h"

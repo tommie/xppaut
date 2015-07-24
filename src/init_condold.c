@@ -14,10 +14,10 @@
 #include <math.h>
 #include <ctype.h>
 #include "xpplim.h"
-#include "ic.bitmap"
-#include "param.bitmap"
-#include "delay.bitmap"
-#include "bc.bitmap"
+#include "bitmap/ic.bitmap"
+#include "bitmap/param.bitmap"
+#include "bitmap/delay.bitmap"
+#include "bitmap/bc.bitmap"
 #include "shoot.h"
 
 #include "mykeydef.h"

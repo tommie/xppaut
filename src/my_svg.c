@@ -56,7 +56,7 @@ int svg_init(char *filename, int color)
 
 	fprintf(svgfile,"<!-- Uncomment following when using your own custom external stylesheet.-->\n");
 	fprintf(svgfile,"<!--\n");
-	fprintf(svgfile,"<?xml-stylesheet type=\"text/css\" href=\"xppaut-stylesheet.css\" ?>\n");
+	fprintf(svgfile,"<?xml-stylesheet type=\"text/css\" href=\"share/xppaut-stylesheet.css\" ?>\n");
 	fprintf(svgfile,"-->\n");
 	fprintf(svgfile,"<svg  xmlns=\"http://www.w3.org/2000/svg\"\n");
 	fprintf(svgfile,"      xmlns:xlink=\"http://www.w3.org/1999/xlink\" font-size=\"12pt\" width=\"640\" height=\"400\">\n");

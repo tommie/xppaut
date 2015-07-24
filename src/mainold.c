@@ -28,7 +28,7 @@
 #include <X11/Xatom.h>
 /* #include <X11/bitmaps/icon> */
 #include <math.h>
-#include "pp.bitmap"
+#include "bitmap/pp.bitmap"
 #include <stdio.h>
 /* #include <errno.h> */
 #include "help_defs.h"
@@ -47,7 +47,7 @@
 #define BITMAPDEPTH 1
 #define TOO_SMALL 0
 #define BIG_ENOUGH 1
-#include "lines.bitmap"
+#include "bitmap/lines.bitmap"
 
 #include "myfonts.h"
 

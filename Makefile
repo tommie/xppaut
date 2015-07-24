@@ -13,7 +13,7 @@ MAJORVER=7.0
 MINORVER=0
 
 ODES=ode/*.ode ode/*.ani
-DOC=xpp_doc.pdf xpp_sum.pdf install.pdf
+DOC=doc/xpp_doc.pdf doc/xpp_sum.pdf doc/install.pdf
 HELP=help/*.html
 # Standard C compiler
 #CC= cc
@@ -40,7 +40,8 @@ AUTLIBS=  -lm
 #CFLAGS=   -g -O -m32 -DNON_UNIX_STDIO -DAUTO -DCVODE_YES  -DHAVEDLL -DMYSTR1=$(MAJORVER) -DMYSTR2=$(MINORVER)  -I/usr/X11R6/include
 #CFLAGS=   -g -O -m64 -DNOERRNO -DNON_UNIX_STDIO -DAUTO -DCVODE_YES  -DHAVEDLL -DMYSTR1=$(MAJORVER) -DMYSTR2=$(MINORVER)  -I/usr/include/X11
 
-CFLAGS= -g -pedantic -O -DNOERRNO -DNON_UNIX_STDIO -DAUTO -DCVODE_YES  -DHAVEDLL -DMYSTR1=$(MAJORVER) -DMYSTR2=$(MINORVER)  -I/opt/X11/include
+# TODO(tommie): src/fftn.c includes itself, so __FILE__ needs to be the basename. Split into two files.
+CFLAGS= -g -pedantic -O -DNOERRNO -DNON_UNIX_STDIO -DAUTO -DCVODE_YES  -DHAVEDLL -DMYSTR1=$(MAJORVER) -DMYSTR2=$(MINORVER) -D__FILE__=\"$(notdir $<)\" -Wno-builtin-macro-redefined -I/opt/X11/include
 #LDFLAGS=  -m64 -L/usr/lib -L/usr/lib64
 LDFLAGS=  -L/usr/X11R6/lib
 LIBS=  -lX11 -lm -ldl   
@@ -109,7 +110,7 @@ LIBS=  -lX11 -lm -ldl
 #             You  can stop messing with it now, the rest is
 #             probably OkeyDokey
 ###############################################################
-HEADERS = abort.h comline.h extra.h kinescope.h newhome.h stiff.h\
+HEADERS = $(addprefix src/, abort.h comline.h extra.h kinescope.h newhome.h stiff.h\
 	  adj2.h cvband.h f2c.h lio.h newpars.h storage.h\
 	  aniparse_avi.h cvdense.h fftn.h llnlmath.h nullcline.h struct.h\
 	  aniparse.h cvdiag.h fio.h llnltyps.h numerics.h sue.h\
@@ -129,14 +130,14 @@ HEADERS = abort.h comline.h extra.h kinescope.h newhome.h stiff.h\
 	  calc.h edit_rhs.h init_conds.h mykeydef.h sfe.h wsne.h\
 	  choice_box.h eig_list.h integrate.h my_pars.h shoot.h xpplim.h\
 	  close.h endfile.h iterativ.h my_ps.h my_svg.h simplenet.h\
-	  color.h err.h kbs.h my_rhs.h spgmr.h cv2.h tutor.h
+	  color.h err.h kbs.h my_rhs.h spgmr.h cv2.h tutor.h)
 
-BITMAPS = aniwin.bitmap alert.bitmap bc.bitmap eqns.bitmap info.bitmap ic.bitmap pp.bitmap\
+BITMAPS = $(addprefix src/bitmap, aniwin.bitmap alert.bitmap bc.bitmap eqns.bitmap info.bitmap ic.bitmap pp.bitmap\
 	  array.bitmap browse.bitmap equilib.bitmap lines.bitmap txtview.bitmap\
 	  auto.bitmap delay.bitmap graph.bitmap param.bitmap filebrowse.bitmap \
-	  lineup.bitmap linedn.bitmap pageup.bitmap pagedn.bitmap home.bitmap start.bitmap  
+	  lineup.bitmap linedn.bitmap pageup.bitmap pagedn.bitmap home.bitmap start.bitmap)
 
-SOURCES = main.c ggets.c menu.c rubber.c derived.c init_condold.c \
+SOURCES = $(addprefix src/, main.c ggets.c menu.c rubber.c derived.c init_condold.c \
 	  many_pops.c pop_list.c graphics.c dialog_box.c \
 	  numerics.c choice_box.c color.c init_conds.c \
 	  browse.c kinescope.c  axes2.c abort.c \
@@ -161,7 +162,7 @@ SOURCES = main.c ggets.c menu.c rubber.c derived.c init_condold.c \
 	  cvode.c  cvdense.c  dense.c  cvband.c \
 	  band.c  cvdiag.c  cvspgmr.c  spgmr.c  \
 	  iterativ.c  vector.c  llnlmath.c cv2.c \
-	  mainold.c load_eqnold.c ggetsold.c comlineold.c 
+	  mainold.c load_eqnold.c ggetsold.c comlineold.c)
 	  
 
           
@@ -169,7 +170,7 @@ SOURCES = main.c ggets.c menu.c rubber.c derived.c init_condold.c \
 # WARNING: For 64 bit machines replace parser2.o with parserslow2.o 
 #          in the OBJECTS section!
 #
-OBJECTS = main.o ggets.o menu.o  rubber.o derived.o\
+OBJECTS = $(addprefix src/, main.o ggets.o menu.o  rubber.o derived.o\
 	many_pops.o  pop_list.o  graphics.o dialog_box.o \
 	numerics.o choice_box.o color.o init_conds.o \
         browse.o kinescope.o axes2.o abort.o \
@@ -189,14 +190,14 @@ OBJECTS = main.o ggets.o menu.o  rubber.o derived.o\
         fc77.o f2cstart.o \
 	cvode.o  cvdense.o  dense.o  cvband.o \
         band.o  cvdiag.o  cvspgmr.o  spgmr.o  \
-        iterativ.o  vector.o  llnlmath.o cv2.o
+        iterativ.o  vector.o  llnlmath.o cv2.o)
 	
 #If you are using sundials cvode libraries then you may comment out following above
 #	cvode.o  cvdense.o  dense.o  cvband.o \
 #        band.o  cvdiag.o  cvspgmr.o  spgmr.o  \
 #        iterativ.o  vector.o  llnlmath.o cv2.o
  
-LIB_OBJECTS = main.o ggets.o menu.o  rubber.o derived.o\
+LIB_OBJECTS = $(addprefix src/, main.o ggets.o menu.o  rubber.o derived.o\
 	many_pops.o  pop_list.o  graphics.o dialog_box.o \
 	numerics.o choice_box.o color.o init_conds.o \
         browse.o kinescope.o axes2.o abort.o \
@@ -209,9 +210,9 @@ LIB_OBJECTS = main.o ggets.o menu.o  rubber.o derived.o\
 	comline.o edit_rhs.o do_fit.o flags.o del_stab.o stiff.o \
         arrayplot.o array_print.o aniparse.o simplenet.o dae_fun.o \
          fftn.o extra.o scrngif.o nagroutines.o homsup.o txtread.o \
-        menudrive.o userbut.o 
-AUTOOBJ = autlib1.o autlib2.o autlib3.o autevd.o run_auto.o autpp.o \
-	diagram.o auto_nox.o auto_x11.o flowkm_small.o 
+        menudrive.o userbut.o)
+AUTOOBJ = $(addprefix src/, autlib1.o autlib2.o autlib3.o autevd.o run_auto.o autpp.o \
+	diagram.o auto_nox.o auto_x11.o flowkm_small.o)
            
 ######################################################################
 #
@@ -271,10 +272,10 @@ install: xppaut
 	install -m 755 xppaut $(DESTDIR)$(BINDIR)
 	cp -r ode* $(DESTDIR)$(DOCDIR)/examples
 	cp -r help/* $(DESTDIR)$(DOCDIR)/html
-	cp README *.pdf $(DESTDIR)$(DOCDIR)
-	cp *.xbm $(DESTDIR)$(DOCDIR)/xbm 
+	cp README doc/*.pdf $(DESTDIR)$(DOCDIR)
+	cp doc/bitmap/*.xbm $(DESTDIR)$(DOCDIR)/xbm
 	
-	cp xppaut.1 $(DESTDIR)$(MANDIR)
+	cp doc/xppaut.1 $(DESTDIR)$(MANDIR)
 	
 # End Debian Ed
 uninstall: 
@@ -294,51 +295,51 @@ xpplib: $(LIB_OBJECTS) $(AUTOOBJ)
 ####################################################
 tarfile:
 	tar cvf xppaut$(VERSION).tar $(SOURCES) $(AUTOSRC) $(HEADERS) $(BITMAPS) default.opt \
-	 xpp_doc.tex README Makefile Makefile.64 Makefile.nice  Makefile.lib Makefile.avi Makefile.old Makefile.w7b \
-	ode/*.*  canonical/*.* xpp_doc.pdf xpp_sum.tex xpp_sum.pdf  xpp_doc.tex tree.tex tree.pdf nullcline_bw.c  \
-	xppaut.1\
+	 doc/xpp_doc.tex README Makefile Makefile.64 Makefile.nice  Makefile.lib Makefile.avi Makefile.old Makefile.w7b \
+	ode/*.*  canonical/*.* doc/xpp_doc.pdf doc/xpp_sum.tex doc/xpp_sum.pdf  doc/xpp_doc.tex doc/tree.tex doc/tree.pdf nullcline_bw.c  \
+	doc/xppaut.1\
         mkavi/*.cc mkavi/*.h mkavi/Makefile mkavi/drive.c help/*.html \
-	help/odes/*.ode help/odes/*.c install.pdf install.tex LICENSE HISTORY \
-	Makefile.s2x sbml2xpp.c *.xbm *.jar changes.txt \
-xppaut-stylesheet.css	xppaut-stylesheet2.css animsvgwww
+	help/odes/*.ode help/odes/*.c doc/install.pdf doc/install.tex LICENSE HISTORY \
+	Makefile.s2x sbml2xpp.c doc/bitmap/*.xbm betty/*.jar doc/changes.txt \
+xppaut-stylesheet.css	xppaut-stylesheet2.css bin/animsvgwww
 	gzip xppaut$(VERSION).tar 
 otarfile:
 	tar cvf xppaut$(VERSION).tar $(SOURCES) $(AUTOSRC) $(HEADERS) $(BITMAPS) default.opt \
-	 xpp_doc.tex README Makefile Makefile.nice  Makefile.lib Makefile.avi Makefile.old \
-	ode/*.* xpp_doc.ps xpp_doc.pdf xpp_sum.tex xpp_sum.pdf xpp_sum.ps nullcline_bw.c  \
+	 doc/xpp_doc.tex README Makefile Makefile.nice  Makefile.lib Makefile.avi Makefile.old \
+	ode/*.* doc/xpp_doc.ps doc/xpp_doc.pdf doc/xpp_sum.tex doc/xpp_sum.pdf doc/xpp_sum.ps nullcline_bw.c  \
         libI77/*.c libI77/*.h libI77/Makefile \
-	cvodesrc/*.c cvodesrc/*.h cvodesrc/Makefile xppaut.1\
+	cvodesrc/*.c cvodesrc/*.h cvodesrc/Makefile doc/xppaut.1\
         mkavi/*.cc mkavi/*.h mkavi/Makefile mkavi/drive.c help/*.html \
-	help/odes/*.ode help/odes/*.c install.pdf install.tex LICENSE HISTORY \
-	Makefile.s2x sbml2xpp.c *.xbm *.jar
+	help/odes/*.ode help/odes/*.c doc/install.pdf doc/install.tex LICENSE HISTORY \
+	Makefile.s2x sbml2xpp.c doc/bitmap/*.xbm betty/*.jar
 	gzip xppaut$(VERSION).tar 
 ##############################################
 #  pack up a binary
 ##############################################
 binary:
-	strip xppaut;tar zvcf binary.tgz xppaut *.pdf *.xbm xppaut.1 $(ODES) $(DOC) $(HELP) README HISTORY LICENSE
+	strip xppaut;tar zvcf binary.tgz xppaut doc/*.pdf doc/bitmap/*.xbm doc/xppaut.1 $(ODES) $(DOC) $(HELP) README HISTORY LICENSE
 ##############################################
 #  clean
 ##############################################
 clean:
 	#rm -f *.o *.a  libI77/*.o libI77/*.a cvodesrc/*.o cvodesrc/*.a xppaut
 	#rm -f *.o *.a   cvodesrc/*.o cvodesrc/*.a xppaut
-	rm -f *.o *.a xppaut 
+	rm -f src/*.o src/*.a xppauto
 #######################################################
 #  Documentation
 #######################################################
 xppdoc:     
-	 latex xpp_doc
-	 latex xpp_doc
-	 latex xpp_doc		
-	 dvips -o xpp_doc.ps  xpp_doc
-	 ps2pdf xpp_doc.ps
-	 latex xpp_sum
-	 latex xpp_sum
-	 dvips -o xpp_sum.ps  xpp_sum
-	  ps2pdf xpp_sum.ps
-	  latex install.tex
-	 latex install.tex
-	 dvips -o install.ps  install
-	  ps2pdf install.ps
+	 cd doc && latex xpp_doc
+	 cd doc && latex xpp_doc
+	 cd doc && latex xpp_doc
+	 cd doc && dvips -o xpp_doc.ps  xpp_doc
+	 cd doc && ps2pdf xpp_doc.ps
+	 cd doc && latex xpp_sum
+	 cd doc && latex xpp_sum
+	 cd doc && dvips -o xpp_sum.ps  xpp_sum
+	 cd doc && ps2pdf xpp_sum.ps
+	 cd doc && latex install.tex
+	 cd doc && latex install.tex
+	 cd doc && dvips -o install.ps  install
+	 cd doc && ps2pdf install.ps
          

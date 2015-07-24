@@ -40,9 +40,9 @@ AUTLIBS=  -lm
 #CFLAGS=   -g -O -m32 -DNON_UNIX_STDIO -DAUTO -DCVODE_YES  -DHAVEDLL -DMYSTR1=$(MAJORVER) -DMYSTR2=$(MINORVER)  -I/usr/X11R6/include
 #CFLAGS=   -g -O -m64 -DNOERRNO -DNON_UNIX_STDIO -DAUTO -DCVODE_YES  -DHAVEDLL -DMYSTR1=$(MAJORVER) -DMYSTR2=$(MINORVER)  -I/usr/include/X11
 
-CFLAGS= -g -pedantic -O -m32 -DNOERRNO -DNON_UNIX_STDIO -DAUTO -DCVODE_YES  -DHAVEDLL -DMYSTR1=$(MAJORVER) -DMYSTR2=$(MINORVER)  -I/opt/X11/include 
+CFLAGS= -g -pedantic -O -DNOERRNO -DNON_UNIX_STDIO -DAUTO -DCVODE_YES  -DHAVEDLL -DMYSTR1=$(MAJORVER) -DMYSTR2=$(MINORVER)  -I/opt/X11/include
 #LDFLAGS=  -m64 -L/usr/lib -L/usr/lib64
-LDFLAGS=  -m32 -L/usr/X11R6/lib 
+LDFLAGS=  -L/usr/X11R6/lib
 LIBS=  -lX11 -lm -ldl   
 # NOTE: Recent (RedHat 8) versions of GCC seem to no longer have
 # the integer errno, so compile with the -DNOERRNO option as well

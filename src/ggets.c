@@ -1,66 +1,50 @@
 #include "ggets.h"
 
-#include <stdlib.h> 
+#include <math.h>
+#include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <X11/Xlib.h>
-#include <X11/XKBlib.h>
-#include <X11/Xutil.h>
 #include <X11/keysym.h>
 #include <X11/keysymdef.h>
-#include <math.h>
-#include "struct.h"
-#include "newhome.h"
-#include "mykeydef.h"
-#include <stdarg.h>
-#include "graphics.h" 
+#include <X11/XKBlib.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+
 #include "axes2.h"
+#include "browse.h"
+#include "calc.h"
+#include "graphics.h"
+#include "main.h"
 #include "many_pops.h"
 #include "menudrive.h"
+#include "mykeydef.h"
+#include "newhome.h"
 #include "pop_list.h"
-#include "calc.h"
-#include "browse.h"
-
+#include "struct.h"
 
 
 #define ESCAPE 27
 char *info_message;
-extern int XPPBatch;
-/* do_calc();
-new_float();
-new_int();
-*/
 double atof();
-extern int SCALEX,SCALEY;
 int MSStyle=0;
-extern int Xup;
-
-extern int tfBell;
 int done=0;
-extern Display *display;
-extern int screen;
 int CURS_X,CURS_Y;
-extern int DCURY,DCURX,CURY_OFF;
-extern Window win,command_pop,info_pop,draw_win,main_win;
-extern GC gc,gc_graph;
-extern unsigned int MyBackColor,MyForeColor;
 int xor_flag;
-extern FILE *logfile;
-extern int XPPVERBOSE;
- 
-void ping() 
+
+void ping()
 {
   	if(tfBell&&!XPPBatch)
   	{
 		/*
-		XkbBell allows window managers to react 
+		XkbBell allows window managers to react
 		to bell events using possibly user-specified
 		accessiblity options (e.g. visual bell)
 		*/
-		
-  		XkbBell(display,command_pop,100,(Atom)NULL); 
+
+  		XkbBell(display,command_pop,100,(Atom)NULL);
  	}
- /* Call to XBell seems to be ignored by many window managers where XkbBell is not. 
+ /* Call to XBell seems to be ignored by many window managers where XkbBell is not.
  if(tfBell&&!XPPBatch)
   XBell(display,100);
 */
@@ -123,7 +107,7 @@ void chk_xor()
 
 
 
-  
+
 void set_gcurs( y,  x)
 int y,x;
 {
@@ -178,33 +162,33 @@ char *string;
 {
  if(Xup) respond_box("OK",string);
  else {plintf("%s\n",string);}
- 
+
 }
 
 int plintf(char *fmt,...)
 {
 	int nchar=0;
 	va_list arglist;
-	
+
 	if (!XPPVERBOSE) return(nchar);/*Don't print at all!*/
-	
+
 	if (logfile == NULL)
 	{
 		printf("The log file is NULL!\n");
-		logfile = stdout;	
+		logfile = stdout;
 	}
-	
+
 	va_start(arglist,fmt);
 	nchar=vfprintf(logfile,fmt,arglist);
 	va_end(arglist);
-	/*Makes sense to flush to the output file to 
+	/*Makes sense to flush to the output file to
 	prevent loss of log info if program crashes.
 	Then maybe user can figure out what happened and when.*/
 	fflush(logfile);
-	
+
 	return(nchar);
 }
- 
+
 int show_position(ev,com)
 XEvent ev;
 int *com;
@@ -216,8 +200,8 @@ int *com;
  */
  /*w=ev.xbutton.window;*/
   /* XSetInputFocus(display,w,RevertToParent,CurrentTime); */
-  
- 
+
+
 
  /*i=ev.xbutton.x;
  j=ev.xbutton.y;
@@ -232,7 +216,7 @@ int *com;
  check_draw_button(ev);
  return(0);
 
- 
+
 }
 
 void gpos_prn(string,row,col)
@@ -264,7 +248,7 @@ int get_key_press(ev)
        KeySym ks;
 
        XLookupString((XKeyEvent *)ev,buf,maxlen,&ks,&comp);
-       /*printf(" ks=%d buf[0]=%d char=%c \n",ks,(int)buf[0],buf[0]); 
+       /*printf(" ks=%d buf[0]=%d char=%c \n",ks,(int)buf[0],buf[0]);
 	*/
    /*    plintf("h=%d e=%d ks=%d \n",XK_Home,XK_End,ks); */
 	if(ks==XK_Escape)return(ESC);
@@ -288,15 +272,15 @@ int get_key_press(ev)
         else if (ks==XK_PgUp)return(PGUP);
         else if (ks==XK_PgDn)return(PGDN);
         else {
-        
+
          return(BADKEY);
          }
     }
 
- 
 
 
-    
+
+
 
 
 void cput_text()
@@ -311,7 +295,7 @@ void cput_text()
     fillintext(&string[1],new);
     strcpy(string,new);
   } /* this makes it permanent */
-    
+
    new_int("Size 0-4 :",&size);
    /* new_int("Font  0-times/1-symbol :",&font); */
   if(size>4)size=4;
@@ -326,7 +310,7 @@ void cput_text()
  BaseCol();
  }
   waitasec(ClickTime);
-  XDestroyWindow(display,temp); 
+  XDestroyWindow(display,temp);
  }
 
  /*
@@ -369,13 +353,13 @@ int get_mouse_xy(x,y,w)
           *x=ev.xbutton.x;
           *y=ev.xbutton.y;
           return(1);
-          
+
    }
   }
 	return(0);
  }
-               
-     
+
+
 
 void Ftext(x,y,string,o)
 int x,y;
@@ -385,7 +369,7 @@ char *string;
    chk_xor();
    XDrawString(display,o,gc,x,y+CURY_OFF,string,strlen(string));
 }
- 
+
 
 
 
@@ -404,7 +388,7 @@ Window w;
  XDrawRectangle(display,w,gc,x,y,x2-x,y2-y);
 }
 
-/*  
+/*
 getuch()
 {
  int ch;
@@ -449,7 +433,7 @@ double *value;
    if(done==0||strlen(tvalue)==0)return -1;
 
 
-    
+
     if(tvalue[0]=='%')
     {
      flag=do_calc(&tvalue[1],&newz);
@@ -457,11 +441,11 @@ double *value;
      return(0);
     }
      *value=atof(tvalue);
- 
+
    return(0);
 
  }
- 
+
 /*
 do_calc(s,v)
 char *s;
@@ -469,7 +453,7 @@ double *v;
 {
  return(1);
 }
- 
+
  */
 
  int new_int(name,value)
@@ -482,8 +466,8 @@ double *v;
    *value=atoi(svalue);
    return(0);
  }
-  
-   
+
+
 
 
 void display_command(name,value,pos,col)
@@ -530,10 +514,10 @@ void put_string_at(w,col,s,off)
      int off,col;
 {
  int l=strlen(s)-off;
- 
+
  XDrawString(display,w,gc,col,CURY_OFF,s+off,l);
 }
-              
+
 void movmem(s1,s2,len)
      char *s1,*s2;
      int len;
@@ -559,15 +543,15 @@ void edit_window(w,pos,value,col,done,ch)
  int ch;
  {
    int col0=*col-*pos*DCURX;
-        
+
    *done=0;
   /* plintf(" po=%d cl=%d ch=%d ||%s|| c0=%d\n",*pos,*col,ch,value,col0); */
    switch(ch){
-   case LEFT: 
+   case LEFT:
      if(*pos>0){ *pos=*pos-1; *col-=DCURX;}
      else ping();
      break;
-   case RIGHT: 
+   case RIGHT:
      if(*pos<strlen(value)){ *pos=*pos+1; *col+=DCURX;}
      else ping();
      break;
@@ -583,20 +567,20 @@ void edit_window(w,pos,value,col,done,ch)
      return;    /* junk key  */
    case ESC: *done=-1;  /* quit without saving */
      return;
-   case FINE: 
+   case FINE:
      if(MSStyle==0)
        *done=1;
      else
        *done=2;
      return;   /* save this guy */
    case BKSP:
-     /*  
+     /*
      *pos=0;
      *col=col0;
      value[0]=0;
      clr_line_at(w,col0,0,80);
      break; */
-   case DEL:	
+   case DEL:
      if(*pos>0){
        memmov(&value[*pos-1],&value[*pos],strlen(value)-*pos+1);
        *pos=*pos-1;
@@ -604,9 +588,9 @@ void edit_window(w,pos,value,col,done,ch)
      }
      else ping();
      break;
-   case TAB: 
+   case TAB:
      if(MSStyle==0)
-       *done=2; 
+       *done=2;
      else
        *done=1;
      return;
@@ -624,13 +608,13 @@ void edit_window(w,pos,value,col,done,ch)
    put_string_at(w,col0,value,0);
    put_cursor_at(w,col0,*pos);
 /*  plintf(" on ret %d %d %d %s %d\n",*pos,*col,ch,value,col0);*/
-   
+
    XFlush(display);
-   
+
  }
 
 
- 
+
 
 void do_backspace(pos,value,col,w)
  int *pos,*col;
@@ -673,7 +657,7 @@ void edit_command_string(ev,name,value,done,pos,col)
       		 ch=get_key_press(&ev);
 		 edit_window(command_pop,pos,value,col,done,ch);
 
-		
+
 
 		} /* end event cases */
   }
@@ -687,7 +671,7 @@ char *value;
  int done=0;
  int pos=strlen(value);
  int col=(pos+strlen(name))*DCURX;
- 
+
  XEvent ev;
  strcpy(old_value,value);
  clr_command();
@@ -695,29 +679,9 @@ char *value;
  while(done==0){
 	XNextEvent(display,&ev);
 	edit_command_string(ev,name,value,&done,&pos,&col);
- 	} 
+ 	}
 	clr_command();
 	if(done==1||done==2)return(done);
 	strcpy(value,old_value);
 	return(0);
 }
-
-       
-      
-
- 
- 
-              
-
-
-
-
-
-
-
-
-
-
-
-
-

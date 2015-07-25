@@ -1,36 +1,28 @@
 #include "choice_box.h"
 
-#include <stdlib.h> 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/cursorfont.h>
 #include <X11/keysym.h>
 #include <X11/keysymdef.h>
-#include <X11/cursorfont.h>
-#include <stdio.h>
+
+#include "browse.h"
+#include "ggets.h"
+#include "pop_list.h"
+#include "struct.h"
+
 #define ALL_DONE 2
 #define DONE_WITH_THIS 1
 #define FORGET_ALL   0
 #define FORGET_THIS 3
-#include "struct.h"
-#include "pop_list.h"
-#include "ggets.h"
-#include "browse.h"
-
-
-
 
 #define EV_MASK (ButtonPressMask 	|\
 		KeyPressMask		|\
 		ExposureMask		|\
 		StructureNotifyMask)
-
-extern Display *display;
-extern Window main_win;
-extern unsigned int MyBackColor,MyForeColor;
-extern int screen;
-extern GC gc;
-extern int xor_flag,DCURY,DCURX,CURY_OFF,CURS_X,CURS_Y;
 
 
 void destroy_choice(p)
@@ -49,12 +41,12 @@ CHOICE_BOX p;
  int n=p.n;
  XSetFillStyle(display,gc,FillSolid);
   XSetForeground(display,gc,MyForeColor);
- 
+
   if(w==p.ok)XDrawString(display,w,gc,0,CURY_OFF,"Ok",2);
   if(w==p.cancel)
 	XDrawString(display,w,gc,0,CURY_OFF,"Cancel",6);
    for(i=0;i<n;i++)
-  {  
+  {
     if(w!=p.cw[i])continue;
     XDrawString(display,w,gc,0,CURY_OFF,p.name[i],strlen(p.name[i]));
     if(p.flag[i]==1)set_fore();
@@ -68,8 +60,8 @@ void do_checks(p)
 CHOICE_BOX p;
 {
  int i;
- 
- 
+
+
  for(i=0;i<p.n;i++)
  {
   if(p.flag[i]==1)set_fore();
@@ -87,7 +79,7 @@ char **names,*wname;
 }
 
 
- 
+
 
 int do_choice_box(root,wname,n,mcc,names,check,type)
 Window root;
@@ -121,7 +113,7 @@ char **names,*wname;
  size_hints.max_width=width;
  size_hints.max_height=height;
  XSetWMProperties(display,base,&winname,NULL,NULL,0,&size_hints,NULL,NULL);
- 
+
  ystart=DCURY;
    xstart=DCURX;
 
@@ -139,7 +131,7 @@ for(i=0;i<n;i++){
   p.ok=make_window(base,xpos,ypos,2*DCURX,DCURY,2);
   p.cancel=make_window(base,xpos+4*DCURX,ypos,6*DCURX,DCURY,2);
   p.base=base;
-  
+
   p.n=n;
   p.type=type;
   p.mc=mcc;
@@ -155,19 +147,19 @@ for(i=0;i<n;i++){
  }
 
 
- 
+
 int choice_box_event_loop(p)
  CHOICE_BOX p;
- 
+
  {
  int i,j,nn=p.n;
   int status=-1;
- 
+
  XEvent ev;
 
  XNextEvent(display,&ev);
- 
- 
+
+
   switch(ev.type){
 	case ConfigureNotify:
 	case Expose:
@@ -198,17 +190,15 @@ int choice_box_event_loop(p)
 			     do_checks(p);
 			     }
                          }
-			 
-			
-			
+
+
+
 		}
-			
+
 		break;
 	case KeyPress:
              		break;
          }
- 
+
          return(status);
  }
-
-

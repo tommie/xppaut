@@ -1,11 +1,11 @@
 #include "color.h"
 
-#include <stdlib.h> 
-
-
+#include <math.h>
+#include <stdlib.h>
 #include <X11/Xlib.h>
 #include "ggets.h"
-#include <math.h>
+#include "main.h"
+
 #define COLOR_SCALE 0
 #define GRAYSCALE 1
 #define RGRAYSCALE 2
@@ -29,16 +29,7 @@
 #define C_GRAY 5
 #define C_BUDGIE 6
 
-extern int Xup;
-
-extern GC gc_graph,small_gc;
-extern Display *display;
-extern int screen;
-extern Window main_win;
- int color_mode=1,color_min,color_total,COLOR,color_max;
-extern int DCURX,DCURY,CURY_OFF,CURS_X,CURS_Y,DCURXs,DCURYs;
-extern unsigned int Black,White;
-extern unsigned int MyBackColor,MyForeColor,GrFore,GrBack;
+int color_mode=1,color_min,color_total,COLOR,color_max;
 int periodic=0,spectral;
 int custom_color=0;
 #define MAX_COLORS 256
@@ -49,7 +40,6 @@ int custom_color=0;
 XColor	color[MAX_COLORS];
 /* int	pixel[MAX_COLORS];
  */
-extern int TrueColorFlag;
 
 
 void tst_color(w)
@@ -95,8 +85,8 @@ void make_cmaps(r,g,b,n,type)
 {
  double x;
  int i,i1,i2,i3;
- 
- 
+
+
 
  switch(type){
  case C_NORM:
@@ -119,7 +109,7 @@ void make_cmaps(r,g,b,n,type)
    i1=.375*n;
    i2=2*i1;
    i3=n-i2;
- 
+
    for(i=0;i<i1;i++){
      x=256*255*(double)i/((double)i1);
 
@@ -145,7 +135,7 @@ void make_cmaps(r,g,b,n,type)
      r[i]=(int)(256*255*x);
      b[i]=(int)(256*255*(1-x));
      g[i]=256*255;
-   
+
    }
    break;
  case C_REDBLUE:
@@ -154,10 +144,10 @@ void make_cmaps(r,g,b,n,type)
      r[i]=(int)(256*255*x);
      b[i]=(int)(256*255*(1-x));
      g[i]=0;
-   
+
    }
    break;
- 
+
  case C_GRAY:
    for(i=0;i<n;i++){
      r[i]=i*256*255/n;
@@ -165,13 +155,13 @@ void make_cmaps(r,g,b,n,type)
      g[i]=i*256*255/n;
    }
    break;
- }    
+ }
 }
 
  int rfun(y,per)
   double y;
   int per;
-{  
+{
   double x;
   x=y;
   if((y>.666666)&&(per==1))x=1.-y;
@@ -187,7 +177,7 @@ int gfun(y,per)
  if(y>.666666)return(0);
  return( (int)(3.*255*sqrt((.6666667-y)*(y))));
 }
- 
+
 int bfun(y,per)
 double y;
 int per;
@@ -216,7 +206,7 @@ void get_ps_color(int i,float *r,float *g,float *b)
 
 void get_svg_color(int i,int *r,int *g,int *b)
 {
-  
+
   *r=color[i].red/255;
     *g=color[i].green/255;
   *b=color[i].blue/255;
@@ -246,8 +236,8 @@ int r[256],g[256],b[256];
     color[i].green=0;
     	color[i].flags = DoRed | DoGreen | DoBlue;
     }
- 
-  
+
+
     color[RED].red=255;
     color[BLUE].blue=255;
     color[GREEN].green=225;
@@ -277,17 +267,17 @@ int r[256],g[256],b[256];
 	if (Xup){XAllocColor(display,cmap,&color[i]);}
 
     }
-    
+
    make_cmaps(r,g,b,color_total+1,custom_color);
     for (i = color_min; i <= color_max; i++) {
      color[i].red=r[i-color_min];
      color[i].green=g[i-color_min];
      color[i].blue=b[i-color_min];
-     
+
 	 	color[i].flags = DoRed | DoGreen | DoBlue;
 	if (Xup){XAllocColor(display,cmap,&color[i]);}
     }
-   
+
 }
 
 
@@ -303,15 +293,3 @@ int i;
 	return(i);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

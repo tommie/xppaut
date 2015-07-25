@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#define HMAX CV_HMAX
+#define HMIN CV_HMIN
 #include "band.h"
 #include "cvband.h"
 #include "cvdense.h"  /* prototype for CVDense, constant DENSE_NJE         */
@@ -14,6 +16,8 @@
                       /* integer (set to int), and the constant FALSE      */
 #include "vector.h"   /* definitions of type N_Vector and macro N_VIth,    */
                       /* prototypes for N_VNew, N_VFree                    */
+#undef HMIN
+#undef HMAX
 
 #include "flags.h"
 #include "ggets.h"

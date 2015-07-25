@@ -1,60 +1,42 @@
 #include "lunch-new.h"
-#include "parserslow.h"
-#include "edit_rhs.h"
-#include "browse.h"
-#include "ggets.h"
-#include "graf_par.h"
-#include "volterra2.h"
-#include "storage.h"
-#include "init_conds.h"
 
-#include "numerics.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <math.h>
-#include "arrayplot.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <time.h>
-#include "xpplim.h"
-#include "struct.h"
-#include "shoot.h"
-#include "load_eqn.h"
+
 #include "adj2.h"
+#include "arrayplot.h"
+#include "browse.h"
+#include "delay_handle.h"
+#include "edit_rhs.h"
+#include "form_ode.h"
+#include "ggets.h"
+#include "graf_par.h"
+#include "init_conds.h"
 #include "integrate.h"
+#include "load_eqn.h"
+#include "main.h"
+#include "many_pops.h"
+#include "numerics.h"
+#include "parserslow.h"
+#include "shoot.h"
+#include "storage.h"
+#include "struct.h"
+#include "volterra2.h"
+#include "xpplim.h"
 
 #define READEM 1
 #define VOLTERRA 6
 #define MAXUFUN 50
 #define PARAMBOX 1
 
-extern int XPPBatch;
-extern BoxList ParamBox;
 double atof();
 
-extern int Xup;
- extern Window main_win;
-extern GRAPH *MyGraph;
-
- extern BC_STRUCT my_bc[MAXODE];
-
 int set_type=0;
-
-extern FIXINFO fixinfo[MAXODE];
-extern int FIX_VAR,NFUN;
-
- extern int NJMP,NMESH,METHOD,NODE,POIMAP,POIVAR,POISGN,SOS,INFLAG,NMarkov;
- extern int NUPAR,NEQ,BVP_MAXIT,EVEC_ITER,DelayFlag,MyStart;
- extern double last_ic[MAXODE],MyData[MAXODE],MyTime,LastTime;
- extern double TEND,DELTA_T,T0,TRANS,BOUND,HMIN,HMAX,TOLER,ATOLER,DELAY;
- extern double POIPLN,EVEC_ERR,NEWT_ERR;
-extern double BVP_TOL,BVP_EPS;
-extern int MaxPoints;
-
- extern char upar_names[MAXPAR][11],this_file[XPP_MAX_NAME],delay_string[MAXODE][80];
- extern char uvar_names[MAXODE][12];
- extern char *ode_names[MAXODE],*fix_names[MAXODE];
 
 
 void file_inf()

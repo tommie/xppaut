@@ -14,8 +14,11 @@ typedef struct {
 
 /* --- Data --- */
 extern int DelayErr;
+extern double LastTime;
 extern int MakePlotFlag;
 extern double MyData[MAXODE];
+extern int MyStart;
+extern double MyTime;
 extern RANGE range;
 extern int SuppressBounds;
 extern int SuppressOut;

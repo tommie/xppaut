@@ -5,6 +5,7 @@
 
 /* --- Data --- */
 extern int NWiener;
+extern int STOCH_FLAG;
 extern int storind;
 
 /* --- Functions --- */

@@ -1,60 +1,9 @@
-#include "integrate.h"
-
-#include "load_eqn.h"
-#include "my_rhs.h"
-#include "dormpri.h"
-#include "stiff.h"
-#include "cv2.h"
-#include "storage.h"
-
-#include "parserslow.h"
-#include "markov.h"
-#include "tabular.h"
-#include "adj2.h"
-#include "browse.h"
-#include "derived.h"
-#include "gear.h"
-#include "ggets.h"
-#include "graf_par.h"
-#include "graphics.h"
-#include "init_conds.h"
-#include "kinescope.h"
-#include "lunch-new.h"
-#include "del_stab.h"
-#include "flags.h"
-#include "histogram.h"
-#include "auto_x11.h"
-
-#include "odesol2.h"
-
-#include "abort.h"
-
-#include "pp_shoot.h"
-#include "color.h"
-#include "dae_fun.h"
-#include "load_eqn.h"
-#include "many_pops.h"
-#include "my_ps.h"
-#include "my_svg.h"
-#include "numerics.h"
-#include "volterra2.h"
-#include <stdlib.h>
-#include "calc.h"
-#include "aniparse.h"
-#include "pop_list.h"
-#include "delay_handle.h"
-#include "load_eqn.h"
-
 /*    this is the main integrator routine
       for phase-plane
       It takes the steps looks at the interrupts, plots and stores the data
       It also loads the delay stuff if required
 
-*/
-
-
-/*
-New stuff for 9/96 -- cvode added
+ New stuff for 9/96 -- cvode added
  cvode(command,y,t,n,tout,kflag,atol,rtol)
  command =0 continue, 1 is start 2 finish
  kflag is error < 0 is bad -- call cvode_err_msg(kflag)
@@ -64,20 +13,61 @@ New stuff for 9/96 -- cvode added
 
 NOTE: except for the structure MyGraph, it is "x-free" so it
  is completely portable
-
-
 */
+#include "integrate.h"
 
-#include <stdio.h>
-#include <X11/Xlib.h>
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "xpplim.h"
-#include "struct.h"
-#include "phsplan.h"
-extern GRAPH *MyGraph;
-#include "menudrive.h"
+#include <X11/Xlib.h>
+
+#include "abort.h"
+#include "adj2.h"
+#include "aniparse.h"
 #include "arrayplot.h"
+#include "auto_x11.h"
+#include "browse.h"
+#include "calc.h"
+#include "color.h"
+#include "comline.h"
+#include "cv2.h"
+#include "dae_fun.h"
+#include "del_stab.h"
+#include "delay_handle.h"
+#include "derived.h"
+#include "dormpri.h"
+#include "flags.h"
+#include "gear.h"
+#include "ggets.h"
+#include "graf_par.h"
+#include "graphics.h"
+#include "histogram.h"
+#include "homsup.h"
+#include "init_conds.h"
+#include "kinescope.h"
+#include "load_eqn.h"
+#include "lunch-new.h"
+#include "main.h"
+#include "many_pops.h"
+#include "markov.h"
+#include "menudrive.h"
+#include "my_ps.h"
+#include "my_rhs.h"
+#include "my_svg.h"
+#include "numerics.h"
+#include "odesol2.h"
+#include "parserslow.h"
+#include "phsplan.h"
+#include "pop_list.h"
+#include "pp_shoot.h"
+#include "stiff.h"
+#include "storage.h"
+#include "struct.h"
+#include "tabular.h"
+#include "volterra2.h"
+#include "xpplim.h"
+
 #define MSWTCH(u,v) memcpy((void *)(u),(void *)(v),xpv.node*sizeof(double))
 
 #define READEM 1
@@ -101,29 +91,8 @@ extern GRAPH *MyGraph;
 #define DP5 11
 #define DP83 12
 #define RB23 13
-extern int animation_on_the_fly;
-extern double ShootIC[8][MAXODE];
-extern int ShootType[8];
-extern int ShootICFlag;
-extern int ShootIndex;
-extern int SimulPlotFlag,current_pop,num_pops,ActiveWinList[];
-extern int use_intern_sets;
-extern int dryrun;
-extern int querysets;
-extern int querypars;
-extern int queryics;
-extern int aplot_range;
-extern int Nintern_2_use;
-extern int AdjRange;
-
-
-extern char this_internset[XPP_MAX_NAME];
 
 int MakePlotFlag=0;
-
-extern FILE *svgfile;
-
-extern OptionsSet notAlreadySet;
 
 typedef struct {
   int index0,type;
@@ -165,33 +134,15 @@ typedef struct
 XPPVEC xpv;
 int SuppressOut=0;
 int SuppressBounds=0;
-extern int NUPAR;
-
-extern char *info_message,*ic_hint[],*sing_hint[];
-extern int Xup,batch_range;
-extern char batchout[256];
 double atof();
-extern int NMarkov,STOCH_FLAG;
-extern int color_total,SCALEY,DCURY,PltFmtFlag,PointRadius;
 int DelayErr;
 
 float **get_browser_data();
 double get_ivar();
 double  MyData[MAXODE],MyTime;
 int MyStart;
-extern int DelayFlag,DCURY,NKernel;
 int RANGE_FLAG;
-extern int PAR_FOL,SHOOT;
-extern char upar_names[MAXPAR][11];
-extern double default_val[MAXPAR];
-extern double last_ic[MAXODE];
 double LastTime;
-
-extern char UserOUTFILE[256];
-
-extern double DELAY;
-extern int R_COL;
-extern int (*rhs)();
 int STOP_FLAG=0;
 int PSLineStyle;
  struct {
@@ -206,10 +157,6 @@ int PSLineStyle;
 	 double plow,phigh,plow2,phigh2;
          int rtype;
        } range;
-
-extern INTERN_SET intern_set[MAX_INTERN_SET];
-extern int Nintern_set;
-
 
 int (*solver)();
 

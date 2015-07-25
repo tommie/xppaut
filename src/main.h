@@ -7,6 +7,7 @@
 /* --- Data --- */
 extern int allwinvis;
 extern char anifile[XPP_MAX_NAME];
+extern int batch_range;
 extern char batchout[256];
 extern int CURY_OFF;
 extern int CURY_OFFb;

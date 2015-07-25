@@ -11,10 +11,15 @@ typedef struct {
 } SET_NAME;
 
 /* --- Data --- */
+extern int dryrun;
 extern char includefilename[MaxIncludeFiles][XPP_MAX_NAME];
 extern int loadincludefile;
 extern int NincludedFiles;
+extern int Nintern_2_use;
 extern int noicon;
+extern int queryics;
+extern int querypars;
+extern int querysets;
 
 /* --- Functions --- */
 int is_set_name(SET_NAME *set, char *nam);

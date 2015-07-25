@@ -64,7 +64,6 @@ noinst_HEADERS = \
 	ggets.h \
 	main.h \
 	pop_list.h \
-	auto.h \
 	graf_par.h \
 	many_pops.h \
 	pp_shoot.h \

@@ -30,7 +30,6 @@ noinst_HEADERS = \
 	adj2.h \
 	newpars.h \
 	storage.h \
-	aniparse_avi.h \
 	fftn.h \
 	nullcline.h \
 	struct.h \
@@ -50,7 +49,6 @@ noinst_HEADERS = \
 	autlib1.h \
 	delay_handle.h \
 	lunch-new.h \
-	parser.h \
 	txtread.h \
 	autlib2.h \
 	del_stab.h \

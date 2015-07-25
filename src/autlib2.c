@@ -5,18 +5,12 @@
 #include "autlib2.h"
 
 #include <math.h>
+#include "auto_nox.h"
 #include "auto_x11.h"
 
 int FLOWK;
 /* Common Block Declarations */
 
-typedef struct {
-  int irot;
-  int nrot[1000];
-  double torper;
-} ROTCHK;
-
-extern ROTCHK blrtn;
 struct {
     integer ndim, ips, irs, ilp, icp[20];
     doublereal par[20];

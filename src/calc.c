@@ -1,31 +1,25 @@
 #include "calc.h"
 
-#include "ggets.h"
-#include "pop_list.h"
-#include "init_conds.h"
-#include <stdlib.h> 
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
 #include <X11/keysymdef.h>
+
+#include "browse.h"
+#include "form_ode.h"
+#include "ggets.h"
+#include "init_conds.h"
+#include "load_eqn.h"
+#include "parserslow.h"
+#include "pop_list.h"
 #include "xpplim.h"
+
 #define PARAM 1
 #define IC 2
-#include "browse.h"
-
-#include "parserslow.h"
-
-extern int NCON,NSYM,NCON_START,NSYM_START;
-
-
-extern Display *display;
-extern int screen;
-extern GC gc, small_gc;
-extern int DCURX,DCURXs,DCURY,DCURYs,CURY_OFFs,CURY_OFF;
-
 
 #define MYMASK  (ButtonPressMask 	|\
 		KeyPressMask		|\
@@ -44,7 +38,6 @@ extern int DCURX,DCURXs,DCURY,DCURYs,CURY_OFFs,CURY_OFF;
 
 double calculate(/* char * */);
 double evaluate();
-extern double last_ic[MAXODE];
 
 struct {
   Window base,quit,answer;
@@ -114,7 +107,7 @@ void quit_calc()
 {
  my_calc.use=0;
  XSelectInput(display,my_calc.quit,SIMPMASK);
- waitasec(ClickTime); 
+ waitasec(ClickTime);
  XDestroySubwindows(display,my_calc.base);
  XDestroyWindow(display,my_calc.base);
  clr_command();
@@ -151,7 +144,7 @@ void q_calc()
 	 XSetWindowBorderWidth(display,ev.xcrossing.window,2);
 
 	if(ev.type==LeaveNotify&&ev.xcrossing.window==my_calc.quit)
-	XSetWindowBorderWidth(display,ev.xcrossing.window,1);   
+	XSetWindowBorderWidth(display,ev.xcrossing.window,1);
     edit_command_string(ev,name,value,&done,&pos,&col);
     if(done==1){
       flag=do_calc(value,&z);
@@ -161,7 +154,7 @@ void q_calc()
     }
    if(done==-1)break;
  }
-  quit_calc();              
+  quit_calc();
  }
 
 
@@ -170,7 +163,7 @@ char *temp;
 double *z;
  {
  char val[15];
- int ok; 
+ int ok;
  int i;
  double newz;
  if(strlen(temp)==0){
@@ -179,10 +172,10 @@ double *z;
 	}
  if(has_eq(temp,val,&i))
  {
- 
- 
+
+
   newz=calculate(&temp[i],&ok);  /*  calculate quantity  */
- 
+
   if(ok==0)return(-1);
   i=find_user_name(PARAM,val);
   if(i>-1){
@@ -204,7 +197,7 @@ double *z;
   }
     return(0);
 }
-	    
+
   newz=calculate(temp,&ok);
   if(ok==0)return(-1);
  *z=newz;
@@ -247,12 +240,3 @@ bye:
   NSYM=NSYM_START;
   return(z);
  }
-
-
-
-
-
-
-
-
-

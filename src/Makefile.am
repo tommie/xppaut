@@ -15,9 +15,6 @@ bin_PROGRAMS = \
 lib_LIBRARIES = \
 	libxpp.a
 
-check_PROGRAMS = \
-	libexample.so
-
 noinst_HEADERS = \
 	abort.h \
 	comline.h \
@@ -292,9 +289,3 @@ strutil_sources =
 else
 strutil_sources = strutil.c
 endif
-
-libexample_so_CFLAGS = -fPIC
-libexample_so_LDFLAGS = -shared
-
-libexample_so_SOURCES = \
-	funexample.c

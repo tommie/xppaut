@@ -1,71 +1,51 @@
 #include "browse.h"
+
+#ifndef HAVE_WCTYPE_H
+# include <ctype.h>
+#else
+# include <wctype.h>
+#endif
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-#include "parserslow.h"
-#include "strutil.h"
 #include <sys/time.h>
-#include "ggets.h"
-#include "dialog_box.h"
-#include "eig_list.h"
-#include "integrate.h"
-#include "menudrive.h"
-#include "init_conds.h"
-#include "many_pops.h"
-#include "pop_list.h"
-#include <stdlib.h>
-#include <stdio.h>
-
 #include <sys/time.h>
 #include <unistd.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
 #include <X11/keysymdef.h>
-#include <math.h>
-#ifndef WCTYPE
-#include <ctype.h>
-#else
-#include <wctype.h>
-#endif
 
+#include "comline.h"
+#include "dialog_box.h"
+#include "eig_list.h"
+#include "form_ode.h"
+#include "ggets.h"
+#include "init_conds.h"
+#include "integrate.h"
+#include "load_eqn.h"
+#include "main.h"
+#include "many_pops.h"
+#include "menudrive.h"
+#include "menus.h"
+#include "mykeydef.h"
+#include "newhome.h"
+#include "parserslow.h"
+#include "pop_list.h"
+#include "strutil.h"
 #include "xpplim.h"
 #include "bitmap/browse.bitmap"
-#include "newhome.h"
-#include "mykeydef.h"
 
-extern char *browse_hint[];
 #define xds(a) { XDrawString(display,w,small_gc,5,CURY_OFFs,a,strlen(a));\
 		return;}
 
 
 #define BMAXCOL 20
 
-
-
-
-extern int *my_ode[];
-
-extern int *plotlist,N_plist;
-
-extern char *ode_names[MAXODE];
 double evaluate();
 double atof();
-extern int NEQ,MAXSTOR,NMarkov,FIX_VAR;
-extern int NEQ_MIN;
-extern int NODE,NJMP;
-extern int Xup,TipsFlag;
-extern double last_ic[MAXODE],DELTA_T;
-
-extern int NSYM,NSYM_START,NCON,NCON_START;
-
-extern Display *display;
-extern int screen,storind;
-extern GC gc, small_gc;
-extern int DCURX,DCURXs,DCURY,DCURYs,CURY_OFFs,CURY_OFF;
-extern unsigned int MyBackColor,MyForeColor,MyMainWinColor,MyDrawWinColor,GrFore,GrBack;
-
-
-extern Window command_pop;
 
 #define MYMASK  (ButtonPressMask 	|\
                 ButtonReleaseMask |\
@@ -104,11 +84,6 @@ extern Window command_pop;
 */
 BROWSER my_browser;
 
-
-
-
-extern int noicon;
-extern char uvar_names[MAXODE][12];
 float *old_rep;
 int REPLACE=0,R_COL=0;
 

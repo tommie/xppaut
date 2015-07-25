@@ -16,9 +16,14 @@ typedef struct {
 
 /* --- Data --- */
 extern int FIX_VAR;
+extern int *my_ode[MAXODE];
+extern int N_plist;
 extern int NCON;
 extern int NCON_START;
+extern int NEQ_MIN;
 extern int NSYM_START;
+extern char *ode_names[MAXODE];
+extern int *plotlist;
 extern char uvar_names[MAXODE][12];
 
 /* --- Functions --- */

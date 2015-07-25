@@ -37,5 +37,6 @@ extern char *aaxes_hint[];
 extern char *afile_hint[];
 extern char *aspecial_hint[];
 extern char *arun_hint[];
+extern char *browse_hint[];
 
 #endif /* XPPAUT_MENUS_H */

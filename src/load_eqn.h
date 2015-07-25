@@ -193,11 +193,15 @@ typedef struct {
 
 /* --- Data --- */
 extern double ATOLER;
+extern double BOUND;
 extern int BVP_FLAG;
+extern double EVEC_ERR;
+extern int EVEC_ITER;
 extern int got_file;
 extern INTERN_SET intern_set[MAX_INTERN_SET];
 extern double last_ic[MAXODE];
 extern int METHOD;
+extern double NEWT_ERR;
 extern int Nintern_set;
 extern int NJMP;
 extern int RunImmediately;

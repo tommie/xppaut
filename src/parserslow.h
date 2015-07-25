@@ -16,7 +16,9 @@ typedef struct {
 /* --- Data --- */
 extern double constants[MAXPAR];
 extern int NSYM;
+extern int NVAR;
 extern UFUN_ARG ufun_arg[MAXUFUN];
+extern double variables[MAXODE1];
 
 /* --- Functions --- */
 void init_rpn(void);

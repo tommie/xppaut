@@ -1,28 +1,22 @@
-
 #include "dae_fun.h"
-#include "gear.h"
-#include "parserslow.h"
 
-#include "ggets.h"
-#include <stdlib.h> 
-#include <stdio.h>
-#include <string.h>
 #include <math.h>
-#include "xpplim.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "form_ode.h"
+#include "gear.h"
 #include "getvar.h"
+#include "ggets.h"
+#include "integrate.h"
+#include "load_eqn.h"
+#include "parserslow.h"
+#include "xpplim.h"
+
 #define MAXDAE 400
 
-extern double variables[];
-extern int NVAR;
-
-extern int DelayErr;
-
-extern double EVEC_ERR,NEWT_ERR,BOUND;
-extern int EVEC_ITER;
 double evaluate();
-
-extern int NODE,FIX_VAR;
-extern int *my_ode[];
 double sdot();
 
 /*    will have more stuff someday */
@@ -39,14 +33,14 @@ typedef struct {
   int *form;
   int index;
   double value,last;
-}SOL_VAR;
+} SOLV_VAR;
 
 typedef struct {
   char *rhs;
   int *form;
 } DAE_EQN;
 
-SOL_VAR svar[MAXDAE];
+SOLV_VAR svar[MAXDAE];
 DAE_EQN aeqn[MAXDAE];
 
 int nsvar=0,naeqn=0;
@@ -62,7 +56,7 @@ int add_svar(name,rhs)
     plintf(" Too many variables\n");
     return 1;
   }
-  
+
   strcpy(svar[nsvar].name,name);
   svar[nsvar].rhs=(char *) malloc(80);
   strcpy(svar[nsvar].rhs,rhs);
@@ -106,10 +100,10 @@ int compile_svars()
 {
   int i,f[256],n,k;
   if(nsvar!=naeqn){
-    plintf(" #SOL_VAR(%d) must equal #ALG_EQN(%d) ! \n",nsvar,naeqn);
+    plintf(" #SOLV_VAR(%d) must equal #ALG_EQN(%d) ! \n",nsvar,naeqn);
     return 1;
   }
-  
+
   for(i=0;i<naeqn;i++){
     if(add_expr(aeqn[i].rhs,f,&n)==1){
     plintf(" Bad right-hand side for alg-eqn \n");
@@ -131,7 +125,7 @@ int compile_svars()
    }
      init_dae_work();
    return 0;
- 
+
 }
 
 void reset_dae()
@@ -153,18 +147,18 @@ void set_init_guess()
 }
 void err_dae()
 {
-  
+
   switch(dae_work.status){
-  case 2: 
+  case 2:
     err_msg(" Warning - no change in Iterates");
     break;
   case -1:
     err_msg(" Singular jacobian for dae\n");
-    
+
     break;
   case -2:
     err_msg(" Maximum iterates exceeded for dae\n");
-    
+
     break;
   case -3:
     err_msg(" Newton update out of bounds\n");
@@ -201,8 +195,8 @@ void do_daes()
   dae_work.status=ans;
   if(ans==1||ans==2)return; /* accepts a no change error! */
   DelayErr=1;
-  
-  
+
+
 }
 
 /* Newton solver for algebraic stuff */
@@ -239,7 +233,7 @@ int solve_dae()
 	SETVAR(svar[i].index,y[i]);
 	svar[i].last=y[i];
       }
-      return 1; 
+      return 1;
     }
     /* compute jacobian */
     for(i=0;i<n;i++){
@@ -264,7 +258,7 @@ int solve_dae()
     for(i=0;i<n;i++){
       y[i]-=errvec[i];
       err+=fabs(errvec[i]);
-    } 
+    }
     if(err>(n*BOUND)){
       for(i=0;i<n;i++)
 	SETVAR(svar[i].index,svar[i].last);
@@ -291,7 +285,7 @@ int solve_dae()
 
 
 /* interface shit -- different for Win95 */
- 
+
 void get_new_guesses()
 {
   int i,n;
@@ -312,17 +306,3 @@ void get_new_guesses()
     svar[i].last=z;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

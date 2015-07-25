@@ -5,6 +5,7 @@
 #include "xpplim.h"
 
 /* --- Data --- */
+extern int DelayErr;
 extern int MakePlotFlag;
 extern double MyData[MAXODE];
 extern int SuppressOut;

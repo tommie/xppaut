@@ -4,6 +4,7 @@
 /* --- Data --- */
 extern int NoBreakLine;
 extern int PltFmtFlag;
+extern int PSColorFlag;
 extern char PS_FONT[100];
 extern int PS_FONTSIZE;
 extern double PS_LW;

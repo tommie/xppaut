@@ -151,12 +151,7 @@ int PSLineStyle;
 	 double plow,phigh;
        } eq_range;
 
- struct {
-         char item[30],item2[30];
-	 int steps,steps2,reset,oldic,index,index2,cycle,type,type2,movie;
-	 double plow,phigh,plow2,phigh2;
-         int rtype;
-       } range;
+RANGE range;
 
 int (*solver)();
 

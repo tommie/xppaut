@@ -4,10 +4,19 @@
 #include <stdio.h>
 #include "xpplim.h"
 
+/* --- Type --- */
+typedef struct {
+  char item[30],item2[30];
+  int steps,steps2,reset,oldic,index,index2,cycle,type,type2,movie;
+  double plow,phigh,plow2,phigh2;
+  int rtype;
+} RANGE;
+
 /* --- Data --- */
 extern int DelayErr;
 extern int MakePlotFlag;
 extern double MyData[MAXODE];
+extern RANGE range;
 extern int SuppressBounds;
 extern int SuppressOut;
 

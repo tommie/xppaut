@@ -62,9 +62,28 @@ typedef struct {
 
 /* --- Data --- */
 extern BIFUR Auto;
+extern double auto_a0;
+extern double auto_a1;
+extern double auto_ds;
+extern double auto_dsmax;
+extern double auto_dsmin;
+extern double auto_epsl;
+extern double auto_epsu;
+extern double auto_epss;
 extern int Auto_index_to_array[5];
+extern int auto_ncol;
+extern int auto_nmx;
+extern int auto_npr;
+extern int auto_ntst;
 extern int AutoPar[5];
+extern double auto_rl0;
+extern double auto_rl1;
 extern int AutoTwoParam;
+extern int auto_var;
+extern double auto_xmax;
+extern double auto_xmin;
+extern double auto_ymax;
+extern double auto_ymin;
 extern ROTCHK blrtn;
 extern unsigned int DONT_XORCross;
 extern GRABPT grabpt;
@@ -73,6 +92,10 @@ extern int NAutoPar;
 extern int NAutoUzr;
 extern int NewPeriodFlag;
 extern double outperiod[20];
+extern int SEc;
+extern int SPc;
+extern int UEc;
+extern int UPc;
 extern int UzrPar[20];
 
 /* --- Functions --- */

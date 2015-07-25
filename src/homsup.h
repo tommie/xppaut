@@ -1,8 +1,10 @@
-#ifndef _homsup_h_
-#define _homsup_h_
+#ifndef XPPAUT_HOMSUP_H
+#define XPPAUT_HOMSUP_H
 
+/* --- Data --- */
+extern int (*rhs)();
 
-
+/* --- Functions --- */
 double hom_bcs();
 void do_projection();
 int pdfdu_();
@@ -14,4 +16,4 @@ int qrstep_();
 int orthes_();
 int ortran_();
 
-#endif
+#endif /* XPPAUT_HOMSUP_H */

@@ -1,23 +1,14 @@
-#include <stdlib.h> 
-#include "f2c.h"
-#include "auto_nox.h"
+#include <stdlib.h>
 #include "autlim.h"
+#include "auto_nox.h"
 #include "derived.h"
+#include "f2c.h"
+#include "homsup.h"
+#include "load_eqn.h"
+#include "parserslow.h"
 #include "pp_shoot.h"
 
 
-/*    Hooks to xpp RHS     */
-
-extern int (*rhs)();
-extern double constants[],last_ic[];
-
-extern int Auto_index_to_array[5];
-extern int NewPeriodFlag;
-extern int AutoTwoParam,NAutoPar;
-extern int Homo_n;
-extern int METHOD,NJMP;
-extern double outperiod[];
-extern int UzrPar[],NAutoUzr;
 struct {
     integer ndim, ips, irs, ilp, icp[20];
     doublereal par[20];
@@ -59,7 +50,7 @@ double  *u,*par,*f,*dfdu,*dfdp;
    double zz[NAUTO];
    for(i=0;i<NAutoPar;i++){
      constants[Auto_index_to_array[i]]=par[i];
-     
+
    }
    evaluate_derived();
    rhs(0.0,u,f,*ndim);
@@ -87,7 +78,7 @@ doublereal *u, *par,*t;
   double p;
   for(i=0;i<NAutoPar;i++)
     par[i] = constants[Auto_index_to_array[i]];
-  if(NewPeriodFlag==0){  
+  if(NewPeriodFlag==0){
     for(i=0;i<*ndim;i++)
       u[i]=last_ic[i];
     return 0;
@@ -113,7 +104,7 @@ doublereal *par;
   if(i0<0||i0>=NAutoUzr)return(1.0);
   return(par[UzrPar[i0]]-outperiod[i0]);
 
-} 
+}
 
 
 
@@ -132,13 +123,13 @@ double *dbc;
      constants[Auto_index_to_array[i]]=par[i];
  }
 
- 
+
  evaluate_derived();
  do_bc(u0,0.0,u1,1.0,fb,*nbc);
     return 0;
 } /* bcnd_ */
 
-/* Subroutine */ int icnd_(ndim, par, icp, nint, u, uold, udot, upold, fi, 
+/* Subroutine */ int icnd_(ndim, par, icp, nint, u, uold, udot, upold, fi,
 	ijac, dint)
 integer *ndim;
 double *par;
@@ -153,7 +144,7 @@ double *dint;
   for(i=0;i<Homo_n;i++)
     dum+=upold[i]*(u[i]-uold[i]);
   fi[0]=dum;
- 
+
     return 0;
 } /* icnd_ */
 
@@ -168,7 +159,3 @@ double *fs, *dfdu, *dfdp;
 /*     ---------- ---- */
     return 0;
 } /* fopt_ */
-
-
-
-

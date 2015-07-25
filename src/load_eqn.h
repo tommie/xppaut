@@ -188,6 +188,8 @@ typedef struct {
 /* --- Data --- */
 extern int BVP_FLAG;
 extern double last_ic[MAXODE];
+extern int METHOD;
+extern int NJMP;
 extern char this_file[XPP_MAX_NAME];
 extern int xorfix;
 

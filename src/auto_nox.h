@@ -70,6 +70,10 @@ extern unsigned int DONT_XORCross;
 extern GRABPT grabpt;
 extern int load_all_labeled_orbits;
 extern int NAutoPar;
+extern int NAutoUzr;
+extern int NewPeriodFlag;
+extern double outperiod[20];
+extern int UzrPar[20];
 
 /* --- Functions --- */
 void colset(int type);

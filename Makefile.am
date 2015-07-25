@@ -4,6 +4,7 @@ SUBDIRS = \
 	canonical \
 	doc \
 	help \
+	libi77 \
 	mkavi \
 	ode \
 	share \

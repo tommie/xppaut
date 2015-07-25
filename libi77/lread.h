@@ -14,9 +14,6 @@
 #endif
 
 
-#include "axes2.h"
-#include "browse.h"
-
 #include "fp.h"
 
 

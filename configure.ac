@@ -71,6 +71,7 @@ AC_CONFIG_FILES([
     canonical/Makefile
     doc/Makefile
     help/Makefile
+    libi77/Makefile
     mkavi/Makefile
     ode/Makefile
     share/Makefile

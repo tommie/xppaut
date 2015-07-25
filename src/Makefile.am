@@ -7,7 +7,8 @@ AM_CPPFLAGS = \
 	-DCVODE_YES \
 	-DHAVEDLL \
 	-DMYSTR1=$(MAJORVER) \
-	-DMYSTR2=$(MINORVER)
+	-DMYSTR2=$(MINORVER) \
+	-I$(top_srcdir)/libi77
 
 bin_PROGRAMS = \
 	xppaut
@@ -27,8 +28,6 @@ noinst_HEADERS = \
 	stiff.h \
 	adj2.h \
 	cvband.h \
-	f2c.h \
-	lio.h \
 	newpars.h \
 	storage.h \
 	aniparse_avi.h \
@@ -39,10 +38,8 @@ noinst_HEADERS = \
 	struct.h \
 	aniparse.h \
 	cvdiag.h \
-	fio.h \
 	llnltyps.h \
 	numerics.h \
-	sue.h \
 	arrayplot.h \
 	cvode.h \
 	flags.h \
@@ -51,18 +48,13 @@ noinst_HEADERS = \
 	tabular.h \
 	array_print.h \
 	cvspgmr.h \
-	fmt.h \
-	local.h \
 	toons.h \
 	autevd.h \
 	dae_fun.h \
 	form_ode.h \
-	lread.h \
-	open.h \
 	torus.h \
 	autlib1.h \
 	delay_handle.h \
-	fp.h \
 	lunch-new.h \
 	parser.h \
 	txtread.h \
@@ -71,7 +63,6 @@ noinst_HEADERS = \
 	gear.h \
 	macdirent.h \
 	parserslow.h \
-	uio.h \
 	autlim.h \
 	dense.h \
 	getvar.h \
@@ -83,9 +74,7 @@ noinst_HEADERS = \
 	ggets.h \
 	main.h \
 	pop_list.h \
-	util.h \
 	auto.h \
-	dfe.h \
 	graf_par.h \
 	many_pops.h \
 	pp_shoot.h \
@@ -94,7 +83,6 @@ noinst_HEADERS = \
 	diagram.h \
 	graphics.h \
 	markov.h \
-	rdfmt.h \
 	volterra2.h \
 	auto_x11.h \
 	dialog_box.h \
@@ -107,38 +95,28 @@ noinst_HEADERS = \
 	histogram.h \
 	menu.h \
 	rubber.h \
-	wref.h \
 	band.h \
 	dormpri.h \
 	homsup.h \
 	menus.h \
 	run_auto.h \
-	wrtfmt.h \
 	browse.h \
-	due.h \
-	iio.h \
 	myfonts.h \
 	scrngif.h \
-	wsfe.h \
 	calc.h \
 	edit_rhs.h \
 	init_conds.h \
 	mykeydef.h \
-	sfe.h \
-	wsne.h \
 	choice_box.h \
 	eig_list.h \
 	integrate.h \
 	my_pars.h \
 	shoot.h \
 	xpplim.h \
-	close.h \
-	endfile.h \
 	iterativ.h \
 	my_ps.h \
 	simplenet.h \
 	color.h \
-	err.h \
 	kbs.h \
 	my_rhs.h \
 	spgmr.h \
@@ -171,6 +149,9 @@ bitmap_headers = \
 	bitmap/pagedn.bitmap \
 	bitmap/pageup.bitmap \
 	bitmap/start.bitmap
+
+xppaut_LDADD = \
+	$(top_builddir)/libi77/libi77.a
 
 xppaut_SOURCES = \
 	main.c \
@@ -234,34 +215,6 @@ xppaut_SOURCES = \
 	txtread.c \
 	menudrive.c \
 	userbut.c \
-	Version.c \
-	backspace.c \
-	dfe.c \
-	due.c \
-	iio.c \
-	inquire.c \
-	rewind.c \
-	rsfe.c \
-	rdfmt.c \
-	sue.c \
-	uio.c \
-	wsfe.c \
-	sfe.c \
-	fmt.c \
-	lio.c \
-	lread.c \
-	open.c \
-	close.c \
-	util.c \
-	endfile.c \
-	wrtfmt.c \
-	wref.c \
-	err.c \
-	fmtlib.c \
-	rsne.c \
-	wsne.c \
-	fc77.c \
-	f2cstart.c \
 	$(cvode_sources) \
 	$(auto_sources)
 

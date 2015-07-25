@@ -16,9 +16,6 @@
 #endif
 
 
-#include "axes2.h"
-#include "browse.h"
-
 #include "fp.h"
 */
 extern char *fmtbuf;
@@ -77,21 +74,21 @@ int l_read(number,ptr,len,type) ftnint *number,type; char *ptr; ftnlen len;
 	real *xx;
 	for(i=0;i<*number;i++)
 	{
-		if(lquit) 
+		if(lquit)
 		{
 			return(0);
 		}
-		if(curunit->uend) 
+		if(curunit->uend)
 		{
 			err(elist->ciend, EOF, "list in");
 		}
-		if(lcount == 0) 
+		if(lcount == 0)
 		{
 			ltype = 0;
-			for(;;)  
+			for(;;)
 			{
 				GETC(ch);
-				switch(ch) 
+				switch(ch)
 				{
 				case EOF:
 					goto loopend;
@@ -294,28 +291,28 @@ int l_C()
 		(void) ungetc(ch,cf);
 		if(fscanf(cf,"%d",&lcount)!=1)
 		{
-			if(!feof(cf)) 
+			if(!feof(cf))
 			{
 				err(elist->cierr,112,"complex format");
 			}
-			else 
+			else
 			{
 				err(elist->cierr,(EOF),"lread");
 			}
 		}
 		if(GETC(ch)!='*')
 		{
-			if(!feof(cf)) 
+			if(!feof(cf))
 			{
 				err(elist->cierr,112,"no star");
 			}
-			else 
+			else
 			{
 				err(elist->cierr,(EOF),"lread");
 			}
 		}
 		if(GETC(ch)!='(')
-		{	
+		{
 			(void) ungetc(ch,cf);
 			return(0);
 		}
@@ -346,11 +343,11 @@ int l_L()
 		(void) fscanf(cf,"%d",&lcount);
 		if(GETC(ch)!='*')
 		{
-			if(!feof(cf)) 
-			{	
+			if(!feof(cf))
+			{
 				err(elist->cierr,112,"no star");
 			}
-			else 
+			else
 			{
 				err(elist->cierr,(EOF),"lread");
 			}

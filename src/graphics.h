@@ -4,6 +4,8 @@
 #include <X11/Xlib.h>
 
 /* --- Data --- */
+extern int avromfonts[5];
+extern int avsymfonts[5];
 extern int HChar, VChar;
 extern int DBottom, DLeft, DRight, DTop;
 extern double XMin, YMin, XMax, YMax;

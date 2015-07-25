@@ -192,6 +192,7 @@ typedef struct {
 } OptionsSet;
 
 /* --- Data --- */
+extern double ATOLER;
 extern int BVP_FLAG;
 extern int got_file;
 extern INTERN_SET intern_set[MAX_INTERN_SET];
@@ -201,6 +202,7 @@ extern int Nintern_set;
 extern int NJMP;
 extern int RunImmediately;
 extern char this_file[XPP_MAX_NAME];
+extern double TOLER;
 extern int xorfix;
 
 /* --- Functions --- */

@@ -1,30 +1,31 @@
 #include "cv2.h"
 
-#include "flags.h"
-#include "my_rhs.h"
-#include "ggets.h"
 #include <stdio.h>
 #include <string.h>
-#include "llnltyps.h" /* definitions of types real (set to double) and     */
-                      /* integer (set to int), and the constant FALSE      */
+
+#include "band.h"
+#include "cvband.h"
+#include "cvdense.h"  /* prototype for CVDense, constant DENSE_NJE         */
 #include "cvode.h"    /* prototypes for CVodeMalloc, CVode, and CVodeFree, */
                       /* constants OPT_SIZE, BDF, NEWTON, SV, SUCCESS,     */
                       /* NST, NFE, NSETUPS, NNI, NCFN, NETF                */
-#include "cvdense.h"  /* prototype for CVDense, constant DENSE_NJE         */
-
+#include "dense.h"    /* definitions of type DenseMat, macro DENSE_ELEM    */
+#include "llnltyps.h" /* definitions of types real (set to double) and     */
+                      /* integer (set to int), and the constant FALSE      */
 #include "vector.h"   /* definitions of type N_Vector and macro N_VIth,    */
                       /* prototypes for N_VNew, N_VFree                    */
-#include "dense.h"    /* definitions of type DenseMat, macro DENSE_ELEM    */
-#include "cvband.h"
-#include "band.h"
+
+#include "flags.h"
+#include "ggets.h"
+#include "load_eqn.h"
+#include "my_rhs.h"
+#include "numerics.h"
+
 double cv_ropt[OPT_SIZE];
   int cv_iopt[OPT_SIZE];
-extern int cv_bandflag,cv_bandupper,cv_bandlower;
 static void cvf();
 void *cvode_mem;
 N_Vector ycv;
-extern int NFlags;
-extern double TOLER,ATOLER;
 void start_cv(y,t,n,tout,atol,rtol)
      double *y,t,tout,*atol,*rtol;
      int n;
@@ -38,8 +39,8 @@ void start_cv(y,t,n,tout,atol,rtol)
  if(cv_bandflag==1)
    CVBand(cvode_mem,cv_bandupper,cv_bandlower,NULL,NULL);
  else
-   CVDense(cvode_mem, NULL, NULL); 
-    
+   CVDense(cvode_mem, NULL, NULL);
+
 }
 
 void end_cv()
@@ -47,7 +48,7 @@ void end_cv()
   N_VFree(ycv);
   CVodeFree(cvode_mem);
 }
- 
+
 static void cvf(n,t,y,ydot,fdata)
      void *fdata;
      double t;
@@ -55,10 +56,10 @@ static void cvf(n,t,y,ydot,fdata)
      N_Vector y,ydot;
 {
   my_rhs(t,y->data,ydot->data,n);
-  
+
 }
-     
- 
+
+
 void cvode_err_msg(kflag)
      int kflag;
 {
@@ -90,9 +91,9 @@ void cvode_err_msg(kflag)
   if(strlen(s)>0)
     err_msg(s);
 }
-    
 
-int cvode(command,y,t,n,tout,kflag,atol,rtol) 
+
+int cvode(command,y,t,n,tout,kflag,atol,rtol)
 /* command =0 continue, 1 is start 2 finish */
      int *command,*kflag;
      double *y,*atol,*rtol;
@@ -108,7 +109,7 @@ int cvode(command,y,t,n,tout,kflag,atol,rtol)
    return 1;
 }
 /* rtol is like our TOLER and atol is something else ?? */
-int ccvode(command,y,t,n,tout,kflag,atol,rtol) 
+int ccvode(command,y,t,n,tout,kflag,atol,rtol)
 /* command =0 continue, 1 is start 2 finish */
      int *command,*kflag;
      double *y,*atol,*rtol;
@@ -126,7 +127,7 @@ int ccvode(command,y,t,n,tout,kflag,atol,rtol)
     start_cv(y,*t,n,tout,atol,rtol);
     flag=CVode(cvode_mem, tout, ycv, t, NORMAL);
     if(flag != SUCCESS){
-     
+
      *kflag=flag;
      end_cv();
      *command=1;
@@ -135,27 +136,15 @@ int ccvode(command,y,t,n,tout,kflag,atol,rtol)
     *command=0;
     for(i=0;i<n;i++)y[i]=ycv->data[i];
     return(0);
-  } 
+  }
   flag=CVode(cvode_mem,tout,ycv,t,NORMAL);
   if(flag != SUCCESS){
       *kflag=flag;
       end_cv();
       *command=1;
-     
+
       return(-1);
   }
   for(i=0;i<n;i++)y[i]=ycv->data[i];
   return(0);
 }
-
-
-
-
-
-
-
-
-
-
-
-

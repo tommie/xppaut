@@ -29,6 +29,7 @@ extern int NODE;
 extern int NSYM_START;
 extern char *ode_names[MAXODE];
 extern int *plotlist;
+extern char upar_names[MAXPAR][11];
 extern char uvar_names[MAXODE][12];
 
 /* --- Functions --- */

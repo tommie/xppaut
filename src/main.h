@@ -13,6 +13,7 @@ extern unsigned int MyDrawWinColor;
 extern unsigned int MyMainWinColor;
 extern int TrueColorFlag;
 extern int use_ani_file;
+extern int Xup;
 
 extern Display *display;
 extern GC gc;
@@ -20,6 +21,7 @@ extern GC font_gc;
 extern GC gc_graph;
 extern GC small_gc;
 extern Window command_pop;
+extern Window draw_win;
 extern Window info_pop;
 
 /* --- Functions --- */

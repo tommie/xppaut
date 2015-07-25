@@ -3,6 +3,7 @@
 
 /* --- Data --- */
 extern int NoBreakLine;
+extern int PltFmtFlag;
 
 /* --- Functions --- */
 int ps_init(char *filename, int color);

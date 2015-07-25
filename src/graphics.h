@@ -4,9 +4,14 @@
 #include <X11/Xlib.h>
 
 /* --- Data --- */
+extern int HChar, VChar;
+extern int DBottom, DLeft, DRight, DTop;
+extern double XMin, YMin, XMax, YMax;
 extern int PointType;
 extern XFontStruct *romfonts[5];
 extern XFontStruct *symfonts[5];
+extern int TextJustify;
+extern int HTic, VTic;
 
 /* --- Functions --- */
 void get_scale(double *x1, double *y1, double *x2, double *y2);

@@ -2,8 +2,10 @@
 #define XPPAUT_MANY_POPS_H
 
 #include <X11/Xlib.h>
+#include "struct.h"
 
 /* --- Data --- */
+extern GRAPH *MyGraph;
 
 /* --- Functions --- */
 int select_table(void);

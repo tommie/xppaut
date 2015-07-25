@@ -1,7 +1,8 @@
-#include "autevd.h" 
-#include <stdlib.h> 
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "autevd.h"
 
 
 #include "auto_nox.h"
@@ -37,7 +38,7 @@ double dreal_(z)
 dcomplex *z;
 {
  return(z->r);
- 
+
 }
 void send_eigen(ibr,ntot,n,ev)
      int ibr,ntot,n;
@@ -69,7 +70,7 @@ void send_mult(ibr,ntot,n,ev)
   }
 }
 
-  
+
 /* Only unit 8,3 or q.prb is important; all others are unnecesary */
 
 
@@ -104,7 +105,7 @@ void addbif_(ibr, ntot, itp, lab, npar,a, uhigh, ulow, u0, ubar,ndim)
   {
     add_point(blbcn_1.par,per,uhigh,ulow,ubar,*a,type,1,*lab,
 	      *npar,icp1,icp2,AutoTwoParam,my_ev.evr,my_ev.evi);
-  }  
+  }
 
   if(DiagFlag==0){
     /* start_diagram(*ndim); */
@@ -112,12 +113,12 @@ void addbif_(ibr, ntot, itp, lab, npar,a, uhigh, ulow, u0, ubar,ndim)
 	       blbcn_1.par,per,*ndim,icp1,icp2,my_ev.evr,my_ev.evi);
     DiagFlag=1;
     return;
-  } 
+  }
   add_diagram(*ibr,*ntot,*itp,*lab,*npar,*a,uhigh,ulow,u0,ubar,
 	       blbcn_1.par,per,*ndim,icp1,icp2,AutoTwoParam,my_ev.evr,
 	      my_ev.evi);
 }
-    
+
 
 
 
@@ -125,9 +126,9 @@ void addbif_(ibr, ntot, itp, lab, npar,a, uhigh, ulow, u0, ubar,ndim)
 double etime_(z)
 double *z;
 {
- 
+
  return(0.0);
- } 
+ }
 
 int eigrf_(a,n,m,ecv,work,ier)
      double *a,*work;
@@ -151,7 +152,7 @@ void init_auto(ndim,nbc,ips,irs,ilp,ntst,isp,isw,nmx,npr,
      double ds,dsmin,dsmax,rl0,rl1,a0,a1,epsl,epsu,epss;
 {
   int i;
- 
+
   NUZR=nuzr;
   NDIM = ndim;
 
@@ -159,16 +160,16 @@ void init_auto(ndim,nbc,ips,irs,ilp,ntst,isp,isw,nmx,npr,
   IRS = irs;
   ILP = ilp;
   ISP =isp;
- 
-  NBC = nbc; 
+
+  NBC = nbc;
   NIC=ndim-nbc;/* here is weher the integral conditions come in!!! */
   blbcn_1.icp[0] = ip1+1;
   blbcn_1.icp[1] = ip2+1;
   blbcn_1.icp[2] = ip3+1;
   blbcn_1.icp[3] = ip4+1;
   blbcn_1.icp[4] = ip5+1;
-  
-  
+
+
   RL0 = rl0;
   DS= ds;
   RL1 = rl1;
@@ -176,30 +177,17 @@ void init_auto(ndim,nbc,ips,irs,ilp,ntst,isp,isw,nmx,npr,
   AUTO_A0= a0;
   DSMAX= dsmax;
   AUTO_A1 = a1;
-  
+
   NTST =ntst;
   ISW = isw;
   NMX =nmx;
   NCOL=ncol;
-  
+
   blmax_1.npr = npr;
   blmax_1.jac = 0;
   for(i=0;i<20;i++)
     EPSL(i)=epsl;
   EPSU=epsu;
   EPSS=epss;
-  
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

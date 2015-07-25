@@ -4,7 +4,7 @@
 #include "ggets.h"
 #include "tabular.h"
 
-#include <stdlib.h> 
+#include <stdlib.h>
 
 #ifndef WCTYPE
 #include <ctype.h>
@@ -23,7 +23,7 @@
 
 #define MAXEXPLEN 1024
 #define THOUS 10000
-#define DOUB_EPS 2.23E-15 
+#define DOUB_EPS 2.23E-15
 #define POP stack[--stack_pointer]
 double zippy;
 #define PUSH(a) zippy=(a); stack[stack_pointer++]=zippy;
@@ -97,7 +97,7 @@ UFUN_ARG ufun_arg[MAXUFUN];
 
 
 SYMBOL my_symb[MAX_SYMBS]=
-{  
+{
    {"(",1,999,0,1},      /*  0   */
    {")",1,999,0,2},
    {",",1,999,0,3},
@@ -149,7 +149,7 @@ SYMBOL my_symb[MAX_SYMBS]=
    {"==",2,COM(FUN2TYPE,13),0,7},
    {">=",2,COM(FUN2TYPE,14),0,7},
    {"<=",2,COM(FUN2TYPE,15),0,7}, /*50 */
-   {"IF",2,995,1,10}, 
+   {"IF",2,995,1,10},
    {"THEN",4,994,1,10},
    {"ELSE",4,993,1,10},
    {"!=",2,COM(FUN2TYPE,16),0,7},
@@ -157,12 +157,12 @@ SYMBOL my_symb[MAX_SYMBS]=
    {"NORMAL",6,COM(FUN2TYPE,17),2,10}, /* returns normally dist number */
    {"BESSELJ",7,COM(FUN2TYPE,18),2,10}, /* Bessel J   */
    {"BESSELY",7,COM(FUN2TYPE,19),2,10}, /* Bessel Y */
-   {"NXXQQ",5,NUMSYM,0,10},  
+   {"NXXQQ",5,NUMSYM,0,10},
    {"ERF", 3, COM(FUN1TYPE,21),0,10}, /* 60 */
    {"ERFC",4,COM(FUN1TYPE,22),0,10},
    {"SUM",3,SUMSYM,2,10},
    {"OF",2,ENDSUM,0,10},
-   {"SHIFT",5,ENDSHIFT,2,10}, 
+   {"SHIFT",5,ENDSHIFT,2,10},
    {"DEL_SHFT",8,ENDDELSHFT,3,10},/* 65 */
    {"HOM_BCS",7,COM(FUN1TYPE,23),0,10},
    {"ISHIFT",6,ENDISHIFT,2,10}, /* 67 */
@@ -190,13 +190,13 @@ SYMBOL my_symb[MAX_SYMBS]=
    {"ARG17",5,COM(USTACKTYPE,16),0,10},
    {"ARG18",5,COM(USTACKTYPE,17),0,10},
    {"ARG19",5,COM(USTACKTYPE,18),0,10},
-   {"ARG20",5,COM(USTACKTYPE,19),0,10},  
+   {"ARG20",5,COM(USTACKTYPE,19),0,10},
    {"BESSELI",7,COM(FUN2TYPE,20),2,10},/* Bessel I  # 93 */
    {"LGAMMA",6,COM(FUN1TYPE,25),1,10} /* Log Gamma  #94 */
       };
-    
-    
-    
+
+
+
 int NCON=0,NVAR=0,NFUN=0;
 int NSYM=STDSYM;
 
@@ -248,7 +248,7 @@ char *c;
 	    case OVERFLOW:  c = "overflow range"; break;
 	    case UNDERFLOW: c = "underflow range"; break;
 	    default:		c = "(unknown error"; break;
-	} 
+	}
 	fprintf(stderr, "math exception : %d\n", e->type);
 	fprintf(stderr, "    name : %s\n", e->name);
 	fprintf(stderr, "    arg 1: %e\n", e->arg1);
@@ -325,7 +325,7 @@ char *junk;
 {
  int len;
  char string[100];
- 
+
  if(duplicate_name(junk)==1)return(1);
  if(NCON>=MAXPAR)
  {
@@ -396,7 +396,7 @@ int add_kernel(name,mu,expr)
      double mu;
 {
   char string[100];
-  
+
   int len,i,in=-1;
   if(duplicate_name(name)==1)return(1);
   if(NKernel==MAXKER){
@@ -446,7 +446,7 @@ int add_kernel(name,mu,expr)
   NKernel++;
   return(0);
 }
-  
+
 
 
 /*  ADD_VAR          */
@@ -490,14 +490,14 @@ int *command, *length;
  int err,i;
  convert(expr,dest);
 /* plintf(" Making token ...\n");  */
- err=make_toks(dest,my_token); 
+ err=make_toks(dest,my_token);
 
 /*  i=0;
   while(1){
   plintf(" %d %d \n",i,my_token[i]);
   if(my_token[i]==ENDTOK)break;
   i++;
-} */ 
+} */
  if(err!=0)return(1);
  err = alg_to_rpn(my_token,command);
  if(err!=0)return(1);
@@ -515,7 +515,7 @@ int add_net_name(index,name)
   char string[50];
   int len=strlen(name);
   plintf(" Adding net %s %d \n",name,index);
-  if(duplicate_name(name)==1)return(1);  
+  if(duplicate_name(name)==1)return(1);
   convert(name,string);
   if(len>MXLEN)len=MXLEN;
   strncpy(my_symb[NSYM].name,string,len);
@@ -526,7 +526,7 @@ int add_net_name(index,name)
   my_symb[NSYM].com=COM(NETTYPE,index);
   NSYM++;
   return(0);
-   
+
 }
 
 
@@ -547,7 +547,7 @@ int add_file_table(index,file)
 {
   char file2[1000];
   int i2=0,i1=0,n;
-  char ch; 
+  char ch;
   n=strlen(file);
   for(i1=0;i1<n;i1++){
     ch=file[i1];
@@ -562,7 +562,7 @@ int add_file_table(index,file)
       if(ERROUT)printf("Problem with creating table !!\n");
        return(1);
     }
- 
+
     return(0);
 }
 
@@ -572,7 +572,7 @@ int add_table_name(index,name)
 {
      char string[50];
      int len=strlen(name);
-     if(duplicate_name(name)==1)return(1);  
+     if(duplicate_name(name)==1)return(1);
      convert(name,string);
      if(len>MXLEN)len=MXLEN;
      strncpy(my_symb[NSYM].name,string,len);
@@ -594,8 +594,8 @@ int add_form_table(index,nn,xlo,xhi,formula)
      int nn;
      int index;
 {
- 
- 
+
+
   if(create_fun_table(nn,xlo,xhi,formula,index)==0)
     {
       if(ERROUT)printf("Problem with creating table !!\n");
@@ -603,7 +603,7 @@ int add_form_table(index,nn,xlo,xhi,formula)
     }
     return(0);
 }
-    
+
 
 void set_old_arg_names(narg)
      int narg;
@@ -669,7 +669,7 @@ int add_ufun_new(index,narg,rhs,args)
      char *rhs,args[MAXARG][11];
      int narg,index;
 {
-  
+
   int i,l;
   int end;
    if(narg>MAXARG){
@@ -692,7 +692,7 @@ int add_ufun_new(index,narg,rhs,args)
   set_new_arg_names(narg,args);
   if(add_expr(rhs,ufun[index],&end)==0)
     {
-      
+
       ufun[index][end-1]=ENDFUN;
       ufun[index][end]=narg;
       ufun[index][end+1]=ENDEXP;
@@ -702,8 +702,8 @@ int add_ufun_new(index,narg,rhs,args)
       narg_fun[index]=narg;
       set_old_arg_names(narg);
       return(0);
-    } 
-  
+    }
+
   set_old_arg_names(narg);
   if(ERROUT)printf(" ERROR IN FUNCTION DEFINITION\n");
   return(1);
@@ -774,7 +774,7 @@ double value;
  int bob,in,i;
  /*int m;*/
  for(i=0;i<NSYM;i++){
-	
+
 	if(strncmp(my_symb[i].name,"NUM##",5)==0){
 	bob=my_symb[i].com;
 	in=bob%MAXTYPE;
@@ -787,7 +787,7 @@ double value;
  }
  return(0);
 }
-	
+
 
 
 
@@ -860,7 +860,7 @@ int find_lookup(name)
   if(is_lookup(com))return(com%MAXTYPE);
   return(-1);
 }
- 
+
 
 /* FIND_NAME    */
 
@@ -935,7 +935,7 @@ double value;
   if(is_ucon(com))
   {
          constants[com % MAXTYPE]=value;
-   
+
     return(1);
   }
   if(is_uvar(com))
@@ -994,17 +994,17 @@ int *toklist,*command;
 	    my_symb[LASTTOK].com=COM(SVARTYPE,temp%MAXTYPE); /* create a temporary sybol */
             NDELAYS++;
            toklist[lstptr+1]=LASTTOK;
-	  	
+
 	    my_symb[LASTTOK].pri=10;
-	 
+
 	   	    }
-	   else 
+	   else
 	   {
 		printf("Illegal use of DELAY \n");
 		return(1);
            }
 
-          
+
 	 }
 
 /*        check for delshft symbol             */
@@ -1017,17 +1017,17 @@ int *toklist,*command;
 	    my_symb[LASTTOK].com=COM(SVARTYPE, temp%MAXTYPE); /* create a temporary sybol */
             NDELAYS++;
            toklist[lstptr+1]=LASTTOK;
-	  	
+
 	    my_symb[LASTTOK].pri=10;
-	 
+
 	   	    }
-	   else 
+	   else
 	   {
 		printf("Illegal use of DELAY Shift \n");
 		return(1);
            }
 
-          
+
 	 }
 
 
@@ -1042,28 +1042,28 @@ int *toklist,*command;
              if(is_uvar(temp))my_symb[LASTTOK].com=COM(SVARTYPE, temp%MAXTYPE);
 	        if(is_ucon(temp))my_symb[LASTTOK].com=COM(SCONTYPE, temp%MAXTYPE);
 /* create a temporary sybol */
-         
+
            toklist[lstptr+1]=LASTTOK;
-	  	
+
 	    my_symb[LASTTOK].pri=10;
-	 
+
 	   	    }
-	   else 
+	   else
 	   {
 		printf("Illegal use of SHIFT \n");
 		return(1);
            }
 
-          
+
        	  }
 
 
-  
-           
+
+
 
  next:
           if((newtok==ENDTOK)&&(oldtok==STARTTOK))break;
-         
+
           if(newtok==LPAREN)
            {
              tokstak[tokptr]=LPAREN;
@@ -1137,8 +1137,8 @@ int *toklist,*command;
                      comptr++;
 		     lptr++;
 		     nif++;
-                }    
-	   if(my_com==MYTHEN){ 
+                }
+	   if(my_com==MYTHEN){
 		              /* First resolve the if jump */
 			lptr--;
 			jmp=comptr-loopstk[lptr];  /* -1 is old */
@@ -1157,19 +1157,19 @@ int *toklist,*command;
 			     }
 
 
-			      
-			      
+
+
              if(my_com==ENDDELAY||my_com==ENDSHIFT||my_com==ENDISHIFT){
-        
+
 	     ncomma-=1;
                 }
              if(my_com==ENDDELSHFT)
-	       ncomma-=2;  
+	       ncomma-=2;
            /*  if(my_com==CONV||my_com==DCONV){
        	      ncomma-=1;
 	     }  */
 
-   
+
             /*    CHECK FOR USER FUNCTION       */
             if(is_ufun(my_com))
             {
@@ -1288,7 +1288,7 @@ int gives_number(token)
   if(token==NUMTOK)return(1);
   if(i1==FUN1TYPE&&!unary_sym(token))return(1); /* single variable functions */
   if(i1==FUN2TYPE&&!binary_sym(token))return(1); /* two-variable function */
-  /* !! */ 
+  /* !! */
   /* ram: 5 issue; was if(i1==8||isvar(i1)||iscnst(i1)||i1==7||i1==6||i1==5||isker(i1)||i1==UFUN)return(1); */
   if (i1 == USTACKTYPE || isvar(i1) || iscnst(i1) || i1 == TABTYPE || i1 == NETTYPE || isker(i1) || i1 == UFUNTYPE) return(1);
   if(com==MYIF||token==DELSHFTSYM||token==DELSYM||token==SHIFTSYM||token==ISHIFTSYM||com==SUMSYM)return(1);
@@ -1301,8 +1301,8 @@ int check_syntax(oldtoken,newtoken) /* 1 is BAD!   */
 {
   int com2=my_symb[newtoken].com;
 
-/* if the first symbol or (  or binary symbol then must be unary symbol or 
-   something that returns a number or another (   
+/* if the first symbol or (  or binary symbol then must be unary symbol or
+   something that returns a number or another (
 */
 
 
@@ -1314,9 +1314,9 @@ int check_syntax(oldtoken,newtoken) /* 1 is BAD!   */
      return(1);
    }
 
-/* if this is a regular function, then better have ( 
+/* if this is a regular function, then better have (
 */
- 
+
  if(function_sym(oldtoken)){
    if(newtoken==LPAREN)return(0);
    return(1);
@@ -1325,7 +1325,7 @@ int check_syntax(oldtoken,newtoken) /* 1 is BAD!   */
 /* if we have a constant or variable or ) or kernel then better
    have binary symbol or "then" or "else" as next symbol
 */
-   
+
  if(pure_number(oldtoken)){
    if(binary_sym(newtoken)||newtoken==RPAREN
       ||newtoken==COMMA||newtoken==ENDTOK)
@@ -1344,7 +1344,7 @@ int check_syntax(oldtoken,newtoken) /* 1 is BAD!   */
 
   plintf("Bad token %d \n",oldtoken);
   return(1);
-    
+
 }
 
 
@@ -1383,7 +1383,7 @@ int make_toks(dest,my_token)
   token=NEGATE;
   if(token==LPAREN)++nparen;
   if(token==RPAREN)--nparen;
-  
+
   if(token==NSYM)
     {
       if(do_num(dest,num,&value,&index)){
@@ -1401,9 +1401,9 @@ int make_toks(dest,my_token)
 	 return(1);
        }
       old_tok=NUMTOK;
- 
+
     }
-   
+
    else
      {
        my_token[tok_in++]=token;
@@ -1573,7 +1573,7 @@ void two_args()
  fun2[18]=bessel_j;
  fun2[19]=bessel_y;
  fun2[20]=bessi;
- 
+
 
 
 
@@ -1581,7 +1581,7 @@ void two_args()
 }
 
 /*   These are the Bessel Functions; if you dont have them then
-     return some sort of dummy value or else write a program 
+     return some sort of dummy value or else write a program
      to compute them
 */
 
@@ -1698,9 +1698,9 @@ double z,w;
  }
  else
  return(pow(fabs(z),w));
- 
+
 }
- 
+
  */
 
 
@@ -1726,7 +1726,7 @@ double shift,variable;
   int it, in;
   int i=(int)(variable),ish=(int)shift;
 
-/* plintf( "shifting %d (%s) by %d to %d (%s)\n", 
+/* plintf( "shifting %d (%s) by %d to %d (%s)\n",
  *	(int)variable, com_name((int)variable), (int)shift, i, com_name(i) );
  */
 
@@ -1738,13 +1738,13 @@ double shift,variable;
 	if(in>NCON)
 	  return 0.0;
 	else
-	  return constants[in]; 
+	  return constants[in];
 	break;
   case VARTYPE:
 	if(in>MAXODE)
 	  return 0.0;
-	else 
-	  return variables[in];  
+	else
+	  return variables[in];
   default:
     plintf("This can't happen: Invalid symbol index for SHIFT: i = %d\n", i);
     return 0.0;
@@ -1753,12 +1753,12 @@ double shift,variable;
 double do_ishift(shift,variable)
 double shift,variable;
 {
-  
-/* plintf( "shifting %d (%s) by %d to %d (%s)\n", 
+
+/* plintf( "shifting %d (%s) by %d to %d (%s)\n",
  *	(int)variable, com_name((int)variable), (int)shift, i, com_name(i) );
  */
  return variable+shift;
- 
+
 }
 
 double do_delay_shift(delay,shift,variable)
@@ -1771,17 +1771,17 @@ double do_delay_shift(delay,shift,variable)
 
   if(in>MAXODE)
     return 0.0;
- 
+
   if(del_stab_flag>0){
     if(DelayFlag&&delay>0.0)
       return(get_delay(in-1,delay));
     return(variables[in]);
   }
- 
+
   return(delay_stab_eval(delay,in));
-  
- 
- 
+
+
+
 
 
 }
@@ -1800,9 +1800,9 @@ double delay,i;
     }
     return(variables[variable]);
   }
- 
+
   return(delay_stab_eval(delay,(int)variable));
-  
+
 }
 /*
 double Exp(z)
@@ -1862,7 +1862,7 @@ double normal(mean,std)
      double mean,std;
 {
  double fac,r,v1,v2;
- if(BoxMullerFlag==0){ 
+ if(BoxMullerFlag==0){
    do {
      v1=2.0*ndrand48()-1.0;
      v2=2.0*ndrand48()-1.0;
@@ -1999,7 +1999,7 @@ double x,y;
  {
    int i,it,in,j,*tmpeq;
   int is;
-  
+
   int low,high,ijmp;
   double temx,temy,temz;
   double sum;
@@ -2028,9 +2028,9 @@ double x,y;
      break;
    case ENDFUN:
    		 i=*equat++;
-		
+
     		 uptr-=i;
-		
+
    		 break;
 
    case MYIF:
@@ -2044,7 +2044,7 @@ double x,y;
 		break;
    case MYELSE:
 		break;
-  
+
    case ENDDELSHFT:
      temx=POP;
      temy=POP;
@@ -2054,7 +2054,7 @@ double x,y;
    case ENDDELAY:
 		    temx=POP;
 		    temy=POP;
-                   
+
                    PUSH(do_delay(temx,temy));
 		   break;
 
@@ -2111,35 +2111,35 @@ double x,y;
              temy=POP;
 	     PUSH(fun2[in](temy,temx));break;
 	    }
-     case CONTYPE: 
+     case CONTYPE:
               PUSH(constants[in]);break;
      case NETTYPE:  PUSH(network_value(POP,in));break;
      case TABTYPE: PUSH(lookup(POP,in));break;
-            
+
      case USTACKTYPE:
         /* ram: so this means ustacks really do need to be of USTACKTYPE */
             PUSH(ustack[uptr-1-in]); break;
      case KERTYPE: PUSH(ker_val(in));break;
     case VARTYPE:
              PUSH(variables[in]); break;
-       
+
      /* indexes for shift and delay operators... */
      case SCONTYPE:
-        
+
          PUSH((double)(COM(CONTYPE, in))); break;
      case SVARTYPE:
-        
+
              PUSH((double)(COM(VARTYPE, in))); break;
 
      case UFUNTYPE: i=*equat++;
-         
+
             for(j=0;j<i;j++)
             {
             ustack[uptr]=POP;
-	 
+
 	    uptr++;
             }
-            PUSH(eval_rpn(ufun[in])); 
+            PUSH(eval_rpn(ufun[in]));
 break;
     }
 bye: j=0;

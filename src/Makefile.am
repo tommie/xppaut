@@ -1,8 +1,7 @@
-AM_CFLAGS = -std=c99 -Wall -pedantic
+AM_CFLAGS = -std=c99 -Wall -pedantic -Werror
 AM_CPPFLAGS = \
 	-D_XOPEN_SOURCE=600 \
 	-DNOERRNO \
-	-DNON_UNIX_STDIO \
 	-DAUTO \
 	-DCVODE_YES \
 	-DHAVEDLL \

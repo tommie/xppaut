@@ -12,6 +12,7 @@ void add_diagram(int ibr, int ntot, int itp, int lab, int nfpar, double a, doubl
 void kill_diagrams(void);
 void redraw_diagram(void);
 void write_info_out(void);
+void load_browser_with_branch(int ibr,int pts,int pte);
 void write_init_data_file(void);
 void write_pts(void);
 void post_auto(void);

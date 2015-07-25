@@ -63,6 +63,7 @@ typedef struct {
 void colset(int type);
 void pscolset2(int flag2);
 void colset2(int flag2);
+void storeautopoint(double x,double y);
 void get_auto_str(char *xlabel, char *ylabel);
 void draw_ps_axes(void);
 void draw_svg_axes(void);

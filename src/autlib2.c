@@ -4,6 +4,7 @@
 */
 #include "autlib2.h"
 
+#include <math.h>
 #include "auto_x11.h"
 
 int FLOWK;
@@ -87,7 +88,7 @@ struct {
 #define blusz_1 blusz_
 
 struct {
-    integer ndimp1, ndirc, ntstp1, ndcc, ndrhs, ndbc, nuicd, ndicd, nwbr, 
+    integer ndimp1, ndirc, ntstp1, ndcc, ndrhs, ndbc, nuicd, ndicd, nwbr,
 	    niwbr;
 } bldim_;
 
@@ -179,10 +180,10 @@ static integer c__2 = 2;
 
 /*     ---------- ------ */
 /* Subroutine */ int cnrlbv_(funi, bcni, icni, stpnt, fnbpbv, ibr, m1aa, m2aa,
-	 aa, m1bb, m2bb, bb, m1cc, cc, m1dd, dd, wbrbd, m1u, ups, uoldps, 
+	 aa, m1bb, m2bb, bb, m1cc, cc, m1dd, dd, wbrbd, m1u, ups, uoldps,
 	upoldp, udotps, rhsa, rhsd, tint, uintt, dups, eqf, uneq, tm, dtm, tm2,
-	 u, f, m1df, dfdu, dfdp, itm, ial, ubc0, ubc1, m1bc, dbc, uicd, ficd, 
-	m1ic, dicd, ir, ic, iwbrbd, p0, p1, poin, ev, wkev, ndim2, smat, 
+	 u, f, m1df, dfdu, dfdp, itm, ial, ubc0, ubc1, m1bc, dbc, uicd, ficd,
+	m1ic, dicd, ir, ic, iwbrbd, p0, p1, poin, ev, wkev, ndim2, smat,
 	rnllv)
 /* Subroutine */ int (*funi) (), (*bcni) (), (*icni) (), (*stpnt) (), (*
 	fnbpbv) ();
@@ -215,11 +216,11 @@ doublereal *smat, *rnllv;
     /* System generated locals */
     integer aa_dim1, aa_dim2, aa_offset, bb_dim1, bb_dim2, bb_offset, cc_dim1,
 	     cc_offset, dd_dim1, dd_offset, ups_dim1, ups_offset, uoldps_dim1,
-	     uoldps_offset, upoldp_dim1, upoldp_offset, udotps_dim1, 
-	    udotps_offset, rhsa_dim1, rhsa_offset, uintt_dim1, uintt_offset, 
-	    dups_dim1, dups_offset, dfdu_dim1, dfdu_offset, dfdp_dim1, 
-	    dfdp_offset, dbc_dim1, dbc_offset, dicd_dim1, dicd_offset, 
-	    p0_dim1, p0_offset, p1_dim1, p1_offset, poin_dim1, poin_offset, 
+	     uoldps_offset, upoldp_dim1, upoldp_offset, udotps_dim1,
+	    udotps_offset, rhsa_dim1, rhsa_offset, uintt_dim1, uintt_offset,
+	    dups_dim1, dups_offset, dfdu_dim1, dfdu_offset, dfdp_dim1,
+	    dfdp_offset, dbc_dim1, dbc_offset, dicd_dim1, dicd_offset,
+	    p0_dim1, p0_offset, p1_dim1, p1_offset, poin_dim1, poin_offset,
 	    smat_dim1, smat_offset, i__1, i__2;
 
     /* Local variables */
@@ -233,7 +234,7 @@ doublereal *smat, *rnllv;
     static logical limpnt;
     extern /* Subroutine */ int stdrbv_();
     extern /* Subroutine */ doublereal fnuzbv_();
-    extern /* Subroutine */ int stplbv_(), extrbv_(), solvbv_(), rsptbv_(), 
+    extern /* Subroutine */ int stplbv_(), extrbv_(), solvbv_(), rsptbv_(),
 	    tpspbv_();
     static doublereal sp1;
     static integer lab;
@@ -361,12 +362,12 @@ doublereal *smat, *rnllv;
 	    , &uoldps[uoldps_offset], &udotps[udotps_offset], &upoldp[
 	    upoldp_offset], &tint[1], &uintt[uintt_offset], &eqf[1], &uneq[1], &
 	    dups[dups_offset], &tm[1], &dtm[1], &tm2[1], &itm[1], &ial[1], &u[
-	    1], &f[1], m1df, &dfdu[dfdu_offset], &dfdp[dfdp_offset], &ev[1], 
+	    1], &f[1], m1df, &dfdu[dfdu_offset], &dfdp[dfdp_offset], &ev[1],
 	    ndim2, &smat[smat_offset], &rnllv[1], &ir[1], &ic[1], &nodir);
 
      setrtn_( blbcn_1.ndim,blcde_1.ntst,*m1u,ups);
     if (nodir == 1 && blcde_1.isw > 0) {
-	stdrbv_(funi, bcni, icni, &rds, m1aa, m2aa, &aa[aa_offset], m1bb, 
+	stdrbv_(funi, bcni, icni, &rds, m1aa, m2aa, &aa[aa_offset], m1bb,
 		m2bb, &bb[bb_offset], m1cc, &cc[cc_offset], m1dd, &dd[
 		dd_offset], &wbrbd[1], m1u, &ups[ups_offset], &uoldps[
 		uoldps_offset], &udotps[udotps_offset], &upoldp[upoldp_offset]
@@ -376,7 +377,7 @@ doublereal *smat, *rnllv;
 		 m1ic, &dicd[dicd_offset], &ir[1], &ic[1], &iwbrbd[1], &c__0);
 
     } else if (blbcn_1.irs != 0 && blcde_1.isw < 0) {
-	stdrbv_(funi, bcni, icni, &rds, m1aa, m2aa, &aa[aa_offset], m1bb, 
+	stdrbv_(funi, bcni, icni, &rds, m1aa, m2aa, &aa[aa_offset], m1bb,
 		m2bb, &bb[bb_offset], m1cc, &cc[cc_offset], m1dd, &dd[
 		dd_offset], &wbrbd[1], m1u, &ups[ups_offset], &uoldps[
 		uoldps_offset], &udotps[udotps_offset], &upoldp[upoldp_offset]
@@ -442,10 +443,10 @@ L3:
 	     &dfdu[dfdu_offset], &dfdp[dfdp_offset], &dtm[1]);
 L4:
     solvbv_(funi, bcni, icni, &istop, &rds, &nitps, ibr, &ntot, m1aa, m2aa, &
-	    aa[aa_offset], m1bb, m2bb, &bb[bb_offset], m1cc, &cc[cc_offset], 
+	    aa[aa_offset], m1bb, m2bb, &bb[bb_offset], m1cc, &cc[cc_offset],
 	    m1dd, &dd[dd_offset], &wbrbd[1], m1u, &ups[ups_offset], &uoldps[
 	    uoldps_offset], &udotps[udotps_offset], &upoldp[upoldp_offset], &
-	    rhsa[rhsa_offset], &rhsd[1], &dups[dups_offset], &tm[1], &dtm[1], 
+	    rhsa[rhsa_offset], &rhsd[1], &dups[dups_offset], &tm[1], &dtm[1],
 	    &u[1], &f[1], m1df, &dfdu[dfdu_offset], &dfdp[dfdp_offset], &ubc0[
 	    1], &ubc1[1], m1bc, &dbc[dbc_offset], &uicd[1], &ficd[1], m1ic, &
 	    dicd[dicd_offset], &ir[1], &ic[1], &iwbrbd[1]);
@@ -488,14 +489,14 @@ L5:
 	goto L55;
     }
 
-    lcspbv_((doublereal(*)(void))fnbpbv, funi, bcni, icni, &istop, &itp, &sp1, &nitps, ibr, &ntot, 
+    lcspbv_((doublereal(*)(void))fnbpbv, funi, bcni, icni, &istop, &itp, &sp1, &nitps, ibr, &ntot,
 	    m1aa, m2aa, &aa[aa_offset], m1bb, m2bb, &bb[bb_offset], m1cc, &cc[
 	    cc_offset], m1dd, &dd[dd_offset], &wbrbd[1], m1u, &ups[ups_offset]
 	    , &uoldps[uoldps_offset], &udotps[udotps_offset], &upoldp[
-	    upoldp_offset], &rhsa[rhsa_offset], &rhsd[1], &dups[dups_offset], 
+	    upoldp_offset], &rhsa[rhsa_offset], &rhsd[1], &dups[dups_offset],
 	    &tm[1], &dtm[1], &u[1], &f[1], m1df, &dfdu[dfdu_offset], &dfdp[
 	    dfdp_offset], &ubc0[1], &ubc1[1], m1bc, &dbc[dbc_offset], &uicd[1]
-	    , &ficd[1], m1ic, &dicd[dicd_offset], &ir[1], &ic[1], &iwbrbd[1], 
+	    , &ficd[1], m1ic, &dicd[dicd_offset], &ir[1], &ic[1], &iwbrbd[1],
 	    &p0[p0_offset], &p1[p1_offset], &poin[poin_offset], &ev[1], &wkev[
 	    1]);
     if (istop == 1) {
@@ -510,7 +511,7 @@ L5:
     }
 
     if (itp == -1) {
-	if (blbcn_1.ips != 2 && blbcn_1.ips != 3 && blbcn_1.ips != 12 && 
+	if (blbcn_1.ips != 2 && blbcn_1.ips != 3 && blbcn_1.ips != 12 &&
 		blbcn_1.ips != 13 && blbcn_1.ips != 6) {
 /*          **BIFURCATION POINT */
 	    itp = blitp_1.itpst * 10 + 6;
@@ -532,7 +533,7 @@ L55:
     i__1 = bllim_1.nuzr;
     for (i = 1; i <= i__1; ++i) {
 	blusz_1.iuzr = i;
-	lcspbv_((doublereal (*)(void))fnuzbv_, funi, bcni, icni, &istop, &itp, &uzr[i - 1], &nitps, 
+	lcspbv_((doublereal (*)(void))fnuzbv_, funi, bcni, icni, &istop, &itp, &uzr[i - 1], &nitps,
 		ibr, &ntot, m1aa, m2aa, &aa[aa_offset], m1bb, m2bb, &bb[
 		bb_offset], m1cc, &cc[cc_offset], m1dd, &dd[dd_offset], &
 		wbrbd[1], m1u, &ups[ups_offset], &uoldps[uoldps_offset], &
@@ -607,10 +608,10 @@ doublereal *ups;
       ups[j+ups_offset+2*ups_dim1] ); */
     for (i__ = 0; i__ < n; ++i__) {
 
-	d__1 = (ups[ntst+ i__ * ups_dim1+ups_offset] - ups[i__ * ups_dim1+ups_offset]) / 
+	d__1 = (ups[ntst+ i__ * ups_dim1+ups_offset] - ups[i__ * ups_dim1+ups_offset]) /
 		blrtn.torper;
 	blrtn.nrot[i__ ] = i_dnnt(&d__1);
-	/* plintf(" i=%d nrot=%d  tp=%g \n",i__,blrtn.nrot[i__],blrtn.torper); 
+	/* plintf(" i=%d nrot=%d  tp=%g \n",i__,blrtn.nrot[i__],blrtn.torper);
          */
 	if (blrtn.nrot[i__] != 0) {
 	    blrtn.irot = 1;
@@ -623,7 +624,7 @@ doublereal *ups;
 
 
 /*     ---------- ------ */
-/* Subroutine */ int contbv_(funi, rds, m1u, ups, uoldps, udotps, upoldp, u, 
+/* Subroutine */ int contbv_(funi, rds, m1u, ups, uoldps, udotps, upoldp, u,
 	f, m1df, dfdu, dfdp, dtm)
 /* Subroutine */ int (*funi) ();
 doublereal *rds;
@@ -633,7 +634,7 @@ integer *m1df;
 doublereal *dfdu, *dfdp, *dtm;
 {
     /* System generated locals */
-    integer ups_dim1, ups_offset, udotps_dim1, udotps_offset, upoldp_dim1, 
+    integer ups_dim1, ups_offset, udotps_dim1, udotps_offset, upoldp_dim1,
 	    upoldp_offset, uoldps_dim1, uoldps_offset, dfdu_dim1, dfdu_offset,
 	     dfdp_dim1, dfdp_offset, i__1, i__2;
 
@@ -683,7 +684,7 @@ doublereal *dfdu, *dfdp, *dtm;
     for (j = 1; j <= i__1; ++j) {
 	i__2 = blicn_1.nrow;
 	for (i = 1; i <= i__2; ++i) {
-	    udotps[j + i * udotps_dim1] = (ups[j + i * ups_dim1] - uoldps[j + 
+	    udotps[j + i * udotps_dim1] = (ups[j + i * ups_dim1] - uoldps[j +
 		    i * uoldps_dim1]) * dds;
 /* L1: */
 	}
@@ -691,7 +692,7 @@ doublereal *dfdu, *dfdp, *dtm;
     }
     i__1 = blicn_1.nfpar;
     for (i = 1; i <= i__1; ++i) {
-	blcrl_1.rldot[i - 1] = (blcrl_1.rl[i - 1] - blcrl_1.rlold[i - 1]) * 
+	blcrl_1.rldot[i - 1] = (blcrl_1.rl[i - 1] - blcrl_1.rlold[i - 1]) *
 		dds;
 /* L3: */
     }
@@ -715,7 +716,7 @@ doublereal *dfdu, *dfdp, *dtm;
 
 
 /*     ---------- ------ */
-/* Subroutine */ int extrbv_(funi, rds, m1u, ups, uoldps, udotps, upoldp, u, 
+/* Subroutine */ int extrbv_(funi, rds, m1u, ups, uoldps, udotps, upoldp, u,
 	f, m1df, dfdu, dfdp, dtm)
 /* Subroutine */ int (*funi) ();
 doublereal *rds;
@@ -725,7 +726,7 @@ integer *m1df;
 doublereal *dfdu, *dfdp, *dtm;
 {
     /* System generated locals */
-    integer ups_dim1, ups_offset, udotps_dim1, udotps_offset, upoldp_dim1, 
+    integer ups_dim1, ups_offset, udotps_dim1, udotps_offset, upoldp_dim1,
 	    upoldp_offset, uoldps_dim1, uoldps_offset, dfdu_dim1, dfdu_offset,
 	     dfdp_dim1, dfdp_offset, i__1, i__2;
 
@@ -797,8 +798,8 @@ integer *m1df;
 doublereal *dfdu, *dfdp;
 {
     /* System generated locals */
-    integer ups_dim1, ups_offset, uoldps_dim1, uoldps_offset, upoldp_dim1, 
-	    upoldp_offset, dfdu_dim1, dfdu_offset, dfdp_dim1, dfdp_offset, 
+    integer ups_dim1, ups_offset, uoldps_dim1, uoldps_offset, upoldp_dim1,
+	    upoldp_offset, dfdu_dim1, dfdu_offset, dfdp_dim1, dfdp_offset,
 	    i__1, i__2, i__3;
 
     /* Local variables */
@@ -860,12 +861,12 @@ doublereal *dfdu, *dfdp;
 	for (i = 1; i <= i__2; ++i) {
 	    u[i] = uoldps[j + i * uoldps_dim1];
 	    if (blbcn_1.ips == 14) {
-		blwif_1.u0xx[i - 1] = uoldps[j + i * uoldps_dim1] * 2 - ups[j 
+		blwif_1.u0xx[i - 1] = uoldps[j + i * uoldps_dim1] * 2 - ups[j
 			+ i * ups_dim1];
 	    }
 /* L2: */
 	}
-	(*funi)(&blbcn_1.ndim, &u[1], blwif_1.u0xx, blbcn_1.icp, blbcn_1.par, 
+	(*funi)(&blbcn_1.ndim, &u[1], blwif_1.u0xx, blbcn_1.icp, blbcn_1.par,
 		&c__0, &f[1], &dfdu[dfdu_offset], &dfdp[dfdp_offset]);
 	i__2 = blbcn_1.ndim;
 	for (i = 1; i <= i__2; ++i) {
@@ -890,7 +891,7 @@ doublereal *dfdu, *dfdp;
 		}
 /* L5: */
 	    }
-	    (*funi)(&blbcn_1.ndim, &u[1], blwif_1.u0xx, blbcn_1.icp, 
+	    (*funi)(&blbcn_1.ndim, &u[1], blwif_1.u0xx, blbcn_1.icp,
 		    blbcn_1.par, &c__0, &f[1], &dfdu[dfdu_offset], &dfdp[
 		    dfdp_offset]);
 	    i__3 = blbcn_1.ndim;
@@ -914,9 +915,9 @@ doublereal *dfdu, *dfdp;
 
 
 /*     ---------- ------ */
-/* Subroutine */ int solvbv_(funi, bcni, icni, istop, rds, nitps, ibr, ntot, 
-	m1aa, m2aa, aa, m1bb, m2bb, bb, m1cc, cc, m1dd, dd, wbrbd, m1u, ups, 
-	uoldps, udotps, upoldp, rhsa, rhsd, dups, tm, dtm, u, f, m1df, dfdu, 
+/* Subroutine */ int solvbv_(funi, bcni, icni, istop, rds, nitps, ibr, ntot,
+	m1aa, m2aa, aa, m1bb, m2bb, bb, m1cc, cc, m1dd, dd, wbrbd, m1u, ups,
+	uoldps, udotps, upoldp, rhsa, rhsd, dups, tm, dtm, u, f, m1df, dfdu,
 	dfdp, ubc0, ubc1, m1bc, dbc, uicd, ficd, m1ic, dicd, ir, ic, iwbrbd)
 /* Subroutine */ int (*funi) (), (*bcni) (), (*icni) ();
 integer *istop;
@@ -949,11 +950,11 @@ PSIZE\002)";
 E\002)";
 
     /* System generated locals */
-    integer dfdu_dim1, dfdu_offset, dfdp_dim1, dfdp_offset, aa_dim1, aa_dim2, 
-	    aa_offset, bb_dim1, bb_dim2, bb_offset, cc_dim1, cc_offset, 
-	    dd_dim1, dd_offset, ups_dim1, ups_offset, uoldps_dim1, 
-	    uoldps_offset, udotps_dim1, udotps_offset, upoldp_dim1, 
-	    upoldp_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset, 
+    integer dfdu_dim1, dfdu_offset, dfdp_dim1, dfdp_offset, aa_dim1, aa_dim2,
+	    aa_offset, bb_dim1, bb_dim2, bb_offset, cc_dim1, cc_offset,
+	    dd_dim1, dd_offset, ups_dim1, ups_offset, uoldps_dim1,
+	    uoldps_offset, udotps_dim1, udotps_offset, upoldp_dim1,
+	    upoldp_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset,
 	    dbc_dim1, dbc_offset, dicd_dim1, dicd_offset, i__1, i__2, i__3;
     doublereal d__1, d__2;
 
@@ -986,7 +987,7 @@ E\002)";
 
 /* SGLE IMPLICIT REAL             (A-H,O-Z) */
 
-/* Controls the solution of the nonlinear equations (by Newton's method) 
+/* Controls the solution of the nonlinear equations (by Newton's method)
 */
 /* for the next solution (PAR(ICP(*)) , U) on a branch of solutions. */
 
@@ -1073,7 +1074,7 @@ L1:
 	}
 
 	if (ifst == 1) {
-	    setubv_(funi, bcni, icni, rds, m1aa, m2aa, &aa[aa_offset], m1bb, 
+	    setubv_(funi, bcni, icni, rds, m1aa, m2aa, &aa[aa_offset], m1bb,
 		    m2bb, &bb[bb_offset], m1cc, &cc[cc_offset], m1dd, &dd[
 		    dd_offset], m1u, &ups[ups_offset], &uoldps[uoldps_offset],
 		     &udotps[udotps_offset], &upoldp[upoldp_offset], &rhsa[
@@ -1090,7 +1091,7 @@ L1:
 		    uoldps_offset], &udotps[udotps_offset], &upoldp[
 		    upoldp_offset], &rhsa[rhsa_offset], &rhsd[1], &dups[
 		    dups_offset], &dtm[1], &u[1], &f[1], m1df, &dfdu[
-		    dfdu_offset], &dfdp[dfdp_offset], &ubc0[1], &ubc1[1], 
+		    dfdu_offset], &dfdp[dfdp_offset], &ubc0[1], &ubc1[1],
 		    m1bc, &dbc[dbc_offset], &uicd[1], &ficd[1], m1ic, &dicd[
 		    dicd_offset]);
 	}
@@ -1106,7 +1107,7 @@ L1:
 	}
 	brbd_(&blcde_1.ntst, &blicn_1.nrow, &blicn_1.nclm, m1aa, m2aa, &aa[
 		aa_offset], &blicn_1.nfpar, m1bb, m2bb, &bb[bb_offset], &
-		blicn_1.nrc, m1cc, &cc[cc_offset], m1dd, &dd[dd_offset], m1u, 
+		blicn_1.nrc, m1cc, &cc[cc_offset], m1dd, &dd[dd_offset], m1u,
 		&rhsa[rhsa_offset], &rhsd[1], &wbrbd[1], &iibr, &ifst, &ir[1],
 		 &ic[1], &iwbrbd[1], &c__0);
 
@@ -1154,7 +1155,7 @@ L1:
 	rdrl = blrcn_1.zero;
 	i__2 = blicn_1.nfpar;
 	for (i = 1; i <= i__2; ++i) {
-	    adrl = (d__1 = rhsd[blbcn_1.ndim + i], abs(d__1)) / (blrcn_1.one 
+	    adrl = (d__1 = rhsd[blbcn_1.ndim + i], abs(d__1)) / (blrcn_1.one
 		    + (d__2 = blcrl_1.rl[i - 1], abs(d__2)));
 /* SGLE      ADRL= ABS(RHSD(NDIM+I))/(ONE+ ABS(RL(I))) */
 	    if (adrl > bleps_1.epsl[i - 1]) {
@@ -1214,7 +1215,7 @@ L8:
     for (j = 1; j <= i__1; ++j) {
 	i__2 = blicn_1.nrow;
 	for (i = 1; i <= i__2; ++i) {
-	    ups[j + i * ups_dim1] = uoldps[j + i * uoldps_dim1] + *rds * 
+	    ups[j + i * ups_dim1] = uoldps[j + i * uoldps_dim1] + *rds *
 		    udotps[j + i * udotps_dim1];
 /* L10: */
 	}
@@ -1255,9 +1256,9 @@ L13:
 
 
 /*     ---------- ------ */
-/* Subroutine */ int setubv_(funi, bcni, icni, rds, m1aa, m2aa, aa, m1bb, 
-	m2bb, bb, m1cc, cc, m1dd, dd, m1u, ups, uoldps, udotps, upoldp, rhsa, 
-	rhsd, dups, dtm, u, f, m1df, dfdu, dfdp, ubc0, ubc1, m1bc, dbc, uicd, 
+/* Subroutine */ int setubv_(funi, bcni, icni, rds, m1aa, m2aa, aa, m1bb,
+	m2bb, bb, m1cc, cc, m1dd, dd, m1u, ups, uoldps, udotps, upoldp, rhsa,
+	rhsd, dups, dtm, u, f, m1df, dfdu, dfdp, ubc0, ubc1, m1bc, dbc, uicd,
 	ficd, m1ic, dicd)
 /* Subroutine */ int (*funi) (), (*bcni) (), (*icni) ();
 doublereal *rds;
@@ -1280,12 +1281,12 @@ integer *m1ic;
 doublereal *dicd;
 {
     /* System generated locals */
-    integer dfdu_dim1, dfdu_offset, dfdp_dim1, dfdp_offset, aa_dim1, aa_dim2, 
-	    aa_offset, bb_dim1, bb_dim2, bb_offset, cc_dim1, cc_offset, 
-	    dd_dim1, dd_offset, ups_dim1, ups_offset, uoldps_dim1, 
-	    uoldps_offset, udotps_dim1, udotps_offset, upoldp_dim1, 
-	    upoldp_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset, 
-	    dbc_dim1, dbc_offset, dicd_dim1, dicd_offset, i__1, i__2, i__3, 
+    integer dfdu_dim1, dfdu_offset, dfdp_dim1, dfdp_offset, aa_dim1, aa_dim2,
+	    aa_offset, bb_dim1, bb_dim2, bb_offset, cc_dim1, cc_offset,
+	    dd_dim1, dd_offset, ups_dim1, ups_offset, uoldps_dim1,
+	    uoldps_offset, udotps_dim1, udotps_offset, upoldp_dim1,
+	    upoldp_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset,
+	    dbc_dim1, dbc_offset, dicd_dim1, dicd_offset, i__1, i__2, i__3,
 	    i__4, i__5;
     doublereal d__1;
 
@@ -1438,7 +1439,7 @@ doublereal *dicd;
 	for (ic = 1; ic <= i__2; ++ic) {
 	    i__3 = ncp1;
 	    for (ib = 1; ib <= i__3; ++ib) {
-		wploc[ib + (ic << 3) - 9] = ddt * blwts_1.wp[ib + (ic << 3) - 
+		wploc[ib + (ic << 3) - 9] = ddt * blwts_1.wp[ib + (ic << 3) -
 			9];
 /* L11: */
 	    }
@@ -1448,12 +1449,12 @@ doublereal *dicd;
 	for (ic = 1; ic <= i__2; ++ic) {
 	    i__3 = blbcn_1.ndim;
 	    for (k = 1; k <= i__3; ++k) {
-		u[k] = blwts_1.w[ncp1 + (ic << 3) - 9] * ups[jp1 + k * 
+		u[k] = blwts_1.w[ncp1 + (ic << 3) - 9] * ups[jp1 + k *
 			ups_dim1];
 		i__4 = blcde_1.ncol;
 		for (l = 1; l <= i__4; ++l) {
 		    l1 = (l - 1) * blbcn_1.ndim + k;
-		    u[k] += blwts_1.w[l + (ic << 3) - 9] * ups[j + l1 * 
+		    u[k] += blwts_1.w[l + (ic << 3) - 9] * ups[j + l1 *
 			    ups_dim1];
 /* L13: */
 		}
@@ -1464,12 +1465,12 @@ doublereal *dicd;
  */
 		i__3 = blbcn_1.ndim;
 		for (k = 1; k <= i__3; ++k) {
-		    blwif_1.u0xx[k - 1] = blwts_1.w[ncp1 + (ic << 3) - 9] * 
+		    blwif_1.u0xx[k - 1] = blwts_1.w[ncp1 + (ic << 3) - 9] *
 			    uoldps[jp1 + k * uoldps_dim1];
 		    i__4 = blcde_1.ncol;
 		    for (l = 1; l <= i__4; ++l) {
 			l1 = (l - 1) * blbcn_1.ndim + k;
-			blwif_1.u0xx[k - 1] += blwts_1.w[l + (ic << 3) - 9] * 
+			blwif_1.u0xx[k - 1] += blwts_1.w[l + (ic << 3) - 9] *
 				uoldps[j + l1 * uoldps_dim1];
 /* L131: */
 		    }
@@ -1481,7 +1482,7 @@ doublereal *dicd;
 		blbcn_1.par[blbcn_1.icp[i - 1] - 1] = blcrl_1.rl[i - 1];
 /* L15: */
 	    }
-	    (*funi)(&blbcn_1.ndim, &u[1], blwif_1.u0xx, blbcn_1.icp, 
+	    (*funi)(&blbcn_1.ndim, &u[1], blwif_1.u0xx, blbcn_1.icp,
 		    blbcn_1.par, &c__1, &f[1], &dfdu[dfdu_offset], &dfdp[
 		    dfdp_offset]);
 	    ic1 = (ic - 1) * blbcn_1.ndim;
@@ -1494,8 +1495,8 @@ doublereal *dicd;
 			    ib + (ic << 3) - 9];
 		    i__5 = blbcn_1.ndim;
 		    for (k = 1; k <= i__5; ++k) {
-			aa[j + (ic1 + i + (ib1 + k) * aa_dim2) * aa_dim1] -= 
-				blwts_1.w[ib + (ic << 3) - 9] * dfdu[i + k * 
+			aa[j + (ic1 + i + (ib1 + k) * aa_dim2) * aa_dim1] -=
+				blwts_1.w[ib + (ic << 3) - 9] * dfdu[i + k *
 				dfdu_dim1];
 /* L16: */
 		    }
@@ -1507,16 +1508,16 @@ doublereal *dicd;
 	    for (i = 1; i <= i__3; ++i) {
 		i__4 = blicn_1.nfpar;
 		for (k = 1; k <= i__4; ++k) {
-		    bb[j + (ic1 + i + k * bb_dim2) * bb_dim1] = -dfdp[i + 
+		    bb[j + (ic1 + i + k * bb_dim2) * bb_dim1] = -dfdp[i +
 			    blbcn_1.icp[k - 1] * dfdp_dim1];
 /* L19: */
 		}
-		rhsa[j + (ic1 + i) * rhsa_dim1] = f[i] - wploc[ncp1 + (ic << 
+		rhsa[j + (ic1 + i) * rhsa_dim1] = f[i] - wploc[ncp1 + (ic <<
 			3) - 9] * ups[jp1 + i * ups_dim1];
 		i__4 = blcde_1.ncol;
 		for (k = 1; k <= i__4; ++k) {
 		    k1 = (k - 1) * blbcn_1.ndim + i;
-		    rhsa[j + (ic1 + i) * rhsa_dim1] -= wploc[k + (ic << 3) - 
+		    rhsa[j + (ic1 + i) * rhsa_dim1] -= wploc[k + (ic << 3) -
 			    9] * ups[j + k1 * ups_dim1];
 /* L20: */
 		}
@@ -1569,7 +1570,7 @@ doublereal *dicd;
     for (j = 1; j <= i__1; ++j) {
 	i__2 = blicn_1.nrow;
 	for (i = 1; i <= i__2; ++i) {
-	    dups[j + i * dups_dim1] = ups[j + i * ups_dim1] - uoldps[j + i * 
+	    dups[j + i * dups_dim1] = ups[j + i * ups_dim1] - uoldps[j + i *
 		    uoldps_dim1];
 /* L28: */
 	}
@@ -1607,7 +1608,7 @@ L30:
 	    }
 
 	    (*icni)(&blbcn_1.ndim, blbcn_1.par, blbcn_1.icp, &blcde_1.nint, &
-		    uicd[1], &uicd[blbcn_1.ndim + 1], &uicd[(blbcn_1.ndim << 
+		    uicd[1], &uicd[blbcn_1.ndim + 1], &uicd[(blbcn_1.ndim <<
 		    1) + 1], &uicd[blbcn_1.ndim * 3 + 1], &ficd[1], &c__1, &
 		    dicd[dicd_offset]);
 	    i__3 = blcde_1.nint;
@@ -1616,14 +1617,14 @@ L30:
 		for (i = 1; i <= i__4; ++i) {
 		    k1 = (k - 1) * blbcn_1.ndim + i;
 		    l1 = (j - 1) * blicn_1.nrow + k1;
-		    cc[l1 + (blcde_1.nbc + m) * cc_dim1] += dtm[j] * 
+		    cc[l1 + (blcde_1.nbc + m) * cc_dim1] += dtm[j] *
 			    blwts_1.wi[k - 1] * dicd[m + i * dicd_dim1];
 /* L32: */
 		}
 		i__4 = blicn_1.nfpar;
 		for (i = 1; i <= i__4; ++i) {
 		    dd[blcde_1.nbc + m + i * dd_dim1] += dtm[j] * blwts_1.wi[
-			    k - 1] * dicd[m + (blbcn_1.ndim + blbcn_1.icp[i - 
+			    k - 1] * dicd[m + (blbcn_1.ndim + blbcn_1.icp[i -
 			    1]) * dicd_dim1];
 /* L33: */
 		}
@@ -1652,11 +1653,11 @@ L37:
 	    for (k = 1; k <= i__3; ++k) {
 		k1 = (k - 1) * blbcn_1.ndim + i;
 		l1 = (j - 1) * blicn_1.nrow + k1;
-		cc[l1 + blicn_1.nrc * cc_dim1] += sc * blwts_1.wi[k - 1] * 
+		cc[l1 + blicn_1.nrc * cc_dim1] += sc * blwts_1.wi[k - 1] *
 			udotps[j + k1 * udotps_dim1];
 /* L38: */
 	    }
-	    cc[j * blicn_1.nrow + i + blicn_1.nrc * cc_dim1] += sc * 
+	    cc[j * blicn_1.nrow + i + blicn_1.nrc * cc_dim1] += sc *
 		    blwts_1.wi[ncp1 - 1] * udotps[jp1 + i * udotps_dim1];
 /* L39: */
 	}
@@ -1671,7 +1672,7 @@ L37:
 	dd[blicn_1.nrc + i * dd_dim1] = d__1 * d__1 * blcrl_1.rldot[i - 1];
 /* Computing 2nd power */
 	d__1 = bltht_1.thetal[i - 1];
-	rlsum += d__1 * d__1 * (blcrl_1.rl[i - 1] - blcrl_1.rlold[i - 1]) * 
+	rlsum += d__1 * d__1 * (blcrl_1.rl[i - 1] - blcrl_1.rlold[i - 1]) *
 		blcrl_1.rldot[i - 1];
 /* L41: */
     }
@@ -1691,8 +1692,8 @@ L37:
 
 
 /*     ---------- ------ */
-/* Subroutine */ int setrbv_(funi, bcni, icni, rds, m1u, ups, uoldps, udotps, 
-	upoldp, rhsa, rhsd, dups, dtm, u, f, m1df, dfdu, dfdp, ubc0, ubc1, 
+/* Subroutine */ int setrbv_(funi, bcni, icni, rds, m1u, ups, uoldps, udotps,
+	upoldp, rhsa, rhsd, dups, dtm, u, f, m1df, dfdu, dfdp, ubc0, ubc1,
 	m1bc, dbc, uicd, ficd, m1ic, dicd)
 /* Subroutine */ int (*funi) (), (*bcni) (), (*icni) ();
 doublereal *rds;
@@ -1707,10 +1708,10 @@ integer *m1ic;
 doublereal *dicd;
 {
     /* System generated locals */
-    integer ups_dim1, ups_offset, uoldps_dim1, uoldps_offset, udotps_dim1, 
+    integer ups_dim1, ups_offset, uoldps_dim1, uoldps_offset, udotps_dim1,
 	    udotps_offset, upoldp_dim1, upoldp_offset, dfdu_dim1, dfdu_offset,
-	     dfdp_dim1, dfdp_offset, rhsa_dim1, rhsa_offset, dups_dim1, 
-	    dups_offset, dbc_dim1, dbc_offset, dicd_dim1, dicd_offset, i__1, 
+	     dfdp_dim1, dfdp_offset, rhsa_dim1, rhsa_offset, dups_dim1,
+	    dups_offset, dbc_dim1, dbc_offset, dicd_dim1, dicd_offset, i__1,
 	    i__2, i__3, i__4;
     doublereal d__1;
 
@@ -1794,7 +1795,7 @@ doublereal *dicd;
 	for (ic = 1; ic <= i__2; ++ic) {
 	    i__3 = ncp1;
 	    for (ib = 1; ib <= i__3; ++ib) {
-		wploc[ib + (ic << 3) - 9] = ddt * blwts_1.wp[ib + (ic << 3) - 
+		wploc[ib + (ic << 3) - 9] = ddt * blwts_1.wp[ib + (ic << 3) -
 			9];
 /* L2: */
 	    }
@@ -1804,12 +1805,12 @@ doublereal *dicd;
 	for (ic = 1; ic <= i__2; ++ic) {
 	    i__3 = blbcn_1.ndim;
 	    for (k = 1; k <= i__3; ++k) {
-		u[k] = blwts_1.w[ncp1 + (ic << 3) - 9] * ups[jp1 + k * 
+		u[k] = blwts_1.w[ncp1 + (ic << 3) - 9] * ups[jp1 + k *
 			ups_dim1];
 		i__4 = blcde_1.ncol;
 		for (l = 1; l <= i__4; ++l) {
 		    l1 = (l - 1) * blbcn_1.ndim + k;
-		    u[k] += blwts_1.w[l + (ic << 3) - 9] * ups[j + l1 * 
+		    u[k] += blwts_1.w[l + (ic << 3) - 9] * ups[j + l1 *
 			    ups_dim1];
 /* L4: */
 		}
@@ -1820,12 +1821,12 @@ doublereal *dicd;
  */
 		i__3 = blbcn_1.ndim;
 		for (k = 1; k <= i__3; ++k) {
-		    blwif_1.u0xx[k - 1] = blwts_1.w[ncp1 + (ic << 3) - 9] * 
+		    blwif_1.u0xx[k - 1] = blwts_1.w[ncp1 + (ic << 3) - 9] *
 			    uoldps[jp1 + k * uoldps_dim1];
 		    i__4 = blcde_1.ncol;
 		    for (l = 1; l <= i__4; ++l) {
 			l1 = (l - 1) * blbcn_1.ndim + k;
-			blwif_1.u0xx[k - 1] += blwts_1.w[l + (ic << 3) - 9] * 
+			blwif_1.u0xx[k - 1] += blwts_1.w[l + (ic << 3) - 9] *
 				uoldps[j + l1 * uoldps_dim1];
 /* L41: */
 		    }
@@ -1837,18 +1838,18 @@ doublereal *dicd;
 		blbcn_1.par[blbcn_1.icp[i - 1] - 1] = blcrl_1.rl[i - 1];
 /* L6: */
 	    }
-	    (*funi)(&blbcn_1.ndim, &u[1], blwif_1.u0xx, blbcn_1.icp, 
+	    (*funi)(&blbcn_1.ndim, &u[1], blwif_1.u0xx, blbcn_1.icp,
 		    blbcn_1.par, &c__0, &f[1], &dfdu[dfdu_offset], &dfdp[
 		    dfdp_offset]);
 	    ic1 = (ic - 1) * blbcn_1.ndim;
 	    i__3 = blbcn_1.ndim;
 	    for (i = 1; i <= i__3; ++i) {
-		rhsa[j + (ic1 + i) * rhsa_dim1] = f[i] - wploc[ncp1 + (ic << 
+		rhsa[j + (ic1 + i) * rhsa_dim1] = f[i] - wploc[ncp1 + (ic <<
 			3) - 9] * ups[jp1 + i * ups_dim1];
 		i__4 = blcde_1.ncol;
 		for (k = 1; k <= i__4; ++k) {
 		    k1 = (k - 1) * blbcn_1.ndim + i;
-		    rhsa[j + (ic1 + i) * rhsa_dim1] -= wploc[k + (ic << 3) - 
+		    rhsa[j + (ic1 + i) * rhsa_dim1] -= wploc[k + (ic << 3) -
 			    9] * ups[j + k1 * ups_dim1];
 /* L7: */
 		}
@@ -1886,7 +1887,7 @@ doublereal *dicd;
     for (j = 1; j <= i__1; ++j) {
 	i__2 = blicn_1.nrow;
 	for (i = 1; i <= i__2; ++i) {
-	    dups[j + i * dups_dim1] = ups[j + i * ups_dim1] - uoldps[j + i * 
+	    dups[j + i * dups_dim1] = ups[j + i * ups_dim1] - uoldps[j + i *
 		    uoldps_dim1];
 /* L13: */
 	}
@@ -1924,7 +1925,7 @@ L15:
 	    }
 
 	    (*icni)(&blbcn_1.ndim, blbcn_1.par, blbcn_1.icp, &blcde_1.nint, &
-		    uicd[1], &uicd[blbcn_1.ndim + 1], &uicd[(blbcn_1.ndim << 
+		    uicd[1], &uicd[blbcn_1.ndim + 1], &uicd[(blbcn_1.ndim <<
 		    1) + 1], &uicd[blbcn_1.ndim * 3 + 1], &ficd[1], &c__0, &
 		    dicd[dicd_offset]);
 	    i__3 = blcde_1.nint;
@@ -1946,7 +1947,7 @@ L20:
     for (i = 1; i <= i__1; ++i) {
 /* Computing 2nd power */
 	d__1 = bltht_1.thetal[i - 1];
-	rlsum += d__1 * d__1 * (blcrl_1.rl[i - 1] - blcrl_1.rlold[i - 1]) * 
+	rlsum += d__1 * d__1 * (blcrl_1.rl[i - 1] - blcrl_1.rlold[i - 1]) *
 		blcrl_1.rldot[i - 1];
 /* L21: */
     }
@@ -1967,14 +1968,14 @@ L20:
 /* ------------------------------------------------------------------- */
 
 /*     ---------- ------ */
-/* Subroutine */ int rsptbv_(funi, stpnt, rds, istop, ntot, lab, ibr, m1u, 
-	ups, uoldps, udotps, upoldp, tint, uintt, eqf, uneq, dups, tm, dtm, 
+/* Subroutine */ int rsptbv_(funi, stpnt, rds, istop, ntot, lab, ibr, m1u,
+	ups, uoldps, udotps, upoldp, tint, uintt, eqf, uneq, dups, tm, dtm,
 	tm2, itm, ial, u, f, m1df, dfdu, dfdp, ev, ndim2, smat, rnllv, ir, ic,
 	 nodir)
 /* Subroutine */ int (*funi) (), (*stpnt) ();
 doublereal *rds;
 integer *istop, *ntot, *lab, *ibr, *m1u;
-doublereal *ups, *uoldps, *udotps, *upoldp, *tint, *uintt, *eqf, *uneq, *dups, 
+doublereal *ups, *uoldps, *udotps, *upoldp, *tint, *uintt, *eqf, *uneq, *dups,
 	*tm, *dtm, *tm2;
 integer *itm, *ial;
 doublereal *u, *f;
@@ -1986,9 +1987,9 @@ doublereal *smat, *rnllv;
 integer *ir, *ic, *nodir;
 {
     /* System generated locals */
-    integer ups_dim1, ups_offset, uoldps_dim1, uoldps_offset, udotps_dim1, 
+    integer ups_dim1, ups_offset, uoldps_dim1, uoldps_offset, udotps_dim1,
 	    udotps_offset, upoldp_dim1, upoldp_offset, uintt_dim1, uintt_offset,
-	     dups_dim1, dups_offset, dfdu_dim1, dfdu_offset, dfdp_dim1, 
+	     dups_dim1, dups_offset, dfdu_dim1, dfdu_offset, dfdp_dim1,
 	    dfdp_offset, smat_dim1, smat_offset, i__1, i__2;
 
     /* Local variables */
@@ -2007,7 +2008,7 @@ integer *ir, *ic, *nodir;
 /* input on unit 3. The label IRS, where computation is to resume, must */
 
 /* be specified in the user-supplied subroutine INIT. */
-/* If IRS=0 then the starting point must be provided analytically in the 
+/* If IRS=0 then the starting point must be provided analytically in the
 */
 /* user-supplied subroutine STPNT. */
 
@@ -2063,7 +2064,7 @@ integer *ir, *ic, *nodir;
 
     /* Function Body */
     (*stpnt)(&ntstrs, &ncolrs, lab, ibr, m1u, &u[1], &ups[ups_offset], &
-	    udotps[udotps_offset], &upoldp[upoldp_offset], &tm[1], &dtm[1], 
+	    udotps[udotps_offset], &upoldp[upoldp_offset], &tm[1], &dtm[1],
 	    ndim2, &smat[smat_offset], &rnllv[1], &ir[1], &ic[1], &f[1], &
 	    dfdu[dfdu_offset], &dfdp[dfdp_offset], nodir);
 
@@ -2125,7 +2126,7 @@ integer *ir, *ic, *nodir;
 
 
 /*     ---------- ------ */
-/* Subroutine */ int stpnbv_(ntstrs, ncolrs, lab, ibr, m1u, u, ups, udotps, 
+/* Subroutine */ int stpnbv_(ntstrs, ncolrs, lab, ibr, m1u, u, ups, udotps,
 	upoldp, tm, dtm, ndim2, smat, rnllv, ir, ic, f, dfdu, dfdp, nodir)
 integer *ntstrs, *ncolrs, *lab, *ibr, *m1u;
 doublereal *u, *ups, *udotps, *upoldp, *tm, *dtm;
@@ -2139,8 +2140,8 @@ integer *nodir;
     static char fmt_101[] = "(4x,1p7e18.10)";
 
     /* System generated locals */
-    integer ups_dim1, ups_offset, udotps_dim1, udotps_offset, upoldp_dim1, 
-	    upoldp_offset, smat_dim1, smat_offset, dfdu_dim1, dfdu_offset, 
+    integer ups_dim1, ups_offset, udotps_dim1, udotps_offset, upoldp_dim1,
+	    upoldp_offset, smat_dim1, smat_offset, dfdu_dim1, dfdu_offset,
 	    dfdp_dim1, dfdp_offset, i__1, i__2, i__3;
 
     /* Builtin functions */
@@ -2329,7 +2330,7 @@ integer *nodir;
 /* at a period doubling bifurcation. */
 
     if ((blbcn_1.ips == 2 || blbcn_1.ips == 3 || (real) blbcn_1.ips == (float)
-	    6. || blbcn_1.ips == 12 || blbcn_1.ips == 13) && blcde_1.isw == 
+	    6. || blbcn_1.ips == 12 || blbcn_1.ips == 13) && blcde_1.isw ==
 	    -1 && itp1 == 7) {
 	pdble_(&blbcn_1.ndim, ntstrs, ncolrs, m1u, &ups[ups_offset], &udotps[
 		udotps_offset], &tm[1], &blbcn_1.par[10]);
@@ -2359,7 +2360,7 @@ integer *nodir;
 
 
 /*     ---------- ------ */
-/* Subroutine */ int stpnub_(ntstrs, ncolrs, lab, ibr, m1u, u, ups, udotps, 
+/* Subroutine */ int stpnub_(ntstrs, ncolrs, lab, ibr, m1u, u, ups, udotps,
 	upoldp, tm, dtm, ndim2, smat, rnllv, ir, ic, f, dfdu, dfdp, nodir)
 integer *ntstrs, *ncolrs, *lab, *ibr, *m1u;
 doublereal *u, *ups, *udotps, *upoldp, *tm, *dtm;
@@ -2370,8 +2371,8 @@ doublereal *f, *dfdu, *dfdp;
 integer *nodir;
 {
     /* System generated locals */
-    integer ups_dim1, ups_offset, udotps_dim1, udotps_offset, upoldp_dim1, 
-	    upoldp_offset, smat_dim1, smat_offset, dfdu_dim1, dfdu_offset, 
+    integer ups_dim1, ups_offset, udotps_dim1, udotps_offset, upoldp_dim1,
+	    upoldp_offset, smat_dim1, smat_offset, dfdu_dim1, dfdu_offset,
 	    dfdp_dim1, dfdp_offset, i__1, i__2, i__3;
 
     /* Local variables */
@@ -2465,7 +2466,7 @@ integer *nodir;
 
 
 /*     ---------- ------ */
-/* Subroutine */ int stdrbv_(funi, bcni, icni, rds, m1aa, m2aa, aa, m1bb, 
+/* Subroutine */ int stdrbv_(funi, bcni, icni, rds, m1aa, m2aa, aa, m1bb,
 	m2bb, bb, m1cc, cc, m1dd, dd, wbrbd, m1u, ups, uoldps, udotps, upoldp,
 	 rhsa, rhsd, dups, dtm, u, f, m1df, dfdu, dfdp, ubc0, ubc1, m1bc, dbc,
 	 uicd, ficd, m1ic, dicd, ir, ic, iwbrbd, iperp)
@@ -2495,11 +2496,11 @@ integer *ir, *ic, *iwbrbd, *iperp;
 S) : \002,/,10e11.3,/,10e11.3)";
 
     /* System generated locals */
-    integer dfdu_dim1, dfdu_offset, dfdp_dim1, dfdp_offset, aa_dim1, aa_dim2, 
-	    aa_offset, bb_dim1, bb_dim2, bb_offset, cc_dim1, cc_offset, 
-	    dd_dim1, dd_offset, ups_dim1, ups_offset, uoldps_dim1, 
-	    uoldps_offset, udotps_dim1, udotps_offset, upoldp_dim1, 
-	    upoldp_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset, 
+    integer dfdu_dim1, dfdu_offset, dfdp_dim1, dfdp_offset, aa_dim1, aa_dim2,
+	    aa_offset, bb_dim1, bb_dim2, bb_offset, cc_dim1, cc_offset,
+	    dd_dim1, dd_offset, ups_dim1, ups_offset, uoldps_dim1,
+	    uoldps_offset, udotps_dim1, udotps_offset, upoldp_dim1,
+	    upoldp_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset,
 	    dbc_dim1, dbc_offset, dicd_dim1, dicd_offset, i__1, i__2;
 
     /* Builtin functions */
@@ -2698,10 +2699,10 @@ S) : \002,/,10e11.3,/,10e11.3)";
 /* ------------------------------------------------------------------- */
 
 /*     ---------- ------ */
-/* Subroutine */ int lcspbv_(fncs, funi, bcni, icni, istop, itp, sp1, nitps, 
-	ibr, ntot, m1aa, m2aa, aa, m1bb, m2bb, bb, m1cc, cc, m1dd, dd, wbrbd, 
-	m1u, ups, uoldps, udotps, upoldp, rhsa, rhsd, dups, tm, dtm, u, f, 
-	m1df, dfdu, dfdp, ubc0, ubc1, m1bc, dbc, uicd, ficd, m1ic, dicd, ir, 
+/* Subroutine */ int lcspbv_(fncs, funi, bcni, icni, istop, itp, sp1, nitps,
+	ibr, ntot, m1aa, m2aa, aa, m1bb, m2bb, bb, m1cc, cc, m1dd, dd, wbrbd,
+	m1u, ups, uoldps, udotps, upoldp, rhsa, rhsd, dups, tm, dtm, u, f,
+	m1df, dfdu, dfdp, ubc0, ubc1, m1bc, dbc, uicd, ficd, m1ic, dicd, ir,
 	ic, iwbrbd, p0, p1, poin, ev, wkev)
 doublereal (*fncs) ();
 /* Subroutine */ int (*funi) (), (*bcni) (), (*icni) ();
@@ -2738,10 +2739,10 @@ i3,\002  POINT \002,i4,\002)\002)";
     /* System generated locals */
     integer aa_dim1, aa_dim2, aa_offset, bb_dim1, bb_dim2, bb_offset, cc_dim1,
 	     cc_offset, dd_dim1, dd_offset, ups_dim1, ups_offset, udotps_dim1,
-	     udotps_offset, upoldp_dim1, upoldp_offset, uoldps_dim1, 
-	    uoldps_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset, 
-	    dfdu_dim1, dfdu_offset, dfdp_dim1, dfdp_offset, dbc_dim1, 
-	    dbc_offset, dicd_dim1, dicd_offset, p0_dim1, p0_offset, p1_dim1, 
+	     udotps_offset, upoldp_dim1, upoldp_offset, uoldps_dim1,
+	    uoldps_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset,
+	    dfdu_dim1, dfdu_offset, dfdp_dim1, dfdp_offset, dbc_dim1,
+	    dbc_offset, dicd_dim1, dicd_offset, p0_dim1, p0_offset, p1_dim1,
 	    p1_offset, poin_dim1, poin_offset;
 
     /* Builtin functions */
@@ -2859,11 +2860,11 @@ i3,\002  POINT \002,i4,\002)\002)";
 /* Check for zero. */
 
     *sp1 = (*fncs)(&chng, funi, bcni, icni, istop, itp, nitps, &p0[p0_offset],
-	     &p1[p1_offset], &poin[poin_offset], &ev[1], &wkev[1], ibr, ntot, 
+	     &p1[p1_offset], &poin[poin_offset], &ev[1], &wkev[1], ibr, ntot,
 	    m1aa, m2aa, &aa[aa_offset], m1bb, m2bb, &bb[bb_offset], m1cc, &cc[
 	    cc_offset], m1dd, &dd[dd_offset], &wbrbd[1], m1u, &ups[ups_offset]
 	    , &uoldps[uoldps_offset], &udotps[udotps_offset], &upoldp[
-	    upoldp_offset], &rhsa[rhsa_offset], &rhsd[1], &dups[dups_offset], 
+	    upoldp_offset], &rhsa[rhsa_offset], &rhsd[1], &dups[dups_offset],
 	    &tm[1], &dtm[1], &u[1], &f[1], m1df, &dfdu[dfdu_offset], &dfdp[
 	    dfdp_offset], &ubc0[1], &ubc1[1], m1bc, &dbc[dbc_offset], &uicd[1]
 	    , &ficd[1], m1ic, &dicd[dicd_offset], &ir[1], &ic[1], &iwbrbd[1]);
@@ -2911,10 +2912,10 @@ L1:
 	    udotps[udotps_offset], &upoldp[upoldp_offset], &u[1], &f[1], m1df,
 	     &dfdu[dfdu_offset], &dfdp[dfdp_offset], &dtm[1]);
     solvbv_(funi, bcni, icni, istop, &rds, nitps, ibr, ntot, m1aa, m2aa, &aa[
-	    aa_offset], m1bb, m2bb, &bb[bb_offset], m1cc, &cc[cc_offset], 
+	    aa_offset], m1bb, m2bb, &bb[bb_offset], m1cc, &cc[cc_offset],
 	    m1dd, &dd[dd_offset], &wbrbd[1], m1u, &ups[ups_offset], &uoldps[
 	    uoldps_offset], &udotps[udotps_offset], &upoldp[upoldp_offset], &
-	    rhsa[rhsa_offset], &rhsd[1], &dups[dups_offset], &tm[1], &dtm[1], 
+	    rhsa[rhsa_offset], &rhsd[1], &dups[dups_offset], &tm[1], &dtm[1],
 	    &u[1], &f[1], m1df, &dfdu[dfdu_offset], &dfdp[dfdp_offset], &ubc0[
 	    1], &ubc1[1], m1bc, &dbc[dbc_offset], &uicd[1], &ficd[1], m1ic, &
 	    dicd[dicd_offset], &ir[1], &ic[1], &iwbrbd[1]);
@@ -2927,11 +2928,11 @@ L1:
 
     sp10 = *sp1;
     *sp1 = (*fncs)(&chng, funi, bcni, icni, istop, itp, nitps, &p0[p0_offset],
-	     &p1[p1_offset], &poin[poin_offset], &ev[1], &wkev[1], ibr, ntot, 
+	     &p1[p1_offset], &poin[poin_offset], &ev[1], &wkev[1], ibr, ntot,
 	    m1aa, m2aa, &aa[aa_offset], m1bb, m2bb, &bb[bb_offset], m1cc, &cc[
 	    cc_offset], m1dd, &dd[dd_offset], &wbrbd[1], m1u, &ups[ups_offset]
 	    , &uoldps[uoldps_offset], &udotps[udotps_offset], &upoldp[
-	    upoldp_offset], &rhsa[rhsa_offset], &rhsd[1], &dups[dups_offset], 
+	    upoldp_offset], &rhsa[rhsa_offset], &rhsd[1], &dups[dups_offset],
 	    &tm[1], &dtm[1], &u[1], &f[1], m1df, &dfdu[dfdu_offset], &dfdp[
 	    dfdp_offset], &ubc0[1], &ubc1[1], m1bc, &dbc[dbc_offset], &uicd[1]
 	    , &ficd[1], m1ic, &dicd[dicd_offset], &ir[1], &ic[1], &iwbrbd[1]);
@@ -2953,10 +2954,10 @@ L1:
 
 
 /*     ------ --------- */
-doublereal fnlpbv_(chng, funi, bcni, icni, istop, itp, nitps, p0, p1, poin, 
-	ev, wkev, ibr, ntot, m1aa, m2aa, aa, m1bb, m2bb, bb, m1cc, cc, m1dd, 
-	dd, wbrbd, m1u, ups, uoldps, udotps, upoldp, rhsa, rhsd, dups, tm, 
-	dtm, u, f, m1df, dfdu, dfdp, ubc0, ubc1, m1bc, dbc, uicd, ficd, m1ic, 
+doublereal fnlpbv_(chng, funi, bcni, icni, istop, itp, nitps, p0, p1, poin,
+	ev, wkev, ibr, ntot, m1aa, m2aa, aa, m1bb, m2bb, bb, m1cc, cc, m1dd,
+	dd, wbrbd, m1u, ups, uoldps, udotps, upoldp, rhsa, rhsd, dups, tm,
+	dtm, u, f, m1df, dfdu, dfdp, ubc0, ubc1, m1bc, dbc, uicd, ficd, m1ic,
 	dicd, ir, ic, iwbrbd)
 logical *chng;
 /* Subroutine */ int (*funi) (), (*bcni) (), (*icni) ();
@@ -2989,10 +2990,10 @@ integer *ir, *ic, *iwbrbd;
     /* System generated locals */
     integer aa_dim1, aa_dim2, aa_offset, bb_dim1, bb_dim2, bb_offset, cc_dim1,
 	     cc_offset, dd_dim1, dd_offset, ups_dim1, ups_offset, udotps_dim1,
-	     udotps_offset, upoldp_dim1, upoldp_offset, uoldps_dim1, 
-	    uoldps_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset, 
-	    dbc_dim1, dbc_offset, dicd_dim1, dicd_offset, dfdu_dim1, 
-	    dfdu_offset, dfdp_dim1, dfdp_offset, p0_dim1, p0_offset, p1_dim1, 
+	     udotps_offset, upoldp_dim1, upoldp_offset, uoldps_dim1,
+	    uoldps_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset,
+	    dbc_dim1, dbc_offset, dicd_dim1, dicd_offset, dfdu_dim1,
+	    dfdu_offset, dfdp_dim1, dfdp_offset, p0_dim1, p0_offset, p1_dim1,
 	    p1_offset, poin_dim1, poin_offset, i__1, i__2;
     doublereal ret_val;
 
@@ -3151,10 +3152,10 @@ integer *ir, *ic, *iwbrbd;
 
 
 /*     ------ --------- */
-doublereal fnbpbv_(chng, funi, bcni, icni, istop, itp, nitps, p0, p1, poin, 
-	ev, wkev, ibr, ntot, m1aa, m2aa, aa, m1bb, m2bb, bb, m1cc, cc, m1dd, 
-	dd, wbrbd, m1u, ups, uoldps, udotps, upoldp, rhsa, rhsd, dups, tm, 
-	dtm, u, f, m1df, dfdu, dfdp, ubc0, ubc1, m1bc, dbc, uicd, ficd, m1ic, 
+doublereal fnbpbv_(chng, funi, bcni, icni, istop, itp, nitps, p0, p1, poin,
+	ev, wkev, ibr, ntot, m1aa, m2aa, aa, m1bb, m2bb, bb, m1cc, cc, m1dd,
+	dd, wbrbd, m1u, ups, uoldps, udotps, upoldp, rhsa, rhsd, dups, tm,
+	dtm, u, f, m1df, dfdu, dfdp, ubc0, ubc1, m1bc, dbc, uicd, ficd, m1ic,
 	dicd, ir, ic, iwbrbd)
 logical *chng;
 /* Subroutine */ int (*funi) (), (*bcni) (), (*icni) ();
@@ -3187,10 +3188,10 @@ integer *ir, *ic, *iwbrbd;
     /* System generated locals */
     integer aa_dim1, aa_dim2, aa_offset, bb_dim1, bb_dim2, bb_offset, cc_dim1,
 	     cc_offset, dd_dim1, dd_offset, ups_dim1, ups_offset, udotps_dim1,
-	     udotps_offset, upoldp_dim1, upoldp_offset, uoldps_dim1, 
-	    uoldps_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset, 
-	    dbc_dim1, dbc_offset, dicd_dim1, dicd_offset, dfdu_dim1, 
-	    dfdu_offset, dfdp_dim1, dfdp_offset, p0_dim1, p0_offset, p1_dim1, 
+	     udotps_offset, upoldp_dim1, upoldp_offset, uoldps_dim1,
+	    uoldps_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset,
+	    dbc_dim1, dbc_offset, dicd_dim1, dicd_offset, dfdu_dim1,
+	    dfdu_offset, dfdp_dim1, dfdp_offset, p0_dim1, p0_offset, p1_dim1,
 	    p1_offset, poin_dim1, poin_offset;
     doublereal ret_val;
 
@@ -3315,10 +3316,10 @@ integer *ir, *ic, *iwbrbd;
 
 
 /*     ------ --------- */
-doublereal fnspbv_(chng, funi, bcni, icni, istop, itp, nitps, p0, p1, poin, 
-	ev, wkev, ibr, ntot, m1aa, m2aa, aa, m1bb, m2bb, bb, m1cc, cc, m1dd, 
-	dd, wbrbd, m1u, ups, uoldps, udotps, upoldp, rhsa, rhsd, dups, tm, 
-	dtm, u, f, m1df, dfdu, dfdp, ubc0, ubc1, m1bc, dbc, uicd, ficd, m1ic, 
+doublereal fnspbv_(chng, funi, bcni, icni, istop, itp, nitps, p0, p1, poin,
+	ev, wkev, ibr, ntot, m1aa, m2aa, aa, m1bb, m2bb, bb, m1cc, cc, m1dd,
+	dd, wbrbd, m1u, ups, uoldps, udotps, upoldp, rhsa, rhsd, dups, tm,
+	dtm, u, f, m1df, dfdu, dfdp, ubc0, ubc1, m1bc, dbc, uicd, ficd, m1ic,
 	dicd, ir, ic, iwbrbd)
 logical *chng;
 /* Subroutine */ int (*funi) (), (*bcni) (), (*icni) ();
@@ -3359,10 +3360,10 @@ OF MULTIPLIERS IN UNIT CIRCLE =\002,i3)";
     /* System generated locals */
     integer aa_dim1, aa_dim2, aa_offset, bb_dim1, bb_dim2, bb_offset, cc_dim1,
 	     cc_offset, dd_dim1, dd_offset, ups_dim1, ups_offset, udotps_dim1,
-	     udotps_offset, upoldp_dim1, upoldp_offset, uoldps_dim1, 
-	    uoldps_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset, 
-	    dbc_dim1, dbc_offset, dicd_dim1, dicd_offset, dfdu_dim1, 
-	    dfdu_offset, dfdp_dim1, dfdp_offset, p0_dim1, p0_offset, p1_dim1, 
+	     udotps_offset, upoldp_dim1, upoldp_offset, uoldps_dim1,
+	    uoldps_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset,
+	    dbc_dim1, dbc_offset, dicd_dim1, dicd_offset, dfdu_dim1,
+	    dfdu_offset, dfdp_dim1, dfdp_offset, p0_dim1, p0_offset, p1_dim1,
 	    p1_offset, poin_dim1, poin_offset, i__1, i__2, i__3,i_1,i_2;
     doublereal ret_val;
     doublecomplex z__1;
@@ -3490,7 +3491,7 @@ OF MULTIPLIERS IN UNIT CIRCLE =\002,i3)";
    if(FLOWK==0)  {
 /* Compute the linearization of the Poincare map. */
 
-    poinc_(&blbcn_1.ndim, &p0[p0_offset], &p1[p1_offset], &poin[poin_offset], 
+    poinc_(&blbcn_1.ndim, &p0[p0_offset], &p1[p1_offset], &poin[poin_offset],
 	    &blmax_1.iid, &ir[1], &ic[1]);
 
 /* Compute the Floquet multipliers. */
@@ -3511,7 +3512,7 @@ OF MULTIPLIERS IN UNIT CIRCLE =\002,i3)";
 
 	flowkm_(&blbcn_1.ndim, &p0[p0_offset], &p1[p1_offset], &blmax_1.iid, &
 		ir[1], &ic[1], &poin[poin_offset], &ev[1]);
-		
+
       }
 
 
@@ -3590,7 +3591,7 @@ L3:
     }
 
 /* Print error message if the Floquet multiplier at z=1 is inaccurate. */
-/* (ISP is set to negative and detection of bifurations is discontinued) 
+/* (ISP is set to negative and detection of bifurations is discontinued)
 */
 
     z__1.r = ev[1].r - blrcn_1.one, z__1.i = ev[1].i;
@@ -3706,10 +3707,10 @@ L5:
 
 
 /*     ------ --------- */
-doublereal fnuzbv_(chng, funi, bcni, icni, istop, itp, nitps, p0, p1, poin, 
-	ev, wkev, ibr, ntot, m1aa, m2aa, aa, m1bb, m2bb, bb, m1cc, cc, m1dd, 
-	dd, wbrbd, m1u, ups, uoldps, udotps, upoldp, rhsa, rhsd, dups, tm, 
-	dtm, u, f, m1df, dfdu, dfdp, ubc0, ubc1, m1bc, dbc, uicd, ficd, m1ic, 
+doublereal fnuzbv_(chng, funi, bcni, icni, istop, itp, nitps, p0, p1, poin,
+	ev, wkev, ibr, ntot, m1aa, m2aa, aa, m1bb, m2bb, bb, m1cc, cc, m1dd,
+	dd, wbrbd, m1u, ups, uoldps, udotps, upoldp, rhsa, rhsd, dups, tm,
+	dtm, u, f, m1df, dfdu, dfdp, ubc0, ubc1, m1bc, dbc, uicd, ficd, m1ic,
 	dicd, ir, ic, iwbrbd)
 logical *chng;
 /* Subroutine */ int (*funi) (), (*bcni) (), (*icni) ();
@@ -3742,10 +3743,10 @@ integer *ir, *ic, *iwbrbd;
     /* System generated locals */
     integer aa_dim1, aa_dim2, aa_offset, bb_dim1, bb_dim2, bb_offset, cc_dim1,
 	     cc_offset, dd_dim1, dd_offset, ups_dim1, ups_offset, udotps_dim1,
-	     udotps_offset, upoldp_dim1, upoldp_offset, uoldps_dim1, 
-	    uoldps_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset, 
-	    dbc_dim1, dbc_offset, dicd_dim1, dicd_offset, dfdu_dim1, 
-	    dfdu_offset, dfdp_dim1, dfdp_offset, p0_dim1, p0_offset, p1_dim1, 
+	     udotps_offset, upoldp_dim1, upoldp_offset, uoldps_dim1,
+	    uoldps_offset, rhsa_dim1, rhsa_offset, dups_dim1, dups_offset,
+	    dbc_dim1, dbc_offset, dicd_dim1, dicd_offset, dfdu_dim1,
+	    dfdu_offset, dfdp_dim1, dfdp_offset, p0_dim1, p0_offset, p1_dim1,
 	    p1_offset, poin_dim1, poin_offset;
     doublereal ret_val;
 
@@ -3864,7 +3865,7 @@ integer *iid, *ir, *ic;
     static char fmt_102[] = "(1x,6e21.14)";
 
     /* System generated locals */
-    integer p0_dim1, p0_offset, p1_dim1, p1_offset, poin_dim1, poin_offset, 
+    integer p0_dim1, p0_offset, p1_dim1, p1_offset, poin_dim1, poin_offset,
 	    i__1, i__2;
 
     /* Builtin functions */
@@ -4037,7 +4038,7 @@ L2:
 /* ------------------------------------------------------------------- */
 
 /*     ---------- ------ */
-/* Subroutine */ int stplbv_(istop, itp, nitps, ntot, lab, ibr, m1u, ups, 
+/* Subroutine */ int stplbv_(istop, itp, nitps, ntot, lab, ibr, m1u, ups,
 	udotps, tm, dtm, m1df)
 integer *istop, *itp, *nitps, *ntot, *lab, *ibr, *m1u;
 doublereal *ups, *udotps, *tm, *dtm;
@@ -4078,7 +4079,7 @@ integer *m1df;
 /*            - = stable , + = unstable, or unknown. */
 /*  ITP    : An integer indicating the type of point : */
 
-/*             4  (  )  :   Output point (Every NPR steps along branch). 
+/*             4  (  )  :   Output point (Every NPR steps along branch).
 */
 /*            -4  (UZ)  :   Output point (Zero of user function USZR). */
 /*             5  (LP)  :   Limit point (fold). */
@@ -4090,7 +4091,7 @@ integer *m1df;
 
 /*  LAB        : The label of a special point. */
 /*  PAR(ICP(1)): The principal parameter. */
-/*  A          : The L2-norm of the solution vector, or other measure of 
+/*  A          : The L2-norm of the solution vector, or other measure of
 */
 /*               the solution (see the user-supplied parameter IPLT). */
 /*  MAX U(*)   : The maxima of the first few solution components. */
@@ -4111,7 +4112,7 @@ integer *m1df;
     /* Function Body */
     ++(*ntot);
 
-/* ITP is set to 4 every NPR steps along a branch of solns and the entire 
+/* ITP is set to 4 every NPR steps along a branch of solns and the entire
 */
 /* solution is written on unit 8. */
 
@@ -4180,8 +4181,8 @@ integer *m1df;
 
     ibr1 = *ibr;
     ntot1 = *ntot;
-    if ((blbcn_1.ips == 2 || blbcn_1.ips == 3 || blbcn_1.ips == 6 || 
-	    blbcn_1.ips == 12 || blbcn_1.ips == 13) && abs(blcde_1.isw) != 2) 
+    if ((blbcn_1.ips == 2 || blbcn_1.ips == 3 || blbcn_1.ips == 6 ||
+	    blbcn_1.ips == 12 || blbcn_1.ips == 13) && abs(blcde_1.isw) != 2)
 	    {
 	ibr1 = -(*ibr);
 	if (bldet_1.nins == blbcn_1.ndim) {
@@ -4195,7 +4196,7 @@ integer *m1df;
         u0[i-1] = ups[i * ups_dim1 + 1];
 	uhigh[i - 1] = rmxups_(m1u, &i, &ups[ups_offset]);
 	ulow[i - 1] = rmnups_(m1u, &i, &ups[ups_offset]);
-        ubar[i-1] =rintg_(m1u,&i,&ups[ups_offset],&dtm[1]);  
+        ubar[i-1] =rintg_(m1u,&i,&ups[ups_offset],&dtm[1]);
 /* L11: */
     }
 /*     ADD BIFURCATION */
@@ -4229,7 +4230,7 @@ doublereal *ups, *udotps, *tm, *dtm;
     static char fmt_102[] = "(4x,1p7e18.10)";
 
     /* System generated locals */
-    integer ups_dim1, ups_offset, udotps_dim1, udotps_offset, i__1, i__2, 
+    integer ups_dim1, ups_offset, udotps_dim1, udotps_offset, i__1, i__2,
 	    i__3;
 
     /* Builtin functions */
@@ -4322,7 +4323,7 @@ doublereal *ups, *udotps, *tm, *dtm;
     ntpl = blcde_1.ncol * blcde_1.ntst + 1;
     nar = blbcn_1.ndim + 1;
     nrd = blbcn_1.ndim / 7 + 2 + blbcn_1.ndim / 8;
-    nrowpr = nrd * (blcde_1.ncol * blcde_1.ntst + 1) + blicn_1.nfpar / 8 + 1 
+    nrowpr = nrd * (blcde_1.ncol * blcde_1.ntst + 1) + blicn_1.nfpar / 8 + 1
 	    + blicn_1.npar / 8 + 1;
     s_wsfe(&io___192);
     do_fio(&c__1, (char *)&(*ibr), (ftnlen)sizeof(integer));
@@ -4551,7 +4552,7 @@ doublereal *ups, *tm, *dtm;
 /* ------------------------------------------------------------------- */
 
 /*     ---------- ---- */
-/* Subroutine */ int brbd_(na, nra, nca, ma1, ma2, a, ncb, mb1, mb2, b, nrc, 
+/* Subroutine */ int brbd_(na, nra, nca, ma1, ma2, a, ncb, mb1, mb2, b, nrc,
 	mc1, c, md1, d, mfa1, fa, fc, wkdr, idb, ifst, ir, ic, iwkdr, nllv)
 integer *na, *nra, *nca, *ma1, *ma2;
 doublereal *a;
@@ -4570,7 +4571,7 @@ integer *idb, *ifst, *ir, *ic, *iwkdr, *nllv;
 V=\002,i2)";
 
     /* System generated locals */
-    integer a_dim1, a_dim2, a_offset, b_dim1, b_dim2, b_offset, c_dim1, 
+    integer a_dim1, a_dim2, a_offset, b_dim1, b_dim2, b_offset, c_dim1,
 	    c_offset, d_dim1, d_offset, fa_dim1, fa_offset, i__1, i__2;
 
     /* Builtin functions */
@@ -4580,14 +4581,14 @@ V=\002,i2)";
     /* Local variables */
     static integer i, j, lrhse;
     /*static integer lnext; Not used*/
-    
+
     extern /* Subroutine */ int print1_();
     static integer lb, lc, le;
     extern /* Subroutine */ int print3_(), print2_();
     static integer ne, ls;
     extern logical erbrbd_();
     static integer lt;
-    extern /* Subroutine */ int reduce_(), dimrge_(), bcksub_(), infpar_(), 
+    extern /* Subroutine */ int reduce_(), dimrge_(), bcksub_(), infpar_(),
 	    conpar_(), redrhs_(), conrhs_(), copycp_();
     static integer la1, la2;
     extern /* Subroutine */ int cpyrhs_();
@@ -4702,7 +4703,7 @@ V=\002,i2)";
 /*            NOV = -------------------- . */
 /*                        NA-1 */
 
-/*  IWKDR: Integer workspace array of dimension at least 3*NOV*(NA-1)+NA. 
+/*  IWKDR: Integer workspace array of dimension at least 3*NOV*(NA-1)+NA.
 */
 
 /*   IFST   = 1 on first call, */
@@ -4719,11 +4720,11 @@ V=\002,i2)";
 /*   NLLV : If NLLV>0 then the system is assumed to have a NLLV- */
 /*          dimensional nullspace. */
 /*          In this case a null vector will be returned. */
-/*          If NLLVC = -1 then the system will be solved with zero right 
+/*          If NLLVC = -1 then the system will be solved with zero right
 */
-/*          hand side, except for the last equation, for which the right 
+/*          hand side, except for the last equation, for which the right
 */
-/*          hand side entry will be set to 1 (i.e., the last entry of FC 
+/*          hand side entry will be set to 1 (i.e., the last entry of FC
 */
 /*          will be set to 1, otherwise FA and FC are zero). */
 /*          If the linear system is the same as in the preceding call */
@@ -4782,7 +4783,7 @@ V=\002,i2)";
 	do_fio(&c__1, (char *)&(*ifst), (ftnlen)sizeof(integer));
 	do_fio(&c__1, (char *)&(*nllv), (ftnlen)sizeof(integer));
 	e_wsfe();
-	print1_(&nov, na, nra, nca, ncb, nrc, ma1, ma2, &a[a_offset], mb1, 
+	print1_(&nov, na, nra, nca, ncb, nrc, ma1, ma2, &a[a_offset], mb1,
 		mb2, &b[b_offset], mc1, &c[c_offset], md1, &d[d_offset], mfa1,
 		 &fa[fa_offset], &fc[1]);
     }
@@ -4797,7 +4798,7 @@ V=\002,i2)";
 /*       PRINT DEBUG OUTPUT */
 	if (*idb >= 2) {
 	    print1_(&nov, na, nra, nca, ncb, nrc, ma1, ma2, &a[a_offset], mb1,
-		     mb2, &b[b_offset], mc1, &c[c_offset], md1, &d[d_offset], 
+		     mb2, &b[b_offset], mc1, &c[c_offset], md1, &d[d_offset],
 		    mfa1, &fa[fa_offset], &fc[1]);
 	}
     }
@@ -4899,9 +4900,9 @@ V=\002,i2)";
 /* Solve the system generated by REDUCE */
 /* by Gauss elimination with complete pivoting. */
 
-    dimrge_(na, &nov, nca, &wkdr[ls], &wkdr[la2], ncb, &wkdr[lb], &wkdr[lc], 
+    dimrge_(na, &nov, nca, &wkdr[ls], &wkdr[la2], ncb, &wkdr[lb], &wkdr[lc],
 	    nrc, mc1, &c[c_offset], md1, &d[d_offset], &wkdr[lfa], &fc[1], &
-	    ne, &wkdr[le], &wkdr[lrhse], &wkdr[lxe], idb, &ir[1], &ic[1], 
+	    ne, &wkdr[le], &wkdr[lrhse], &wkdr[lxe], idb, &ir[1], &ic[1],
 	    nllv);
 
 /* Backsubstitution in the reduction process. */
@@ -4985,9 +4986,9 @@ integer *nrc, *mc1;
 doublereal *c, *a1, *a2, *bc, *cc;
 {
     /* System generated locals */
-    integer a_dim1, a_dim2, a_offset, b_dim1, b_dim2, b_offset, c_dim1, 
-	    c_offset, a1_dim1, a1_dim2, a1_offset, a2_dim1, a2_dim2, 
-	    a2_offset, bc_dim1, bc_dim2, bc_offset, cc_dim1, cc_dim2, 
+    integer a_dim1, a_dim2, a_offset, b_dim1, b_dim2, b_offset, c_dim1,
+	    c_offset, a1_dim1, a1_dim2, a1_offset, a2_dim1, a2_dim2,
+	    a2_offset, bc_dim1, bc_dim2, bc_offset, cc_dim1, cc_dim2,
 	    cc_offset, i__1, i__2, i__3;
 
     /* Local variables */
@@ -5037,16 +5038,16 @@ doublereal *c, *a1, *a2, *bc, *cc;
 	for (ir = 1; ir <= i__2; ++ir) {
 	    i__3 = *nov;
 	    for (ic = 1; ic <= i__3; ++ic) {
-		a1[ir + (ic + i * a1_dim2) * a1_dim1] = a[i + (*nra - *nov + 
+		a1[ir + (ic + i * a1_dim2) * a1_dim1] = a[i + (*nra - *nov +
 			ir + ic * a_dim2) * a_dim1];
-		a2[ir + (ic + i * a2_dim2) * a2_dim1] = a[i + (*nra - *nov + 
+		a2[ir + (ic + i * a2_dim2) * a2_dim1] = a[i + (*nra - *nov +
 			ir + (*nca - *nov + ic) * a_dim2) * a_dim1];
 /* L1: */
 	    }
 
 	    i__3 = *ncb;
 	    for (ic = 1; ic <= i__3; ++ic) {
-		bc[ir + (ic + i * bc_dim2) * bc_dim1] = b[i + (*nra - *nov + 
+		bc[ir + (ic + i * bc_dim2) * bc_dim1] = b[i + (*nra - *nov +
 			ir + ic * b_dim2) * b_dim1];
 /* L2: */
 	    }
@@ -5084,9 +5085,9 @@ doublereal *d, *a1, *a2, *b, *c, *s, *t;
 integer *ipr, *ipc;
 {
     /* System generated locals */
-    integer a1_dim1, a1_dim2, a1_offset, a2_dim1, a2_dim2, a2_offset, s_dim1, 
-	    s_dim2, s_offset, t_dim1, t_dim2, t_offset, ipr_dim1, ipr_offset, 
-	    ipc_dim1, ipc_offset, b_dim1, b_dim2, b_offset, c_dim1, c_dim2, 
+    integer a1_dim1, a1_dim2, a1_offset, a2_dim1, a2_dim2, a2_offset, s_dim1,
+	    s_dim2, s_offset, t_dim1, t_dim2, t_offset, ipr_dim1, ipr_offset,
+	    ipc_dim1, ipc_offset, b_dim1, b_dim2, b_offset, c_dim1, c_dim2,
 	    c_offset, d_dim1, d_offset, i__1, i__2, i__3, i__4;
     doublereal d__1;
 
@@ -5207,7 +5208,7 @@ integer *ipr, *ipc;
 	    for (ir = ic; ir <= i__3; ++ir) {
 		i__4 = ic;
 		for (k = ic; k <= i__4; ++k) {
-		    daba2 = (d__1 = a2[ir + (k + i1 * a2_dim2) * a2_dim1], 
+		    daba2 = (d__1 = a2[ir + (k + i1 * a2_dim2) * a2_dim1],
 			    abs(d__1));
 /* SGLE          DABA2= ABS(A2(IR,K,I1)) */
 		    if (daba2 > rmxa2) {
@@ -5225,7 +5226,7 @@ integer *ipr, *ipc;
 	    for (ir = 1; ir <= i__3; ++ir) {
 		i__4 = ic;
 		for (k = ic; k <= i__4; ++k) {
-		    daba1 = (d__1 = a1[ir + (k + i2 * a1_dim2) * a1_dim1], 
+		    daba1 = (d__1 = a1[ir + (k + i2 * a1_dim2) * a1_dim1],
 			    abs(d__1));
 /* SGLE          DABA1= ABS(A1(IR,K,I2)) */
 		    if (daba1 > rmxa1) {
@@ -5247,16 +5248,16 @@ integer *ipr, *ipc;
 		for (k = 1; k <= i__3; ++k) {
 		    if (k >= ic) {
 			tmp = a2[ic + (k + i1 * a2_dim2) * a2_dim1];
-			a2[ic + (k + i1 * a2_dim2) * a2_dim1] = a2[ira2 + (k 
+			a2[ic + (k + i1 * a2_dim2) * a2_dim1] = a2[ira2 + (k
 				+ i1 * a2_dim2) * a2_dim1];
 			a2[ira2 + (k + i1 * a2_dim2) * a2_dim1] = tmp;
 		    }
 		    tmp = s[ic + (k + i1 * s_dim2) * s_dim1];
-		    s[ic + (k + i1 * s_dim2) * s_dim1] = s[ira2 + (k + i1 * 
+		    s[ic + (k + i1 * s_dim2) * s_dim1] = s[ira2 + (k + i1 *
 			    s_dim2) * s_dim1];
 		    s[ira2 + (k + i1 * s_dim2) * s_dim1] = tmp;
 		    tmp = t[ic + (k + i1 * t_dim2) * t_dim1];
-		    t[ic + (k + i1 * t_dim2) * t_dim1] = t[ira2 + (k + i1 * 
+		    t[ic + (k + i1 * t_dim2) * t_dim1] = t[ira2 + (k + i1 *
 			    t_dim2) * t_dim1];
 		    t[ira2 + (k + i1 * t_dim2) * t_dim1] = tmp;
 /* L12: */
@@ -5264,7 +5265,7 @@ integer *ipr, *ipc;
 		i__3 = *ncb;
 		for (k = 1; k <= i__3; ++k) {
 		    tmp = b[ic + (k + i1 * b_dim2) * b_dim1];
-		    b[ic + (k + i1 * b_dim2) * b_dim1] = b[ira2 + (k + i1 * 
+		    b[ic + (k + i1 * b_dim2) * b_dim1] = b[ira2 + (k + i1 *
 			    b_dim2) * b_dim1];
 		    b[ira2 + (k + i1 * b_dim2) * b_dim1] = tmp;
 /* L13: */
@@ -5280,16 +5281,16 @@ integer *ipr, *ipc;
 		for (k = 1; k <= i__3; ++k) {
 		    if (k >= ic) {
 			tmp = a2[ic + (k + i1 * a2_dim2) * a2_dim1];
-			a2[ic + (k + i1 * a2_dim2) * a2_dim1] = a1[ira1 + (k 
+			a2[ic + (k + i1 * a2_dim2) * a2_dim1] = a1[ira1 + (k
 				+ i2 * a1_dim2) * a1_dim1];
 			a1[ira1 + (k + i2 * a1_dim2) * a1_dim1] = tmp;
 		    }
 		    tmp = s[ic + (k + i1 * s_dim2) * s_dim1];
-		    s[ic + (k + i1 * s_dim2) * s_dim1] = s[ira1 + (k + i2 * 
+		    s[ic + (k + i1 * s_dim2) * s_dim1] = s[ira1 + (k + i2 *
 			    s_dim2) * s_dim1];
 		    s[ira1 + (k + i2 * s_dim2) * s_dim1] = tmp;
 		    tmp = t[ic + (k + i1 * t_dim2) * t_dim1];
-		    t[ic + (k + i1 * t_dim2) * t_dim1] = a2[ira1 + (k + i2 * 
+		    t[ic + (k + i1 * t_dim2) * t_dim1] = a2[ira1 + (k + i2 *
 			    a2_dim2) * a2_dim1];
 		    a2[ira1 + (k + i2 * a2_dim2) * a2_dim1] = tmp;
 /* L14: */
@@ -5297,7 +5298,7 @@ integer *ipr, *ipc;
 		i__3 = *ncb;
 		for (k = 1; k <= i__3; ++k) {
 		    tmp = b[ic + (k + i1 * b_dim2) * b_dim1];
-		    b[ic + (k + i1 * b_dim2) * b_dim1] = b[ira1 + (k + i2 * 
+		    b[ic + (k + i1 * b_dim2) * b_dim1] = b[ira1 + (k + i2 *
 			    b_dim2) * b_dim1];
 		    b[ira1 + (k + i2 * b_dim2) * b_dim1] = tmp;
 /* L15: */
@@ -5311,26 +5312,26 @@ integer *ipr, *ipc;
 	    if (ic != *nov) {
 		i__3 = *nov;
 		for (ir = icp1; ir <= i__3; ++ir) {
-		    rm = a2[ir + (ic + i1 * a2_dim2) * a2_dim1] / a2[ic + (ic 
+		    rm = a2[ir + (ic + i1 * a2_dim2) * a2_dim1] / a2[ic + (ic
 			    + i1 * a2_dim2) * a2_dim1];
 		    a2[ir + (ic + i1 * a2_dim2) * a2_dim1] = rm;
 		    i__4 = *nov;
 		    for (k = icp1; k <= i__4; ++k) {
-			a2[ir + (k + i1 * a2_dim2) * a2_dim1] -= rm * a2[ic + 
+			a2[ir + (k + i1 * a2_dim2) * a2_dim1] -= rm * a2[ic +
 				(k + i1 * a2_dim2) * a2_dim1];
 /* L16: */
 		    }
 		    i__4 = *nov;
 		    for (k = 1; k <= i__4; ++k) {
-			s[ir + (k + i1 * s_dim2) * s_dim1] -= rm * s[ic + (k 
+			s[ir + (k + i1 * s_dim2) * s_dim1] -= rm * s[ic + (k
 				+ i1 * s_dim2) * s_dim1];
-			t[ir + (k + i1 * t_dim2) * t_dim1] -= rm * t[ic + (k 
+			t[ir + (k + i1 * t_dim2) * t_dim1] -= rm * t[ic + (k
 				+ i1 * t_dim2) * t_dim1];
 /* L17: */
 		    }
 		    i__4 = *ncb;
 		    for (k = 1; k <= i__4; ++k) {
-			b[ir + (k + i1 * b_dim2) * b_dim1] -= rm * b[ic + (k 
+			b[ir + (k + i1 * b_dim2) * b_dim1] -= rm * b[ic + (k
 				+ i1 * b_dim2) * b_dim1];
 /* L18: */
 		    }
@@ -5340,7 +5341,7 @@ integer *ipr, *ipc;
 
 	    i__3 = *nov;
 	    for (ir = 1; ir <= i__3; ++ir) {
-		rm = a1[ir + (ic + i2 * a1_dim2) * a1_dim1] / a2[ic + (ic + 
+		rm = a1[ir + (ic + i2 * a1_dim2) * a1_dim1] / a2[ic + (ic +
 			i1 * a2_dim2) * a2_dim1];
 		a1[ir + (ic + i2 * a1_dim2) * a1_dim1] = rm;
 		if (icp1 > *nov) {
@@ -5348,22 +5349,22 @@ integer *ipr, *ipc;
 		}
 		i__4 = *nov;
 		for (k = icp1; k <= i__4; ++k) {
-		    a1[ir + (k + i2 * a1_dim2) * a1_dim1] -= rm * a2[ic + (k 
+		    a1[ir + (k + i2 * a1_dim2) * a1_dim1] -= rm * a2[ic + (k
 			    + i1 * a2_dim2) * a2_dim1];
 /* L20: */
 		}
 L21:
 		i__4 = *nov;
 		for (k = 1; k <= i__4; ++k) {
-		    s[ir + (k + i2 * s_dim2) * s_dim1] -= rm * s[ic + (k + i1 
+		    s[ir + (k + i2 * s_dim2) * s_dim1] -= rm * s[ic + (k + i1
 			    * s_dim2) * s_dim1];
-		    a2[ir + (k + i2 * a2_dim2) * a2_dim1] -= rm * t[ic + (k + 
+		    a2[ir + (k + i2 * a2_dim2) * a2_dim1] -= rm * t[ic + (k +
 			    i1 * t_dim2) * t_dim1];
 /* L22: */
 		}
 		i__4 = *ncb;
 		for (k = 1; k <= i__4; ++k) {
-		    b[ir + (k + i2 * b_dim2) * b_dim1] -= rm * b[ic + (k + i1 
+		    b[ir + (k + i2 * b_dim2) * b_dim1] -= rm * b[ic + (k + i1
 			    * b_dim2) * b_dim1];
 /* L23: */
 		}
@@ -5378,7 +5379,7 @@ L21:
 	    icp1 = ic + 1;
 	    i__3 = *nrc;
 	    for (ir = blcde_1.nbc + 1; ir <= i__3; ++ir) {
-		rm = c[ir + (ic + i2 * c_dim2) * c_dim1] / a2[ic + (ic + i1 * 
+		rm = c[ir + (ic + i2 * c_dim2) * c_dim1] / a2[ic + (ic + i1 *
 			a2_dim2) * a2_dim1];
 		c[ir + (ic + i2 * c_dim2) * c_dim1] = rm;
 		if (icp1 > *nov) {
@@ -5386,14 +5387,14 @@ L21:
 		}
 		i__4 = *nov;
 		for (k = icp1; k <= i__4; ++k) {
-		    c[ir + (k + i2 * c_dim2) * c_dim1] -= rm * a2[ic + (k + 
+		    c[ir + (k + i2 * c_dim2) * c_dim1] -= rm * a2[ic + (k +
 			    i1 * a2_dim2) * a2_dim1];
 /* L26: */
 		}
 L27:
 		i__4 = *nov;
 		for (k = 1; k <= i__4; ++k) {
-		    c[ir + (k + c_dim2) * c_dim1] -= rm * s[ic + (k + i1 * 
+		    c[ir + (k + c_dim2) * c_dim1] -= rm * s[ic + (k + i1 *
 			    s_dim2) * s_dim1];
 		    c[ir + (k + (i2 + 1) * c_dim2) * c_dim1] -= rm * t[ic + (
 			    k + i1 * t_dim2) * t_dim1];
@@ -5401,7 +5402,7 @@ L27:
 		}
 		i__4 = *ncb;
 		for (k = 1; k <= i__4; ++k) {
-		    d[ir + k * d_dim1] -= rm * b[ic + (k + i1 * b_dim2) * 
+		    d[ir + k * d_dim1] -= rm * b[ic + (k + i1 * b_dim2) *
 			    b_dim1];
 /* L29: */
 		}
@@ -5468,8 +5469,8 @@ doublereal *a1, *a2, *c, *fa, *fc;
 integer *ipr;
 {
     /* System generated locals */
-    integer a1_dim1, a1_dim2, a1_offset, a2_dim1, a2_dim2, a2_offset, c_dim1, 
-	    c_dim2, c_offset, fa_dim1, fa_offset, ipr_dim1, ipr_offset, i__1, 
+    integer a1_dim1, a1_dim2, a1_offset, a2_dim1, a2_dim2, a2_offset, c_dim1,
+	    c_dim2, c_offset, fa_dim1, fa_offset, ipr_dim1, ipr_offset, i__1,
 	    i__2, i__3;
 
     /* Local variables */
@@ -5519,12 +5520,12 @@ integer *ipr;
 
 	    if (ipr[ic + i1 * ipr_dim1] <= *nov) {
 		tmp = fa[ic + i1 * fa_dim1];
-		fa[ic + i1 * fa_dim1] = fa[ipr[ic + i1 * ipr_dim1] + i1 * 
+		fa[ic + i1 * fa_dim1] = fa[ipr[ic + i1 * ipr_dim1] + i1 *
 			fa_dim1];
 		fa[ipr[ic + i1 * ipr_dim1] + i1 * fa_dim1] = tmp;
 	    } else {
 		tmp = fa[ic + i1 * fa_dim1];
-		fa[ic + i1 * fa_dim1] = fa[ipr[ic + i1 * ipr_dim1] - *nov + 
+		fa[ic + i1 * fa_dim1] = fa[ipr[ic + i1 * ipr_dim1] - *nov +
 			i2 * fa_dim1];
 		fa[ipr[ic + i1 * ipr_dim1] - *nov + i2 * fa_dim1] = tmp;
 	    }
@@ -5568,7 +5569,7 @@ integer *ipr;
 
 
 /*     ---------- ------ */
-/* Subroutine */ int dimrge_(na, nov, nca, s, a2, ncb, b, cc, nrc, mc1, c, 
+/* Subroutine */ int dimrge_(na, nov, nca, s, a2, ncb, b, cc, nrc, mc1, c,
 	md1, d, fa, fc, ne, e, rhse, xe, idb, ir, ic, nllv)
 integer *na, *nov, *nca;
 doublereal *s, *a2;
@@ -5588,7 +5589,7 @@ integer *idb, *ir, *ic, *nllv;
     static char fmt_103[] = "(\002 SOLUTION VECTOR :\002,/,10e10.3)";
 
     /* System generated locals */
-    integer s_dim1, s_dim2, s_offset, a2_dim1, a2_dim2, a2_offset, b_dim1, 
+    integer s_dim1, s_dim2, s_offset, a2_dim1, a2_dim2, a2_offset, b_dim1,
 	    b_dim2, b_offset, cc_dim1, cc_dim2, cc_offset, fa_dim1, fa_offset,
 	     c_dim1, c_offset, d_dim1, d_offset, e_dim1, e_offset, i__1, i__2;
 
@@ -5661,7 +5662,7 @@ integer *idb, *ir, *ic, *nllv;
 
 	i__2 = *ncb;
 	for (j = 1; j <= i__2; ++j) {
-	    e[i + ((*nov << 1) + j) * e_dim1] = b[i + (j + *na * b_dim2) * 
+	    e[i + ((*nov << 1) + j) * e_dim1] = b[i + (j + *na * b_dim2) *
 		    b_dim1];
 /* L2: */
 	}
@@ -5677,7 +5678,7 @@ integer *idb, *ir, *ic, *nllv;
 	i__2 = *nov;
 	for (j = 1; j <= i__2; ++j) {
 	    e[*nov + i + j * e_dim1] = cc[i + (j + cc_dim2) * cc_dim1];
-	    e[*nov + i + (*nov + j) * e_dim1] = cc[i + (j + (*na + 1) * 
+	    e[*nov + i + (*nov + j) * e_dim1] = cc[i + (j + (*na + 1) *
 		    cc_dim2) * cc_dim1];
 /* L4: */
 	}
@@ -5748,16 +5749,16 @@ integer *idb, *ir, *ic, *nllv;
 
 
 /*     ---------- ---- */
-/* Subroutine */ int bcksub_(nov, nov2, na, ncb, s, a1, a2, t, b, fa, xe, fc, 
+/* Subroutine */ int bcksub_(nov, nov2, na, ncb, s, a1, a2, t, b, fa, xe, fc,
 	ipr, ipc)
 integer *nov, *nov2, *na, *ncb;
 doublereal *s, *a1, *a2, *t, *b, *fa, *xe, *fc;
 integer *ipr, *ipc;
 {
     /* System generated locals */
-    integer s_dim1, s_dim2, s_offset, a1_dim1, a1_dim2, a1_offset, a2_dim1, 
-	    a2_dim2, a2_offset, t_dim1, t_dim2, t_offset, b_dim1, b_dim2, 
-	    b_offset, fa_dim1, fa_offset, ipr_dim1, ipr_offset, ipc_dim1, 
+    integer s_dim1, s_dim2, s_offset, a1_dim1, a1_dim2, a1_offset, a2_dim1,
+	    a2_dim2, a2_offset, t_dim1, t_dim2, t_offset, b_dim1, b_dim2,
+	    b_offset, fa_dim1, fa_offset, ipr_dim1, ipr_offset, ipc_dim1,
 	    ipc_offset, i__1, i__2, i__3;
 
     /* Local variables */
@@ -5820,15 +5821,15 @@ integer *ipr, *ipc;
 	    fa[j + i2 * fa_dim1] = fa[j + i1 * fa_dim1];
 	    i__3 = *nov;
 	    for (k = 1; k <= i__3; ++k) {
-		fa[j + i2 * fa_dim1] -= s[j + (k + i1 * s_dim2) * s_dim1] * 
+		fa[j + i2 * fa_dim1] -= s[j + (k + i1 * s_dim2) * s_dim1] *
 			xe[k];
-		fa[j + i2 * fa_dim1] -= t[j + (k + i1 * t_dim2) * t_dim1] * 
+		fa[j + i2 * fa_dim1] -= t[j + (k + i1 * t_dim2) * t_dim1] *
 			fa[k + (i2 + 1) * fa_dim1];
 /* L3: */
 	    }
 	    i__3 = *ncb;
 	    for (k = 1; k <= i__3; ++k) {
-		fa[j + i2 * fa_dim1] -= b[j + (k + i1 * b_dim2) * b_dim1] * 
+		fa[j + i2 * fa_dim1] -= b[j + (k + i1 * b_dim2) * b_dim1] *
 			fc[*nov + k];
 /* L4: */
 	    }
@@ -5860,7 +5861,7 @@ L6:
 
 
 /*     ---------- ------ */
-/* Subroutine */ int print1_(nov, na, nra, nca, ncb, nrc, ma1, ma2, a, mb1, 
+/* Subroutine */ int print1_(nov, na, nra, nca, ncb, nrc, ma1, ma2, a, mb1,
 	mb2, b, mc1, c, md1, d, mfa1, fa, fc)
 integer *nov, *na, *nra, *nca, *ncb, *nrc, *ma1, *ma2;
 doublereal *a;
@@ -5882,8 +5883,8 @@ doublereal *fa, *fc;
     static char fmt_105[] = "(\002 D , FC\002)";
 
     /* System generated locals */
-    integer a_dim1, a_dim2, a_offset, b_dim1, b_dim2, b_offset, c_dim1, 
-	    c_offset, d_dim1, d_offset, fa_dim1, fa_offset, i__1, i__2, i__3, 
+    integer a_dim1, a_dim2, a_offset, b_dim1, b_dim2, b_offset, c_dim1,
+	    c_offset, d_dim1, d_offset, fa_dim1, fa_offset, i__1, i__2, i__3,
 	    i__4;
 
     /* Builtin functions */
@@ -6035,9 +6036,9 @@ doublereal *s, *a1, *a2, *t, *b, *c, *f;
     static char fmt_107[] = "(1x,e10.3)";
 
     /* System generated locals */
-    integer a1_dim1, a1_dim2, a1_offset, a2_dim1, a2_dim2, a2_offset, b_dim1, 
-	    b_dim2, b_offset, s_dim1, s_dim2, s_offset, t_dim1, t_dim2, 
-	    t_offset, f_dim1, f_offset, c_dim1, c_dim2, c_offset, i__1, i__2, 
+    integer a1_dim1, a1_dim2, a1_offset, a2_dim1, a2_dim2, a2_offset, b_dim1,
+	    b_dim2, b_offset, s_dim1, s_dim2, s_offset, t_dim1, t_dim2,
+	    t_offset, f_dim1, f_offset, c_dim1, c_dim2, c_offset, i__1, i__2,
 	    i__3, i__4, i__5;
 
     /* Builtin functions */
@@ -6110,12 +6111,12 @@ doublereal *s, *a1, *a2, *t, *b, *c, *f;
 	    s_wsfe(&io___311);
 	    i__3 = *nov;
 	    for (ic = 1; ic <= i__3; ++ic) {
-		do_fio(&c__1, (char *)&a1[ir + (ic + i * a1_dim2) * a1_dim1], 
+		do_fio(&c__1, (char *)&a1[ir + (ic + i * a1_dim2) * a1_dim1],
 			(ftnlen)sizeof(doublereal));
 	    }
 	    i__4 = *nov;
 	    for (ic = 1; ic <= i__4; ++ic) {
-		do_fio(&c__1, (char *)&a2[ir + (ic + i * a2_dim2) * a2_dim1], 
+		do_fio(&c__1, (char *)&a2[ir + (ic + i * a2_dim2) * a2_dim1],
 			(ftnlen)sizeof(doublereal));
 	    }
 	    i__5 = *ncb;
@@ -6294,7 +6295,7 @@ doublereal *d, *rm;
 integer *lc;
 {
     /* System generated locals */
-    integer a_dim1, a_dim2, a_offset, b_dim1, b_dim2, b_offset, c_dim1, 
+    integer a_dim1, a_dim2, a_offset, b_dim1, b_dim2, b_offset, c_dim1,
 	    c_offset, d_dim1, d_offset, i__1, i__2, i__3, i__4;
 
     /* Local variables */
@@ -6360,7 +6361,7 @@ integer *lc;
 	    for (l = 1; l <= i__3; ++l) {
 		i__4 = *na;
 		for (i = 1; i <= i__4; ++i) {
-		    a[i + (ir + l * a_dim2) * a_dim1] -= rm[i] * a[i + (irp + 
+		    a[i + (ir + l * a_dim2) * a_dim1] -= rm[i] * a[i + (irp +
 			    l * a_dim2) * a_dim1];
 /* L11: */
 		}
@@ -6370,7 +6371,7 @@ integer *lc;
 	    for (l = icp1; l <= i__3; ++l) {
 		i__4 = *na;
 		for (i = 1; i <= i__4; ++i) {
-		    a[i + (ir + l * a_dim2) * a_dim1] -= rm[i] * a[i + (irp + 
+		    a[i + (ir + l * a_dim2) * a_dim1] -= rm[i] * a[i + (irp +
 			    l * a_dim2) * a_dim1];
 /* L12: */
 		}
@@ -6380,7 +6381,7 @@ integer *lc;
 	    for (l = 1; l <= i__3; ++l) {
 		i__4 = *na;
 		for (i = 1; i <= i__4; ++i) {
-		    b[i + (ir + l * b_dim2) * b_dim1] -= rm[i] * b[i + (irp + 
+		    b[i + (ir + l * b_dim2) * b_dim1] -= rm[i] * b[i + (irp +
 			    l * b_dim2) * b_dim1];
 /* L13: */
 		}
@@ -6398,7 +6399,7 @@ integer *lc;
 	    }
 	    i__3 = *na;
 	    for (i = 1; i <= i__3; ++i) {
-		rm[i] = c[lc[i] + ir * c_dim1] / a[i + (irp + ic * a_dim2) * 
+		rm[i] = c[lc[i] + ir * c_dim1] / a[i + (irp + ic * a_dim2) *
 			a_dim1];
 		c[lc[i] + ir * c_dim1] = rm[i];
 /* L50: */
@@ -6437,7 +6438,7 @@ integer *lc;
 	    for (l = 1; l <= i__3; ++l) {
 		i__4 = *na;
 		for (i = 1; i <= i__4; ++i) {
-		    d[ir + l * d_dim1] -= rm[i] * b[i + (irp + l * b_dim2) * 
+		    d[ir + l * d_dim1] -= rm[i] * b[i + (irp + l * b_dim2) *
 			    b_dim1];
 /* L71: */
 		}
@@ -6459,7 +6460,7 @@ integer *lc;
 
 
 /*     ---------- ------ */
-/* Subroutine */ int conrhs_(nov, na, nra, nca, ma1, ma2, a, nrc, mc1, c, 
+/* Subroutine */ int conrhs_(nov, na, nra, nca, ma1, ma2, a, nrc, mc1, c,
 	mfa1, fa, fc, lc)
 integer *nov, *na, *nra, *nca, *ma1, *ma2;
 doublereal *a;
@@ -6470,7 +6471,7 @@ doublereal *fa, *fc;
 integer *lc;
 {
     /* System generated locals */
-    integer a_dim1, a_dim2, a_offset, c_dim1, c_offset, fa_dim1, fa_offset, 
+    integer a_dim1, a_dim2, a_offset, c_dim1, c_offset, fa_dim1, fa_offset,
 	    i__1, i__2, i__3;
 
     /* Local variables */
@@ -6523,7 +6524,7 @@ integer *lc;
 /* Note that  RM=A(I,IR,IC) is the multiplier. */
 	    i__3 = *na;
 	    for (i = 1; i <= i__3; ++i) {
-		fa[i + ir * fa_dim1] -= a[i + (ir + ic * a_dim2) * a_dim1] * 
+		fa[i + ir * fa_dim1] -= a[i + (ir + ic * a_dim2) * a_dim1] *
 			fa[i + irp * fa_dim1];
 /* L11: */
 	    }
@@ -6573,7 +6574,7 @@ integer *nfadr;
 doublereal *fadr;
 {
     /* System generated locals */
-    integer a_dim1, a_dim2, a_offset, b_dim1, b_dim2, b_offset, fa_dim1, 
+    integer a_dim1, a_dim2, a_offset, b_dim1, b_dim2, b_offset, fa_dim1,
 	    fa_offset, fadr_dim1, fadr_offset, i__1, i__2, i__3;
 
     /* Local variables */
@@ -6620,7 +6621,7 @@ doublereal *fadr;
 	for (k = 1; k <= i__2; ++k) {
 	    i__3 = *na;
 	    for (i = 1; i <= i__3; ++i) {
-		fa[i + ir * fa_dim1] -= a[i + (ir + k * a_dim2) * a_dim1] * 
+		fa[i + ir * fa_dim1] -= a[i + (ir + k * a_dim2) * a_dim1] *
 			fadr[k + i * fadr_dim1];
 /* L11: */
 	    }
@@ -6635,7 +6636,7 @@ doublereal *fadr;
 	for (k = 1; k <= i__2; ++k) {
 	    i__3 = *na;
 	    for (i = 1; i <= i__3; ++i) {
-		fa[i + ir * fa_dim1] -= a[i + (ir + (*nca - *nov + k) * 
+		fa[i + ir * fa_dim1] -= a[i + (ir + (*nca - *nov + k) *
 			a_dim2) * a_dim1] * fadr[k + (i + 1) * fadr_dim1];
 /* L31: */
 	    }
@@ -6645,7 +6646,7 @@ doublereal *fadr;
 	for (k = 1; k <= i__2; ++k) {
 	    i__3 = *na;
 	    for (i = 1; i <= i__3; ++i) {
-		fa[i + ir * fa_dim1] -= b[i + (ir + k * b_dim2) * b_dim1] * 
+		fa[i + ir * fa_dim1] -= b[i + (ir + k * b_dim2) * b_dim1] *
 			fc[*nov + k];
 /* L61: */
 	    }
@@ -6660,7 +6661,7 @@ doublereal *fadr;
 	for (k = k1; k <= i__2; ++k) {
 	    i__3 = *na;
 	    for (i = 1; i <= i__3; ++i) {
-		fa[i + ir * fa_dim1] -= a[i + (ir + k * a_dim2) * a_dim1] * 
+		fa[i + ir * fa_dim1] -= a[i + (ir + k * a_dim2) * a_dim1] *
 			fa[i + k * fa_dim1];
 /* L71: */
 	    }
@@ -6669,7 +6670,7 @@ doublereal *fadr;
 L8:
 	i__2 = *na;
 	for (i = 1; i <= i__2; ++i) {
-	    fa[i + (ir + *nov) * fa_dim1] = fa[i + ir * fa_dim1] / a[i + (ir 
+	    fa[i + (ir + *nov) * fa_dim1] = fa[i + ir * fa_dim1] / a[i + (ir
 		    + (*nca - *nov - ir1 + 1) * a_dim2) * a_dim1];
 /* L91: */
 	}
@@ -6696,4 +6697,3 @@ L8:
 
     return 0;
 } /* infpar_ */
-

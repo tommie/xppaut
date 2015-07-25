@@ -1,11 +1,12 @@
 #ifndef _autevd_h_
 #define _autevd_h_
 
+#include "f2c.h"
 #include "autlim.h"
 
 /* autevd.c */
 
-typedef struct {double r,i;} dcomplex;
+typedef doublecomplex dcomplex;
 
 typedef struct {
   int pt,br;

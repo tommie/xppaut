@@ -76,6 +76,7 @@ void data_pgdn(BROWSER *b);
 void data_home(BROWSER *b);
 void data_end(BROWSER *b);
 void get_data_xyz(float *x, float *y, float *z, int i1, int i2, int i3, int off);
+void data_get_mybrowser(int row);
 void data_get(BROWSER *b);
 void data_replace(BROWSER *b);
 void data_unreplace(BROWSER *b);
@@ -92,14 +93,3 @@ void data_restore(BROWSER *b);
 void get_col_list(char *s, int *cl, int *n);
 
 #endif
-
-
-
-
-
-
-
-
-
-
-

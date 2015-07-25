@@ -42,6 +42,7 @@ void quad_contour(Pt p1, Pt p2, Pt p3, Pt p4);
 void triangle_contour(Pt p1, Pt p2, Pt p3);
 void do_cline(int ngrid, double x1, double y1, double x2, double y2);
 void do_batch_nclines();
+void set_colorization_stuff();
 void do_batch_dfield();
 
 #endif

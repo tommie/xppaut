@@ -26,6 +26,8 @@ extern int use_ani_file;
 extern int use_intern_sets;
 extern char UserOUTFILE[256];
 extern int XPPBatch;
+extern float xppvermaj;
+extern float xppvermin;
 extern int Xup;
 
 extern Display *display;

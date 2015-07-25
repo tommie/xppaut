@@ -1,6 +1,9 @@
 #ifndef XPPAUT_COMLINE_H
 #define XPPAUT_COMLINE_H
 
+#include "ggets.h"
+#include "load_eqn.h"
+
 /* --- Types --- */
 typedef struct {
   char *name;
@@ -8,6 +11,9 @@ typedef struct {
 } SET_NAME;
 
 /* --- Data --- */
+extern char includefilename[MaxIncludeFiles][XPP_MAX_NAME];
+extern int loadincludefile;
+extern int NincludedFiles;
 extern int noicon;
 
 /* --- Functions --- */

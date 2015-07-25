@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 /* --- Data --- */
+extern int NWiener;
 extern int storind;
 
 /* --- Functions --- */

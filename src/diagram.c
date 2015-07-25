@@ -1,35 +1,28 @@
+#include "diagram.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "diagram.h"
 #include "autevd.h"
-#include "browse.h"
-#include "init_conds.h"
-#include "ggets.h"
-
-#include "my_svg.h"
-#include "my_ps.h"
-#include "my_ps.h"
-#include "graphics.h"
-#include "auto_nox.h"
 #include "autlim.h"
+#include "auto_nox.h"
+#include "browse.h"
+#include "form_ode.h"
+#include "ggets.h"
+#include "graf_par.h"
+#include "graphics.h"
+#include "init_conds.h"
 #include "load_eqn.h"
+#include "markov.h"
+#include "my_ps.h"
+#include "my_svg.h"
+
 #define DALLOC(a) (double *)malloc((a)*sizeof(double))
-
-
-extern ROTCHK blrtn;
-extern int PS_Color;
-
-extern float **storage;
-extern int storind;
 
 #define PACK_AUTO 0
 #define PACK_LBF 1
-extern int AutoTwoParam;
-extern int NODE;
-extern int DiagFlag;
+
 int NBifs=0;
-extern int NAutoPar;
 DIAGRAM *bifd;
 
 void start_diagram(n)

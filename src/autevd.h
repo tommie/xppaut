@@ -1,11 +1,10 @@
-#ifndef _autevd_h_
-#define _autevd_h_
+#ifndef XPPAUT_AUTEVD_H
+#define XPPAUT_AUTEVD_H
 
 #include "f2c.h"
 #include "autlim.h"
 
-/* autevd.c */
-
+/* --- Types --- */
 typedef doublecomplex dcomplex;
 
 typedef struct {
@@ -13,6 +12,10 @@ typedef struct {
   double evr[NAUTO],evi[NAUTO];
 } EIGVAL;
 
+/* --- Data --- */
+extern int DiagFlag;
+
+/* --- Functions --- */
 double dreal_(dcomplex *z);
 void send_eigen(int ibr, int ntot, int n, dcomplex *ev);
 void send_mult(int ibr, int ntot, int n, dcomplex *ev);
@@ -22,5 +25,4 @@ double etime_(double *z);
 int eigrf_(double *a, int *n, int *m, dcomplex *ecv, double *work, int *ier);
 void init_auto(int ndim, int nbc, int ips, int irs, int ilp, int ntst, int isp, int isw, int nmx, int npr, double ds, double dsmin, double dsmax, double rl0, double rl1, double a0, double a1, int ip1, int ip2, int ip3, int ip4, int ip5, int nuzr, double epsl, double epsu, double epss, int ncol);
 
-
-#endif
+#endif /* XPPAUT_AUTEVD_H */

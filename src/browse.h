@@ -27,6 +27,7 @@ typedef struct {
 
 /* --- Data --- */
 extern BROWSER my_browser;
+extern float **storage;
 
 /* --- Functions --- */
 float **get_browser_data(void);

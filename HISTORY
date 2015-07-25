@@ -1,7 +1,10 @@
+VERSION 7.0  November 2012
+- So much new stuff......
+
 VERSION 5.99 Sept 2009
 - havent kept up with history much
 - lots of new stuff added
-  - spectral analysis - CSD, PSD, Coherence (seems to do the same thing 
+  - spectral analysis - CSD, PSD, Coherence (seems to do the same thing
     up to a scale factor as MATLAB
   -FFT correlations - much faster
   - command line options
@@ -13,9 +16,9 @@ VERSION 5.99 Sept 2009
     -ee uses MS convention in dialogs
   - when you compute equilibria in XPP you can import them and then use
     as starting point for AUTO.
-  - strong sets kept for 2D systems 
+  - strong sets kept for 2D systems
 
--miscellaneous PS bugs fixed, I think 
+-miscellaneous PS bugs fixed, I think
 
 VERSION 5.6  Sept 2002
 - not much new, poisson processes added, and the "delete/backspace" keys
@@ -52,14 +55,14 @@ VERSION 5.0  Jan 2001
 - improved text rendering with sub/super scripts and mixed symbols
 - added a widget for viewing the ODE file and also for creating "active"
   tutorials within the ODE file.  This is really cool - see the example
-  lecar.ode 
-- made it possible to extend the dimension of AUTO problems - see 
+  lecar.ode
+- made it possible to extend the dimension of AUTO problems - see
   AUTLIM.H   You can change it to bigger than 50
 - added some capabilities for finding homoclinics in AUTO by using
   the projection boundary method described by Sandstede et al in HOMCONT
 - added two new integrators: a Rosenbrock stiff integrator and a symplectic
   integrator for systems of the form x'' = F(x) x \in R^n
-- various bugs fixed 
+- various bugs fixed
 
 
 VERSION 4.75 Sept 2000
@@ -87,7 +90,7 @@ Added ability to print colorcoded trajectories in postscript
 Added higher order interpolation option to tables
 
 
-VERSION 4.3 January 2000 
+VERSION 4.3 January 2000
 a. Fixed some bugs, added the ability to have up to 400 parameters
 b. Added a Liapunov exponent calculation
 c. Added the ability to save the nullclines to a file
@@ -95,7 +98,7 @@ d. Added colormap features. 6 different colormaps allowed now.
 e. Changed the delay handle to use a cubic interpolation.
 f. Added a new operator del_shft to combine the shift and the delay together.
 g. Extended the maximum length of expressions to 1000 characters
-h. Changed the command line from -noicon to -iconify. The default is to 
+h. Changed the command line from -noicon to -iconify. The default is to
    not iconify the windows. I also switched the meaning of XORFIX so that
    the default works on LINUX and WINDOWS.  Sorry if this screws everyone up
 i. Added ability to make portrait postscript files
@@ -104,16 +107,16 @@ k. Fixed a bug in the STIFF/GEAR integrators that arose when the number
    of equations exceeded 300
 l. Rewrote "Kinescope" so that it works much faster and doesnt crash
    the X server
- 
+
 VERSION 4.01
 Minor fixes here and there. Added a little file lister etc
 so that if you just type XPP from the command line you can
 navigate through files before loading one up. I have (alas)
-eliminated the "(c)reate" option since it uses the old 
+eliminated the "(c)reate" option since it uses the old
 impenetrable syntax.  If any users really miss it, I will put
 it back in reluctantly.
 
-VERSION 4.00 
+VERSION 4.00
 Fixed a bug in the production of ppm files to make mpeg
 movies.  Up to 600 equations can be integrated.  Initial
 conditions ,parameter, etc windows have scrolling so that they
@@ -121,7 +124,7 @@ are a more manageable size.  A file browser has been added that
 lets you select files easily. ***NEW SET FILES** I have drastically
 altered the way to save simulations so that there is much more
 saves and it is all commented so that a human can read it. The
-new SET file command is compatible with the old format so that it 
+new SET file command is compatible with the old format so that it
 can read the old format set files. However, the new set files are
 not compatible with the old.
 
@@ -137,7 +140,7 @@ added  PHI=#,THETA=# to  @ commands
 VERSION 3.98  Oct 1998
 
 Bug fixes here and there and added the ability to continue periodic
-points of maps. 
+points of maps.
 
 VERSION 3.95  Aug 1998
 Some bug fixes. Added the ability to set delayed initial data in the
@@ -146,38 +149,38 @@ ODE file.
 
 VERSION 3.91  June    1998
 1. Added differential-algebraic capabilities to XPP and WinPP
-   
+
 
 VERSION 3.90  June 3  1998
 1. Minor fixes that make it more compatible with some compilers.
 2. Can now integrate up to 400 ODEs (was 300 before)
 3. Fixed some problems with global flags
 4. Added "derived parameters" which allow you to define parameters in
-   terms of other parameters and which are updated only when the 
+   terms of other parameters and which are updated only when the
    parameters are changed.
 
 VERSION 3.85  Feb 2 1998
 1. Include and update the old version of the parser since
    some compilers complain about the funky pointer arithmetic
-   that I used.  
+   that I used.
 VERSION 3.8   Dec 23 1997
 1. Fixed some stuff
 2. Added AUTO stuff for the @ commands
 3. Added some cool networky stuff for doing discrete convolutions
-   and operations with sparsely connected neural networks.  
+   and operations with sparsely connected neural networks.
 4. Doubled the speed of the calculation engine by rewriting the parser.
 5. Ported to Windows 95  see  xpp4w95.zip
 
 VERSION 3.6   Oct 24 1997
 1. Added new command line option to prevent dead iconified
-   windows in fvwm and some other window managers. Call 
+   windows in fvwm and some other window managers. Call
    xppaut -noicon
 2. Added interspike interval calculation to Poincare maps
 
 
 VERSION 3.5   Sept 1 1997
 
-1. Frozen nullclines 
+1. Frozen nullclines
 2. Fixed more bugs in table stuff and array printing
 3. Fixed up the shift operator to work on parameters
 4. Changed data format in browser to give more decimal places
@@ -201,18 +204,18 @@ VERSION 2.71  Nov 18 1996
 
 SOON --  version with LOCBIF another bifurcation package will be available
 SUMMER 1997  Windows 95 version maybe
- 
+
 VERSION 2.6   Oct 3 1996
 
-NOTE: !! Please make this version from scratch ( rm *.o ) !! 
+NOTE: !! Please make this version from scratch ( rm *.o ) !!
 
-1. Main new feature is the addition of the industrial strength stiff 
+1. Main new feature is the addition of the industrial strength stiff
    solver  CVODE, a C language version of LSODE.
    This is a big piece of code and I only implement
-   a small portion of it.  It is optional for now but if you don't 
-   want it you must change the Makefile.  See below.  
+   a small portion of it.  It is optional for now but if you don't
+   want it you must change the Makefile.  See below.
 2. Added AUTOFREEZE option.  Every curve that is integrate is automatically
-   saved.  This way you dont have to freeze after every integration. 
+   saved.  This way you dont have to freeze after every integration.
    Up to 26 curves can be frozen.
 3. Fixed array options for markov processes
 4. Fixed arrow head bug
@@ -233,7 +236,7 @@ New Features:
 
 VERSION 2.00 of XPP/XPPAUT
 New features:
-1. Added two new integrators:  
+1. Added two new integrators:
   i) a quality step Runge-Kutta algorithm  that is good for nonstiff problems
   ii) An alternate stiff integrator based on a Rosenbrock method
 2. AUTO interface supports discrete problems
@@ -242,10 +245,10 @@ New features:
 VERSION 1.80 of XPP/XPPAUT
 New Features:
 1.  -convert command line argument converts old-style to new style
-2.  Symbol font and Times fonts in 5 sizes.  All Text is editable 
+2.  Symbol font and Times fonts in 5 sizes.  All Text is editable
 3.  Add arrows and pointers to plots
 4.  Import bifurcation diagrams into main window
 5.  Include information about the graphics, numerics, storage, and X
     fonts in the ODE files
 6.  Make 3D movies and movies of trajectories as a parameter varies
-7.  Stability for delay equations 
+7.  Stability for delay equations

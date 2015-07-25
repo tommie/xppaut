@@ -1,29 +1,25 @@
 #include "gear.h"
-#include "ggets.h"
-#include "menudrive.h"
-#include "eig_list.h"
-#include "graphics.h"
-#include "flags.h"
-#include "integrate.h"
-#include "abort.h"
 
-#include <stdlib.h> 
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "abort.h"
+#include "eig_list.h"
+#include "flags.h"
+#include "form_ode.h"
+#include "ggets.h"
+#include "graphics.h"
+#include "homsup.h"
+#include "integrate.h"
+#include "load_eqn.h"
+#include "menudrive.h"
 #include "xpplim.h"
+
 #define DING ping()
 int UnstableManifoldColor=5;
 int StableManifoldColor=8;
 double ndrand48();
-extern int (*rhs)();
-
-
-extern double DELTA_T;
-extern int METHOD;
-extern int ENDSING,PAR_FOL,SHOOT,PAUSER;
-
-extern int NODE;
-extern int NFlags;
 double ShootIC[8][MAXODE];
 int ShootICFlag;
 int ShootIndex;
@@ -57,11 +53,11 @@ void silent_fixpt(double *x,double eps,double err,double big,int maxit,int n,
   int kmem,i,j;
 
 
- 
+
  double *work,*eval,*b,*bp,*oldwork,*ework;
  double temp,old_x[MAXODE];
 
- 
+
  kmem=n*(2*n+5)+50;
  *ierr=0;
  if((work=(double *)malloc(sizeof(double)*kmem))==NULL)
@@ -87,7 +83,7 @@ void silent_fixpt(double *x,double eps,double err,double big,int maxit,int n,
 
  for(i=0;i<n*n;i++){
   oldwork[i]=work[i];
-  
+
  }
 /* Transpose for Eigen        */
   for(i=0;i<n;i++)
@@ -115,7 +111,7 @@ void silent_fixpt(double *x,double eps,double err,double big,int maxit,int n,
 
 
 
-/* main fixed point finder */ 
+/* main fixed point finder */
 void do_sing(x,eps, err,big,maxit, n,ierr,stabinfo)
 double *x,eps, err, big;
 float *stabinfo;
@@ -127,7 +123,7 @@ int maxit, n,*ierr;
  int pose=0,nege=0,pr;
  double *work,*eval,*b,*bp,*oldwork,*ework;
  double temp,oldt=DELTA_T,old_x[MAXODE];
- 
+
  char ch;
  double real,imag;
  double bigpos=-1e10,bigneg=1e10;
@@ -157,7 +153,7 @@ int maxit, n,*ierr;
  }
  DING;
  /* for(i=0;i<n;i++)xl[i]=(float)x[i]; */
- 
+
  for(i=0;i<n*n;i++){
   oldwork[i]=work[i];
   /* plintf("dm=%g\n",oldwork[i]); */
@@ -184,7 +180,7 @@ ch='n';
 if(!PAR_FOL)
 {
  ch=(char)TwoChoice("YES","NO","Print eigenvalues?","yn");
- 
+
 }
  pr=0;
 
@@ -206,7 +202,7 @@ if(!PAR_FOL)
   if(fabs(imag)<.00000001)imag=0.0;
   if(real<0.0)
   {
-    if(imag!=0.0){ 
+    if(imag!=0.0){
       cn++;
       if(real<bigneg){bigneg=real;bneg=-1;}
     }
@@ -238,9 +234,9 @@ if(!PAR_FOL)
    if((rp+cp)!=0)eq_symb(x,0);
    else eq_symb(x,3);
  }
- 
+
  *stabinfo=(float)(cp+rp)+(float)(cn+rn)/1000.0;
- 
+
  /* Lets change Work back to transposed oldwork */
    for(i=0;i<n;i++)
      {
@@ -250,7 +246,7 @@ if(!PAR_FOL)
 	   work[i+j*n]=oldwork[i*n+j];
 	   work[i*n+j]=temp;
 	 }
-     } 
+     }
  create_eq_box(cp,cn,rp,rn,im,x,eval,n);
  if(((rp==1)||(rn==1))&&(n>1))
  {
@@ -262,7 +258,7 @@ if(!PAR_FOL)
   if((ch=='y')||(PAR_FOL&&SHOOT))
   {
    oldt=DELTA_T;
-  
+
    if(rp==1)
    {
      /* plintf(" One real positive -- pos=%d lam=%g \n",pose,eval[2*pose]); */
@@ -283,7 +279,7 @@ if(!PAR_FOL)
    }
    if(rn==1)
    {
-     
+
      get_evec(work,oldwork,b,bp,n,maxit,err,ipivot,eval[2*nege],ierr);
      if(*ierr==0)
      {
@@ -301,7 +297,7 @@ if(!PAR_FOL)
   }
  }  /* end of normal shooting stuff */
 
- /* strong (un) stable manifold calculation  
+ /* strong (un) stable manifold calculation
     only one-d manifolds calculated */
  /* lets check to see if it is relevant */
  if(((rn>1)&&(bneg>=0))||((rp>1)&&(bpos>=0))) {
@@ -314,8 +310,8 @@ if(!PAR_FOL)
    if((ch=='y')||(PAR_FOL&&SHOOT))
      {
        oldt=DELTA_T;
-            
-      
+
+
 	 if((rp>1)&&(bpos>=0)) /* then there is a strong unstable */
 	 {
 	   plintf("strong unstable %g \n",bigpos);
@@ -328,12 +324,12 @@ if(!PAR_FOL)
 	       shoot(bp,x,b,1);
 	       shoot(bp,x,b,-1);
 	       change_current_linestyle(oldcol,&dummy);
-	       
+
 	     }
 	   else
-	     err_msg("Failed to compute eigenvector");   
+	     err_msg("Failed to compute eigenvector");
 	 }
-	 
+
      if((rn>1)&&(bneg>=0)) /* then there is a strong stable */
 	 {
 	   plintf("strong stable %g \n",bigneg);
@@ -349,15 +345,15 @@ if(!PAR_FOL)
 	     }
 	   else
 	     err_msg("Failed to compute eigenvector");
-    
+
 
 	 }
      }
-        DELTA_T=oldt;   
+        DELTA_T=oldt;
  }
-  
 
- 
+
+
  free(work);
  return;
 }
@@ -372,7 +368,7 @@ void shoot_this_now() /* this uses the current labeled saddle point stuff to int
   for(k=0;k<ShootIndex;k++){
     for(i=0;i<NODE;i++)
       x[i]=ShootIC[k][i];
-    
+
     type=ShootType[k];
     if(type>0){
        change_current_linestyle(UnstableManifoldColor,&oldcol);
@@ -391,7 +387,7 @@ void shoot_this_now() /* this uses the current labeled saddle point stuff to int
 
 }
 
-/* fixed point with no requests and store manifolds */ 
+/* fixed point with no requests and store manifolds */
 void do_sing_info(x,eps, err,big,maxit, n,er,em,ierr)
      double *x,*er,*em,eps, err, big;
      int maxit, n,*ierr;
@@ -403,7 +399,7 @@ void do_sing_info(x,eps, err,big,maxit, n,er,em,ierr)
  double *work,*eval,*b,*bp,*oldwork,*ework;
  double temp,old_x[MAXODE];
 
- 
+
 
  double real,imag;
  double bigpos=-1e10,bigneg=1e10;
@@ -431,9 +427,9 @@ void do_sing_info(x,eps, err,big,maxit, n,er,em,ierr)
   for(i=0;i<n;i++)x[i]=old_x[i];
   return;
  }
- 
+
  /* for(i=0;i<n;i++)xl[i]=(float)x[i]; */
- 
+
  for(i=0;i<n*n;i++){
   oldwork[i]=work[i];
   /* plintf("dm=%g\n",oldwork[i]); */
@@ -451,7 +447,7 @@ void do_sing_info(x,eps, err,big,maxit, n,er,em,ierr)
  eigen(n,work,eval,ework,ierr);
  if(*ierr!=0)
  {
- 
+
   free(work);
   return;
  }
@@ -468,7 +464,7 @@ void do_sing_info(x,eps, err,big,maxit, n,er,em,ierr)
   if(fabs(imag)<.00000001)imag=0.0;
   if(real<0.0)
   {
-    if(imag!=0.0){ 
+    if(imag!=0.0){
       cn++;
       if(real<bigneg){bigneg=real;/*bneg=-1;Not used*/}
     }
@@ -500,9 +496,9 @@ void do_sing_info(x,eps, err,big,maxit, n,er,em,ierr)
    if((rp+cp)!=0)eq_symb(x,0);
    else eq_symb(x,3);
  }
- 
 
- 
+
+
  /* Lets change Work back to transposed oldwork */
    for(i=0;i<n;i++)
      {
@@ -512,11 +508,11 @@ void do_sing_info(x,eps, err,big,maxit, n,er,em,ierr)
 	   work[i+j*n]=oldwork[i*n+j];
 	   work[i*n+j]=temp;
 	 }
-     } 
+     }
 
  if((n>1))
  {
- 
+
    if(rp==1)
    {
      /* plintf(" One real positive -- pos=%d lam=%g \n",pose,eval[2*pose]); */
@@ -535,24 +531,24 @@ void do_sing_info(x,eps, err,big,maxit, n,er,em,ierr)
 
    if(rn==1)
    {
-     
+
      get_evec(work,oldwork,b,bp,n,maxit,err,ipivot,eval[2*nege],ierr);
 
 
      if(*ierr==0)
      {
        pr_evec(x,b,n,pr,eval[2*nege],-1);
-     
+
      }
-   
-     
+
+
    }
 
  }
 
-  
 
- 
+
+
  free(work);
  return;
 }
@@ -697,7 +693,7 @@ void get_evec(a,anew,b,bp, n, maxit,
       temp=fabs(b[0]);
       jmax=0;
       for(j=0;j<n;j++)
-	{ 
+	{
 	  if(fabs(b[j])>temp)
 	    {
 	      temp=fabs(b[j]);
@@ -716,7 +712,7 @@ void get_evec(a,anew,b,bp, n, maxit,
 
       void eigen( n,a,ev,work,ierr)
 	int n,*ierr;
-	double *a,*ev,*work;   
+	double *a,*ev,*work;
    {
 
       orthes(n,1,n,a,work);
@@ -970,7 +966,7 @@ int n;
     r=eps*amax(eps,fabs(x[i]));
     xp[i]=xp[i]+r;
     rhs(0.0,xp,yp,n);
-    /* 
+    /*
        for(j=0;j<n;j++)
        plintf(" r=%g yp=%g xp=%g\n",r,yp[j],xp[j]);
     */
@@ -1008,9 +1004,9 @@ int *ierr,maxit, n;
  while(1)
  {
   ch=my_abort();
- 
+
   {
-  
+
    if(ch==27)
    {
     *ierr=1;
@@ -1077,7 +1073,7 @@ int gear( n,t, tout,y, hmin, hmax,eps,
   if(NFlags==0)
     return(ggear( n,t, tout,y, hmin, hmax,eps,
 	  mf,error,kflag,jstart,work,iwork));
-  return(one_flag_step_gear(n,t, tout,y, hmin, 
+  return(one_flag_step_gear(n,t, tout,y, hmin,
 		   hmax,eps,mf,error,kflag,jstart,work,iwork));
 }
 
@@ -1095,7 +1091,7 @@ double *t, tout, *y, hmin, hmax, eps,*work,*error;
   double *ytable[8],*ymax,*work2;
   int i,iret=0,maxder=0,j=0,k=0,iret1=0,nqold=0,nq=0,newq=0;
   int idoub=0,mtyp=0,iweval=0,j1=0,j2=0,l=0,info=0,job=0,nt=0;
-/* plintf("entering gear ... with start=%d \n",*jstart);*/ 
+/* plintf("entering gear ... with start=%d \n",*jstart);*/
    for(i=0;i<8;i++)
   {
   save[i]=work+i*n;
@@ -1111,7 +1107,7 @@ double *t, tout, *y, hmin, hmax, eps,*work,*error;
   work2=work+21*n+n*n+10;
   if(*jstart!=0)
   {
-  
+
   k=iwork[0];
   nq=iwork[1];
   nqold=iwork[2];
@@ -1147,7 +1143,7 @@ double *t, tout, *y, hmin, hmax, eps,*work,*error;
   for(i=0;i<n;i++)ytable[0][i]=y[i];
 
 L70:
-	
+
   iret=1;
   *kflag=1;
   if((h>0.0)&&((*t+h)>tout))h=tout-*t;
@@ -1180,9 +1176,9 @@ L110:
 L120:
 
     if(*jstart==-1)goto L140;
-   
-    nq=1;	
-	
+
+    nq=1;
+
         rhs(*t,ytable[0],save11,n);
 
     for(i=0;i<n;i++)
@@ -1190,7 +1186,7 @@ L120:
      ytable[1][i]=save11[i]*h;
      ymax[i]=1.00;
     }
-   
+
      hnew=h;
      k=2;
      goto L80;
@@ -1253,9 +1249,9 @@ L150:
 	  a[6]=-1./1764;
 	  break;
        }
- 
+
 /*L310:*/
-	
+
     k=nq+1;
     idoub=k;
     mtyp=(4-mf)/2;
@@ -1270,12 +1266,12 @@ L150:
     bnd=eps*enq3/(double)n;
 
 /*L320:*/
-	
+
     iweval=2;
     if(iret==2)goto L750;
 
 L330:
-	
+
     *t=*t+h;
     for(j=2;j<=k;j++)
      for(j1=j;j1<=k;j1++)
@@ -1289,7 +1285,7 @@ L330:
      {
       rhs(*t,ytable[0],save11,n);
       if(iweval<1)
-	{ 
+	{
        /*  plintf("iweval=%d \n",iweval);
          for(i=0;i<n;i++)printf("up piv = %d \n",gear_pivot[i]);*/
 	  goto L460;
@@ -1434,20 +1430,20 @@ L710:
     goto L150;
 
 L720:
-	
+
     if(pr2>pr1) goto L670;
     newq=nq;
     r=1.0/Max(pr2,.0001);
     goto L680;
 
 L730:
-	
+
     r=1.0/Max(pr3,.0001);
     newq=nq+1;
     goto L680;
 
 L740:
-	
+
     iret=2;
     h=h*r;
     hnew=h;
@@ -1456,7 +1452,7 @@ L740:
     goto L150;
 
 L750:
-	
+
     r1=1.0;
     for(j=2;j<=k;j++)
     {
@@ -1467,7 +1463,7 @@ L750:
     idoub=k;
 
 L770:
-	
+
     for(i=0;i<n;i++)ymax[i]=Max(ymax[i],fabs(ytable[0][i]));
     *jstart=nq;
     if((h>0.0)&&(*t>=tout))goto L860;
@@ -1475,7 +1471,7 @@ L770:
     goto L70;
 
 L790:
-	
+
     if(nq==1)goto L850;
     rhs(*t,ytable[0],save11,n);
     r=h/hold;
@@ -1490,14 +1486,14 @@ L790:
     goto L150;
 
 L810:
-	
+
    *kflag=-1;
    hnew=h;
    *jstart=nq;
    goto L860;
 
 L820:
-	
+
     racum=Max(fabs(hmin/hold),racum);
     racum=Min(racum,fabs(hmax/hold));
     r1=1.0;
@@ -1516,7 +1512,7 @@ L820:
     if(iret1==3)goto L710;
 
 L850:
-	
+
    *kflag=-4;
 
    goto L540;
@@ -1544,7 +1540,7 @@ L860:
   iwork[5]=iret;
   iwork[6]=newq;
   iwork[7]=iweval;
-	
+
   return(1);
 
 }
@@ -1753,6 +1749,3 @@ double sa,*sx;
   for(i=0;i<nincx;i+=incx)
   sx[i]*=sa;
 }
-
-
-

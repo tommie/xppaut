@@ -1,71 +1,63 @@
+/* This makes a big box with windows that have the names of the variables and
+ * their current initial data, parameters, BCs etc
+ *
+ * This also has the slider boxes
+ * This also has the file selector gadget
+ * This also has the clone gadget
+ */
 #include "init_conds.h"
-#include "parserslow.h"
-#include "tabular.h"
-#include "nullcline.h"
-#include "menudrive.h"
 
-#include "arrayplot.h"
-#include "lunch-new.h"
-#include "volterra2.h"
-#include "calc.h"
-#include "delay_handle.h"
-#include "integrate.h"
-#include "eig_list.h"
-#include "graf_par.h"
-
+#ifndef HAVE_WCTYPE_H
+# include <ctype.h>
+#else
+# include <wctype.h>
+#endif
+#include <dirent.h>
+#include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-#include "browse.h"
-#include "load_eqn.h"
-
-/*    This makes a big box with windows that have the names of the
-       variables and their current initial data, parameters, BCs
-       etc
-
-         This also has the slider boxes
-
-        This also has the file selector gadget
-This also has the clone gadget
-*/
-
-#include <dirent.h>
+#include <time.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <stdio.h>
-#include <math.h>
-#ifndef WCTYPE
-#include <ctype.h>
-#else
-#include <wctype.h>
-#endif
 
-#include <time.h>
-#include "xpplim.h"
-#include "bitmap/ic.bitmap"
-#include "bitmap/param.bitmap"
-#include "bitmap/delay.bitmap"
-
-#include "bitmap/filebrowse.bitmap"
-#include "bitmap/pageup.bitmap"
-#include "bitmap/pagedn.bitmap"
-#include "bitmap/lineup.bitmap"
-#include "bitmap/linedn.bitmap"
-#include "bitmap/home.bitmap"
-#include "bitmap/start.bitmap"
-
-
-#include "bitmap/bc.bitmap"
-#include "shoot.h"
+#include "arrayplot.h"
+#include "browse.h"
+#include "calc.h"
+#include "delay_handle.h"
+#include "derived.h"
+#include "eig_list.h"
+#include "form_ode.h"
 #include "ggets.h"
-
+#include "graf_par.h"
+#include "integrate.h"
+#include "load_eqn.h"
+#include "lunch-new.h"
+#include "main.h"
+#include "many_pops.h"
+#include "menudrive.h"
+#include "mykeydef.h"
+#include "nullcline.h"
+#include "parserslow.h"
 #include "pop_list.h"
 #include "read_dir.h"
-#include "derived.h"
-#include "form_ode.h"
-#include "many_pops.h"
+#include "shoot.h"
+#include "tabular.h"
+#include "volterra2.h"
+#include "xpplim.h"
+#include "bitmap/bc.bitmap"
+#include "bitmap/delay.bitmap"
+#include "bitmap/filebrowse.bitmap"
+#include "bitmap/home.bitmap"
+#include "bitmap/ic.bitmap"
+#include "bitmap/linedn.bitmap"
+#include "bitmap/lineup.bitmap"
+#include "bitmap/pagedn.bitmap"
+#include "bitmap/pageup.bitmap"
+#include "bitmap/param.bitmap"
+#include "bitmap/start.bitmap"
 
-#include "mykeydef.h"
 #define HOTWILD 2
 #define HOTFILE 1
 
@@ -74,20 +66,6 @@ This also has the clone gadget
 #define MAX_LEN_SBOX 25
 
 #define MAXLINES 5000
-extern char *save_eqn[MAXLINES];
-extern int NLINES;
-extern Display *display;
-extern int screen,Xup;
-extern GC gc, small_gc;
-extern Window main_win;
-extern int DCURX,DCURXs,DCURY,DCURYs,CURY_OFFs,CURY_OFF;
-extern int NDELAYS;
-/*extern char UserBGBitmap[100];*/
-extern char UserBGBitmap[XPP_MAX_NAME];
-extern int SuppressBounds;
-extern double DELAY;
-extern unsigned int MyBackColor,MyForeColor,MyMainWinColor,MyDrawWinColor;
-extern int noicon;
 #define PARAMBOX 1
 #define ICBOX 2
 #define DELAYBOX 3
@@ -106,43 +84,8 @@ extern int noicon;
 #define EDIT_ESC 2
 #define EDIT_DONE 3
 
-
-extern char cur_dir[];
-
-
 FILESEL filesel;
-
-extern FILEINFO my_ff;
-
-extern int NUPAR,NODE,NEQ,NMarkov;
-extern char upar_names[MAXPAR][11],uvar_names[MAXODE][12];
-extern char delay_string[MAXODE][80];
-extern double default_val[MAXPAR];
-extern double last_ic[MAXODE];
-extern double default_ic[MAXODE];
-
-
-
 PAR_SLIDER my_par_slide[3];
-extern OptionsSet notAlreadySet;
-
-extern    int SLIDER1;
-extern    int SLIDER2;
-extern    int SLIDER3;
-extern   char SLIDER1VAR[20];
-extern   char SLIDER2VAR[20];
-extern   char SLIDER3VAR[20];
-extern double SLIDER1LO;
-extern double SLIDER2LO;
-extern double SLIDER3LO;
-extern double SLIDER1HI;
-extern double SLIDER2HI;
-extern double SLIDER3HI;
-
-
-
-extern BC_STRUCT my_bc[MAXODE];
-
 Window make_window();
 BoxList *HotBox;
 int HotBoxItem=-1;
@@ -154,8 +97,6 @@ BoxList BCBox;
 int BoxMode;
 
 double atof();
-
-extern char this_file[XPP_MAX_NAME];
 
 #define SB_DIM 5
 #define SB_SPC 2

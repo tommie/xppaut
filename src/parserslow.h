@@ -17,6 +17,7 @@ typedef struct {
 extern double constants[MAXPAR];
 extern int ERROUT;
 extern int narg_fun[MAXUFUN];
+extern int NDELAYS;
 extern int NFUN;
 extern int NKernel;
 extern int NSYM;

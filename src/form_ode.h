@@ -17,6 +17,8 @@ typedef struct {
 
 /* --- Data --- */
 extern int ConvertStyle;
+extern double default_ic[MAXODE];
+extern double default_val[MAXPAR];
 extern int EqType[MAXODE];
 extern int FIX_VAR;
 extern BC_STRUCT my_bc[MAXODE];
@@ -25,11 +27,13 @@ extern int N_plist;
 extern int NCON;
 extern int NCON_START;
 extern int NEQ_MIN;
+extern int NLINES;
 extern int NMarkov;
 extern int NODE;
 extern int NSYM_START;
 extern char *ode_names[MAXODE];
 extern int *plotlist;
+extern char *save_eqn[MAXLINES];
 extern char upar_names[MAXPAR][11];
 extern char uvar_names[MAXODE][12];
 

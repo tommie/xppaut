@@ -1,11 +1,3 @@
-#include "extra.h"
-
-#include "init_conds.h"
-#include "ggets.h"
-#include "read_dir.h"
-#include "parserslow.h"
-#include <stdlib.h> 
-#include <string.h>
 /* this is a way to communicate XPP with other stuff
 
 # complex right-hand sides
@@ -16,15 +8,21 @@ x'=xp
 y'=yp
 # tell xpp input info and output info
 export {x,y} {xp,yp}
- 
+
 */
-
-
-
-
+#include "config.h"
+#include "extra.h"
 
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "ggets.h"
+#include "init_conds.h"
+#include "parserslow.h"
+#include "read_dir.h"
+
 #define PAR 0
 #define VAR 1
 char dll_lib[256];
@@ -43,10 +41,6 @@ typedef struct
 
 IN_OUT in_out;
 
-extern double variables[], constants[];
-
-extern char cur_dir[];
-
 typedef struct {
   char libname[1024];
   char libfile[256];
@@ -55,8 +49,8 @@ typedef struct {
 } DLFUN;
 
 DLFUN dlf;
-#ifdef HAVEDLL 
-/* this loads a dynamically linked library of the 
+#ifdef HAVE_LIBDL
+/* this loads a dynamically linked library of the
    users choice
 */
 
@@ -76,7 +70,7 @@ void auto_load_dll()
     dlf.loaded=0;
   }
 }
- 
+
 void load_new_dll()
 {
   int status;
@@ -93,12 +87,12 @@ int my_fun(double *in, double *out, int nin,int nout,double *v,double *c)
   char *error;
   if(dlf.loaded==-1)return(0);
   if(dlf.loaded==0){
-    dlhandle=dlopen (dlf.libname, RTLD_LAZY);  
+    dlhandle=dlopen (dlf.libname, RTLD_LAZY);
     if(!dlhandle){
       plintf(" Cant find the library \n");
       dlf.loaded=-1;
       return 0;
-    }  
+    }
        /*From the man pages:
        ...the correct way to test
        for  an  error  is  to call dlerror() to clear any old error conditions, then
@@ -107,7 +101,7 @@ int my_fun(double *in, double *out, int nin,int nout,double *v,double *c)
        */
      dlerror();
      /*fun=dlsym(dlhandle,dlf.fun);*/
-     /*Following is the new C99 standard way to do this.  
+     /*Following is the new C99 standard way to do this.
      See the Example in the dlsym man page
      for detailed explanation...*/
      *(void **) (&fun)=dlsym(dlhandle,dlf.fun);
@@ -118,26 +112,23 @@ int my_fun(double *in, double *out, int nin,int nout,double *v,double *c)
        return 0;
      }
      dlf.loaded=1;
-    
+
   }  /* Ok we have a nice function */
   fun(in,out,nin,nout,v,c);
   return(1);
-}  
+}
 #else
-load_new_dll()
+void load_new_dll()
 {
-
-}
-my_fun(double *in, double *out, int nin,int nout,double *v,double *c)
-{
-
-
-
 }
 
-auto_load_dll()
+int my_fun(double *in, double *out, int nin,int nout,double *v,double *c)
 {
+  return(0);
+}
 
+void auto_load_dll()
+{
 }
 #endif
 
@@ -155,14 +146,14 @@ void do_in_out()
     else
       in_out.vin[i]=variables[in_out.in[i]];
   }
-  my_fun(in_out.vin,in_out.vout,in_out.nin,in_out.nout,variables,constants); 
+  my_fun(in_out.vin,in_out.vout,in_out.nin,in_out.nout,variables,constants);
   for(i=0;i<in_out.nout;i++){
     if(in_out.outtype[i]==PAR)
       constants[in_out.out[i]]=in_out.vout[i];
     else
       variables[in_out.out[i]]=in_out.vout[i];
-     
-  }  
+
+  }
 }
 
 void add_export_list(char *in,char *out)
@@ -187,14 +178,14 @@ void add_export_list(char *in,char *out)
   /* plintf(" in %d out %d \n",in_out.nin,in_out.nout); */
 
 }
-  
+
 void check_inout()
 {
   int i;
   for(i=0;i<in_out.nin;i++)
     plintf(" type=%d index=%d \n",in_out.intype[i],in_out.in[i]);
   for(i=0;i<in_out.nout;i++)
-  plintf(" type=%d index=%d \n",in_out.outtype[i],in_out.out[i]);  
+  plintf(" type=%d index=%d \n",in_out.outtype[i],in_out.out[i]);
 }
 int get_export_count(char *s)
 {
@@ -254,23 +245,23 @@ void parse_inout(char *l,int flag)
 		  in_out.out[k]=index;
 		  in_out.outtype[k]=VAR;
 		}
-		/*  plintf(" variable %s =%d k=%d \n",new,index,k); */ 
+		/*  plintf(" variable %s =%d k=%d \n",new,index,k); */
 		k++;
 	      }
 	  } /* it is a parameter */
-	else 
+	else
 	  {
 	    if(flag==0)
 	      {
 		in_out.in[k]=index;
 		in_out.intype[k]=PAR;
 	      }
-	  else 
+	  else
 	    {
 	      in_out.out[k]=index;
 	      in_out.outtype[k]=PAR;
 	    }
-	    /* plintf(" parameter %s =%d k=%d \n",new,index,k); */ 
+	    /* plintf(" parameter %s =%d k=%d \n",new,index,k); */
 	    k++;
 
 	  }
@@ -288,11 +279,3 @@ void parse_inout(char *l,int flag)
 	done=0;
     }
 }
-      
-
-
-
-
-
-
-

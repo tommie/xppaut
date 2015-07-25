@@ -2,7 +2,7 @@
 
 #include <unistd.h>
 #include "ggets.h"
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <string.h>
 #include "load_eqn.h"
 
@@ -12,7 +12,7 @@
 IGNORE THIS -- I have included the relevant files !!  July 2002
 
 1. Make the following changes in the MAC system directories. (I
-think this is a bug in their header files.) 
+think this is a bug in their header files.)
 
   a. copy /usr/include/dirent.h  to your xpp directory. I'll assume
 you've called it dirent.h locally.
@@ -24,21 +24,21 @@ you've called it dirent.h locally.
 statement to call your local copy of dirent.h, not the one in
  /usr/include.
 
- d. In your local copy of dirent.h, change the #include<sys/dirent.h>   
+ d. In your local copy of dirent.h, change the #include<sys/dirent.h>
 statement to call your local copy of sysdirent.h
 
  e. In your local copy of sysdirent.h, change the lines:
 
-  u_int32_t d_fileno;          
-  u_int16_t d_reclen;          
-  u_int8_t  d_type;           
-  u_int8_t  d_namlen;       
+  u_int32_t d_fileno;
+  u_int16_t d_reclen;
+  u_int8_t  d_type;
+  u_int8_t  d_namlen;
  to the new lines:
 
-  unsigned long d_fileno;   
-  unsigned short d_reclen; 
-  unsigned char d_type;    
-  unsigned char d_namlen;  
+  unsigned long d_fileno;
+  unsigned short d_reclen;
+  unsigned char d_type;
+  unsigned char d_namlen;
 (These occur in the {\tt struct dirent}  declaration)
 and save the file.
 
@@ -54,12 +54,6 @@ and save the file.
 #include <dirent.h>
 #include <stdio.h>
 #include <sys/stat.h>
-
-/*Let's try to be consistent with file name buffer sizes and
-any strings that may hold a path name (e.g. dialog message etc.)*/
-/*#define MAXPATHLEN 1024*/
-#define MAXPATHLEN XPP_MAX_NAME
-
 
 #define EOS '\0'
 #define NENTRIES 100
@@ -81,7 +75,7 @@ char cur_dir[MAXPATHLEN];
 FILEINFO my_ff;
  /*
 main()
-{ 
+{
   int i;
   change_directory("../xtc");
   get_directory(cur_dir);
@@ -162,10 +156,10 @@ int get_fileinfo_tab(wild,direct,ff,wild2)
    ff->nfiles=nf;
    ff->ndirs=nd;
    if (nd > 0)
-   {	
+   {
    	qsort(&(ff->dirnames[0]),nd, sizeof(char *), cmpstringp);
    }
-   
+
    if (nf > 0)
    {
    	qsort(&(ff->filenames[0]),nf, sizeof(char *), cmpstringp);
@@ -211,12 +205,12 @@ int get_fileinfo(wild,direct,ff)
      }
      dp=readdir(dirp);
    }
-   
+
    if (nd > 0)
-   {	
+   {
    	qsort(&(ff->dirnames[0]),nd, sizeof(char *), cmpstringp);
    }
-   
+
    if (nf > 0)
    {
    	qsort(&(ff->filenames[0]),nf, sizeof(char *), cmpstringp);
@@ -256,7 +250,7 @@ int fil_count(direct,ndir,nfil,wild,mld,mlf)
 	l=strlen(dp->d_name);
 	if(l>*mlf)*mlf=l;
       }
-      
+
     }
     dp=readdir(dirp);
   }
@@ -441,7 +435,3 @@ star(string, pattern)
 	    return 0;
     return 1;
 }
-
-
-
-

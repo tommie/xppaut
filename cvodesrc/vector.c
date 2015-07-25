@@ -16,8 +16,7 @@
 #include <stdlib.h>
 #include "vector.h"
 #include "llnltyps.h"
-#include "llnlmath.h" 
-#include "ggets.h" 
+#include "llnlmath.h"
 
 
 #define ZERO RCONST(0.0)
@@ -33,7 +32,7 @@ static void VNeg(N_Vector x, N_Vector z); /* z=-x */
 /* z=c(x+y) */
 static void VScaleSum(real c, N_Vector x, N_Vector y, N_Vector z);
 /* z=c(x-y) */
-static void VScaleDiff(real c, N_Vector x, N_Vector y, N_Vector z); 
+static void VScaleDiff(real c, N_Vector x, N_Vector y, N_Vector z);
 static void VLin1(real a, N_Vector x, N_Vector y, N_Vector z); /* z=ax+y */
 static void VLin2(real a, N_Vector x, N_Vector y, N_Vector z); /* z=ax-y */
 static void Vaxpy(real a, N_Vector x, N_Vector y); /* y <- ax+y */
@@ -41,7 +40,7 @@ static void VScaleBy(real a, N_Vector x); /* x <- ax */
 
 /********************* Exported Functions ************************/
 
- 
+
 N_Vector N_VNew(integer N, void *machEnv)
 {
   N_Vector v;
@@ -50,7 +49,7 @@ N_Vector N_VNew(integer N, void *machEnv)
 
   v = (N_Vector) malloc(sizeof *v);
   if (v == NULL) return(NULL);
-  
+
   v->data = (real *) malloc(N * sizeof(real));
   if (v->data == NULL) {
     free(v);
@@ -58,7 +57,7 @@ N_Vector N_VNew(integer N, void *machEnv)
   }
 
   v->length = N;
-  
+
   return(v);
 }
 
@@ -144,13 +143,13 @@ void N_VLinearSum(real a, N_Vector x, real b, N_Vector y, N_Vector z)
      (1) a == other, b == 0.0 - user should have called N_VScale
      (2) a == 0.0, b == other - user should have called N_VScale
      (3) a,b == other, a !=b, a != -b */
-  
+
   N = x->length;
   xd = x->data;
   yd = y->data;
   zd = z->data;
 
-  for (i=0; i < N; i++) 
+  for (i=0; i < N; i++)
     *zd++ = a * (*xd++) + b * (*yd++);
 }
 
@@ -163,7 +162,7 @@ void N_VConst(real c, N_Vector z)
   N = z->length;
   zd = z->data;
 
-  for (i=0; i < N; i++) 
+  for (i=0; i < N; i++)
     *zd++ = c;
 }
 
@@ -253,12 +252,12 @@ void N_VAddConst(N_Vector x, real b, N_Vector z)
 {
   integer i, N;
   real *xd, *zd;
-  
+
   N = x->length;
   xd = x->data;
   zd = z->data;
-  
-  for (i=0; i < N; i++) *zd++ = (*xd++) + b; 
+
+  for (i=0; i < N; i++) *zd++ = (*xd++) + b;
 }
 
 
@@ -270,10 +269,10 @@ real N_VDotProd(N_Vector x, N_Vector y)
   N = x->length;
   xd = x->data;
   yd = y->data;
-  
+
   for (i=0; i < N; i++)
     sum += (*xd++) * (*yd++);
-  
+
   return(sum);
 }
 
@@ -289,7 +288,7 @@ real N_VMaxNorm(N_Vector x)
   for (i=0; i < N; i++, xd++) {
     if (ABS(*xd) > max) max = ABS(*xd);
   }
-   
+
   return(max);
 }
 
@@ -333,11 +332,11 @@ void N_VCompare(real c, N_Vector x, N_Vector z)
 {
   integer i, N;
   real *xd, *zd;
-  
+
   N = x->length;
   xd = x->data;
   zd = z->data;
-  
+
   for (i=0; i < N; i++, xd++, zd++) {
     *zd = (ABS(*xd) >= c) ? ONE : ZERO;
   }
@@ -361,7 +360,7 @@ bool N_VInvTest(N_Vector x, N_Vector z)
   return(TRUE);
 }
 
- 
+
 void N_VPrint(N_Vector x)
 {
   integer i, N;
@@ -370,9 +369,9 @@ void N_VPrint(N_Vector x)
   N = x->length;
   xd = x->data;
 
-  for (i=0; i < N; i++) plintf("%g\n", *xd++);
+  for (i=0; i < N; i++) printf("%g\n", *xd++);
 
-  plintf("\n");
+  printf("\n");
 }
 
 
@@ -389,7 +388,7 @@ static void VCopy(N_Vector x, N_Vector z)
   zd = z->data;
 
   for (i=0; i < N; i++)
-    *zd++ = *xd++; 
+    *zd++ = *xd++;
 }
 
 
@@ -412,7 +411,7 @@ static void VDiff(N_Vector x, N_Vector y, N_Vector z)
 {
   integer i, N;
   real *xd, *yd, *zd;
- 
+
   N = x->length;
   xd = x->data;
   yd = y->data;
@@ -515,7 +514,7 @@ static void Vaxpy(real a, N_Vector x, N_Vector y)
     for (i=0; i < N; i++)
       *yd++ -= (*xd++);
     return;
-  }    
+  }
 
   for (i=0; i < N; i++)
     *yd++ += a * (*xd++);
@@ -532,7 +531,3 @@ static void VScaleBy(real a, N_Vector x)
   for (i=0; i < N; i++)
     *xd++ *= a;
 }
-
-
-
-

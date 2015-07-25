@@ -8,6 +8,7 @@ AM_CPPFLAGS = \
 	-DHAVEDLL \
 	-DMYSTR1=$(MAJORVER) \
 	-DMYSTR2=$(MINORVER) \
+	-I$(top_srcdir)/cvodesrc \
 	-I$(top_srcdir)/libi77
 
 bin_PROGRAMS = \
@@ -27,27 +28,20 @@ noinst_HEADERS = \
 	newhome.h \
 	stiff.h \
 	adj2.h \
-	cvband.h \
 	newpars.h \
 	storage.h \
 	aniparse_avi.h \
-	cvdense.h \
 	fftn.h \
-	llnlmath.h \
 	nullcline.h \
 	struct.h \
 	aniparse.h \
-	cvdiag.h \
-	llnltyps.h \
 	numerics.h \
 	arrayplot.h \
-	cvode.h \
 	flags.h \
 	load_eqn.h \
 	odesol2.h \
 	tabular.h \
 	array_print.h \
-	cvspgmr.h \
 	toons.h \
 	autevd.h \
 	dae_fun.h \
@@ -64,7 +58,6 @@ noinst_HEADERS = \
 	macdirent.h \
 	parserslow.h \
 	autlim.h \
-	dense.h \
 	getvar.h \
 	macsysdirent.h \
 	phsplan.h \
@@ -78,7 +71,6 @@ noinst_HEADERS = \
 	graf_par.h \
 	many_pops.h \
 	pp_shoot.h \
-	vector.h \
 	auto_nox.h \
 	diagram.h \
 	graphics.h \
@@ -95,7 +87,6 @@ noinst_HEADERS = \
 	histogram.h \
 	menu.h \
 	rubber.h \
-	band.h \
 	dormpri.h \
 	homsup.h \
 	menus.h \
@@ -113,13 +104,11 @@ noinst_HEADERS = \
 	my_pars.h \
 	shoot.h \
 	xpplim.h \
-	iterativ.h \
 	my_ps.h \
 	simplenet.h \
 	color.h \
 	kbs.h \
 	my_rhs.h \
-	spgmr.h \
 	cv2.h \
 	my_svg.h \
 	tutor.h \
@@ -151,6 +140,7 @@ bitmap_headers = \
 	bitmap/start.bitmap
 
 xppaut_LDADD = \
+	$(top_builddir)/cvodesrc/libcvode.a \
 	$(top_builddir)/libi77/libi77.a
 
 xppaut_SOURCES = \
@@ -295,18 +285,7 @@ auto_sources = \
 	flowkm_small.c
 
 cvode_sources = \
-	band.c \
-	cv2.c \
-	cvband.c \
-	cvdense.c \
-	cvdiag.c \
-	cvode.c \
-	cvspgmr.c \
-	dense.c \
-	iterativ.c \
-	llnlmath.c \
-	spgmr.c \
-	vector.c
+	cv2.c
 
 libexample_so_CFLAGS = -fPIC
 libexample_so_LDFLAGS = -shared

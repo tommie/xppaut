@@ -15,7 +15,6 @@
 #include "llnltyps.h"
 #include "vector.h"
 #include "llnlmath.h"
-#include "ggets.h"
 
 
 #define ZERO RCONST(0.0)
@@ -31,7 +30,7 @@ BandMat BandAllocMat(integer N, integer mu, integer ml, integer smu)
   BandMat A;
 
   if (N <= 0) return(NULL);
-  
+
   A = (BandMat) malloc(sizeof *A);
   if (A == NULL) return (NULL);
 
@@ -40,7 +39,7 @@ BandMat BandAllocMat(integer N, integer mu, integer ml, integer smu)
     free(A);
     return(NULL);
   }
-  
+
   A->size = N;
   A->mu = mu;
   A->ml = ml;
@@ -53,7 +52,7 @@ BandMat BandAllocMat(integer N, integer mu, integer ml, integer smu)
 integer *BandAllocPiv(integer N)
 {
   if (N <= 0) return(NULL);
-  
+
   return((integer *) malloc(N * sizeof(integer)));
 }
 
@@ -96,7 +95,7 @@ void BandFreeMat(BandMat A)
 }
 
 void BandFreePiv(integer *p)
-{ 
+{
   free(p);
 }
 
@@ -160,7 +159,7 @@ integer gbfa(real **a, integer n, integer mu, integer ml, integer smu,
   /* k = elimination step number */
 
   for (k=0; k < n-1; k++, p++) {
-    
+
     col_k     = a[k];
     diag_k    = col_k + smu;
     sub_diag_k = diag_k + 1;
@@ -170,7 +169,7 @@ integer gbfa(real **a, integer n, integer mu, integer ml, integer smu,
 
     l=k;
     max = ABS(*diag_k);
-    for (i=k+1, kptr=sub_diag_k; i <= last_row_k; i++, kptr++) { 
+    for (i=k+1, kptr=sub_diag_k; i <= last_row_k; i++, kptr++) {
       if (ABS(*kptr) > max) {
 	l=i;
 	max = ABS(*kptr);
@@ -178,13 +177,13 @@ integer gbfa(real **a, integer n, integer mu, integer ml, integer smu,
     }
     storage_l = ROW(l, k, smu);
     *p = l;
-    
+
     /* check for zero pivot element */
 
     if (col_k[storage_l] == ZERO) return(k+1);
-    
+
     /* swap a(l,k) and a(k,k) if necessary */
-    
+
     if ((swap = (l != k))) {
       temp = col_k[storage_l];
       col_k[storage_l] = *diag_k;
@@ -196,7 +195,7 @@ integer gbfa(real **a, integer n, integer mu, integer ml, integer smu,
     /* a(k,k) holds the pivot element. This scaling     */
     /* stores the pivot row multipliers -a(i,k)/a(k,k)  */
     /* in a(i,k), i=k+1, ..., MIN(n-1,k+ml).            */
-    
+
     mult = -ONE / (*diag_k);
     for (i=k+1, kptr = sub_diag_k; i <= last_row_k; i++, kptr++)
       (*kptr) *= mult;
@@ -205,17 +204,17 @@ integer gbfa(real **a, integer n, integer mu, integer ml, integer smu,
     /* row k is the pivot row after swapping with row l.                */
     /* The computation is done one column at a time,                    */
     /* column j=k+1, ..., MIN(k+smu,n-1).                               */
-    
+
     last_col_k = MIN(k+smu,n-1);
     for (j=k+1; j <= last_col_k; j++) {
-      
+
       col_j = a[j];
-      storage_l = ROW(l,j,smu); 
-      storage_k = ROW(k,j,smu); 
+      storage_l = ROW(l,j,smu);
+      storage_k = ROW(k,j,smu);
       a_kj = col_j[storage_l];
 
       /* Swap the elements a(k,j) and a(k,l) if l!=k. */
-      
+
       if (swap) {
 	col_j[storage_l] = col_j[storage_k];
 	col_j[storage_k] = a_kj;
@@ -230,12 +229,12 @@ integer gbfa(real **a, integer n, integer mu, integer ml, integer smu,
 	     i++, kptr++, jptr++)
 	  (*jptr) += a_kj * (*kptr);
       }
-    }    
+    }
   }
-  
+
   /* set the last pivot row to be n-1 and check for a zero pivot */
 
-  *p = n-1; 
+  *p = n-1;
   if (a[n-1][smu] == ZERO) return(n);
 
   /* return 0 to indicate success */
@@ -248,9 +247,9 @@ void gbsl(real **a, integer n, integer smu, integer ml, integer *p,
 {
   integer k, l, i, first_row_k, last_row_k;
   real mult, *diag_k;
-  
+
   /* Solve Ly = Pb, store solution y in b */
-  
+
   for (k=0; k < n-1; k++) {
     l = p[k];
     mult = b[l];
@@ -263,9 +262,9 @@ void gbsl(real **a, integer n, integer smu, integer ml, integer *p,
     for (i=k+1; i <= last_row_k; i++)
       b[i] += mult * diag_k[i-k];
   }
-  
+
   /* Solve Ux = y, store solution x in b */
-  
+
   for (k=n-1; k >= 0; k--) {
     diag_k = a[k]+smu;
     first_row_k = MAX(0,k-smu);
@@ -296,7 +295,7 @@ void bandcopy(real **a, real **b, integer n, integer a_smu, integer b_smu,
   real *a_col_j, *b_col_j;
 
   copySize = copymu + copyml + 1;
- 
+
   for (j=0; j < n; j++) {
     a_col_j = a[j]+a_smu-copymu;
     b_col_j = b[j]+b_smu-copymu;
@@ -323,7 +322,7 @@ void bandscale(real c, real **a, integer n, integer mu, integer ml,
 void bandaddI(real **a, integer n, integer smu)
 {
   integer j;
- 
+
   for(j=0; j < n; j++)
     a[j][smu] += ONE;
 }
@@ -342,16 +341,16 @@ void bandfree(real **a)
 void bandprint(real **a, integer n, integer mu, integer ml, integer smu)
 {
   integer i, j, start, finish;
- 
-  plintf("\n");
+
+  printf("\n");
   for (i=0; i < n; i++) {
     start = MAX(0,i-ml);
     finish = MIN(n-1,i+mu);
-    for (j=0; j < start; j++) plintf("%10s","");
+    for (j=0; j < start; j++) printf("%10s","");
     for (j=start; j <= finish; j++) {
-      plintf("%10g", a[j][i-j+smu]);
+      printf("%10g", a[j][i-j+smu]);
     }
-    plintf("\n");
+    printf("\n");
   }
-  plintf("\n");
+  printf("\n");
 }

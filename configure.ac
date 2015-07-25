@@ -69,6 +69,7 @@ AC_CONFIG_FILES([
     betty/Makefile
     bin/Makefile
     canonical/Makefile
+    cvodesrc/Makefile
     doc/Makefile
     help/Makefile
     libi77/Makefile

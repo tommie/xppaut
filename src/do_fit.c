@@ -1,27 +1,26 @@
-
 #include "do_fit.h"
 
-#include "cv2.h"
-#include "dormpri.h"
-#include "stiff.h"
-#include "parserslow.h"
-#include "derived.h"
-#include <stdlib.h> 
-#include <stdio.h>
-#include <string.h>
 #include <math.h>
-#include "ggets.h"
-#include "odesol2.h"
-#include "delay_handle.h"
-#include "pop_list.h"
-#include "gear.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "browse.h"
-
-
+#include "cv2.h"
+#include "delay_handle.h"
+#include "derived.h"
+#include "dormpri.h"
+#include "gear.h"
+#include "ggets.h"
+#include "load_eqn.h"
+#include "odesol2.h"
+#include "parserslow.h"
 #include "phsplan.h"
+#include "pop_list.h"
+#include "stiff.h"
 
 /*  this is also X free ! */
- 
+
 #define GEAR 5
 #define RKQS 8
 #define STIFF 9
@@ -31,12 +30,9 @@
 #define RB23 13
 #define MAX_LEN_SBOX 25
 #define MAX(a,b) ((a)>(b)?(a):(b))
-extern double constants[];
-extern double last_ic[MAXODE];
+
 double atof();
 
-extern double DELAY;
-extern int DelayFlag;
 FITINFO fin;
 
 char *get_first();
@@ -64,14 +60,14 @@ void init_fit_info()
 void get_fit_info(y,a,t0,flag,eps,yfit,yderv,npts,npars,nvars,ivar,ipar)
      int *flag,*ivar,*ipar,npts,npars,nvars;
      double *y,*a,eps,**yderv,*yfit,*t0;
-/*  
+/*
   y     initial condition
   a     initial guesses for the parameters
   t0    vector of output times
-  flag  1 for success  0 for failure 
+  flag  1 for success  0 for failure
   eps   derivative step
   yfit  has y[i1](t0),...,y[im](t0), ..., y[i1](tn),...,y[im](tn)
-        which are the values of the test functions at the npts 
+        which are the values of the test functions at the npts
 	times.  yfit is (npts)*nvars int
   yderv[npar][nvars*(npts)] is the derivative of yfit with rrspect
         to the parameter
@@ -82,7 +78,7 @@ void get_fit_info(y,a,t0,flag,eps,yfit,yderv,npts,npars,nvars,ivar,ipar)
   ipar     the vector of parameters  negative are constants
            positive are initial data
   ivar     the vector of variables
-   
+
  */
 {
   int i,iv,ip,istart=1,j,k,l,k0,ok;
@@ -119,13 +115,13 @@ evaluate_derived();
 
       return;
        }
-   
+
     for(i=0;i<nvars;i++){
       iv=ivar[i];
       yfit[i+k0]=y[iv];
     }
-  }   
-#ifdef CVODE_YES 
+  }
+#ifdef CVODE_YES
   if(METHOD==CVODE)
     end_cv();
 #endif
@@ -254,7 +250,7 @@ if(METHOD==RKQS||METHOD==STIFF){
 	ping();
 	 switch(kflag){
 	       case 2: err_msg("Step size too small"); break;
-	       case 3: err_msg("Too many steps"); break;	 
+	       case 3: err_msg("Too many steps"); break;
 	       case -1: err_msg("singular jacobian encountered"); break;
 	       case 1: err_msg("stepsize is close to 0"); break;
 	       case 4: 	err_msg("exceeded MAXTRY in stiff"); break;
@@ -264,7 +260,7 @@ if(METHOD==RKQS||METHOD==STIFF){
           stor_delay(y);
       return(1);
     }
-  /* cvode(command,y,t,n,tout,kflag,atol,rtol) 
+  /* cvode(command,y,t,n,tout,kflag,atol,rtol)
  command =0 continue, 1 is start 2 finish   */
   if(METHOD==GEAR){
     gear(NODE,&t,t1,y,HMIN,HMAX,TOLER,2,error,&kflag,istart,WORK,IWORK);
@@ -278,7 +274,7 @@ if(METHOD==RKQS||METHOD==STIFF){
 	  case -3: err_msg("kflag=-3: minimum step too big");break;
 	  case -4: err_msg("kflag=-4: tolerance too small");break;
 	  }
-	
+
 	return(0);
       }
         stor_delay(y);
@@ -296,15 +292,15 @@ if(METHOD==RKQS||METHOD==STIFF){
   kflag=solver(y,&t,dt,nit,NODE,istart,WORK);
 
   if(kflag<0)return(0);
-  if((dt<0&&t>t1)||(dt>0&&t<t1)){    
+  if((dt<0&&t>t1)||(dt>0&&t<t1)){
     dt=t1-t;
     kflag=solver(y,&t,dt,1,NODE,istart,WORK);
     if(kflag<0)return(0);
   }
 
   return(1);
-} 
-    
+}
+
 
 
 void print_fit_info()
@@ -312,7 +308,7 @@ void print_fit_info()
   int i;
   plintf("dim=%d maxiter=%d npts=%d file=%s tol=%g eps=%g\n",
 	 fin.dim,fin.maxiter,fin.npts,fin.file,fin.tol,fin.eps);
-  
+
   for(i=0;i<fin.nvars;i++)
     plintf(" variable %d to col %d \n",
 	   fin.ivar[i],fin.icols[i]);
@@ -329,7 +325,7 @@ void test_fit()
  fin.nvars=0;
  fin.npars=0;
  if(get_fit_params()==0)return;
- 
+
  sprintf(collist,fin.collist);
  sprintf(varlist,fin.varlist);
  sprintf(parlist1,fin.parlist1);
@@ -337,7 +333,7 @@ void test_fit()
 
 
  parse_collist(collist,fin.icols,&nvars);
- 
+
  if(nvars<=0){
    err_msg("No columns...");
    return;
@@ -345,14 +341,14 @@ void test_fit()
  fin.nvars=nvars;
  nvars=0;
  parse_varlist(varlist, fin.ivar, &nvars);
- 
+
  if(fin.nvars!=nvars){
    err_msg(" # columns != # fitted variables");
    return;
  }
  npars=0;
  parse_parlist(parlist1,fin.ipar,&npars);
- 
+
  parse_parlist(parlist2,fin.ipar,&npars);
 
  if(npars<=0){
@@ -399,7 +395,7 @@ void test_fit()
    if(ok==0)return;
 
  /* get the latest par values ...  */
- 
+
  for(i=0;i<npars;i++){
    if(fin.ipar[i]<0)
      constants[-fin.ipar[i]]=a[i];
@@ -423,16 +419,16 @@ int run_fit( filename,  /* string */
      double eps,tol;
      double *a,*y0,*yfit;
 
-/* 
+/*
    filename is where the data file is -- it is of the form:
    t1 y11 y12 .... y1m
    t2 ....
    ...
    tn yn1 ....     ynm
-   icols gives the dependent variable columns -- we assume first col 
+   icols gives the dependent variable columns -- we assume first col
    is the times
-   ndim is the number of y-pts in the a row  
-   
+   ndim is the number of y-pts in the a row
+
 */
 
 {
@@ -443,7 +439,7 @@ int run_fit( filename,  /* string */
   double tol10=10*tol;
   double t,ytemp[MAXODE];
 /*printf(" %s %d %d %d %d %d \n",
-	  filename, 
+	  filename,
 	npts,npars,nvars,maxiter,ndim); */
 
 
@@ -472,7 +468,7 @@ int run_fit( filename,  /* string */
   plintf(" Data loaded ... %f %f ...  %f %f \n",
 	 y[0],y[1],y[npts*nvars-2],y[npts*nvars-1]);
 
-  
+
 
   work=(double *)malloc(sizeof(double)*(4*npars+npars*npars));
   yderv=(double **)malloc(npars*sizeof(double *));
@@ -480,12 +476,12 @@ int run_fit( filename,  /* string */
     yderv[i]=(double *)malloc((npts+1)*nvars*sizeof(double));
   for(i=0;i<nvars;i++)
     sig[i]=1.0;
-    
+
   covar=(double *)malloc(npars*npars*sizeof(double));
   alpha=(double *)malloc(npars*npars*sizeof(double));
-  
+
   while(good_flag<3){  /* take 3 good steps after convergence  */
-    
+
     ok=marlevstep(t0,y0,y,sig,a,npts,nvars,npars,
 	       ivar,ipar,covar,alpha,&chisq,&alambda,work,
 	       yderv,yfit,&ochisq,ictrl,eps);
@@ -499,7 +495,7 @@ int run_fit( filename,  /* string */
     if((ok==0)||(niter>=maxiter))break;
     if(ochisq>chisq){
       if(((ochisq-chisq)<tol10)||(((ochisq-chisq)/MAX(1.0,chisq))<tol))
-      { 
+      {
 	good_flag++;
 	niter--;  /* compensate for good stuff ... */
 	}
@@ -509,9 +505,9 @@ int run_fit( filename,  /* string */
       chisq=ochisq;
 
     ictrl=1;
-    
+
   }
-  
+
   if(ok==0){
     err_msg("Error in step...");
 
@@ -523,7 +519,7 @@ int run_fit( filename,  /* string */
   free(covar);
   free(t0);
   free(y);
-  
+
     return(0);
   }
   if(niter>=maxiter){
@@ -537,7 +533,7 @@ int run_fit( filename,  /* string */
   free(covar);
   free(t0);
   free(y);
-  
+
 
     return(1);
   }
@@ -563,9 +559,9 @@ int run_fit( filename,  /* string */
   free(covar);
   free(t0);
   free(y);
-  
+
   return(1);
-}  
+}
 
 int marlevstep(t0,y0,y,sig,a,npts,nvars,npars,
 	   ivar,ipar,covar,alpha,chisq,alambda,work,
@@ -573,8 +569,8 @@ int marlevstep(t0,y0,y,sig,a,npts,nvars,npars,
      double *t0,*y0,*y,*sig,*a,*covar,*alpha,*chisq,*alambda,*work,
        *yfit,**yderv,*ochisq,eps;
      int npts,nvars,npars,*ivar,*ipar,ictrl;
-/*   One step of Levenberg-Marquardt  
-     
+/*   One step of Levenberg-Marquardt
+
 nvars  the number of variables to fit
 ivar   their indices
 npars  the number of parameters to alter
@@ -610,7 +606,7 @@ sigma  weights on nvars
     *alambda=.001;
     if(mrqcof(t0,y0,y,sig,a,npts,nvars,npars,
 	      ivar,ipar,alpha,chisq,beta,
-	      yderv,yfit,eps)==0) 
+	      yderv,yfit,eps)==0)
       return(0);
     for(i=0;i<npars;i++)atry[i]=a[i];
     *ochisq=(*chisq);
@@ -625,7 +621,7 @@ sigma  weights on nvars
       err_msg(" Singular matrix encountered...");
       return(0);
     }
-  
+
   sgesl(covar,npars,npars,ipivot,oneda,0);
   for(j=0;j<npars;j++){
     da[j]=oneda[j];
@@ -675,7 +671,7 @@ sigma  weights on nvars
       {
        int flag,i,j,k,l,k0;
        double sig2i,dy,wt;
-      
+
        get_fit_info(y0,a,t0,&flag,eps,yfit,yderv,npts,npars,nvars,ivar,ipar);
        if(flag==0)
 	 {
@@ -698,12 +694,12 @@ sigma  weights on nvars
 	   for(j=0;j<npars;j++){
 	     wt=yderv[j][k0]*sig2i;
 	     for(l=0;l<npars;l++)
-	       alpha[j+l*npars] += wt*yderv[l][k0]; 
+	       alpha[j+l*npars] += wt*yderv[l][k0];
 	     beta[j] += dy*wt;
 	   }
 	   (*chisq) += dy*dy*sig2i;
 
-/* the last loop could be halved because of symmetry, but I am lazy 
+/* the last loop could be halved because of symmetry, but I am lazy
    and this is an insignificiant amount of the CPU time since
   the evaluation step is really where all the time is used
 */
@@ -718,7 +714,7 @@ sigma  weights on nvars
 	 */
        return(1);
      }
-     
+
 
 
 int get_fit_params()
@@ -762,7 +758,7 @@ void parse_collist(collist,icols,n)
 {
   char *item;
   int v,i=0;
- 
+
   item=get_first(collist," ,");
 
   if(item[0]==0)return;
@@ -782,10 +778,10 @@ void parse_collist(collist,icols,n)
 void parse_varlist(varlist,ivars,n)
      int *n,*ivars;
      char *varlist;
-{  
+{
   char *item;
   int v,i=0;
-  
+
   item=get_first(varlist," ,");
   if(item[0]==0)return;
   find_variable(item,&v);
@@ -793,7 +789,7 @@ void parse_varlist(varlist,ivars,n)
   ivars[i]=v-1;
   i++;
   while((item=get_next(" ,"))!=NULL)
-    { 
+    {
       find_variable(item,&v);
       if(v<=0)return;
       ivars[i]=v-1;
@@ -807,7 +803,7 @@ void parse_varlist(varlist,ivars,n)
 void parse_parlist(parlist,ipars,n)
      int *n,*ipars;
      char *parlist;
-{  
+{
   char *item;
   int v,i=0;
   int j;
@@ -818,7 +814,7 @@ void parse_parlist(parlist,ipars,n)
   if(strlen(parlist)==0)return;
   item=get_first(parlist," ,");
   if(item[0]==0L)return;
- 
+
   find_variable(item,&v);
   if(v>0){
     ipars[i+*n]=v-1;
@@ -831,8 +827,8 @@ void parse_parlist(parlist,ipars,n)
     i++;
   }
   while((item=get_next(" ,"))!=NULL)
-    { 
- 
+    {
+
       find_variable(item,&v);
       if(v>0){
 	ipars[i+*n]=v-1;
@@ -848,12 +844,3 @@ void parse_parlist(parlist,ipars,n)
   *n=*n+i;
 
 }
-
-
-
-
-
-
-
-
-

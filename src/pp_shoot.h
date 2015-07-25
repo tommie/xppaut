@@ -1,9 +1,12 @@
-#ifndef _pp_shoot_h_
-#define _pp_shoot_h_
+#ifndef XPPAUT_PP_SHOT_H
+#define XPPAUT_PP_SHOT_H
 
 #include <stdio.h>
 
+/* --- Data --- */
+extern int HOMOCLINIC_FLAG;
 
+/* --- Functions --- */
 void do_bc(double *y__0, double t0, double *y__1, double t1, double *f, int n);
 void compile_bvp(void);
 void reset_bvp(void);
@@ -18,5 +21,4 @@ void last_shot(int flag);
 int set_up_sh_range(void);
 void bvshoot(double *y, double *yend, double err, double eps, int maxit, int *iret, int n, int ishow, int iper, int ipar, int ivar, double sect);
 
-
-#endif
+#endif /* XPPAUT_PP_SHOT_H */

@@ -4,6 +4,7 @@
 #include <X11/Xlib.h>
 
 /* --- Data --- */
+extern int PointType;
 extern XFontStruct *romfonts[5];
 extern XFontStruct *symfonts[5];
 

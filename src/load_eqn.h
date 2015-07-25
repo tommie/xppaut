@@ -186,6 +186,7 @@ typedef struct {
 } OptionsSet;
 
 /* --- Data --- */
+extern int BVP_FLAG;
 extern double last_ic[MAXODE];
 extern char this_file[XPP_MAX_NAME];
 

@@ -1,5 +1,5 @@
-#ifndef _auto_x11_h_
-#define _auto_x11_h_
+#ifndef XPPAUT_AUTO_X11_H
+#define XPPAUT_AUTO_X11_H
 
 #include <X11/Xlib.h>
 
@@ -8,7 +8,14 @@ typedef struct  {
   Window info,param,file,abort,stab,hint,kill;
 } AUTOWIN;
 
+/* --- Data --- */
+extern int AutoRedrawFlag;
+extern int mark_flag;
+extern int mark_ibrs;
+extern int mark_ipte;
+extern int mark_ipts;
 
+/* --- Functions --- */
 void ALINE(int a, int b, int c, int d);
 void DLINE(double a, double b, double c, double d);
 void ATEXT(int a, int b, char *c);
@@ -48,4 +55,4 @@ void auto_set_mark(int i);
 void do_auto_range();
 void RedrawMark();
 
-#endif
+#endif /* XPPAUT_AUTO_X11_H */

@@ -35,6 +35,7 @@ typedef struct {
 
 /* --- Data --- */
 extern int colorline[12];
+extern int PS_Color;
 
 /* --- Functions --- */
 void change_view_com(int com);

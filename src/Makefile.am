@@ -144,6 +144,7 @@ xppaut_SOURCES = \
 	main.c \
 	ggets.c \
 	menu.c \
+	menus.c \
 	rubber.c \
 	derived.c \
 	many_pops.c \
@@ -210,6 +211,7 @@ libxpp_a_SOURCES = \
 	main.c \
 	ggets.c \
 	menu.c \
+	menus.c \
 	rubber.c \
 	derived.c \
 	many_pops.c \

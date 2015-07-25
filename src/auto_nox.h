@@ -1,19 +1,21 @@
-#ifndef _auto_nox_h_
-#define _auto_nox_h_
+#ifndef XPPAUT_AUTO_NOX_H
+#define XPPAUT_AUTO_NOX_H
 
 #include <stdio.h>
-#include "xpplim.h"
 #include "autlim.h"
+#include "xpplim.h"
+
+/* --- Macros --- */
 #define MAX_AUT_PER 10
 
+/* --- Types --- */
 typedef struct {
   int irot;
   int nrot[1000];
   double torper;
 } ROTCHK;
 
-typedef struct  {
-
+typedef struct {
   int exist;
   int ntst,nmx,npr;
   double ds,dsmax,dsmin,rl0,rl1,a0,a1;
@@ -30,7 +32,7 @@ typedef struct  {
   int uzrpar[MAX_AUT_PER];
   double epsl,epsu,epss;
   int ncol;
-}BIFUR;
+} BIFUR;
 
 typedef struct {
   int package;
@@ -58,8 +60,10 @@ typedef struct {
   double xmin,ymin,xmax,ymax;
 }  AUTOAX;
 
+/* --- Data --- */
+extern int AutoTwoParam;
 
-
+/* --- Functions --- */
 void colset(int type);
 void pscolset2(int flag2);
 void colset2(int flag2);
@@ -150,4 +154,4 @@ void get_a_row(double *u, double *t, int n, FILE *fp);
 void auto_file(void);
 
 
-#endif
+#endif /* XPPAUT_AUTO_NOX_H */

@@ -1,17 +1,16 @@
+#include "autevd.h"
+#undef abs
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "autevd.h"
-
-
+#include "autlim.h"
+#include "auto_define.h"
 #include "auto_nox.h"
-#include "diagram.h"
 #include "diagram.h"
 #include "gear.h"
 
-#include "auto_define.h"
-#include "autlim.h"
 #define SPECIAL 5
 #define SPER 3
 #define UPER 4
@@ -21,7 +20,6 @@
 #define ESCAPE 27
 
 
-extern int AutoTwoParam;
 int DiagFlag=0;
 /*typedef struct {double r,i;} dcomplex;
 

@@ -31,9 +31,11 @@ extern char *fileoff_menu[];
 extern char *main_hint[];
 extern char *file_hint[];
 extern char *num_hint[];
+extern char *auto_hint[];
 extern char *no_hint[];
 extern char *aaxes_hint[];
 extern char *afile_hint[];
+extern char *aspecial_hint[];
 extern char *arun_hint[];
 
 #endif /* XPPAUT_MENUS_H */

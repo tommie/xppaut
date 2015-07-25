@@ -189,6 +189,7 @@ typedef struct {
 extern int BVP_FLAG;
 extern double last_ic[MAXODE];
 extern char this_file[XPP_MAX_NAME];
+extern int xorfix;
 
 /* --- Functions --- */
 void dump_torus(FILE *fp, int f);

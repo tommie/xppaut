@@ -1,34 +1,35 @@
-#include "parserslow.h"
-
 #include "auto_x11.h"
-#include "auto_nox.h"
-#include "init_conds.h"
-#include "derived.h"
-#include "diagram.h"
-#include "ggets.h"
-#include <stdlib.h> 
-#include <string.h>
+
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
 #include <X11/keysymdef.h>
-#include "bitmap/auto.bitmap"
-#include "newhome.h"
-#include "mykeydef.h"
-#include "xpplim.h"
+
 #include "autlim.h"
-#include "math.h"
-#include "rubber.h"
-#include "menudrive.h"
-#include "many_pops.h"
-#include "color.h"
-#include "integrate.h"
+#include "auto_nox.h"
 #include "browse.h"
+#include "color.h"
+#include "derived.h"
+#include "diagram.h"
+#include "ggets.h"
+#include "init_conds.h"
+#include "integrate.h"
+#include "main.h"
+#include "many_pops.h"
+#include "math.h"
+#include "menudrive.h"
+#include "menus.h"
+#include "mykeydef.h"
+#include "newhome.h"
 #include "numerics.h"
-
+#include "parserslow.h"
 #include "pop_list.h"
-
+#include "rubber.h"
+#include "xpplim.h"
+#include "bitmap/auto.bitmap"
 
 #define RUBBOX 0
 #define RUBLINE 1
@@ -58,63 +59,25 @@
 #define SIMPMASK (ButtonPressMask | KeyPressMask|ExposureMask    |StructureNotifyMask)
 
 
-extern Display *display;
-
-extern unsigned int MyBackColor,MyForeColor,MyMainWinColor,MyDrawWinColor;
 int AutoRedrawFlag=1;
-
-extern int screen,storind,NODE;
-extern GC gc, small_gc;
-extern int DCURX,DCURXs,DCURY,DCURYs,CURY_OFFs,CURY_OFFb,CURY_OFF;
 int STD_HGT_var =0;
 int STD_WID_var =0;
 int Auto_extra_wid,Auto_extra_hgt;
 int Auto_x0,Auto_y0;
-extern int load_all_labeled_orbits;
 /* stuff for marking a branch  */
 int mark_flag=0;
 int mark_ibrs,mark_ibre;
 int mark_ipts,mark_ipte;
 int mark_ixs,mark_ixe,mark_iys,mark_iye;
-extern Window command_pop;
 
-extern double TEND;
-extern int AutoTwoParam;
-extern int NAutoPar;
-extern int Auto_index_to_array[5];
-extern int AutoPar[5];
-
-extern int xorfix;
-
-extern int TipsFlag;
-extern unsigned int MyBackColor,MyForeColor,MyMainWinColor,MyDrawWinColor,GrFore,GrBack;
-
-extern char *auto_hint[],*aaxes_hint[],*afile_hint[],*arun_hint[],*no_hint[],*aspecial_hint[];
 double atof();
 
-extern double constants[];
-
-extern int DONT_XORCross;
-
-
 AUTOWIN AutoW;
-
-
-extern BIFUR Auto;
-
-
-extern GRABPT grabpt;
-
-
-extern DIAGRAM *bifd;
 DIAGRAM *CUR_DIAGRAM;
 
 
-extern int NBifs;
-
-
-/* **************************************************** 
-   Code here 
+/* ****************************************************
+   Code here
 *****************************************************/
 
 void ALINE(a,b,c,d)
@@ -125,13 +88,13 @@ void ALINE(a,b,c,d)
 
 
 void DLINE(a,b,c,d)
-     double a,b,c,d; 
+     double a,b,c,d;
 {
   ALINE(IXVal(a),IYVal(b),IXVal(c),IYVal(d));
 }
 
 
-void ATEXT(a,b,c) 
+void ATEXT(a,b,c)
      int a,b;
      char *c;
 {
@@ -193,24 +156,24 @@ int query_special(char* title,char *nsymb)
 	else if(ch=='h'){
 	   sprintf(nsymb,"HB");
 	}
-	else if(ch=='l'){ 
+	else if(ch=='l'){
 	   sprintf(nsymb,"LP");
 	}
-	else if(ch=='m'){ 
+	else if(ch=='m'){
 	   sprintf(nsymb,"MX");
 	}
 	else if(ch=='p'){
-	   sprintf(nsymb,"PD"); 
+	   sprintf(nsymb,"PD");
 	}
 	else if(ch=='t'){
-	   sprintf(nsymb,"TR");  
+	   sprintf(nsymb,"TR");
 	}
-	else if(ch=='u'){ 
+	else if(ch=='u'){
 	   sprintf(nsymb,"UZ");
 	}
 	else
 	{
-	   status=0;   
+	   status=0;
 	   sprintf(nsymb,"  ");
 	}
 	redraw_auto_menus();
@@ -221,7 +184,7 @@ int query_special(char* title,char *nsymb)
 void do_auto_range()
 {
   double t=TEND;
-  
+
   if(mark_flag==2)
     do_auto_range_go();
   TEND=t;
@@ -247,15 +210,15 @@ void  auto_get_info( int *n, char *pname )
 	}
        dnew=d->next;
        if(dnew==NULL){
-	 
+
 	 break;
        }
        d=dnew;
     }
   }
-  
+
 }
-  
+
 void auto_set_mark(int i)
 {
   int pt,ibr;
@@ -289,44 +252,44 @@ void find_point(int ibr, int pt)
 	   redraw_params();
 	   redraw_ics();
            if((d->per)>0)
-	     set_total(d->per);		       
+	     set_total(d->per);
 	   break;
 	 }
        dnew=d->next;
        if(dnew==NULL){
-	 
+
 	 break;
        }
        d=dnew;
      }
 }
-        
+
 
 void traverse_diagram()
 {
   DIAGRAM *d,*dnew,*dold;
   int done=0;
-  int ix,iy,i; 
+  int ix,iy,i;
   int lalo;
   XEvent ev;
   int kp;
   mark_flag=0;
   if(NBifs<2)return;
-  
-  d=bifd; 
+
+  d=bifd;
   DONT_XORCross=0;
   traverse_out(d,&ix,&iy,1);
-  
+
   while(done==0){
     XNextEvent(display,&ev);
     if(ev.type==ButtonPress)
     {
-  
+
   	int xm=ev.xmotion.x;
   	int ym=ev.xmotion.y;
-	
+
 	Window w=ev.xmotion.window;
-  	
+
   	if(w==AutoW.canvas)
 	{
        		clear_msg();
@@ -347,7 +310,7 @@ void traverse_diagram()
                 /*
 		END GO HOME
 		*/
-       
+
        		/*
 		GO END
 		*/
@@ -359,7 +322,7 @@ void traverse_diagram()
 		load_all_labeled_orbits=0;
 		while (1)
 		{
-			dist = sqrt(((double)(xm-ix))*((double)(xm-ix)) + ((double)(ym-iy))*((double)(ym-iy))); 
+			dist = sqrt(((double)(xm-ix))*((double)(xm-ix)) + ((double)(ym-iy))*((double)(ym-iy)));
 			if (dist<ndist)
 			{
 				ndist = dist;
@@ -377,9 +340,9 @@ void traverse_diagram()
 		/*
 		END GO END
 		*/
-		 
-      
-		
+
+
+
 		/*
 		GO HOME
 		*/
@@ -398,14 +361,14 @@ void traverse_diagram()
                 /*
 		END GO HOME
 		*/
-		
+
 	}
     }
     else if(ev.type==KeyPress){
         clear_msg();
 	kp=get_key_press(&ev);
 	char symb[3],nsymb[3];
-        
+
 	int found=0;
 
       switch(kp){
@@ -417,7 +380,7 @@ void traverse_diagram()
 	CUR_DIAGRAM=dnew;
 	traverse_out(d,&ix,&iy,1);
 	break;
-	
+
       case LEFT:
 	dnew=d->prev;
 	if(dnew==NULL)dnew=bifd;
@@ -433,9 +396,9 @@ void traverse_diagram()
        dold=d;
        while(1){
          dnew=d->next;
-	 if(dnew==NULL){dnew=d;break;} 
+	 if(dnew==NULL){dnew=d;break;}
 	 get_bif_sym(symb,dnew->itp);
-	 if(strcmp(symb,nsymb)==0){d=dnew;found=1;break;} 
+	 if(strcmp(symb,nsymb)==0){d=dnew;found=1;break;}
          d=dnew;
          /*if(d->lab==0)break;*/
        }
@@ -459,9 +422,9 @@ void traverse_diagram()
        dold=d;
        while(1){
          dnew=d->prev;
-	 if(dnew==NULL){dnew=d;break;} 
+	 if(dnew==NULL){dnew=d;break;}
 	 get_bif_sym(symb,dnew->itp);
-	 if(strcmp(symb,nsymb)==0){d=dnew;found=1;break;} 
+	 if(strcmp(symb,nsymb)==0){d=dnew;found=1;break;}
          d=dnew;
        }
        if (found)
@@ -476,7 +439,7 @@ void traverse_diagram()
        }
        CUR_DIAGRAM=d;
        traverse_out(d,&ix,&iy,1);
-       break; 
+       break;
       case TAB:
        XORCross(ix,iy);
        while(1){
@@ -560,7 +523,7 @@ void traverse_diagram()
        CUR_DIAGRAM=d;
        traverse_out(d,&ix,&iy,1);
        break;
-      
+
       case FINE:
 	done=1;
 	XORCross(ix,iy);
@@ -577,7 +540,7 @@ void traverse_diagram()
 	break;
       }
     }
-    
+
   }
   /*XORCross(ix,iy);
 */
@@ -615,7 +578,7 @@ void traverse_diagram()
   redraw_params();
   redraw_ics();
 }
-    
+
 
 
 
@@ -655,10 +618,10 @@ int byeauto_(nt,iflag)
 	   ch=get_key_press(&event);
           if(ch==ESC){*iflag=1;return(0);}
 	  break;
-	  
+
 	}
  }
- 
+
  return(0);
 
 
@@ -733,7 +696,7 @@ void XORCross(x,y)
    if(xorfix)
    {
 	   XSetForeground(display,small_gc,MyDrawWinColor);
- 	   XSetBackground(display,small_gc,MyForeColor);   
+ 	   XSetBackground(display,small_gc,MyForeColor);
    }
 
      XSetFunction(display,small_gc,GXxor);
@@ -744,10 +707,10 @@ void XORCross(x,y)
     LineWidth(1);
    if(xorfix)
    {
-	   XSetForeground(display,small_gc,MyForeColor);   
+	   XSetForeground(display,small_gc,MyForeColor);
  	   XSetBackground(display,small_gc,MyDrawWinColor);
    }
-  
+
   XFlush(display);
 }
 
@@ -756,7 +719,7 @@ void FillCircle(x,y,r)
      int x,y;
      int r;
 {
-  
+
     int  r2 = (int) (r / 1.41421356 + 0.5);
     int wh = 2 * r2;
 
@@ -766,7 +729,7 @@ void FillCircle(x,y,r)
 
 
 
-  
+
 
 void LineWidth(wid)
      int wid;
@@ -799,7 +762,7 @@ void auto_motion(ev)
 void display_auto(w)
 Window w;
 {
-	
+
   int ix,iy;
   if(Auto.exist==0)return;
   if(w==AutoW.canvas){if(AutoRedrawFlag==1)redraw_diagram();};
@@ -846,7 +809,7 @@ Window lil_button(root,x,y,name)
   XSelectInput(display,win,MYMASK);
   return(win);
 }
-  
+
 
 
 void make_auto(wname,iname)  /* this makes the auto window  */
@@ -871,24 +834,24 @@ void make_auto(wname,iname)  /* this makes the auto window  */
  Auto_x0=x;
  Auto_y0=y;
  base=make_plain_window(RootWindow(display,screen),0,0,wid,hgt,4);
- XSetWindowBackground(display,base,MyMainWinColor); 
+ XSetWindowBackground(display,base,MyMainWinColor);
  AutoW.base=base;
  strcpy(Auto.hinttxt,"hint");
  XSelectInput(display,base,ExposureMask|KeyPressMask|ButtonPressMask|
 		StructureNotifyMask);
  XStringListToTextProperty(&wname,1,&winname);
  XStringListToTextProperty(&iname,1,&iconname);
-  
+
  size_hints.flags=PPosition|PSize|PMinSize;
  size_hints.x=0;
  size_hints.y=0;
  size_hints.min_width=wid;
  size_hints.min_height=hgt;
- 
+
  XClassHint class_hints;
  class_hints.res_name="";
  class_hints.res_class="";
- 
+
  XSetWMProperties(display,base,&winname,&iconname,NULL,0,
 		  &size_hints,NULL,&class_hints);
  make_icon((char*)auto_bits,auto_width,auto_height,base);
@@ -933,14 +896,14 @@ void make_auto(wname,iname)  /* this makes the auto window  */
  AutoW.hint=make_plain_window(base,x,y+addhgt+6,STD_WID_var+xmargin,DCURY+2,2);
  draw_bif_axes();
 }
- 
+
 
 
 void resize_auto_window(XEvent ev)
 {
 
     int wid,hgt,addhgt=3.5*DCURY;
-  
+
     STD_HGT_var =20*DCURY;
     /*STD_WID_var =1.62*STD_HGT_var;*/
     STD_WID_var = 50*DCURX;
@@ -948,9 +911,9 @@ void resize_auto_window(XEvent ev)
     if(ev.xconfigure.window==AutoW.base){
     wid=ev.xconfigure.width-Auto_extra_wid;
     hgt=ev.xconfigure.height-Auto_extra_hgt;
-    
+
     addhgt=3.0*DCURY;
-    
+
     XResizeWindow(display,AutoW.canvas,wid,hgt);
     Window root;
     int xloc;
@@ -959,23 +922,23 @@ void resize_auto_window(XEvent ev)
     unsigned int chgt;
     unsigned int cbwid;
     unsigned int cdepth;
-    
+
     XGetGeometry(display,AutoW.canvas,&root,&xloc,&yloc,&cwid,&chgt,&cbwid,&cdepth);
     Auto.hgt=chgt-ymargin;
     Auto.wid=cwid-xmargin;
-    
+
     XMoveResizeWindow(display,AutoW.info,xloc,yloc+chgt+4,wid,addhgt);
     XMoveResizeWindow(display,AutoW.hint,xloc,yloc+chgt+addhgt+10,wid,DCURY+2);
-    
-    int ix,iy; 
-    
+
+    int ix,iy;
+
     if(NBifs<2)return;
     traverse_out(CUR_DIAGRAM,&ix,&iy,1);
-    
+
   }
 }
-    
-    
+
+
 
 
 void a_msg(i,v)
@@ -1038,7 +1001,7 @@ void auto_kill()
   waitasec(ClickTime);
   XDestroySubwindows(display,AutoW.base);
   XDestroyWindow(display,AutoW.base);
-  
+
 }
 
 void auto_keypress(ev,used)
@@ -1046,7 +1009,7 @@ void auto_keypress(ev,used)
      int *used;
 {
   Window w=ev.xkey.window;
- /* 
+ /*
   int maxlen=64;
   char buf[65];
   XComposeStatus comp;
@@ -1054,7 +1017,7 @@ void auto_keypress(ev,used)
   char ks;
   Window w2;
   int rev;
-  
+
   *used=0;
   if(Auto.exist==0)return;
   XGetInputFocus(display,&w2,&rev);
@@ -1075,17 +1038,14 @@ void auto_keypress(ev,used)
    if(ks=='P'||ks=='p'){ auto_params(); return;}
    if(ks=='F'||ks=='f'){ auto_file(); return;}
 
-   
+
    if(ks==ESC){
 			XSetInputFocus(display,command_pop,
 				       RevertToParent,CurrentTime);
 		   	return;
 		      }
-   
+
 
  }
-  
+
 }
- 
-
-

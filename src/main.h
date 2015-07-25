@@ -6,8 +6,11 @@
 
 /* --- Data --- */
 extern char anifile[XPP_MAX_NAME];
+extern int CURY_OFFb;
 extern unsigned int GrFore;
 extern unsigned int GrBack;
+extern unsigned int MyDrawWinColor;
+extern unsigned int MyMainWinColor;
 extern int TrueColorFlag;
 extern int use_ani_file;
 

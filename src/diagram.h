@@ -5,6 +5,7 @@
 #include "auto_nox.h"
 
 /* --- Data --- */
+extern DIAGRAM *bifd;
 extern int NBifs;
 
 /* --- Functions --- */

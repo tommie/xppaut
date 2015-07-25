@@ -15,6 +15,7 @@ typedef struct {
 } FIXINFO;
 
 /* --- Data --- */
+extern int ConvertStyle;
 extern int FIX_VAR;
 extern int *my_ode[MAXODE];
 extern int N_plist;

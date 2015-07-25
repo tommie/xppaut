@@ -1,17 +1,23 @@
-#include "xpplim.h"
+/* command-line stuff for xpp */
 #include "comline.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "adj2.h"
 #include "ggets.h"
+#include "integrate.h"
 #include "load_eqn.h"
 #include "lunch-new.h"
-#include <stdlib.h> 
-#include <string.h>
-/* command-line stuff for xpp */
-#include <stdio.h>
+#include "main.h"
+#include "xpplim.h"
+
 #define NCMD 41 /* add new commands as needed  */
 
 #define MAKEC 0
 #define XORFX 1
-#define SILENT 2 
+#define SILENT 2
 #define CONVERT 3
 #define NOICON 4
 #define NEWSEED 5
@@ -51,23 +57,6 @@
 #define DFDRAW 39
 #define NCDRAW 40
 
-extern OptionsSet notAlreadySet;
-
-extern char big_font_name[100],small_font_name[100];
-extern FILE *logfile;
-extern int XPPVERBOSE;
-extern int SuppressOut;
-extern int RunImmediately;
-extern int PaperWhite;
-extern int MSStyle;
-extern int got_file;
-
-/*
-char setfilename[100];
-char parfilename[100];
-char icfilename[100];
-char includefilename[MaxIncludeFiles][100];
-*/
 char setfilename[XPP_MAX_NAME];
 char parfilename[XPP_MAX_NAME];
 char icfilename[XPP_MAX_NAME];
@@ -75,42 +64,12 @@ char includefilename[MaxIncludeFiles][XPP_MAX_NAME];
 
 
 int NincludedFiles=0;
-extern char UserBlack[8];
-extern char UserWhite[8];
-extern char UserMainWinColor[8];
-extern char UserDrawWinColor[8];
-/*extern char UserBGBitmap[100];*/
-extern char UserBGBitmap[XPP_MAX_NAME];
-
-extern int UserGradients;
-extern int UserMinWidth;
-extern int UserMinHeight;
-extern int UserMinHeight;
-/*extern char UserOUTFILE[256];
-*/
-extern char UserOUTFILE[XPP_MAX_NAME];
-extern int tfBell;
-extern int use_intern_sets;
-extern int use_ani_file;
-/*extern char anifile[256];
-*/
-extern char anifile[XPP_MAX_NAME];
 int select_intern_sets=0;
 
-
-
-extern int Nintern_set;
 int Nintern_2_use=0;
 
 
 SET_NAME *sets2use,*setsNOTuse;
-
-extern INTERN_SET intern_set[MAX_INTERN_SET];
-
-
-/*extern char batchout[256];
-*/
-extern char batchout[XPP_MAX_NAME];
 
 int loadsetfile=0;
 int loadparfile=0;
@@ -120,15 +79,6 @@ int querysets=0;
 int querypars=0;
 int queryics=0;
 int dryrun=0;
-/*extern char this_file[100];
-*/
-extern char this_file[XPP_MAX_NAME];
-extern int XPPBatch,MakePlotFlag;
-extern int xorfix;
-extern int newseeed;
-extern int silent;
-extern int allwinvis;
-extern int ConvertStyle;
 int noicon=1;
 int newseed=0;
 typedef struct {
@@ -139,7 +89,7 @@ typedef struct {
 
 VOCAB my_cmd[NCMD]=
 {
-  {"-m",3},         
+  {"-m",3},
   {"-xorfix",7},
   {"-silent",7},
   {"-convert",8},
@@ -189,9 +139,9 @@ char * nam;
 {
 	if (set==NULL){return(0);}
 	SET_NAME *curr;
-	
+
 	curr=set;
-	
+
 	while(curr)
 	{
 		if (strcmp(curr->name,nam)==0)
@@ -200,7 +150,7 @@ char * nam;
 		}
 		curr=(SET_NAME*)curr->next;
 	}
-	
+
 	return(0);
 }
 
@@ -210,13 +160,13 @@ char * nam;
 {
 	if (!is_set_name(set,nam))
 	{
-		SET_NAME *curr;	
+		SET_NAME *curr;
 		curr = (SET_NAME *)malloc(sizeof(SET_NAME));
         	curr->name = (char *)nam;
 		curr->next  = (struct SET_NAME *)set;
 		set=curr;
 	}
-	
+
 	return(set);
 }
 
@@ -225,10 +175,10 @@ SET_NAME *set;
 char *nam;
 {
 	SET_NAME *curr;
-	SET_NAME *prev=NULL;	
-	
+	SET_NAME *prev=NULL;
+
 	if (set==NULL){return(NULL);}
-	
+
 	curr=set;
 	int i=1;
 	while(curr)
@@ -248,8 +198,8 @@ char *nam;
 		prev = curr;
 		i++;
 	}
-	
-	
+
+
 	return(set);
 }
 
@@ -257,7 +207,7 @@ char *nam;
 void do_comline(argc,argv)
 char **argv;
 int argc;
-{ 
+{
  int i,k;
 
  silent = 0;
@@ -276,7 +226,7 @@ int argc;
      strcpy(setfilename,argv[i+1]);
      i++;
      loadsetfile=1;
-     
+
    }
    if(k==2){
      if (notAlreadySet.SMALL_FONT_NAME){strcpy(small_font_name,argv[i+1]);notAlreadySet.SMALL_FONT_NAME=0;};
@@ -285,7 +235,7 @@ int argc;
    if(k==3){
      if (notAlreadySet.BIG_FONT_NAME){strcpy(big_font_name,argv[i+1]);notAlreadySet.BIG_FONT_NAME=0;};
      i++;
-   } 
+   }
    if(k==4){
      strcat(parfilename,"!load ");
      strcat(parfilename,argv[i+1]);
@@ -311,7 +261,7 @@ int argc;
      }
      set_option("FORECOLOR",argv[i+1],1,NULL);
      i++;
-     
+
    }
    if(k==8){
      if (strlen(argv[i+1]) != 6)
@@ -363,7 +313,7 @@ int argc;
      use_intern_sets=atoi(argv[i+1]);
      select_intern_sets=1;
      i++;
-   }  
+   }
    if(k==17){
      sets2use=add_set(sets2use,argv[i+1]);
      i++;
@@ -373,7 +323,7 @@ int argc;
      setsNOTuse=add_set(setsNOTuse,argv[i+1]);
      i++;
      select_intern_sets=1;
-   } 
+   }
    if(k==19){
      if (NincludedFiles>MaxIncludeFiles)
      {
@@ -383,7 +333,7 @@ int argc;
      NincludedFiles++;
      i++;
      loadincludefile=1;
-   } 
+   }
    if(k==20){
      set_option("QUIET",argv[i+1],1,NULL);
      i++;
@@ -407,18 +357,18 @@ int argc;
    }
    if(k==25){
      SuppressOut=1;
-     
+
    }
    if(k==26){
      set_option("DFDRAW",argv[i+1],1,NULL);
      i++;
-   } 
+   }
    if(k==27){
-    
+
      set_option("NCDRAW",argv[i+1],1,NULL);
      i++;
    }
-  
+
  }
 }
 
@@ -431,15 +381,15 @@ int if_needed_select_sets()
   	{
 		intern_set[j].use=use_intern_sets;
 		Nintern_2_use+=use_intern_sets;
-		
+
 		if (is_set_name(sets2use,intern_set[j].name))
 		{
 		plintf("Internal set %s was included\n",intern_set[j].name);
 			if (intern_set[j].use==0){Nintern_2_use++;}
 			intern_set[j].use=1;
-			
+
 		}
-		
+
 		if (is_set_name(setsNOTuse,intern_set[j].name))
 		{
 		plintf("Internal set %s was excluded\n",intern_set[j].name);
@@ -447,9 +397,9 @@ int if_needed_select_sets()
 			intern_set[j].use=0;
 		}
 	}
-	
+
 	plintf("A total of %d internal sets will be used\n",Nintern_2_use);
-	
+
 	return 1;
 }
 
@@ -489,7 +439,7 @@ int if_needed_load_par()
 
 int if_needed_load_ic()
 {
-  
+
   if(!loadicfile)
   {
   	return 1;
@@ -509,8 +459,8 @@ int parse_it(com)
     	{
     		break;
   	}
-  } 
-  
+  }
+
   if(j<NCMD){
     switch(j){
     case MAKEC:
@@ -534,7 +484,7 @@ int parse_it(com)
     case NEWSEED:
      plintf("Random number seed changed\n");
       newseed=1;
-      break;  
+      break;
     case ALLWIN:
       allwinvis=1;
       break;
@@ -560,7 +510,7 @@ int parse_it(com)
     case PARFILE:
       return 4;
     case OUTFILE:
-      return 5; 
+      return 5;
     case ICFILE:
       return 6;
     case FCOLOR:
@@ -588,17 +538,17 @@ int parse_it(com)
     case RSET:
       return 18;
     case INCLUDE:
-      return 19; 
+      return 19;
     case QUIET:
-      return 20; 
+      return 20;
     case LOGFILE:
-      return 21; 
+      return 21;
     case ANIFILE:
       return 22;
     case VERSION:
       return 23;
     case PLOTFMT:
-      return 24;  
+      return 24;
     case NOOUT:
       return 25;
     case DFDRAW:
@@ -610,7 +560,7 @@ int parse_it(com)
       querysets=1;
       dryrun=1;
       break;
-    case QPARS: 
+    case QPARS:
       XPPBatch=1;
       querypars=1;
       dryrun=1;
@@ -619,11 +569,11 @@ int parse_it(com)
       XPPBatch=1;
       queryics=1;
       dryrun=1;
-      break; 
+      break;
     }
   }
   else {
-    if(com[0]=='-'||got_file==1){ 
+    if(com[0]=='-'||got_file==1){
      plintf("Problem reading option %s\n",com);
      plintf("\nUsage: xppaut filename [options ...]\n\n");
      plintf("Options:\n");
@@ -646,7 +596,7 @@ int parse_it(com)
      plintf("  -backimage <filename>  Name of bitmap file (.xbm) to load in background\n");
      plintf("  -mwcolor <######>      Hexadecimal color (e.g. 808080) for main window\n");
      plintf("  -dwcolor <######>      Hexadecimal color (e.g. FFFFFF) for drawing window\n");
-     plintf("  -grads < 1 | 0 >       Color gradients will | won't be used\n"); 
+     plintf("  -grads < 1 | 0 >       Color gradients will | won't be used\n");
      plintf("  -width N               Minimum width in pixels of main window\n");
      plintf("  -height N              Minimum height in pixels of main window\n");
      plintf("  -bell < 1 | 0 >        Events will | won't trigger system bell\n");
@@ -665,7 +615,7 @@ int parse_it(com)
      plintf(" -ncdraw 1               Draw nullclines in batch \n");
          plintf(" -dfdraw <1|2>       Draw dfields in batch  \n");
      plintf("  -version               Print XPPAUT version and exit \n");
-     
+
      plintf("\n");
 
      plintf("Environment variables:\n");
@@ -682,10 +632,3 @@ int parse_it(com)
   }
   return 0;
 }
-
-
-
-
-
-
-

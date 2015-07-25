@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "newpars.h"
+#include "shoot.h"
 #include "xpplim.h"
 
 /* --- Macros --- */
@@ -16,7 +17,9 @@ typedef struct {
 
 /* --- Data --- */
 extern int ConvertStyle;
+extern int EqType[MAXODE];
 extern int FIX_VAR;
+extern BC_STRUCT my_bc[MAXODE];
 extern int *my_ode[MAXODE];
 extern int N_plist;
 extern int NCON;

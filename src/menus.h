@@ -31,6 +31,7 @@ extern char *fileoff_menu[];
 extern char *main_hint[];
 extern char *file_hint[];
 extern char *num_hint[];
+extern char *edrh_hint[];
 extern char *auto_hint[];
 extern char *no_hint[];
 extern char *aaxes_hint[];

@@ -1,33 +1,32 @@
-
 #include "edit_rhs.h"
-#include "init_conds.h"
-#include "browse.h"
-#include "auto_x11.h"
-#include "extra.h"
-#include "ggets.h"
-#include "many_pops.h"
-#include "pop_list.h"
-#include "parserslow.h"
 
+#ifndef HAVE_WCTYPE_H
+# include <ctype.h>
+#else
+# include <wctype.h>
+#endif
+#include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <stdio.h>
 #include <X11/cursorfont.h>
-#include <math.h>
-#ifndef WCTYPE
-#include <ctype.h>
-#else
-#include <wctype.h>
-#endif
 
-#include "xpplim.h"
-#include "struct.h"
-#include "shoot.h"
+#include "auto_x11.h"
+#include "browse.h"
+#include "extra.h"
+#include "form_ode.h"
+#include "ggets.h"
+#include "init_conds.h"
 #include "load_eqn.h"
-
-
+#include "many_pops.h"
+#include "menus.h"
+#include "parserslow.h"
+#include "pop_list.h"
+#include "shoot.h"
+#include "struct.h"
+#include "xpplim.h"
 
 
 #define EV_MASK (ButtonPressMask 	|\
@@ -42,39 +41,7 @@
 		EnterWindowMask		|\
 		LeaveWindowMask)
 
-extern Display *display;
-extern int screen;
-extern Window main_win,info_pop,draw_win,main_win;
-extern int DCURY,DCURX,CURY_OFF,xor_flag;
-extern GC gc;
-extern unsigned int MyBackColor,MyForeColor;
-
 char *get_next(),*get_first();
-
-
-extern char uvar_names[MAXODE][12];
-extern char *ode_names[MAXODE];
-extern int METHOD,NEQ,NODE,NMarkov,FIX_VAR;
-
-extern char *info_message,*edrh_hint[];
-extern int *my_ode[];
-extern int NUPAR;
-extern double last_ic[MAXODE];
-
-/*extern char upar_names[MAXPAR][11],this_file[100];*/
-
-extern char upar_names[MAXPAR][11],this_file[XPP_MAX_NAME];
-extern int EqType[MAXODE];
-
-extern char *ufun_def[MAXUFUN];
-extern char ufun_names[MAXUFUN][12];
-extern int narg_fun[MAXUFUN], *ufun[MAXUFUN];
-
-
-
-extern BC_STRUCT my_bc[MAXODE];
-
-extern int NFUN;
 Window make_window();
 
 

@@ -8,6 +8,7 @@
 #define ClickTime 200
 
 /* --- Data --- */
+extern char *info_message;
 extern int MSStyle;
 
 /* --- Functions --- */

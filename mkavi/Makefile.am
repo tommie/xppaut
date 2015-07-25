@@ -1,17 +1,16 @@
-AM_CFLAGS = -Wall
+AM_CXXFLAGS = -Wall
 
-# Does not compile.
-#bin_PROGRAMS = \
-#	mkavi
+bin_PROGRAMS = \
+	mkavi
 
 noinst_LIBRARIES = \
 	libmkavi.a
 
-#mkavi_SOURCES = \
-#	drive.c
+mkavi_SOURCES = \
+	drive.cc
 
-#mkavi_LDADD = \
-#	libmkavi.a
+mkavi_LDADD = \
+	libmkavi.a
 
 noinst_HEADERS = \
 	avi.h \

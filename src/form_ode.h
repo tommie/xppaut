@@ -25,6 +25,7 @@ extern int N_plist;
 extern int NCON;
 extern int NCON_START;
 extern int NEQ_MIN;
+extern int NMarkov;
 extern int NODE;
 extern int NSYM_START;
 extern char *ode_names[MAXODE];

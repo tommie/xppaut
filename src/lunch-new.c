@@ -9,7 +9,7 @@
 #include "init_conds.h"
 
 #include "numerics.h"
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -43,7 +43,7 @@ int set_type=0;
 
 extern FIXINFO fixinfo[MAXODE];
 extern int FIX_VAR,NFUN;
- 
+
  extern int NJMP,NMESH,METHOD,NODE,POIMAP,POIVAR,POISGN,SOS,INFLAG,NMarkov;
  extern int NUPAR,NEQ,BVP_MAXIT,EVEC_ITER,DelayFlag,MyStart;
  extern double last_ic[MAXODE],MyData[MAXODE],MyTime,LastTime;
@@ -52,8 +52,8 @@ extern int FIX_VAR,NFUN;
 extern double BVP_TOL,BVP_EPS;
 extern int MaxPoints;
 
- extern char upar_names[MAXPAR][11],this_file[100],delay_string[MAXODE][80];
- extern char uvar_names[MAXODE][12]; 
+ extern char upar_names[MAXPAR][11],this_file[XPP_MAX_NAME],delay_string[MAXODE][80];
+ extern char uvar_names[MAXODE][12];
  extern char *ode_names[MAXODE],*fix_names[MAXODE];
 
 
@@ -67,7 +67,7 @@ void file_inf()
  ping();
  if(!file_selector("Save info",filename,"*.pars*"))return;
  /* if(new_string("Filename: ",filename)==0)return; */
-  open_write_file(&fp,filename,&ok); 
+  open_write_file(&fp,filename,&ok);
    if(!ok)return;
     redraw_params();
     do_info(fp);
@@ -94,9 +94,9 @@ void ps_write_pars(FILE *fp)
       get_val(upar_names[i+4*div],&z);
       fprintf(fp,"%%%% %s=%.16g   ",upar_names[i+4*div],z);
     }
-   
+
  fprintf(fp,"\n");
-} 
+}
 
 void do_info(fp)
 FILE *fp;
@@ -124,16 +124,16 @@ FILE *fp;
      fprintf(fp,"%s = %s \n",fixinfo[i].name,fixinfo[i].value);
  }
   if(NFUN>0){
-   fprintf(fp, "\nUser-defined functions:\n"); 
+   fprintf(fp, "\nUser-defined functions:\n");
    user_fun_info(fp);
  }
- 
- 
+
+
  fprintf(fp,"\n\n Numerical parameters ...\n");
 
 
-    
-     
+
+
  fprintf(fp,"NJMP=%d  NMESH=%d METHOD=%s EVEC_ITER=%d \n",
 	 NJMP,NMESH,method[METHOD],EVEC_ITER);
  fprintf(fp,"BVP_EPS=%g,BVP_TOL=%g,BVP_MAXIT=%d \n",
@@ -146,15 +146,15 @@ FILE *fp;
 	   else strcpy(bob,uvar_names[POIVAR-1]);
  fprintf(fp,"POIMAP=%d POIVAR=%s POIPLN=%g POISGN=%d \n",
         POIMAP,bob,POIPLN,POISGN);
- 
+
  fprintf(fp,"\n\n Delay strings ...\n");
- 
+
  for(i=0;i<NODE;i++)fprintf(fp,"%s\n",delay_string[i]);
   fprintf(fp,"\n\n BCs ...\n");
- 
+
  for(i=0;i<NODE;i++)fprintf(fp,"0=%s\n",my_bc[i].string);
  fprintf(fp,"\n\n ICs ...\n");
- 
+
  for(i=0;i<NODE+NMarkov;i++)fprintf(fp,"%s=%.16g\n",uvar_names[i],last_ic[i]);
  fprintf(fp,"\n\n Parameters ...\n");
  div=NUPAR/4;
@@ -171,10 +171,10 @@ FILE *fp;
       get_val(upar_names[i+4*div],&z);
       fprintf(fp,"%s=%.16g   ",upar_names[i+4*div],z);
     }
-   
+
  fprintf(fp,"\n");
 }
-  
+
 
 int read_lunch(FILE *fp)
 {
@@ -212,7 +212,7 @@ int read_lunch(FILE *fp)
    dump_torus(fp,f);
    dump_range(fp,f);
    }
-  
+
    return 1;
 }
 
@@ -227,12 +227,12 @@ int f;
  /*char filename[256];*/
  char filename[XPP_MAX_NAME];
  sprintf(filename,"%s.set",this_file);
- 
+
 
  if(f==READEM){
    ping();
   if(!file_selector("Load SET File",filename,"*.set"))return;
-  
+
    fp=fopen(filename,"r");
    if(fp==NULL){
      err_msg("Cannot open file");
@@ -274,7 +274,7 @@ int f;
    return;
  }
   if(!file_selector("Save SET File",filename,"*.set"))return;
-  open_write_file(&fp,filename,&ok); 
+  open_write_file(&fp,filename,&ok);
    if(!ok)return;
  redraw_params();
  ttt=time(0);
@@ -291,18 +291,18 @@ int f;
    dump_h_stuff(fp,f);
    dump_aplot(fp,f);
    dump_torus(fp,f);
-   dump_range(fp,f);  
+   dump_range(fp,f);
    dump_eqn(fp);
    fclose(fp);
 }
- 
- 
+
+
 
 void dump_eqn(fp)
 FILE *fp;
 {
  int i;
- 
+
 
  char fstr[15];
  fprintf(fp,"RHS etc ...\n");
@@ -319,12 +319,12 @@ FILE *fp;
      fprintf(fp,"%s = %s \n",fixinfo[i].name,fixinfo[i].value);
  }
   if(NFUN>0){
-   fprintf(fp, "\nUser-defined functions:\n"); 
+   fprintf(fp, "\nUser-defined functions:\n");
    user_fun_info(fp);
  }
- 
+
 }
-    
+
 
 void io_numerics(f,fp)
 int f;
@@ -358,7 +358,7 @@ if(f==READEM){
    else
      ATOLER=TOLER*10;
  }
- else 
+ else
    io_double(&ATOLER,fp,f,"Abs. Tolerance");
 
 io_double(&DELAY,fp,f,"Max Delay");
@@ -436,7 +436,7 @@ void io_ic_file(char *fn,int flag)
   int chk=0;
   FILE *fp;
   char msg[256];
-  
+
   for(i=0;i<strlen(fn);i++){
     c=fn[i];
     if(c!=' '){
@@ -455,15 +455,15 @@ void io_ic_file(char *fn,int flag)
       {
       	chk=fscanf(fp,"%lg",&last_ic[i]);
 	if (chk!=1)
-	{	
+	{
 		sprintf(msg,"Expected %d initial conditions but only found %d in %s.",NODE,i,fn);
 		err_msg(msg);
-		return;	
+		return;
 	}
       	/*printf("chk=%d\n",chk);*/
       }
-      
-      while (chk != EOF) 
+
+      while (chk != EOF)
       {
       	chk=fscanf(fp,"%lg",&last_ic[i]);
 	if (chk!=EOF)
@@ -474,8 +474,8 @@ void io_ic_file(char *fn,int flag)
 	}
       }
     fclose(fp);
-    }  
-      
+    }
+
      /* io_int(&np,fp,flag," ");
       if(np!=NUPAR){
 	err_msg("Incompatible parameters");
@@ -499,7 +499,7 @@ void io_ic_file(char *fn,int flag)
   fprintf(fp,"\n\nFile:%s\n%s",this_file, ctime(&ttt));
   fclose(fp);
   */
-} 
+}
 
 
 
@@ -518,7 +518,7 @@ FILE *fp;
   else {
     io_double(&z,fp,f," ");
     set_val(upar_names[i],z);
-    
+
     if (!XPPBatch)
     {
 	    index=find_user_name(PARAMBOX,upar_names[i]);
@@ -531,7 +531,7 @@ FILE *fp;
 	      }
     }
   }
-  
+
   if (!XPPBatch)
   {
   	reset_sliders();
@@ -580,8 +580,8 @@ if(f!=READEM)
     set_val(upar_names[i],z);
   }
 }
-  
-   
+
+
  if(f==READEM&&Xup){
    redraw_bcs();
    redraw_ics();
@@ -589,8 +589,8 @@ if(f!=READEM)
    redraw_params();
  }
 }
-   
- 
+
+
 
 
 
@@ -654,7 +654,7 @@ if(f!=READEM)
     if(f==READEM&&Xup)redraw_the_graph();
 }
 
- 
+
 void io_int(i,fp,f,ss)
 int *i,f;
 FILE *fp;
@@ -681,7 +681,7 @@ char bob[256];
    *z=atof(bob);
  }
  else
- fprintf(fp,"%.16g  %s\n",*z,ss); 
+ fprintf(fp,"%.16g  %s\n",*z,ss);
 }
 
 void io_float(z,fp,f,ss)
@@ -696,7 +696,7 @@ if(f==READEM){
    *z=(float)atof(bob);
  }
  else
- fprintf(fp,"%.16g   %s\n",*z,ss); 
+ fprintf(fp,"%.16g   %s\n",*z,ss);
 }
 /*
 io_int_array(k,n,fp,f)
@@ -731,17 +731,6 @@ int f,len;
      i++;
    }
  }
- else 
+ else
    fprintf(fp,"%s\n",s);
 }
-
-
-    
-
-
-
-
-
-
-
-

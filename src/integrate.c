@@ -191,7 +191,6 @@ extern char UserOUTFILE[256];
 
 extern double DELAY;
 extern int R_COL;
-extern int colorline[11];
 extern int (*rhs)();
 int STOP_FLAG=0;
 int PSLineStyle;

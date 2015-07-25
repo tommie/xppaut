@@ -1,30 +1,47 @@
+/* A simple animator */
 #include "aniparse.h"
-#include "color.h"
-#include "parserslow.h"
-#include "strutil.h"
-#include "form_ode.h"
-#include "my_rhs.h"
-#include "nullcline.h"
-#include "dialog_box.h"
-#include "ggets.h"
-#include "init_conds.h"
-#include "many_pops.h"
-#include "menudrive.h"
-#include "pop_list.h"
-#include <unistd.h>
-#include "scrngif.h"
-#include "load_eqn.h"
-#include "integrate.h"
-#include "sys/types.h"
-#include "sys/stat.h"
-#include <sys/time.h>
+
+#ifndef HAVE_WCTYPE_H
+# include <ctype.h>
+#else
+# include <wctype.h>
+#endif
 #include <fcntl.h>
+#include <libgen.h>
+#include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <libgen.h>
-/*  A simple animator
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <X11/Xlib.h>
+#include <X11/Xproto.h>
+#include <X11/Xutil.h>
 
-*/
+#include "browse.h"
+#include "color.h"
+#include "dialog_box.h"
+#include "form_ode.h"
+#include "ggets.h"
+#include "graf_par.h"
+#include "graphics.h"
+#include "init_conds.h"
+#include "integrate.h"
+#include "load_eqn.h"
+#include "main.h"
+#include "many_pops.h"
+#include "menudrive.h"
+#include "my_rhs.h"
+#include "nullcline.h"
+#include "parserslow.h"
+#include "pop_list.h"
+#include "scrngif.h"
+#include "strutil.h"
+#include "toons.h"
+#include "xpplim.h"
+#include "bitmap/aniwin.bitmap"
 
 
 /***************   NOTES ON MPEG STUFF   ********************
@@ -61,20 +78,6 @@ want to alter the ordering below
 
 /**************************************************************/
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xproto.h>
-#include <stdio.h>
-#include <math.h>
-#ifndef WCTYPE
-#include <ctype.h>
-#else
-#include <wctype.h>
-#endif
-#include "xpplim.h"
-#include "browse.h"
-#include "toons.h"
-#include "bitmap/aniwin.bitmap"
 
 #define MAX_LEN_SBOX 25
 
@@ -125,27 +128,13 @@ int ani_grab_flag=0;
 int who_was_grabbed;
 double get_ivar(int);
 
-extern double last_ic[MAXODE],T0;
-
-
 /************************8  end grabber **********************/
 
 #define FIRSTCOLOR 30
 int on_the_fly_speed=10;
 int animation_on_the_fly=0;
-extern int TrueColorFlag;
-extern char *color_names[11];
-extern int colorline[];
-extern Display *display;
-extern XFontStruct *symfonts[5],*romfonts[5];
-extern int avsymfonts[5],avromfonts[5];
-extern int color_total,screen;
-extern int DCURX,DCURXs,DCURY,DCURYs,CURY_OFFs,CURY_OFF,NODE;
-extern int  FIX_VAR,NMarkov;
-extern GC small_gc;
 double evaluate();
 double atof();
-extern BROWSER my_browser;
 
 int aniflag;
 int LastAniColor;
@@ -153,8 +142,6 @@ int ani_line;
 
 int ani_speed=10;
 int ani_speed_inc=2;
-/*extern char this_file[100];*/
-extern char this_file[XPP_MAX_NAME];
 
 double ani_xlo=0,ani_xhi=1,ani_ylo=0,ani_yhi=1;
 double ani_lastx,ani_lasty;
@@ -214,9 +201,6 @@ int ani_text_color;
 int ani_text_font;
 
 GC ani_gc;
-
-extern int use_ani_file;
-extern char anifile[256];
 
 
 

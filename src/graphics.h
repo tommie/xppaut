@@ -8,6 +8,7 @@ extern int HChar, VChar;
 extern int DBottom, DLeft, DRight, DTop;
 extern double XMin, YMin, XMax, YMax;
 extern int PointType;
+extern int PS_Port;
 extern XFontStruct *romfonts[5];
 extern XFontStruct *symfonts[5];
 extern int TextJustify;

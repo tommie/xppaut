@@ -192,6 +192,9 @@ typedef struct {
 } OptionsSet;
 
 /* --- Data --- */
+extern double x_3d[2];
+extern double y_3d[2];
+extern double z_3d[2];
 extern double ATOLER;
 extern double BOUND;
 extern int BVP_FLAG;
@@ -216,6 +219,7 @@ extern int RunImmediately;
 extern int SHOOT;
 extern double T0;
 extern char this_file[XPP_MAX_NAME];
+extern char this_internset[XPP_MAX_NAME];
 extern double TOLER;
 extern int xorfix;
 

@@ -22,6 +22,7 @@ extern unsigned int MyForeColor;
 extern unsigned int MyDrawWinColor;
 extern unsigned int MyMainWinColor;
 extern OptionsSet notAlreadySet;
+extern char PlotFormat[100];
 extern int SCALEX;
 extern int SCALEY;
 extern int tfBell;

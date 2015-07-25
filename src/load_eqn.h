@@ -195,6 +195,9 @@ typedef struct {
 extern double ATOLER;
 extern double BOUND;
 extern int BVP_FLAG;
+extern double DELAY;
+extern char delay_string[MAXODE][80];
+extern double DELTA_T;
 extern double EVEC_ERR;
 extern int EVEC_ITER;
 extern int got_file;
@@ -205,6 +208,7 @@ extern double NEWT_ERR;
 extern int Nintern_set;
 extern int NJMP;
 extern int RunImmediately;
+extern double T0;
 extern char this_file[XPP_MAX_NAME];
 extern double TOLER;
 extern int xorfix;

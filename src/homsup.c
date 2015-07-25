@@ -1,26 +1,27 @@
 #include "homsup.h"
 
-#include <stdlib.h> 
-#include "f2c.h"
+#include <stdlib.h>
 #include <math.h>
+#include "f2c.h"
+#include "form_ode.h"
+#include "load_eqn.h"
+
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
 #define COMPZERO 1e-13
-extern int NODE;
-extern double NEWT_ERR;
-int (*rhs)(); 
+int (*rhs)();
 typedef struct {
   int nunstab,nstab,n; /* dimension of unstable, stable, phasespace */
   int eleft,eright; /* addresses of variables holding left and right
                        equilibria */
   int u0; /* address of first phase variable */
   double cprev[1600],a[400];
-  int iflag[4];	
-  double fb[400]; /* values of the boundary projections 
+  int iflag[4];
+  double fb[400]; /* values of the boundary projections
                      first nstab are proj to unstable mfld
                      at left ane then the proj to the stabl
-		     mfld on the right */ 
-                   
+		     mfld on the right */
+
 
 } HOMOCLIN;
 
@@ -51,28 +52,28 @@ void do_projection(double *x0,double t0,double *x1,double t1)
   double y[400],f[400],fnew[400];
   double bound[400];
   double eps=NEWT_ERR,del,dsy,yold;
-  
+
   int i,j,n=my_hom.n,nunstab=my_hom.nunstab,nstab=my_hom.nstab;
-  int imfld=-1,itrans=2,is=1;  /* stored in transpose form 
+  int imfld=-1,itrans=2,is=1;  /* stored in transpose form
 				  so dont transpose */
   /* first we take care of the left */
-  /* plintf("n=%d nu=%d ns=%d no=%d \n", 
+  /* plintf("n=%d nu=%d ns=%d no=%d \n",
      n,nunstab,nstab,NODE); */
   for(i=0;i<n;i++){
     y[i]=x0[i+my_hom.eleft];
-    
+
   }
   for(i=n;i<NODE;i++)
     y[i]=x0[i];
   /* Jacobian around the left equilibrium */
   rhs(t0,y,f,NODE);
   for(i=0;i<n;i++){
-    
+
     del=eps*MAX(eps,fabs(y[i]));
     dsy=1/del;
     yold=y[i];
     y[i]=y[i]+del;
-    
+
     rhs(t0,y,fnew,NODE);
     for(j=0;j<n;j++){
       my_hom.a[j*n+i]=dsy*(fnew[j]-f[j]);
@@ -80,17 +81,17 @@ void do_projection(double *x0,double t0,double *x1,double t1)
     }
     y[i]=yold;
   }
-  projection_(bound, &imfld, &is, &itrans); 
+  projection_(bound, &imfld, &is, &itrans);
   for(i=0;i<nstab;i++){
     my_hom.fb[i]=0.0;
     for(j=0;j<n;j++){
       my_hom.fb[i]+=((x0[j]-y[j])*bound[i+j*20]);
     }
   }
-  /* okay - thats all the BCs associated with the left 
-     end. I.e. The projection onto the UNSTABLE MFLD 
+  /* okay - thats all the BCs associated with the left
+     end. I.e. The projection onto the UNSTABLE MFLD
   */
- 
+
   /* Now the right side !!  */
   for(i=0;i<n;i++)
     y[i]=x0[i+my_hom.eright];
@@ -110,7 +111,7 @@ void do_projection(double *x0,double t0,double *x1,double t1)
   }
   imfld=1;
   is=2;
-  projection_(bound, &imfld, &is, &itrans); 
+  projection_(bound, &imfld, &is, &itrans);
   for(i=0;i<nunstab;i++){
     my_hom.fb[i+nstab]=0.0;
     for(j=0;j<n;j++){
@@ -129,9 +130,9 @@ int pdfdu_(double *a,int n)
  for(j=0;j<n;j++)
    for(i=0;i<n;i++){
      a[i+j*20]=my_hom.a[i+j*n];
-    
+
    }
-  
+
   return(1);
 }
 
@@ -183,7 +184,7 @@ integer *imfd, *is, *itrans;
 
 
     /* Parameter adjustments */
-    
+
     bound -= 21;
 
     /* Function Body */
@@ -212,7 +213,7 @@ integer *imfd, *is, *itrans;
 	    }
 	}
     }
-  
+
 /* Compute basis V to put A in upper Hessenberg form */
 
     orthes_(&c__20, &n, &c__1, &n, a, ort);
@@ -233,7 +234,7 @@ integer *imfd, *is, *itrans;
 /* Computes basis to put A in "Quasi Upper-Triangular form" */
 /* with the positive (negative) eigenvalues first if IMFD =-1 (=1) */
 
-    hqr3loc_(a, v, &c__20, &c__1, &n, &eps, er, ei, type__, &c__20, &c__20, 
+    hqr3loc_(a, v, &c__20, &c__1, &n, &eps, er, ei, type__, &c__20, &c__20,
 	    imfd);
 
 /* put the basis in the appropriate part of the matrix CNOW */
@@ -264,7 +265,7 @@ integer *imfd, *is, *itrans;
 	for (i__ = k1; i__ <= i__1; ++i__) {
 	    i__2 = my_hom.n;
 	    for (j = 1; j <= i__2; ++j) {
-		my_hom.cprev[i__ + (j + (*is + (*itrans << 1)) * 20) * 20 - 
+		my_hom.cprev[i__ + (j + (*is + (*itrans << 1)) * 20) * 20 -
 			1221] = cnow[i__ + j * 20 - 21];
 		bound[i__ + j * 20] = cnow[i__ + j * 20 - 21];
 		/* plintf(" i=%d j=%d b=%g \n",i__,j,bound[i__ + j * 20]); */
@@ -284,11 +285,11 @@ integer *imfd, *is, *itrans;
 	    dum2[i__ + j * 20 - 21] = 0.;
 	    i__3 = my_hom.n;
 	    for (k = 1; k <= i__3; ++k) {
-		dum1[i__ + j * 20 - 21] += my_hom.cprev[i__ + m0 + (k + (*is 
-			+ (*itrans << 1)) * 20) * 20 - 1221] * cnow[j + m0 + 
+		dum1[i__ + j * 20 - 21] += my_hom.cprev[i__ + m0 + (k + (*is
+			+ (*itrans << 1)) * 20) * 20 - 1221] * cnow[j + m0 +
 			k * 20 - 21];
-		dum2[i__ + j * 20 - 21] += my_hom.cprev[i__ + m0 + (k + (*is 
-			+ (*itrans << 1)) * 20) * 20 - 1221] * my_hom.cprev[j 
+		dum2[i__ + j * 20 - 21] += my_hom.cprev[i__ + m0 + (k + (*is
+			+ (*itrans << 1)) * 20) * 20 - 1221] * my_hom.cprev[j
 			+ m0 + (k + (*is + (*itrans << 1)) * 20) * 20 - 1221];
 	    }
 	}
@@ -297,7 +298,7 @@ integer *imfd, *is, *itrans;
     if (mcond != 1) {
 	ifail = 0;
 
-	f04aef_(dum1, &c__20, dum2, &c__20, &mcond, &mcond, d__, &c__20, 
+	f04aef_(dum1, &c__20, dum2, &c__20, &mcond, &mcond, d__, &c__20,
 		wkspace, aa, &c__20, bb, &c__20, &ifail);
     } else {
 	d__[0] = dum2[0] / dum1[0];
@@ -310,7 +311,7 @@ integer *imfd, *is, *itrans;
 	    bound[i__ + m0 + j * 20] = (float)0.;
 	    i__3 = mcond;
 	    for (k = 1; k <= i__3; ++k) {
-		bound[i__ + m0 + j * 20] += d__[k + i__ * 20 - 21] * cnow[k + 
+		bound[i__ + m0 + j * 20] += d__[k + i__ * 20 - 21] * cnow[k +
 			m0 + j * 20 - 21];
 	    }
 	}
@@ -320,7 +321,7 @@ integer *imfd, *is, *itrans;
     for (i__ = k1; i__ <= i__1; ++i__) {
 	i__2 = my_hom.n;
 	for (j = 1; j <= i__2; ++j) {
-	    my_hom.cprev[i__ + (j + (*is + (*itrans << 1)) * 20) * 20 - 1221] 
+	    my_hom.cprev[i__ + (j + (*is + (*itrans << 1)) * 20) * 20 - 1221]
 		    = bound[i__ + j * 20];
 	}
     }
@@ -383,8 +384,8 @@ L40:
     if (l == *nlow) {
 	goto L50;
     }
-    if ((d__1 = a[l + (l - 1) * a_dim1], abs(d__1)) <= *eps * ((d__2 = a[l - 
-	    1 + (l - 1) * a_dim1], abs(d__2)) + (d__3 = a[l + l * a_dim1], 
+    if ((d__1 = a[l + (l - 1) * a_dim1], abs(d__1)) <= *eps * ((d__2 = a[l -
+	    1 + (l - 1) * a_dim1], abs(d__2)) + (d__3 = a[l + l * a_dim1],
 	    abs(d__3)))) {
 	goto L50;
     }
@@ -492,18 +493,18 @@ L110:
 /*    * MU+1)*A(MU+2,MU+2)-A(MU+1,MU+2)*A(MU+2,MU+1)) GO TO 230 */
 
     if (*imfd == 1) {
-	if (a[mu - 1 + (mu - 1) * a_dim1] + a[mu + mu * a_dim1] >= a[mu + 1 + 
+	if (a[mu - 1 + (mu - 1) * a_dim1] + a[mu + mu * a_dim1] >= a[mu + 1 +
 		(mu + 1) * a_dim1] + a[mu + 2 + (mu + 2) * a_dim1]) {
 	    goto L230;
 	}
     } else {
-	if (a[mu - 1 + (mu - 1) * a_dim1] + a[mu + mu * a_dim1] <= a[mu + 1 + 
+	if (a[mu - 1 + (mu - 1) * a_dim1] + a[mu + mu * a_dim1] <= a[mu + 1 +
 		(mu + 1) * a_dim1] + a[mu + 2 + (mu + 2) * a_dim1]) {
 	    goto L230;
 	}
     }
 
-    exchng_(&a[a_offset], &v[v_offset], n, &nl, &c__2, &c__2, eps, &fail, na, 
+    exchng_(&a[a_offset], &v[v_offset], n, &nl, &c__2, &c__2, eps, &fail, na,
 	    nv);
     if (! fail) {
 	goto L120;
@@ -522,18 +523,18 @@ L130:
 /*    * MU+1)**2) GO TO 230 */
 
     if (*imfd == 1) {
-	if (a[mu - 1 + (mu - 1) * a_dim1] + a[mu + mu * a_dim1] >= a[mu + 1 + 
+	if (a[mu - 1 + (mu - 1) * a_dim1] + a[mu + mu * a_dim1] >= a[mu + 1 +
 		(mu + 1) * a_dim1] * 2.) {
 	    goto L230;
 	}
     } else {
-	if (a[mu - 1 + (mu - 1) * a_dim1] + a[mu + mu * a_dim1] <= a[mu + 1 + 
+	if (a[mu - 1 + (mu - 1) * a_dim1] + a[mu + mu * a_dim1] <= a[mu + 1 +
 		(mu + 1) * a_dim1] * 2.) {
 	    goto L230;
 	}
     }
 
-    exchng_(&a[a_offset], &v[v_offset], n, &nl, &c__2, &c__1, eps, &fail, na, 
+    exchng_(&a[a_offset], &v[v_offset], n, &nl, &c__2, &c__1, eps, &fail, na,
 	    nv);
     if (! fail) {
 	goto L140;
@@ -573,18 +574,18 @@ L180:
 /*    * A(MU+2,MU+1)) GO TO 220 */
 
     if (*imfd == 1) {
-	if (a[mu + mu * a_dim1] * 2. >= a[mu + 1 + (mu + 1) * a_dim1] + a[mu 
+	if (a[mu + mu * a_dim1] * 2. >= a[mu + 1 + (mu + 1) * a_dim1] + a[mu
 		+ 2 + (mu + 2) * a_dim1]) {
 	    goto L220;
 	}
     } else {
-	if (a[mu + mu * a_dim1] * 2. <= a[mu + 1 + (mu + 1) * a_dim1] + a[mu 
+	if (a[mu + mu * a_dim1] * 2. <= a[mu + 1 + (mu + 1) * a_dim1] + a[mu
 		+ 2 + (mu + 2) * a_dim1]) {
 	    goto L220;
 	}
     }
 
-    exchng_(&a[a_offset], &v[v_offset], n, &mu, &c__1, &c__2, eps, &fail, na, 
+    exchng_(&a[a_offset], &v[v_offset], n, &mu, &c__1, &c__2, eps, &fail, na,
 	    nv);
     if (! fail) {
 	goto L190;
@@ -610,7 +611,7 @@ L200:
 	}
     }
 
-    exchng_(&a[a_offset], &v[v_offset], n, &mu, &c__1, &c__1, eps, &fail, na, 
+    exchng_(&a[a_offset], &v[v_offset], n, &mu, &c__1, &c__1, eps, &fail, na,
 	    nv);
     ++mu;
 L210:
@@ -863,7 +864,7 @@ integer *na, *nv;
     i__1 = *n;
     for (j = *l; j <= i__1; ++j) {
 	s = p * a[*l + j * a_dim1] + q * a[*l + 1 + j * a_dim1];
-	a[*l + 1 + j * a_dim1] = p * a[*l + 1 + j * a_dim1] - q * a[*l + j * 
+	a[*l + 1 + j * a_dim1] = p * a[*l + 1 + j * a_dim1] - q * a[*l + j *
 		a_dim1];
 	a[*l + j * a_dim1] = s;
 /* L10: */
@@ -909,7 +910,7 @@ L60:
     i__1 = *l + 2;
     qrstep_(&a[a_offset], &v[v_offset], &p, &q, &r__, l, &i__1, n, na, nv);
     if ((d__1 = a[*l + 2 + (*l + 1) * a_dim1], abs(d__1)) > *eps * ((d__2 = a[
-	    *l + 1 + (*l + 1) * a_dim1], abs(d__2)) + (d__3 = a[*l + 2 + (*l 
+	    *l + 1 + (*l + 1) * a_dim1], abs(d__2)) + (d__3 = a[*l + 2 + (*l
 	    + 2) * a_dim1], abs(d__3)))) {
 	goto L50;
     }
@@ -948,8 +949,8 @@ L90:
     q /= s;
     r__ /= s;
     qrstep_(&a[a_offset], &v[v_offset], &p, &q, &r__, l, &m, n, na, nv);
-    if ((d__1 = a[m - 1 + (m - 2) * a_dim1], abs(d__1)) > *eps * ((d__2 = a[m 
-	    - 1 + (m - 1) * a_dim1], abs(d__2)) + (d__3 = a[m - 2 + (m - 2) * 
+    if ((d__1 = a[m - 1 + (m - 2) * a_dim1], abs(d__1)) > *eps * ((d__2 = a[m
+	    - 1 + (m - 1) * a_dim1], abs(d__2)) + (d__3 = a[m - 2 + (m - 2) *
 	    a_dim1], abs(d__3)))) {
 	goto L80;
     }
@@ -1142,7 +1143,7 @@ doublereal *a, *ort;
 	h__ = 0.;
 	ort[m] = 0.;
 	scale = 0.;
-/*     .......... scale column (algol tol then not needed) .......... 
+/*     .......... scale column (algol tol then not needed) ..........
 */
 	i__2 = *igh;
 	for (i__ = m; i__ <= i__2; ++i__) {
@@ -1311,16 +1312,3 @@ L140:
 L200:
     return 0;
 } /* ortran_ */
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,8 +1,10 @@
-#ifndef _histogram_h_
-#define _histogram_h_
+#ifndef XPPAUT_HISTOGRAM_H
+#define XPPAUT_HISTOGRAM_H
 
+/* --- Data --- */
+extern int FOUR_HERE;
 
-/* histogram.c */
+/* --- Functions --- */
 int two_d_hist(int col1, int col2, int ndat, int n1, int n2, double xlo, double xhi, double ylo, double yhi);
 void four_back(void);
 void hist_back(void);
@@ -28,5 +30,4 @@ void post_process_stuff();
 void just_fourier(int flag);
 void just_sd(int flag);
 
-#endif
-
+#endif /* XPPAUT_HISTOGRAM_H */

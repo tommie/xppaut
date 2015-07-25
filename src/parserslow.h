@@ -14,6 +14,7 @@ typedef struct {
 } UFUN_ARG;
 
 /* --- Data --- */
+extern int NSYM;
 extern UFUN_ARG ufun_arg[MAXUFUN];
 
 /* --- Functions --- */

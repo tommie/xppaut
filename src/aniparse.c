@@ -1,6 +1,7 @@
 #include "aniparse.h"
 #include "color.h"
 #include "parserslow.h"
+#include "strutil.h"
 #include "form_ode.h"
 #include "my_rhs.h"
 #include "nullcline.h"
@@ -9,7 +10,7 @@
 #include "init_conds.h"
 #include "many_pops.h"
 #include "menudrive.h"
-#include "pop_list.h" 
+#include "pop_list.h"
 #include <unistd.h>
 #include "scrngif.h"
 #include "load_eqn.h"
@@ -18,24 +19,24 @@
 #include "sys/stat.h"
 #include <sys/time.h>
 #include <fcntl.h>
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <string.h>
 #include <libgen.h>
 /*  A simple animator
-   
+
 */
 
 
 /***************   NOTES ON MPEG STUFF   ********************
 To prepare for mpeg encoding in order to make your movies
-permanent, I have to do some image manipulation - the main 
+permanent, I have to do some image manipulation - the main
 routine is writeframe()
 
 The current version works for most 8 bit color servers.  I have
 a version also working for TrueColor 16 bit and I think it works on
 24 bit color as well but havent tried it.  I really dont know
 how all colors are organized.  For my machine the 15 lowest order bits
-code color as 
+code color as
      xrrrrrgggggbbbbb
 in binary so lobits are blue etc. If the colors seem screwy, then you might
 want to alter the ordering below
@@ -123,7 +124,7 @@ int show_grab_points=0;
 int ani_grab_flag=0;
 int who_was_grabbed;
 double get_ivar(int);
- 
+
 extern double last_ic[MAXODE],T0;
 
 
@@ -181,7 +182,7 @@ typedef struct {
   int type, flag;
   int *col,*x1,*y1,*x2,*y2,*who;
   double zcol,zx1,zy1,zx2,zy2,zrad,zval;
-  int zthick,tfont,tsize,tcolor;  
+  int zthick,tfont,tsize,tcolor;
 } ANI_COM;
 */
 
@@ -202,7 +203,7 @@ char file[XPP_MAX_NAME];
 /*char file[256];*/
 } VCR;
 
-VCR vcr; 
+VCR vcr;
 
 
 int n_anicom;
@@ -215,7 +216,7 @@ int ani_text_font;
 GC ani_gc;
 
 extern int use_ani_file;
-extern char anifile[256]; 
+extern char anifile[256];
 
 
 
@@ -223,7 +224,7 @@ char *get_first(/* char *string,char *src */);
 char *get_next(/* char *src */);
 
 
-/* Colors 
+/* Colors
   no color given is default black on white background or white on black
   $name is named color -- red ... purple
   otherwise evaluated - if between 0 and 1 a spectral color
@@ -233,22 +234,22 @@ char *get_next(/* char *src */);
  dimension xlo;ylo;xhi;yh
  transient
  permanent
- line x1;y1;x2;y2;col;thick --  last two optional   
+ line x1;y1;x2;y2;col;thick --  last two optional
  rline x2;y2;col;thick  -- last two optional
  circle x1;x2;r;col;thick   -- last optional
  fcircle x1;x2;r;col  -- last 2 optional
  rect x1;y1;x2;y2;col;thick -- last 2 optional
  frect x1;y1;x2;y2;col -- last optional
- ellip x1;y1;rx;ry;col;thick 
- fellip x1;y1;rx;ry;col;thick 
- text x1;y1;s      
+ ellip x1;y1;rx;ry;col;thick
+ fellip x1;y1;rx;ry;col;thick
+ text x1;y1;s
  vtext x1;y1;s;v
  settext size;font;color -- size 1-5,font roman symbol,color as above
  speed delay in msec
  comet x1;y1;type;n;color  -- use last n points to draw n objects at
                               x1,y1  of type  type>=0 draws a line
                               with thickness type
-                              type<0 draws filled circles of 
+                              type<0 draws filled circles of
                               radius |type|
  *****
  rline is relative to end of last point
@@ -258,17 +259,17 @@ char *get_next(/* char *src */);
  text  string s at (x,y)  if v included then a number
 
  eg   text .3;.3;t=%g;t
- 
+
  will do a sprintf(string,"t=%g",t);
 
  and put text at .3,.3
 */
 
-/*              CREATION STUFF                 
-  
-  [File] [Go  ] [Pause] [<<<<] [>>>>] [fly]  
+/*              CREATION STUFF
+
+  [File] [Go  ] [Pause] [<<<<] [>>>>] [fly]
   [Fast] [Slow] [Reset] [Mpeg] [Skip] [Grab]
-  
+
  -----------------------
 |                       |
 
@@ -308,7 +309,7 @@ void create_vcr(name)
  int wid=280,hgt=350;
  /*XWMHints wm_hints;*/
  XSizeHints size_hints;
-  
+
  XTextProperty winname,iconname;
 
  base=make_plain_window(RootWindow(display,screen),0,0,5*12*DCURXs+8*DCURXs+4,20*(DCURYs+6),1);
@@ -458,7 +459,7 @@ void update_ani_motion_stuff(int x,int y)
   if(dt==0.0)dt=10000000000;
   ami.vx=(ami.x-ami.ox)/dt;
   ami.vy=(ami.y-ami.oy)/dt;
-  
+
    dt=ami.tstart-ami.t2;
    if(dt==0.0)dt=100000000000;
   ami.vax=(ami.x0-ami.x)/dt;
@@ -481,7 +482,7 @@ void ani_buttonx(XEvent ev,int flag)
   /*   ADDED FOR THE GRAB FEATURE IN ANIMATOR  This is BUTTON PRESS */
   if((w==vcr.view)&&(ani_grab_flag==1)){
     if(flag==1){
-  
+
       ami.t1=get_current_time();
       ami.tstart=ami.t1;
       ani_ij_to_xy(ev.xbutton.x,ev.xbutton.y,&ami.x,&ami.y);
@@ -490,22 +491,22 @@ void ani_buttonx(XEvent ev,int flag)
       	who_was_grabbed=search_for_grab(ami.x,ami.y);
 	if(who_was_grabbed<0)
 	  printf("Nothing grabbed\n");
-	
-      
+
+
       /*     printf("found %d\n",who_was_grabbed); */
-      
+
     }
     if(flag==0){ /* This is BUTTON RELEASE  */
       /*  update_ani_motion_stuff(ev.xbutton.x,ev.xbutton.y); */
-  
+
          if(who_was_grabbed<0){
 	   /*  ani_grab_flag=0; */
 	 return;
-       } 
-       /* printf("Final position %g %g %g %g \n",ami.x,ami.y,ami.vx,ami.vy); */ 
+       }
+       /* printf("Final position %g %g %g %g \n",ami.x,ami.y,ami.vx,ami.vy); */
        do_grab_tasks(2);
        set_to_init_data();
-       ani_grab_flag=0;  
+       ani_grab_flag=0;
        redraw_params();
        if(run_now_grab()){
 	 run_now();
@@ -523,8 +524,8 @@ void ani_buttonx(XEvent ev,int flag)
 void ani_button(w)
      Window w;
 {
-  if((ani_grab_flag==1))return; 
-   /* Grab button resets and shows first frame */ 
+  if((ani_grab_flag==1))return;
+   /* Grab button resets and shows first frame */
    if(w==vcr.wgrab){
      if(n_ani_grab==0)return;
     if(vcr.ok){
@@ -533,15 +534,15 @@ void ani_button(w)
       show_grab_points=1;
       /* ani_flip1(0); */
       ani_frame(1);
-      ani_frame(0); 
+      ani_frame(0);
       ani_grab_flag=1;
     }
-    } 
+    }
   if(w==vcr.wmpeg)
     ani_create_mpeg();
   if(w==vcr.wgo)
-  
-    {ani_flip();} 
+
+    {ani_flip();}
   if(w==vcr.wskip)
     ani_newskip();
   if(w==vcr.wup)
@@ -571,8 +572,8 @@ void ani_create_mpeg()
   mpeg.flag=0;
   sprintf(values[0],"%d",mpeg.flag);
   sprintf(values[1],"%s",mpeg.root);
-   sprintf(values[2],"%d",mpeg.aviflag); 
-  status=do_string_box(3,3,1,"Frame saving",n,values,28); 
+   sprintf(values[2],"%d",mpeg.aviflag);
+  status=do_string_box(3,3,1,"Frame saving",n,values,28);
   if(status!=0){
     mpeg.flag=atoi(values[0]);
     if(mpeg.flag>0)mpeg.flag=1;
@@ -584,8 +585,8 @@ void ani_create_mpeg()
     mpeg.flag=0;
   if(mpeg.flag==1)
     ani_disk_warn();
- 
-    
+
+
 }
 
 void ani_expose(w)
@@ -620,9 +621,9 @@ Window w;
   if(w==vcr.wfly)
     check_on_the_fly();
 }
-    
-  
-  
+
+
+
 void ani_resize(x,y)
      int x,y;
 {
@@ -633,7 +634,7 @@ void ani_resize(x,y)
 
  vcr.hgt=4*((y-((3.5*(DCURYs+6))+5))/4);
  vcr.wid=4*((x-(2*4))/4);
- 
+
  /*This little safety check prevents a <X Error of failed request:  BadValue>
  from occuring if the user shrinks the window size smaller than the vcr.hgt | vcr.wid
  */
@@ -641,8 +642,8 @@ void ani_resize(x,y)
  	vcr.hgt = 1;
  if (vcr.wid < 1)
  	vcr.wid = 1;
-	
-	
+
+
  XMoveResizeWindow(display,vcr.view,4,3.5*(DCURYs+6),vcr.wid,vcr.hgt);
  ani_pixmap=  XCreatePixmap(display,RootWindow(display,screen),vcr.wid,vcr.hgt,
 		  DefaultDepth(display,screen));
@@ -653,7 +654,7 @@ void ani_resize(x,y)
    XDestroyWindow(display,vcr.base);
    vcr.iexist=0;
    return;
- } 
+ }
 /*  XSetFunction(display,ani_gc,GXclear);
  XCopyArea(display,ani_pixmap,ani_pixmap,ani_gc,0,0,vcr.wid,vcr.hgt,0,0);
  */
@@ -683,8 +684,8 @@ void check_on_the_fly()
 {
   XClearWindow(display,vcr.wfly);
   if(animation_on_the_fly)
-  {  
-    	XDrawString(display,vcr.wfly,small_gc,5,1.5*CURY_OFFs,"*",1); 
+  {
+    	XDrawString(display,vcr.wfly,small_gc,5,1.5*CURY_OFFs,"*",1);
   }
 }
 void on_the_fly(int task)
@@ -696,7 +697,7 @@ void on_the_fly(int task)
 
 void ani_frame(int task)
 {
- 
+
  XSetForeground(display,ani_gc,WhitePixel(display,screen));
  XFillRectangle(display,ani_pixmap,ani_gc,0,0,vcr.wid,vcr.hgt);
  XSetForeground(display,ani_gc,BlackPixel(display,screen));
@@ -712,7 +713,7 @@ void ani_frame(int task)
  render_ani();
 
  /*  done drawing   */
- 
+
  XCopyArea(display,ani_pixmap,vcr.view,ani_gc,0,0,vcr.wid,vcr.hgt,0,0);
 
  XFlush(display);
@@ -733,7 +734,7 @@ void set_to_init_data()
    redraw_ics();
 }
 
-  
+
 void set_from_init_data()
 {
   double y[MAXODE];
@@ -747,7 +748,7 @@ void set_from_init_data()
 void ani_flip1(n)
 int n;
 {
- int row; 
+ int row;
  float **ss;
   double y[MAXODE];
  double t;
@@ -758,7 +759,7 @@ int n;
 XSetForeground(display,ani_gc,WhitePixel(display,screen));
  XFillRectangle(display,ani_pixmap,ani_gc,0,0,vcr.wid,vcr.hgt);
  XSetForeground(display,ani_gc,BlackPixel(display,screen));
- if(vcr.pos==0) set_ani_perm(); 
+ if(vcr.pos==0) set_ani_perm();
 
 
 
@@ -777,13 +778,13 @@ t=(double)ss[0][row];
  /* now draw the stuff  */
 
  render_ani();
- 
+
  /*  done drawing   */
- 
+
  XCopyArea(display,ani_pixmap,vcr.view,ani_gc,0,0,vcr.wid,vcr.hgt,0,0);
 
- XFlush(display); 
- 
+ XFlush(display);
+
 }
 void ani_flip()
 {
@@ -810,7 +811,7 @@ void ani_flip()
   angiffile=fopen("anim.gif","wb");
   set_global_map(1);
  }
- count=0;  
+ count=0;
  while(!done){ /* Ignore all events except the button presses */
  if(XPending(display)>0)
    {
@@ -835,8 +836,8 @@ void ani_flip()
        break;
      }
    }
-  /* Okay no events  so lets go! */     
- 
+  /* Okay no events  so lets go! */
+
  /* first set all the variables */
  XSetForeground(display,ani_gc,WhitePixel(display,screen));
  XFillRectangle(display,ani_pixmap,ani_gc,0,0,vcr.wid,vcr.hgt);
@@ -851,14 +852,14 @@ void ani_flip()
  /* now draw the stuff  */
 
  render_ani();
- 
+
  /*  done drawing   */
- 
+
  XCopyArea(display,ani_pixmap,vcr.view,ani_gc,0,0,vcr.wid,vcr.hgt,0,0);
 
  XFlush(display);
- 
-  waitasec(ani_speed); 
+
+  waitasec(ani_speed);
   if(mpeg.aviflag==1||mpeg.flag>0)
     waitasec(5*ani_speed);
  vcr.pos=vcr.pos+vcr.inc;
@@ -893,7 +894,7 @@ mpeg.flag=0;
    fclose(angiffile);
    set_global_map(0);
  }
-   
+
 }
 
 
@@ -907,9 +908,9 @@ void ani_disk_warn()
  sprintf(junk," %d Mb disk space needed! Continue?",total);
  ans=(char)TwoChoice("YES","NO",junk,"yn");
  if(ans!='y')mpeg.flag=0;
-  
+
  }
- 
+
 }
 
 int getppmbits(Window window,int *wid,int *hgt, unsigned char *out)
@@ -929,9 +930,9 @@ int getppmbits(Window window,int *wid,int *hgt, unsigned char *out)
   cmap = DefaultColormap(display,screen);
 
   ximage=XGetImage(display,window,0,0,*wid,*hgt,AllPlanes,ZPixmap);
-  
+
   if(!ximage){
-  
+
     return -1;
   }
   /* this is only good for 256 color displays */
@@ -957,10 +958,10 @@ int getppmbits(Window window,int *wid,int *hgt, unsigned char *out)
   for(y=0;y < (unsigned)(ximage->height); y++) {
     for (x = 0; x < (unsigned)(ximage->width); x++) {
       if(TrueColorFlag==1){
-       
-	/*  use the slow way to get the pixel 
+
+	/*  use the slow way to get the pixel
             but then you dont need to screw around
-            with byte order etc  
+            with byte order etc
 	*/
 	value=XGetPixel(ximage,x,y)>>INIT_C_SHIFT;
 	/*vv=value; Not used?*/
@@ -1033,7 +1034,7 @@ int writeframe(filename,window,wid,hgt)
     return -1;
   }
   /*    this worked for me - but you may want to change
-        it for your machine  
+        it for your machine
   */
   if(TrueColorFlag==1){
     bbp=ximage->bits_per_pixel; /* is it 16 or 24 bit */
@@ -1054,10 +1055,10 @@ int writeframe(filename,window,wid,hgt)
   for(y=0;y < (unsigned)(ximage->height); y++) {
     for (x = 0; x < (unsigned)(ximage->width); x++) {
       if(TrueColorFlag==1){
-       
-	/*  use the slow way to get the pixel 
+
+	/*  use the slow way to get the pixel
             but then you dont need to screw around
-            with byte order etc  
+            with byte order etc
 	*/
 	value=XGetPixel(ximage,x,y)>>INIT_C_SHIFT;
 	/*vv=value;
@@ -1092,7 +1093,7 @@ int writeframe(filename,window,wid,hgt)
   return 1;
 }
 
-      
+
 void ani_zero()
 {
   vcr.iexist=0;
@@ -1116,7 +1117,7 @@ void ani_zero()
 
 void get_ani_file(char *fname)
 {
-  
+
   int status;
   int err;
 
@@ -1162,7 +1163,7 @@ int ani_new_file(filename)
   }
   return 0;
 }
-  
+
 
 
 int load_ani_file(fp)
@@ -1190,13 +1191,13 @@ FILE *fp;
     }
     ani_line++;
 
-      
+
   }
  return 1;
 }
 
 /*  This has changed to add the FILE fp to the arguments since the GRAB
-    command requires that you load in two additional lines 
+    command requires that you load in two additional lines
 */
 int parse_ani_string(s,fp)
      char *s;
@@ -1297,7 +1298,7 @@ int parse_ani_string(s,fp)
    nxt=get_next("\n");
    if(nxt==NULL)return -1;
    strcpy(thick,nxt);
-   break;   
+   break;
  case LINE:
  case RECT:
  case ELLIP:
@@ -1321,7 +1322,7 @@ int parse_ani_string(s,fp)
    nxt=get_next("\n");
    if((nxt==NULL)||strlen(nxt)==0)break;
    strcpy(thick,nxt);
-   break;   
+   break;
  case RLINE:
    nxt=get_next(";");
   if(nxt==NULL)return -1;
@@ -1335,7 +1336,7 @@ int parse_ani_string(s,fp)
    nxt=get_next("\n");
   if((nxt==NULL)||strlen(nxt)==0)break;
    strcpy(thick,nxt);
-   break;  
+   break;
  case COMET:
    nxt=get_next(";");
    if(nxt==NULL)return -1;
@@ -1425,9 +1426,9 @@ int parse_ani_string(s,fp)
   if(nxt==NULL)return -1;
    strcpy(x4,nxt);
    break;
- 
+
  }
- 
+
  if(type==END)return 0;
  if(type==TRANSIENT){
    aniflag=TRANSIENT;
@@ -1448,7 +1449,7 @@ int parse_ani_string(s,fp)
 	type,x1,x2,x3,x4,col,thick);  */
  return(add_ani_com(type,x1,x2,x3,x4,col,thick));
 
-     
+
 }
 
 void set_ani_dimension(x1,y1,x2,y2)
@@ -1459,7 +1460,7 @@ void set_ani_dimension(x1,y1,x2,y2)
   xx2=atof(x2);
   yy1=atof(y1);
   yy2=atof(y2);
-  
+
   if((xx1<xx2)&&(yy1<yy2)){
     ani_xlo=xx1;
     ani_xhi=xx2;
@@ -1468,7 +1469,7 @@ void set_ani_dimension(x1,y1,x2,y2)
   }
 
 }
-    
+
 int add_ani_com(type,x1,y1,x2,y2,col,thick)
      int type;
      char *x1,*x2,*y1,*y2,*col,*thick;
@@ -1490,7 +1491,7 @@ int add_ani_com(type,x1,y1,x2,y2,col,thick)
   case AYNULL:
     err=add_ani_null(&my_ani[n_anicom],x1,y1,x2,y2,col,thick);
     break;
-  
+
   case COMET:
     err=add_ani_comet(&my_ani[n_anicom],x1,y1,x2,y2,col,thick);
     break;
@@ -1511,7 +1512,7 @@ int add_ani_com(type,x1,y1,x2,y2,col,thick)
     break;
   case FELLIP:
     err=add_ani_fellip(&my_ani[n_anicom],x1,y1,x2,y2,col,thick);
-    break;  
+    break;
   case CIRC:
     err=add_ani_circle(&my_ani[n_anicom],x1,y1,x2,col,thick);
     break;
@@ -1538,7 +1539,7 @@ int add_ani_com(type,x1,y1,x2,y2,col,thick)
 
 void init_ani_stuff()
 {
-  
+
   ani_text_size=1;
   ani_text_font=0;
   ani_text_color=0;
@@ -1552,7 +1553,7 @@ void init_ani_stuff()
   ani_lasty=0.0;
   vcr.pos=0;
   ani_grab_flag=0; /*********** GRABBER *******************/
-  n_ani_grab=0; 
+  n_ani_grab=0;
 }
 
 void free_ani()
@@ -1568,12 +1569,12 @@ void free_ani()
     if(my_ani[i].type==COMET){
       free(my_ani[i].c.x);
       free(my_ani[i].c.y);
-      free(my_ani[i].c.col); 
+      free(my_ani[i].c.col);
     }
   }
   n_anicom=0;
   free_grabber();
-  
+
   init_ani_stuff();
 }
 
@@ -1624,15 +1625,15 @@ int add_ani_expr(x,c)
  plintf(" evaluated to %g \n",z); */
   return 0;
 }
-  
-/*  the commands  */   
-    
+
+/*  the commands  */
+
 int add_ani_rline(a,x1,y1,col,thick)
      char *x1,*y1,*col,*thick;
      ANI_COM *a;
 {
 
- 
+
 
  int err,index;
  err=chk_ani_color(col,&index);
@@ -1654,7 +1655,7 @@ int add_ani_rline(a,x1,y1,col,thick)
  err=add_ani_expr(y1,a->y1);
  if(err)return -1;
  return 0;
-  
+
 }
 void reset_comets()
 {
@@ -1688,12 +1689,12 @@ void roll_comet(a,xn,yn,col)
   a->c.y[n-1]=yn;
   a->c.col[n-1]=col;
 }
-    
+
 int add_ani_comet(a,x1,y1,x2,y2,col,thick)
      char *x1,*x2,*y1,*y2,*col,*thick;
      ANI_COM *a;
 {
- 
+
 
  int err,n,index;
  /* plintf("<<%s>>\n",col); */
@@ -1730,8 +1731,8 @@ int add_ani_line(a,x1,y1,x2,y2,col,thick)
      ANI_COM *a;
 {
 
- 
- 
+
+
  int err,index;
  err=chk_ani_color(col,&index);
  if(err==1)
@@ -1757,10 +1758,10 @@ int add_ani_line(a,x1,y1,x2,y2,col,thick)
  if(err)return -1;
 /*  plintf(" added line %s %s %s %s \n",
 	x1,y1,x2,y2); */
- 
+
  return 0;
- 
-  
+
+
 }
 
 int add_ani_null(a,x1,y1,x2,y2,col,who)
@@ -1768,7 +1769,7 @@ int add_ani_null(a,x1,y1,x2,y2,col,who)
      ANI_COM *a;
 {
 
- 
+
  int err,index;
  err=chk_ani_color(col,&index);
  if(err==1)
@@ -1780,7 +1781,7 @@ int add_ani_null(a,x1,y1,x2,y2,col,who)
      err=add_ani_expr(col,a->col);
      if(err==1)return -1;
    }
- 
+
  err=add_ani_expr(who,a->who);
   if(err)return -1;
  err=add_ani_expr(x1,a->x1);
@@ -1792,10 +1793,10 @@ int add_ani_null(a,x1,y1,x2,y2,col,who)
  err=add_ani_expr(y2,a->y2);
  if(err)return -1;
 
- 
+
  return 0;
- 
-  
+
+
 }
 
 
@@ -1834,8 +1835,8 @@ int add_ani_circle(a,x1,y1,x2,col,thick)
      ANI_COM *a;
 {
 
- 
- 
+
+
  int err,index;
  err=chk_ani_color(col,&index);
  if(err==1)
@@ -1859,7 +1860,7 @@ int add_ani_circle(a,x1,y1,x2,col,thick)
  if(err)return -1;
 
  return 0;
-  
+
 }
 
 int add_ani_fcircle(a,x1,y1,x2,col,thick)
@@ -1868,7 +1869,7 @@ int add_ani_fcircle(a,x1,y1,x2,col,thick)
 {
  return(add_ani_circle(a,x1,y1,x2,col,thick));
 }
-   
+
 int add_ani_text(a,x1,y1,y2)
      char *x1,*y1,*y2;
      ANI_COM *a;
@@ -1943,7 +1944,7 @@ void render_ani()
        draw_ani_null(i,type-AXNULL);
        break;
     case SETTEXT:
-     set_ani_font_stuff(my_ani[i].tsize,my_ani[i].tfont,my_ani[i].tcolor); 
+     set_ani_font_stuff(my_ani[i].tsize,my_ani[i].tfont,my_ani[i].tcolor);
      break;
     case TEXT:
       if(flag==TRANSIENT)
@@ -1956,13 +1957,13 @@ void render_ani()
       draw_ani_vtext(i);
       break;
     case LINE:
-      
+
       if(flag==TRANSIENT)
 	eval_ani_com(i);
       draw_ani_line(i);
       break;
     case COMET:
-      
+
       if(flag==TRANSIENT)
 	eval_ani_com(i);
       draw_ani_comet(i);
@@ -2006,9 +2007,9 @@ void render_ani()
   }
   if(show_grab_points==1)
     draw_grab_points();
-}   
-     
-      
+}
+
+
 void set_ani_perm()
 {
   /*double t;
@@ -2021,7 +2022,7 @@ void set_ani_perm()
    t=(double)ss[0][0];
  for(i=0;i<NODE+NMarkov;i++)
    y[i]=(double)ss[i+1][0];
-   set_fix_rhs(t,y); */ 
+   set_fix_rhs(t,y); */
  for(i=0;i<n_anicom;i++){
    type=my_ani[i].type;
    if(my_ani[i].flag==PERMANENT){
@@ -2031,14 +2032,14 @@ void set_ani_perm()
 	type==FCIRC||type==ELLIP||type==FELLIP)
        eval_ani_color(i);
    }
- }    
+ }
 }
 
 void eval_ani_color(j)
      int j;
 {
   double z;
-        
+
     if(my_ani[j].col[0]>0){
       z=evaluate(my_ani[j].col);
       if(z>1)z=1.0;
@@ -2049,12 +2050,12 @@ void eval_ani_color(j)
 void eval_ani_com(j)
      int j;
 {
-  
-  
-        
+
+
+
      my_ani[j].zx1=evaluate(my_ani[j].x1);
 
-	
+
     my_ani[j].zy1=evaluate(my_ani[j].y1);
 
     switch(my_ani[j].type)
@@ -2081,7 +2082,7 @@ void eval_ani_com(j)
     if(my_ani[j].type==AXNULL||my_ani[j].type==AYNULL)
       my_ani[j].zval=evaluate(my_ani[j].who);
 
-  
+
   }
 
 
@@ -2113,13 +2114,13 @@ void set_ani_col(j)
 {
   int c=my_ani[j].col[0];
   int icol;
- 
+
   if(c<=0)
     icol=-c;
   else
     icol=(int)(color_total*my_ani[j].zcol)+FIRSTCOLOR;
   /* plintf(" t=%d j=%d col=%d \n",vcr.pos,j,icol); */
-  if(icol==0) 
+  if(icol==0)
     XSetForeground(display,ani_gc,BlackPixel(display,screen));
   else
     XSetForeground(display,ani_gc,ColorMap(icol));
@@ -2129,8 +2130,8 @@ void set_ani_col(j)
 void xset_ani_col(icol)
      int icol;
 {
- 
-if(icol==0) 
+
+if(icol==0)
     XSetForeground(display,ani_gc,BlackPixel(display,screen));
   else
     XSetForeground(display,ani_gc,ColorMap(icol));
@@ -2187,7 +2188,7 @@ void ani_xyscale(x,y,ix,iy)
   if(*iy<0)*iy=0;
   if(*iy>=vcr.hgt)*iy=vcr.hgt-1;
 }
-  
+
 
 
 void draw_ani_comet(j)
@@ -2216,16 +2217,16 @@ void draw_ani_comet(j)
     if(nn>2){
      for(k=1;k<nn;k++){
        i1=my_ani[j].c.x[k-1];
-       j1=my_ani[j].c.y[k-1]; 
+       j1=my_ani[j].c.y[k-1];
        i2=my_ani[j].c.x[k];
-       j2=my_ani[j].c.y[k];  
+       j2=my_ani[j].c.y[k];
        xset_ani_col(my_ani[j].c.col[k]);
        XDrawLine(display,ani_pixmap,ani_gc,i1,j1,i2,j2);
      }
     }
   }
 
- 
+
 }
 
 void draw_ani_null(j,id)
@@ -2251,7 +2252,7 @@ void draw_ani_null(j,id)
     y2=(v[i4+3]-yl)/dy;
     ani_xyscale(x1,y1,&i1,&j1);
     ani_xyscale(x2,y2,&i2,&j2);
-    XDrawLine(display,ani_pixmap,ani_gc,i1,j1,i2,j2); 
+    XDrawLine(display,ani_pixmap,ani_gc,i1,j1,i2,j2);
   }
 }
 
@@ -2265,10 +2266,10 @@ void draw_ani_line(j)
   set_ani_col(j);
   ani_xyscale(x1,y1,&i1,&j1);
   ani_xyscale(x2,y2,&i2,&j2);
-  XDrawLine(display,ani_pixmap,ani_gc,i1,j1,i2,j2); 
+  XDrawLine(display,ani_pixmap,ani_gc,i1,j1,i2,j2);
   ani_lastx=x2;
   ani_lasty=y2;
- 
+
 }
 
 void draw_ani_rline(j)
@@ -2344,7 +2345,7 @@ void draw_ani_frect(j)
   set_ani_col(j);
   ani_xyscale(x1,y1,&i1,&j1);
   ani_xyscale(x2,y2,&i2,&j2);
- 
+
   h=abs(j2-j1);
   w=abs(i2-i1);
   if(i1>i2)i1=i2;
@@ -2418,7 +2419,7 @@ void draw_ani_vtext(j)
  XSetForeground(display,ani_gc,BlackPixel(display,screen));
  XDrawString(display,ani_pixmap,ani_gc,140,140,"!",1);
 }
-*/ 
+*/
 
 void tst_pix_draw()
 {
@@ -2437,7 +2438,7 @@ void tst_pix_draw()
   XDrawString(display,ani_pixmap,ani_gc,10,vcr.hgt-(DCURYs+6),"THIS SPACE FOR RENT",20);
   /* plintf(" color_tot=%d \n",color_total); */
 }
-   
+
 
 
 void read_ani_line(fp,s)
@@ -2469,7 +2470,7 @@ void read_ani_line(fp,s)
   s[n]=' ';
   s[n+1]=0;
 }
-  
+
 
 
 void de_space(s)
@@ -2500,7 +2501,7 @@ int add_grab_command(char *xs,char *ys,char *ts, FILE *fp)
   read_ani_line(fp,start);
   read_ani_line(fp,end);
   /* printf(" %s %s %s \n %s \n %s \n",xs,ys,ts,start,end); */
-  
+
   if(n_ani_grab>=MAX_ANI_GRAB){
     plintf("Too many grabbables! \n");
     return(-1);
@@ -2571,7 +2572,7 @@ int ani_grab_tasks(char *line, int igrab,int which)
     k++;
   }
   return(1);
-    
+
 }
 
 int run_now_grab()
@@ -2609,7 +2610,7 @@ void do_grab_tasks(int which) /* which=1 for start, 2 for end */
     n=ani_grab[i].start.n;
     for(j=0;j<n;j++){
       z=evaluate(ani_grab[i].start.comrhs[j]);
-      /*      printf("%s=%g\n",ani_grab[i].start.lhsname[j],z); */ 
+      /*      printf("%s=%g\n",ani_grab[i].start.lhsname[j],z); */
       set_val(ani_grab[i].start.lhsname[j],z);
     }
     return;
@@ -2640,7 +2641,7 @@ int add_grab_task(char *lhs,char *rhs, int igrab,int which)
     ani_grab[igrab].start.comrhs[i] = (int *)malloc(sizeof(int)*(nc+1));
      for(k=0;k<=nc;k++)
       ani_grab[igrab].start.comrhs[i][k]=com[k];
- 
+
      ani_grab[igrab].start.n=ani_grab[igrab].start.n+1;
      return(1);
   }
@@ -2655,7 +2656,7 @@ int add_grab_task(char *lhs,char *rhs, int igrab,int which)
     i=ani_grab[igrab].end.n;
     if(i>=MAX_GEVENTS)return(-1); /* too many events */
 
-    
+
     strcpy(ani_grab[igrab].end.lhsname[i],lhs);
     if(add_expr(rhs,com,&nc)){
       plintf("Bad right-hand side for grab event %s\n",rhs);
@@ -2669,7 +2670,7 @@ int add_grab_task(char *lhs,char *rhs, int igrab,int which)
      return(1);
   }
   return(-1);
-} 
+}
 
 void draw_grab_points()  /* Draw little black x's where the grab points are */
 {
@@ -2699,7 +2700,7 @@ void draw_grab_points()  /* Draw little black x's where the grab points are */
 
 
 void free_grabber()
-{ 
+{
   int i,j,m;
   for(i=0;i<n_ani_grab;i++){
     free(ani_grab[i].x);
@@ -2707,12 +2708,12 @@ void free_grabber()
     m=ani_grab[i].start.n;
     for(j=0;j<m;j++)
       free(ani_grab[i].start.comrhs[j]);
-    
+
     m=ani_grab[i].end.n;
     for(j=0;j<m;j++)
       free(ani_grab[i].end.comrhs[j]);
     ani_grab[i].start.n=0;
     ani_grab[i].end.n=0;
   }
-    
+
 }

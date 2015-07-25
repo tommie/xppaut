@@ -2,6 +2,7 @@
 #include <string.h>
 #include <strings.h>
 #include "parserslow.h"
+#include "strutil.h"
 #include <sys/time.h>
 #include "ggets.h"
 #include "dialog_box.h"

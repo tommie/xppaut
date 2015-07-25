@@ -9,7 +9,7 @@
 #include "pop_list.h"
 #include "parserslow.h"
 
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -33,14 +33,14 @@
 #define EV_MASK (ButtonPressMask 	|\
 		KeyPressMask		|\
 		ExposureMask		|\
-		StructureNotifyMask)	
+		StructureNotifyMask)
 
 #define BUT_MASK (ButtonPressMask 	|\
 		KeyPressMask		|\
 		ExposureMask		|\
 		StructureNotifyMask	|\
 		EnterWindowMask		|\
-		LeaveWindowMask)	
+		LeaveWindowMask)
 
 extern Display *display;
 extern int screen;
@@ -72,7 +72,6 @@ extern int narg_fun[MAXUFUN], *ufun[MAXUFUN];
 
 
 
-extern UFUN_ARG ufun_arg[MAXUFUN];
 extern BC_STRUCT my_bc[MAXODE];
 
 extern int NFUN;
@@ -142,8 +141,8 @@ char **names,**values,*title;
  if(status==FORGET_ALL) return(status);
  for(i=0;i<n;i++)strcpy(values[i],sb.value[i]);
   return(status);
-   
-	
+
+
  }
 
 void expose_ebox(sb,w,pos,col)
@@ -155,7 +154,7 @@ int pos,col;
 
  if(w==sb->ok){XDrawString(display,w,gc,0,CURY_OFF,"Ok",2);return;}
  if(w==sb->cancel){XDrawString(display,w,gc,0,CURY_OFF,"Cancel",6);
-		   return; 
+		   return;
                  }
  if(w==sb->reset){XDrawString(display,w,gc,0,CURY_OFF,"Reset",5);return;}
  for(i=0;i<sb->n;i++){
@@ -167,7 +166,7 @@ int pos,col;
 }
 
 
-  
+
 void ereset_hot(inew,sb)
 int inew;
 EDIT_BOX *sb;
@@ -195,7 +194,7 @@ void enew_editable(sb,inew,pos,col,done,w)
   *done=0;
   *w=sb->win[inew];
   }
- 
+
 
 int e_box_event_loop(sb,pos,col)
  EDIT_BOX *sb;
@@ -211,7 +210,7 @@ int e_box_event_loop(sb,pos,col)
  Window w=sb->win[ihot];   /* active window   */
  char *s;
  s=sb->value[ihot];
-  
+
  XNextEvent(display,&ev);
  switch(ev.type){
  	case ConfigureNotify:
@@ -224,7 +223,7 @@ int e_box_event_loop(sb,pos,col)
 	case ButtonPress:
 		if(ev.xbutton.window==sb->ok){status=DONE_ALL;break;}
 		if(ev.xbutton.window==sb->cancel){status=FORGET_ALL;break;}
-		if(ev.xbutton.window==sb->reset){ 
+		if(ev.xbutton.window==sb->reset){
 		  reset_ebox(sb,pos,col);break;
 		}
 			for(i=0;i<nn;i++)
@@ -249,7 +248,7 @@ int e_box_event_loop(sb,pos,col)
         if(wt==sb->ok||wt==sb->cancel||wt==sb->reset)
 	 XSetWindowBorderWidth(display,wt,1);
 	break;
-	
+
 	case KeyPress:
 	ch=get_key_press(&ev);
 	edit_window(w,pos,s,col,&done,ch);
@@ -259,12 +258,12 @@ int e_box_event_loop(sb,pos,col)
 		   enew_editable(sb,inew,pos,col,&done,&w);
 		  }
         break;
-		   
+
 	}
        return(status);
-     }           	
-        
-	
+     }
+
+
 void make_ebox_windows(sb,title)
 char *title;
 EDIT_BOX *sb;
@@ -292,7 +291,7 @@ EDIT_BOX *sb;
  size_hints.max_height=height;
  XSetWMProperties(display,base,&winname,NULL,NULL,0,&size_hints,NULL,NULL);
  sb->base=base;
- 
+
   ystart=DCURY;
    xstart=DCURX;
   for(i=0;i<n;i++) {
@@ -300,7 +299,7 @@ EDIT_BOX *sb;
   ypos=ystart+i*(DCURY+10);
   sb->win[i]=make_window(base,xpos,ypos,MAX_LEN_EBOX*DCURX,DCURY,1);
   }
-  
+
  ypos=height-2*DCURY;
   xpos=(width-19*DCURX)/2;
   (sb->ok)=make_window(base,xpos,ypos,2*DCURX,DCURY,1);
@@ -308,13 +307,13 @@ EDIT_BOX *sb;
   (sb->reset)=make_window(base,xpos+12*DCURX,ypos,5*DCURX,DCURY,1);
   XRaiseWindow(display,base);
  }
-   
+
 
 void edit_menu()
 {
  Window temp=main_win;
  static char *n[]={"RHS's" ,"Functions","Save as","Load DLL"};
- static char key[]="rfsl"; 
+ static char key[]="rfsl";
  char ch;
  int edtype=0,i;
  ch=(char)pop_up_list(&temp,"Edit Stuff",n,key,4,11,edtype,10,13*DCURY+8,
@@ -323,7 +322,7 @@ void edit_menu()
  for(i=0;i<4;i++)
  if(ch==key[i])edtype=i;
  switch(edtype){
- case 0: 
+ case 0:
    edit_rhs();
    break;
  case 1:
@@ -362,31 +361,31 @@ void edit_rhs()
  }
  status=do_edit_box(n,"Right Hand Sides",names,values);
  if(status!=0){
-  
+
    for(i=0;i<n;i++){
      if(i<NODE||(i>=(NODE+NMarkov))){
-      
+
        err=add_expr(values[i],command[i],&len);
        if(err==1)
 	 {
 	   sprintf(msg,"Bad rhs:%s=%s",names[i],values[i]);
 	   err_msg(msg);
 	 }
-       else 
+       else
 	 {
 	   free(ode_names[i]);
 	   ode_names[i]=(char *)malloc(strlen(values[i])+5);
 	   strcpy(ode_names[i],values[i]);
 	   i0=i;
 	   if(i>=NODE)i0=i0+FIX_VAR-NMarkov;
-         
+
 	   for(j=0;j<len;j++)
 	     my_ode[i0][j]=command[i][j];
 	 }
      }
    }
  }
-     
+
 
  for(i=0;i<n;i++){
    free(values[i]);
@@ -415,7 +414,7 @@ void user_fun_info(fp)
     fprintf(fp,"%s\n",fundef);
   }
 }
-    
+
 void edit_functions()
 {
  char **names,**values;
@@ -444,12 +443,12 @@ void edit_functions()
 			    ufun_arg[i].args[0],
 			    ufun_arg[i].args[narg_fun[i]-1]);
 
-			   
+
  }
 
  status=do_edit_box(n,"Functions",names,values);
  if(status!=0){
-  
+
    for(i=0;i<n;i++){
      set_new_arg_names(narg_fun[i],ufun_arg[i].args);
      err=add_expr(values[i],command[i],&len);
@@ -463,7 +462,7 @@ void edit_functions()
        for(j=0;j<=len;j++){
          /* plintf("f(%d)[%d]=%d %d \n",i,j,command[i][j],ufun[i][j]); */
          ufun[i][j]=command[i][j];
-	 
+
        }
               fixup_endfun(ufun[i],len,narg_fun[i]);
 
@@ -471,7 +470,7 @@ void edit_functions()
 
    }
  }
- 
+
 
  for(i=0;i<n;i++){
    free(values[i]);
@@ -494,7 +493,7 @@ int save_as()
   ping();
   /* if(new_string("Filename: ",filename)==0)return; */
   if(!file_selector("Save As",filename,"*.ode"))return(-1);
-  open_write_file(&fp,filename,&ok); 
+  open_write_file(&fp,filename,&ok);
    if(!ok)return(-1);
   fp=fopen(filename,"w");
   if(fp==NULL)return(0);
@@ -528,6 +527,6 @@ int save_as()
   for(i=0;i<NODE;i++)fprintf(fp,"b %s \n",my_bc[i].string);
   fprintf(fp,"done\n");
   fclose(fp);
-  
+
   return(1);
 }

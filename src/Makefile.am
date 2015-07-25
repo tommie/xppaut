@@ -108,6 +108,7 @@ noinst_HEADERS = \
 	my_rhs.h \
 	cv2.h \
 	my_svg.h \
+	strutil.h \
 	tutor.h \
 	$(bitmap_headers)
 
@@ -201,6 +202,7 @@ xppaut_SOURCES = \
 	homsup.c \
 	txtread.c \
 	menudrive.c \
+	$(strutil_sources) \
 	userbut.c \
 	$(cvode_sources) \
 	$(auto_sources)
@@ -265,6 +267,7 @@ libxpp_a_SOURCES = \
 	homsup.c \
 	txtread.c \
 	menudrive.c \
+	$(strutil_sources) \
 	userbut.c \
 	$(cvode_sources) \
 	$(auto_sources)
@@ -283,6 +286,12 @@ auto_sources = \
 
 cvode_sources = \
 	cv2.c
+
+if HAVE_STRUPR
+strutil_sources =
+else
+strutil_sources = strutil.c
+endif
 
 libexample_so_CFLAGS = -fPIC
 libexample_so_LDFLAGS = -shared

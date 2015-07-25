@@ -1,5 +1,6 @@
 #include "load_eqn.h"
 #include "parserslow.h"
+#include "strutil.h"
 
 #include "read_dir.h"
 

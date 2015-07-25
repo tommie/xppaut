@@ -1,5 +1,6 @@
 #include "form_ode.h"
 #include "aniparse.h"
+#include "strutil.h"
 
 #include "parserslow.h"
 #include "markov.h"
@@ -99,7 +100,7 @@ int NCON_START,NSYM_START;
 
 #define cstringmaj MYSTR1
 #define cstringmin MYSTR2
-extern float xppvermaj,xppvermin; 
+extern float xppvermaj,xppvermin;
 
 int ConvertStyle=0;
 FILE *convertf;
@@ -143,17 +144,17 @@ double atof();
 
 int make_eqn()
   {
-   
+
    int okay;
    NEQ=2;
    FIX_VAR=0;
    NMarkov=0;
-   
+
    /* initscr(); */
    /*
    pos_prn("*(r)ead or (c)reate:",0,0);
    ch=getuch();
-   pos_prn("",0,0); 
+   pos_prn("",0,0);
    okay=0;
    switch(ch)
    {
@@ -196,7 +197,7 @@ int disc(string)
     i++;
   }
   end[j]=0;
-	   
+
    if(strcmp(end,"dis")==0||strcmp(end,"dif")==0)return(1);
    return(0);
   }
@@ -286,7 +287,7 @@ int get_a_filename(char *filename,char *wild)
     plintf("Loading %s\n ",filename);
     return 1;
   }
-  else 
+  else
     {
       if(string[0]=='l'){
         plintf("List files of type: ");
@@ -327,7 +328,7 @@ int get_a_filename(char *filename,char *wild)
 
 
 void list_em(char *wild)
-{ 
+{
   get_directory(cur_dir);
   plintf("%s: \n",cur_dir);
   get_fileinfo(wild,cur_dir,&my_ff);
@@ -376,7 +377,7 @@ get_dir()
 
  */
 
- 
+
 
 
 
@@ -418,7 +419,7 @@ int get_eqn(fptr)
   /* plintf("incr NLINE in geteqn  %s \n",bob); */
   i=atoi(bob);
   if(i<=0) { /* New parser ---   */
-    
+
     OldStyle=0;
     ConvertStyle=0;
     flag=do_new_parser(fptr,bob,0);
@@ -431,7 +432,7 @@ int get_eqn(fptr)
     if(ConvertStyle){
       if(strlen(this_file)==0)
 	sprintf(filename,"convert.ode");
-      else 
+      else
 	sprintf(filename,"%s.new",this_file);
       if((convertf=fopen(filename,"w"))==NULL){
 	printf(" Cannot open %s - no conversion done \n",filename);
@@ -474,7 +475,7 @@ int get_eqn(fptr)
     }
   }
   BVP_FLAG=1;
-  
+
   if(NODE!=NEQ+FIX_VAR-NMarkov)
     {
       plintf(" Too many/few equations\n");
@@ -486,16 +487,16 @@ int get_eqn(fptr)
 	exit(0);
     }
   NODE=IN_VARS;
-  
+
   for(i=0; i<Naux; i++)
     strcpy(uvar_names[i+NODE+NMarkov],aux_names[i]);
-  
+
   for(i=NODE+NMarkov+Naux;i<NEQ;i++)
     {
       sprintf(uvar_names[i],"AUX%d",i-NODE-NMarkov+1);
     }
-  
-  
+
+
   for(i=0;i<NEQ;i++)
       {
 	strupr(uvar_names[i]);
@@ -525,7 +526,7 @@ int get_eqn(fptr)
   }
   show_flags();
   /*  add auxiliary variables   */
-  for(i=NODE+NMarkov;i<NEQ;i++)add_var(uvar_names[i],0.0); 
+  for(i=NODE+NMarkov;i<NEQ;i++)add_var(uvar_names[i],0.0);
   NCON_START=NCON;
   NSYM_START=NSYM;
   NCON_ORIG=NCON;
@@ -646,17 +647,17 @@ int compiler(bob,fptr)
 	    exit(0);
 	  }
 	  add_wiener(NCON-1);
-	 
+
 	}
       if(ConvertStyle)
 	fprintf(convertf,"\n");
       plintf("\n");
            break;
-    case 'n':    
+    case 'n':
       plintf(" Hidden params:\n");
       if(ConvertStyle)
 	fprintf(convertf,"number ");
-	
+
       advance_past_first_word(&ptr);
       while((my_string=get_next2(&ptr))!=NULL)
 	{
@@ -664,7 +665,7 @@ int compiler(bob,fptr)
 	  free(my_string);
 	  if(ConvertStyle)
 	    fprintf(convertf,"%s=%g  ",name,value);
-          
+
 	  plintf("|%s|=%f ",name,value);
 	  if(add_con(name,value)){
 	    plintf("ERROR at line %d\n",NLINES);
@@ -675,7 +676,7 @@ int compiler(bob,fptr)
        if(ConvertStyle)
 	fprintf(convertf,"\n");
       plintf("\n");
-      break; 
+      break;
     case 'g': /* global */
       my_string=get_next("{ ");
       sign=atoi(my_string);
@@ -715,7 +716,7 @@ int compiler(bob,fptr)
 	    exit(0);
 	    plintf("ERROR at line %d\n",NLINES);
 	  }
-    
+
 	}
       if(ConvertStyle)
 	fprintf(convertf,"\n");
@@ -758,7 +759,7 @@ int compiler(bob,fptr)
       /*      formula[nn-1]=0; */
       sprintf(ode_names[IN_VARS+index],"{ %s ... }",formula);
       break;
-    case 'v':      
+    case 'v':
       iflg=1;
       plintf("\nVariables:\n");
       if(ConvertStyle)
@@ -786,7 +787,7 @@ int compiler(bob,fptr)
 	    {
 	      strcpy(uvar_names[IN_VARS],name);
 	      last_ic[IN_VARS]=value;
-              default_ic[IN_VARS]=value;   
+              default_ic[IN_VARS]=value;
 	      IN_VARS++;
 	      if(ConvertStyle)
 		fprintf(convertf,"%s=%g  ",name,value);
@@ -798,7 +799,7 @@ int compiler(bob,fptr)
 
 	  }
 	  plintf("|%s| ",name);
-	  
+
 	}
       plintf(" \n");
       if(iflg&&ConvertStyle)
@@ -815,10 +816,10 @@ int compiler(bob,fptr)
       strcpy(my_bc[BVP_N].name,"0=");
       if(ConvertStyle)
 	fprintf(convertf,"bndry %s\n",my_bc[BVP_N].string);
-      
-      
-      
-      
+
+
+
+
       plintf("|%s| |%s| \n",my_bc[BVP_N].name,my_bc[BVP_N].string);
       BVP_N++;
       break;
@@ -837,7 +838,7 @@ int compiler(bob,fptr)
 	exit(0);
       }
       break;
-    case 't': 
+    case 't':
       if(NTable>=MAX_TAB)
 	{
 	  if(ERROUT)printf("too many tables !!\n");
@@ -871,10 +872,10 @@ int compiler(bob,fptr)
 	NTable++;
 	printf(" NTable = %d \n",NTable);
 
-	
-	
+
+
       }
-      else 
+      else
 	if(my_string[0]=='@'){
 	  plintf(" Two-dimensional array: \n ");
 	  my_string=get_next(" ");
@@ -900,7 +901,7 @@ int compiler(bob,fptr)
 	    NTable++;
 	  }
       break;
-      
+
     case 'u':
       my_string=get_next(" ");
       strcpy(name,my_string);
@@ -940,7 +941,7 @@ int compiler(bob,fptr)
 	printf("Out of memory at line %d\n",NLINES);
 	exit(0);
       }
-      
+
       if(NODE<IN_VARS)
 	{
 	  if((ode_names[NODE]=(char *)malloc(nn+5))==NULL){
@@ -955,11 +956,11 @@ int compiler(bob,fptr)
 	      fprintf(convertf,"%s'=%s\n",uvar_names[NODE],formula);
 	  }
 	  find_ker(formula,&alt);
-	  
+
 	  /* ode_names[NODE][nn]='\0'; */
-	
+
 	  EqType[NODE]=VFlag;
-	
+
 	  VFlag=0;
 	}
       if(NODE>=IN_VARS&&NODE<(IN_VARS+FIX_VAR))
@@ -967,10 +968,10 @@ int compiler(bob,fptr)
 	  if(ConvertStyle)
 	    fprintf(convertf,"%s=%s\n",fixname[NODE-IN_VARS],formula);
 	  find_ker(formula,&alt);
-	  
+
 	}
-      
-      
+
+
       if(NODE>=(IN_VARS+FIX_VAR))
 	{
 	  i=NODE-(IN_VARS+FIX_VAR);
@@ -995,18 +996,18 @@ int compiler(bob,fptr)
       /* fpr_command(my_ode[NODE]); */
       NODE++;
       break;
-      
+
     case 'a':   /* name auxiliary variables */
       plintf("Auxiliary variables:\n");
       while((my_string=get_next(" ,\n"))!=NULL)
 	{
-	  strcpy(aux_names[Naux],my_string);   
+	  strcpy(aux_names[Naux],my_string);
 	  plintf("|%s| ",aux_names[Naux]);
 	  Naux++;
 	};
       plintf("\n");
       break;
-     
+
     default:
       if(ConvertStyle) {
 	my_string=get_next("\n");
@@ -1014,7 +1015,7 @@ int compiler(bob,fptr)
       }
       break;
     }
-  
+
   return(done);
 }
 
@@ -1095,7 +1096,7 @@ char *src;
  return(ptr);
 }
 
-void find_ker(string,alt)   /* this extracts the integral operators from the string */ 
+void find_ker(string,alt)   /* this extracts the integral operators from the string */
      char *string;
      int *alt;
 {
@@ -1158,7 +1159,7 @@ void find_ker(string,alt)   /* this extracts the integral operators from the str
   }
   new[in]=0;
   strcpy(string,new);
-  
+
 }
 
 void pos_prn(s,x,y)
@@ -1197,7 +1198,7 @@ int getchi()
 /*   This is the new improved parser for input files.
      It is much more natural.  The format is as follows:
 
-# comments    
+# comments
 par  name=val, ....
 init name=val,...
 number name=value, ...
@@ -1207,7 +1208,7 @@ markov name #states (replaces m r)
 { }  ..... { }
 .
 .
-{ }  ..... { } 
+{ }  ..... { }
 options filename
 aux name = expression
 bndry ....
@@ -1217,9 +1218,9 @@ special name=sparse(...)
 
 u' = expression    \
                     ----   Differential equations (replaces o v)
-du/dt = expression /     
+du/dt = expression /
 
-u(t+1) = expression >--- Difference equation   (replace o v)  
+u(t+1) = expression >--- Difference equation   (replace o v)
 
 u(t) = expression with int{} or int[]  <--- volterra equation (replaces i v)
 
@@ -1227,7 +1228,7 @@ f(x,y,...) = expression >----   function (replaces u)
 
 u = expression>---  fixed  (replaces f o)
 
-u(0) = value >---  initial data (replaces v, init is also OK ) 
+u(0) = value >---  initial data (replaces v, init is also OK )
 
 */
 
@@ -1249,19 +1250,19 @@ u(0) = value >---  initial data (replaces v, init is also OK )
    NMarkov = # Markov variables
    NAux = # named auxiliary variables
    NEQ = ode+naux   --> plotted quantities
-  
+
    my_ode[] <---  formulas
    ode_names[] <---- "rhs"
-   uvar_names[] <----\  
+   uvar_names[] <----\
    aux_names[]  <----/ external names
 
    New parser reads in each line storing it in the var_info structure
    if it is a markov (the only truly multiline command) then it
    ** immediately ** reads in the markov stuff
- 
+
    It makes free use of "compiler"  in the old parser by
    sending it new strings
- 
+
    On the first pass it does nothing except markov stuff
    On the second pass it imitates an ode file doing things in the
    "correct" order
@@ -1289,8 +1290,8 @@ int if_include_file(char *old,char *nf)
     de_space(nf);
    return 1;
   }
-  return 0;    
-  
+  return 0;
+
 
 }
 
@@ -1302,7 +1303,7 @@ char *old;
   	if(strncmp(old,"#done",5)==0)return 1;
   	if(strncmp(old,"done",4)==0)return 1;
 	/*Note that feof termination of an included file
-	 is also possible but that condition is checked 
+	 is also possible but that condition is checked
 	elsewhere (currently near the bottom of do_new_parser)
 	*/
   }
@@ -1332,7 +1333,7 @@ void count_object(int type)
   case SOL_VAR:
     NUMSOL++;
     break;
-  
+
   }
 
 
@@ -1388,25 +1389,25 @@ int nnn;
          		  plintf("Can't open include file <%s>\n",includefilename[j]);
 			  exit(-1);
 			  /*continue;*/
-       			} 
-      			plintf("Including %s \n",includefilename[j]); 
+       			}
+      			plintf("Including %s \n",includefilename[j]);
 			IN_INCLUDED_FILE++;
        			do_new_parser(fnew,includefilename[j],1);
        			fclose(fnew);
 		}
        		/*continue;*/
 	}
-    	
+
      strcpy(old,first); /* pass the first line ....  */
      start=1;
    }
-   if (IN_INCLUDED_FILE > 0) 
+   if (IN_INCLUDED_FILE > 0)
     {
 	    if (if_end_include(old) || feof(fp))
 	    {
 	    	plintf("Completed include of file %s\n",first);
 	    	IN_INCLUDED_FILE--;
-	    	return 1; 
+	    	return 1;
 	    }
     }
     if(if_include_file(old,newfile)){
@@ -1414,12 +1415,12 @@ int nnn;
       if(fnew==NULL){
          plintf("Cant open include file <%s>\n",newfile);
          continue;
-       } 
-       plintf("Including %s...\n",newfile); 
+       }
+       plintf("Including %s...\n",newfile);
        IN_INCLUDED_FILE++;
        do_new_parser(fnew,newfile,1);
        fclose(fnew);
-       if (IN_INCLUDED_FILE > 0) 
+       if (IN_INCLUDED_FILE > 0)
        {
 	       if (feof(fp))
 	       {
@@ -1431,15 +1432,15 @@ int nnn;
              continue;
        }
     }
-     
-   
+
+
     search_array(old,new,&jj1,&jj2,&is_array);
    jj=jj1;
    jjsgn=1;
    if(jj2<jj1)jjsgn=-1;
-  
+
    switch(is_array){
-     case 0:  /*  not a for loop so */ 
+     case 0:  /*  not a for loop so */
      case 1:
            nstrings=1;
            strings[0]=(char *)malloc(strlen(new)+10);
@@ -1447,7 +1448,7 @@ int nnn;
            break;
       case 2: /*  a for loop, so we will ignore the first line */
 	/* is_array=1; */
-            while(1){ 
+            while(1){
              read_a_line(fp,old);
              if(old[0]=='%')
                break;
@@ -1456,19 +1457,19 @@ int nnn;
              nstrings++;
              if(nstrings>255)break;
              }
-             
+
             break;
-       }  
-         
-              
-            
-  
+       }
+
+
+
+
    while(1){
       for(ns=0;ns<nstrings;ns++){
       strcpy(new,strings[ns]);
-      subsk(new,big,jj,is_array); 
-     
- 
+      subsk(new,big,jj,is_array);
+
+
    done=parse_a_string(big,&v);
 
    if(done==-1){
@@ -1494,7 +1495,7 @@ int nnn;
 	 read_a_line(fp,old);
 	 plintf("part %d is %s \n",istates,old);
        }
- 
+
        v.type=GROUP;
      }
    /* check for Markov to get rid of extra lines */
@@ -1525,11 +1526,11 @@ int nnn;
 
            if(is_array==2)
 	     {
-               
+
 	       strcpy(markovarrays[istates],strings[ns+1+istates]);
-		     
+
 	     }
-	   else 
+	   else
 	     read_a_line(fp,markovarrays[istates]);
 	 }
        }
@@ -1542,19 +1543,19 @@ int nnn;
        v.type=MARKOV_VAR;
        strcpy(v.lhs,name);
        /* strcpy(v.rhs,save_eqn[nlin]); */
-       strcpy(v.rhs,"...many states.."); 
+       strcpy(v.rhs,"...many states..");
      }
 
-   
 
-        /* take care of special form for SOLVE-VARIABLE */      
+
+        /* take care of special form for SOLVE-VARIABLE */
           if(v.type==COMMAND && v.lhs[0]=='S' && v.lhs[1]=='O'){
            if(find_char(v.rhs,"=",0,&i1)<0){
              strcpy(v.lhs,v.rhs);
              strcpy(v.rhs,"0");
             }
           else{
-	  	
+
           strpiece(v.lhs,v.rhs,0,i1-1);
           strcpy(big,v.rhs);
           strpiece(v.rhs,big,i1+1,strlen(big));
@@ -1564,7 +1565,7 @@ int nnn;
 
      }
 
-   /* take care of special form for auxiliary */       
+   /* take care of special form for auxiliary */
      if(v.type==COMMAND && v.lhs[0]=='A' && v.lhs[1]=='U'){
        find_char(v.rhs,"=",0,&i1);
        strpiece(v.lhs,v.rhs,0,i1-1);
@@ -1572,9 +1573,9 @@ int nnn;
        strpiece(v.rhs,big,i1+1,strlen(big));
        v.type=AUX_VAR;
      }
-   
-   /* take care of special form for special */      
-     
+
+   /* take care of special form for special */
+
      if(v.type==COMMAND && v.lhs[0]=='S'&&v.lhs[1]=='P'&&v.lhs[5]=='A'){
        find_char(v.rhs,"=",0,&i1);
        strpiece(v.lhs,v.rhs,0,i1-1);
@@ -1592,12 +1593,12 @@ int nnn;
        strpiece(v.rhs,big,i1+1,strlen(big));
 
     }
-   
+
 /*  ONLY save options  */
-    
+
     if(v.type==COMMAND && v.lhs[0]=='O' && v.lhs[1]=='N')
     {
-     
+
       break_up_list(v.rhs);
       v.type=ONLY;
      }
@@ -1626,8 +1627,8 @@ int nnn;
       strpiece(v.rhs,big,i1+1,strlen(big));
       v.type=TABLE;
     }
-  
-     
+
+
     /* printf("v.lhs=%s v.rhs=%s v.type=%d v.args=%s\n",v.lhs,v.rhs,v.type,v.args);
    */
     add_varinfo(v.type,v.lhs,v.rhs,v.nargs,v.args);
@@ -1636,10 +1637,10 @@ int nnn;
    } /* end loop for the strings */
       /*     if(nstrings>0){
 	for(i=0;i<nstrings;i++)
-	   free(strings[i]); 
+	   free(strings[i]);
 	nstrings=0;
-	
-	
+
+
 	} */
    if(done==2)notdone=0;
    if(feof(fp))
@@ -1652,7 +1653,7 @@ int nnn;
 	}*/
    	notdone=0;
    }
-   
+
    if(jj==jj2)break;
 
      jj+=jjsgn;
@@ -1667,13 +1668,13 @@ int nnn;
     free(markovarrays);
     free(markovarrays2);
   }
- 
-     
+
+
  }
  for(ns=0;ns<nstrings;ns++)
    free(strings[ns]);
  compile_em();
- 
+
  free_varinfo();
  /*  print_count_of_object(); */
  return 1;
@@ -1693,7 +1694,7 @@ void create_plot_list()
     }
     N_plist=j;
   }
-    
+
 }
 
 void add_only(char *s)
@@ -1741,7 +1742,7 @@ int find_the_name(list,n,name)
   }
   return(-1);
 }
- 
+
 void compile_em() /* Now we try to keep track of markov, fixed, etc as
 		well as their names  */
 {
@@ -1756,14 +1757,14 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
  FILE *fp=NULL;
 
  v=my_varinfo;
- /* On this first pass through, all the variable names 
+ /* On this first pass through, all the variable names
     are kept as well as fixed declarations, boundary conds,
     and parameters, functions and tables.  Once this pass is
     completed all the names will be known to the compiler.
  */
- while(1) 
+ while(1)
    {
-      
+
 
     if(v->type==COMMAND && v->lhs[0]=='P'){
       sprintf(big,"par %s \n",v->rhs);
@@ -1780,13 +1781,13 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
     if(v->type==COMMAND && v->lhs[0]=='O'){
      sprintf(big,"c %s \n",v->rhs);
      compiler(big,fp);
-     
+
     }
     if(v->type==COMMAND && v->lhs[0]=='S' && v->lhs[1]=='E'){
       sprintf(big,"x %s\n",v->rhs);
       compiler(big,fp);
     }
- 
+
     if(v->type==COMMAND && v->lhs[0]=='B'){
       sprintf(big,"b %s \n",v->rhs);
       compiler(big,fp);
@@ -1806,7 +1807,7 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
 	  plintf(" %s is a duplicate name \n",tmp);
 	  exit(0);
 	}
-      
+
       /*  plintf("%d:%s = %s \n",nvar-1,vnames[nvar-1],v->rhs);   */
     }
 
@@ -1816,7 +1817,7 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
 	strcpy(mnames[nmark],tmp);
 	nmark++;
       }
-      
+
 /*      plintf("%s = %s \n",mnames[nmark-1],v->rhs); */
     }
     if(v->type==EXPORT){
@@ -1824,18 +1825,18 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
     }
     if(v->type==SPEC_FUN){
       add_special_name(v->lhs,v->rhs);
-      
+
 	}
     if(v->type==SOL_VAR){
        if(add_svar(v->lhs,v->rhs)==1)
 	 exit(0);
     }
-       
+
     if(v->type==AUX_VAR){
       convert(v->lhs,tmp);
       strcpy(anames[naux],tmp);
       naux++;
-      plintf("%s = %s \n",anames[naux-1],v->rhs); 
+      plintf("%s = %s \n",anames[naux-1],v->rhs);
     }
     if(v->type==DERIVE_PAR){
       if(add_derived(v->lhs,v->rhs)==1)
@@ -1849,7 +1850,7 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
       convert(v->lhs,tmp);
       strcpy(fnames[nfix],tmp);
       nfix++;
-     plintf("%s = %s \n",fnames[nfix-1],v->rhs); 
+     plintf("%s = %s \n",fnames[nfix-1],v->rhs);
     }
 
     if(v->type==TABLE){
@@ -1861,27 +1862,27 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
       plintf("added name %d\n",ntab);
       ntab++;
     }
-    
+
     if(v->type==FUNCTION){
       convert(v->lhs,tmp);
       if(add_ufun_name(tmp,nufun,v->nargs)==1){
 	printf("Duplicate name or too many functions for %s \n",tmp);
 	exit(0);
       }
-    
+
       nufun++;
     }
-      
+
     if(v->next==NULL)break;
      v=v->next;
    }
- 
+
  /*  plintf(" Found\n %d variables\n %d markov\n %d fixed\n %d aux\n %d fun \n %d tab\n ",
      nvar,nmark,nfix,naux,nufun,ntab); */
 
 
- /* now we add all the names of the variables and the 
-    fixed stuff 
+ /* now we add all the names of the variables and the
+    fixed stuff
  */
  for(i=0;i<nvar;i++){
       if(add_var(vnames[i],0.0)){
@@ -1910,8 +1911,8 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
  for(i=0;i<naux;i++)
    strcpy(aux_names[i],anames[i]);
  add_svar_names();
- 
- 
+
+
 /* NODE = nvars ; Naux = naux ; NEQ = NODE+NMarkov+Naux ; FIX_VAR = nfix; */
 
  IN_VARS=nvar;
@@ -1928,14 +1929,14 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
  naux=0;
  ntab=0;
  nufun=0;
- nfix=0; 
+ nfix=0;
  nmark=0;
 
 
  v=my_varinfo;
  while(1)
    {
-     
+
      if(v->type==COMMAND && v->lhs[0]=='I'){
        sprintf(big,"i %s \n",v->rhs);
        ptr=big;
@@ -1977,17 +1978,17 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
      if(v->type==IC){
        convert(v->lhs,tmp);
        fon=formula_or_number(v->rhs,&z);
-       	
+
 	  if(fon==1){
 
 	 if(v->rhs[0]=='-'&&(isdigit(v->rhs[1])||(v->rhs[1]=='.')))
 	   {
-        
+
 	     z=atof(v->rhs);
-	     
+
 	   }
        }
-	 
+
        in=find_the_name(vnames,IN_VARS,tmp);
        if(in>=0){
 	 last_ic[in]=z;
@@ -1995,7 +1996,7 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
 	 set_val(tmp,z);
 	 /* if(fon==1) */
 	   strcpy(delay_string[in],v->rhs);
-	   
+
 	 plintf(" Initial %s(0)=%s\n",tmp,v->rhs);
        }
        else {
@@ -2029,7 +2030,7 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
 	 plintf("could not allocate space for %s \n",v->lhs);
 	 exit(0);
        }
-       
+
        strcpy(ode_names[nvar],v->rhs);
        find_ker(v->rhs,&alt);
        /*       ode_names[nvar][nn-1]=0; */
@@ -2064,7 +2065,7 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
 	 exit(0);
        plintf(" DAE eqn: %s=0 \n",v->rhs);
        break;
-	 
+
      case  AUX_VAR:
        in1=IN_VARS+NMarkov+naux;
        in2=IN_VARS+FIX_VAR+naux;
@@ -2115,7 +2116,7 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
 	 plintf(",%s",v->args[in]);
        plintf(")=%s\n",v->rhs);
        break;
-     
+
      case TABLE:
        sprintf(big,"t %s %s ",v->lhs,v->rhs);
        ptr=big;
@@ -2141,7 +2142,7 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
 	 }
 	 ntab++;
        }
-       else 
+       else
 	 if(my_string[0]=='@'){
 	   plintf(" Two-dimensional array: \n ");
 	   my_string=get_next(" ");
@@ -2156,7 +2157,7 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
 	   {
 	     strcpy(formula,my_string);
 	     plintf("Lookup table %s = %s \n",v->lhs,formula);
-	     
+
 	     if(add_file_table(ntab,formula)){
 	       plintf("ERROR computing %s",v->lhs);
 	       exit(0);
@@ -2165,7 +2166,7 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
 	   }
        break;
      }
-   	 
+
      if(v->next==NULL)break;
      v=v->next;
    }
@@ -2174,12 +2175,12 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
  if(compile_svars()==1)
    exit(0);
  evaluate_derived();
- do_export_list();  
+ do_export_list();
  plintf(" All formulas are valid!!\n");
  NODE=nvar+naux+nfix;
  plintf(" nvar=%d naux=%d nfix=%d nmark=%d NEQ=%d NODE=%d \n",
 	nvar,naux,nfix,nmark,NEQ,NODE);
- 
+
 }
 
 /* this code checks if the right-hand side for an initial
@@ -2229,7 +2230,7 @@ int parse_a_string(s1,v)
     stor_internopts(s1);
     return 0;
   }
-    remove_blanks(s1); 
+    remove_blanks(s1);
 
   strcpy(s1old,s1);
   strupr(s1);
@@ -2284,7 +2285,7 @@ int parse_a_string(s1,v)
       type2=DERIVE_PAR;
       break;
     }
-    
+
     type2=FIXED;
     strpiece(lhs,s1,0,i1-1);
     strpiece(rhs,s1,i1+1,n1);
@@ -2308,7 +2309,7 @@ int parse_a_string(s1,v)
     else
       return -1;
     break;
-    
+
   case 4:
     i0=i1;
     if(strparse(s1,"T+1)=",i0,&i2)){
@@ -2326,7 +2327,7 @@ int parse_a_string(s1,v)
       break;
      }
     if(strparse(s1,"T)=",i0,&i2)){
-  
+
       if(strparse(s1,"INT{",0,&i3)==1||
 	 strparse(s1,"INT[",0,&i3)==1){
 	type2=VEQ;
@@ -2348,7 +2349,7 @@ int parse_a_string(s1,v)
     strpiece(lhs,s1,0,i0-2);
     strpiece(rhs,s1,i2,n1);
     break;
-  default: 
+  default:
     return -1;
   }
 
@@ -2360,16 +2361,16 @@ good_type:
   for(i=0;i<narg;i++)
     strcpy(v->args[i],args[i]);
 
-  /* plintf("type=%d type2 = %d : %s = %s \n",type,v->type,v->lhs,v->rhs); 
+  /* plintf("type=%d type2 = %d : %s = %s \n",type,v->type,v->lhs,v->rhs);
    if(type2==FUNCTION){
-    plintf(" %d args \n",v->nargs); 
+    plintf(" %d args \n",v->nargs);
      for(i=0;i<narg;i++)
        plintf("(%s) ",v->args[i]);
     plintf("\n");
-    
+
   }
   */
-  
+
   if(lhs[0]=='D'&&type2==COMMAND)
     return 2;
   return 1;
@@ -2419,7 +2420,7 @@ void add_varinfo(type,lhs,rhs,nargs,args)
     vnew->prev=v;
   }
 }
-    
+
 void free_varinfo()
 {
   VAR_INFO *v,*vnew;
@@ -2444,7 +2445,7 @@ int extract_ode(s1,ie,i1)  /* name is char 1-i1  ie is start of rhs */
      char *s1;
 {
   int i=0,n=strlen(s1);
-  
+
   i=i1;
   while(i<n){
     if(s1[i]=='='){
@@ -2484,10 +2485,10 @@ int strparse(s1,s2,i0,i1)
 	  start=0;
 	  j=0;
 	}
-    } 
+    }
     else /* just starting */
       {
-         
+
 	if(ch==s2[0]){
 	  j++;
 	  i++;
@@ -2500,7 +2501,7 @@ int strparse(s1,s2,i0,i1)
       else
 	i++;
       }
-	
+
   }
   return(0);
 }
@@ -2535,9 +2536,9 @@ int extract_args(s1,i0,ie,narg,args)
   }
   return(0);
 }
-      
-    
-    
+
+
+
 int find_char(s1,s2,i0,i1)
      int i0,*i1;
      char *s1,*s2;
@@ -2599,9 +2600,9 @@ void remove_blanks(s1)
       s1[j]=s1[j+i];
     s1[l]=0;
   }
- 
+
 }
-      
+
 
 void read_a_line(fp,s)
      char *s;
@@ -2643,20 +2644,20 @@ void read_a_line(fp,s)
       n=strlen(s);
     }
   */
-      
+
   if(s[n-1]=='\n'||s[n-1]=='\r')s[n-1]=' ';
   s[n]=' ';
   s[n+1]=0;
-  
+
 
 }
-  
 
 
 
 
 
- 
+
+
 
 int search_array(old,new,i1,i2,flag)
      char *old,*new;
@@ -2677,7 +2678,7 @@ int search_array(old,new,i1,i2,flag)
   if(old[0]=='#'||old[1]=='#') {  /* check for comments */
 
     strcpy(new,old);
-        
+
     return 1;
   }
   if(check_if_ic(old)==1){
@@ -2739,10 +2740,10 @@ int search_array(old,new,i1,i2,flag)
 	}
       }
     }
-    
+
   }
     *i1=atoi(num1);
-    *i2=atoi(num2); 
+    *i2=atoi(num2);
      /* now we have the numbers and will get rid of the junk inbetween */
   l=0;
   for(i=0;i<=ileft;i++){
@@ -2774,7 +2775,7 @@ int check_if_ic(char *big)
       /*  plintf(" %c %c %c \n",big[j+1],big[j+2],big[j+3]); */
       if((big[j+1]=='(') && (big[j+2]=='0') && (big[j+3]==')')){
 	return 1;
-	
+
       }
     }
     j++;
@@ -2802,15 +2803,15 @@ int is_comment(char *s)
     if(c=='#')return 1;
     if(isspace(c)){
       i++;
-     
+
       if(i>=n)return 0;
     }
     else
       return 0;
   }
 }
- 
-  
+
+
 void subsk(big,new,k,flag)
      char *big,*new;
      int k,flag;
@@ -2821,11 +2822,11 @@ void subsk(big,new,k,flag)
   i=0;
   /*  if(big[0]=='#'){   */
   if(is_comment(big)){
-    
+
     strcpy(new,big);
     return;
   }
-  
+
   while(1){
     ch=big[i];
     chp=big[i+1];
@@ -2856,8 +2857,8 @@ void subsk(big,new,k,flag)
 	}
       }
     }
-    else 
-      
+    else
+
       if(ch=='['&&chp=='j')
 	{
            if(flag==0){
@@ -2924,7 +2925,7 @@ void subsk(big,new,k,flag)
 	    i++;
 	    inew++;
 	  }
-  
+
     if(i>=n)break;
   }
   new[inew]=0;
@@ -2934,7 +2935,7 @@ void subsk(big,new,k,flag)
 void keep_orig_comments()
 {
   int i;
-  
+
   if(orig_ncomments>0)return; /* already stored these so return */
   if(n_comments==0)return; /* nothing to keep ! */
   orig_comments=(ACTION *)malloc(sizeof(ACTION)*n_comments);
@@ -2947,7 +2948,7 @@ void keep_orig_comments()
       strcpy(orig_comments[i].action,comments[i].action);
     orig_comments[i].aflag=comments[i].aflag;
   }
-  
+
 }
 
 void default_comments()
@@ -2956,7 +2957,7 @@ void default_comments()
   if(orig_ncomments==0)return;
   /* first free up the comments */
   free_comments();
-  for(i=0;i<orig_ncomments;i++){ 
+  for(i=0;i<orig_ncomments;i++){
     comments[i].text=(char *)malloc(strlen(orig_comments[i].text)+1);
     strcpy(comments[i].text,orig_comments[i].text);
     if(orig_comments[i].aflag){
@@ -2990,8 +2991,8 @@ void new_comment(FILE *f)
     add_comment(ted);
   }
 
-    
-}  
+
+}
 
 
 void add_comment(char *s)
@@ -3052,7 +3053,7 @@ void add_comment(char *s)
  if(comments[n_comments].aflag==1)
    plintf("action=%s \n",comments[n_comments].action);
  n_comments++;
- 
+
 }
 
 
@@ -3104,7 +3105,7 @@ char* get_next2(char** tokens_ptr) {
     }
 
     if (!success) {
-        /* this is either a variable alone or a syntax error */    
+        /* this is either a variable alone or a syntax error */
         *tokens_ptr = &tokens[len];
         return new_string2(tokens, len);
     }
@@ -3117,9 +3118,9 @@ char* get_next2(char** tokens_ptr) {
             break;
         }
     }
-    
+
     if (!success) {
-        /* this is either a variable alone or a syntax error */    
+        /* this is either a variable alone or a syntax error */
         *tokens_ptr = &tokens[len];
         return new_string2(tokens, len);
     }
@@ -3132,10 +3133,10 @@ char* get_next2(char** tokens_ptr) {
         }
         return new_string2(tokens, i);
     }
-    
 
-    
-    
+
+
+
     /* advance until the first non-space */
     success = 0;
     for (i = i + 1; i < len; i++) {
@@ -3149,24 +3150,24 @@ char* get_next2(char** tokens_ptr) {
         *tokens_ptr = &tokens[len];
         return new_string2(tokens, len);
     }
-    
+
     /* advance past the nonspaces and non-commas */
     for (; i < len; i++) {
         if (isspace(tokens[i]) || tokens[i] == ',') break;
     }
-    
+
     /* advance past any spaces */
     for (; i < len; i++) {
         if (!isspace(tokens[i])) {
             break;
         }
     }
-    
+
     /* advance past a comma, if any */
     if (i < len) {
         if (tokens[i] == ',') i++;
     }
-    
+
     /* advance the pointer to point to the next character, or the null character if no more */
     *tokens_ptr = &tokens[i];
     return new_string2(tokens, i);
@@ -3198,4 +3199,3 @@ void strncpy_trim(char* dest, char* source, int n) {
     strncpy(dest, source, i + 1);
     dest[i + 1] = '\0';
 }
-

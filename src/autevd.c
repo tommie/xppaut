@@ -17,8 +17,6 @@
 #define SEQ 1
 #define UEQ 2
 
-#define ESCAPE 27
-
 
 int DiagFlag=0;
 /*typedef struct {double r,i;} dcomplex;

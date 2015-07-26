@@ -98,7 +98,6 @@ if type=0 mx(0)=maximum mx(1)=index,mx(2)=minimum mx(3)=index
 #include "strutil.h"
 #include "tabular.h"
 
-#define IC 2
 
 /* simple network stuff */
 

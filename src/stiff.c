@@ -50,7 +50,6 @@
 #define PGROW2 -0.2
 #define PSHRNK2 -0.25
 #define ERRCON2 1.89e-4
-double sdot();
 
 void jacobn(x,y,dfdx,dermat,eps,work,n)
      double x,*y,*dermat,*dfdx,eps,*work;

@@ -70,9 +70,6 @@ to be added later
 
 TABULAR my_table[MAX_TAB];
 
-double atof();
-double get_ivar();
-double evaluate();
 
 void set_auto_eval_flags(int f)
 {

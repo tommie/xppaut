@@ -47,7 +47,6 @@
 
 #define DFNORMAL 1
 #define MAXOPT 1000
-#define READEM 1
 
 char *interopt[MAXOPT];
 int Nopts=0;

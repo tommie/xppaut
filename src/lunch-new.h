@@ -3,6 +3,11 @@
 
 #include <stdio.h>
 
+/* --- Macros --- */
+/* flag values */
+#define WRITEM 0
+#define READEM 1
+
 /* --- Functions --- */
 void file_inf(void);
 void ps_write_pars(FILE *fp);

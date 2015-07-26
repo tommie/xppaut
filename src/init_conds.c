@@ -56,8 +56,6 @@
 #define HOTWILD 2
 #define HOTFILE 1
 
-#define READEM 1
-#define WRITEM 0
 #define MAX_LEN_SBOX 25
 
 #define PARAMBOX 1

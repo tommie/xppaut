@@ -55,7 +55,6 @@
 #include "xpplim.h"
 #include "bitmap/array.bitmap"
 
-#define READEM 1
 #define MAX_LEN_SBOX 25
 #define FIRSTCOLOR 30
 #define FIX_MIN_SIZE 2

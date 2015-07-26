@@ -21,7 +21,6 @@
 #include "storage.h"
 #include "volterra2.h"
 
-#define READEM 1
 #define PARAMBOX 1
 
 double atof();
@@ -188,7 +187,7 @@ int read_lunch(FILE *fp)
    return 1;
 }
 
-void do_lunch(f) /* f=1 to read and 0 to write */
+void do_lunch(f)
 int f;
 
 {

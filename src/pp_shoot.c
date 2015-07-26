@@ -202,7 +202,7 @@ double *ystart,*yend;
 
      bvshoot(ystart,yend,BVP_TOL,BVP_EPS,BVP_MAXIT,&ierr,NODE,0,
 	     0,0,0,0.0);
-     if(ierr==-5)continue;
+     if(ierr==ABORT)continue;
      if(ierr<0){
        bad_shoot(ierr);
 
@@ -362,7 +362,7 @@ void find_bvp_com(int com)
  else
  bvshoot(ystart,yend,BVP_TOL,BVP_EPS,BVP_MAXIT,&iret,NODE,ishow,0,0,0,0.0 );
  bad_shoot(iret);
- if(iret==1||iret==2) {
+ if(iret==GOODSHOT||iret==NOCHANGE) {
  get_ic(0,ystart);
  redraw_ics();
  if(ishow){
@@ -488,8 +488,8 @@ void bvshoot(y,yend,err,eps,maxit,iret,n,ishow,iper,ipar,ivar,sect)
 
            {
 
-             if(esc==ESCAPE) {*iret=-5;break;}
-	     if(esc=='/'){*iret=-6;break;}
+             if(esc==ESCAPE) {*iret=ABORT;break;}
+	     if(esc=='/'){*iret=ABORT_ALL;break;}
 
            }
 
@@ -521,7 +521,7 @@ void bvshoot(y,yend,err,eps,maxit,iret,n,ishow,iper,ipar,ivar,sect)
   }
 
    for(i=0;i<n;i++)yend[i]=y1[i];
-   *iret=1;
+   *iret=GOODSHOT;
    goto bye;
 
  }

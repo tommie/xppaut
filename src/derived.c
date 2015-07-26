@@ -11,7 +11,6 @@
 /* Derived parameter stuff !!  */
 #define MAXDERIVED 200
 
-double evaluate();
 typedef struct {
   int index,*form;
   char *rhs;

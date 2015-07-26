@@ -11,6 +11,7 @@ extern int batch_range;
 extern char batchout[256];
 extern int CURY_OFF;
 extern int CURY_OFFb;
+extern int CURY_OFFs;
 extern int DCURX;
 extern int DCURXs;
 extern int DCURY;

@@ -123,13 +123,8 @@ int NAutoPar=5;
 int Auto_index_to_array[5];
 int AutoPar[5];
 
-double atof();
-
 double outperiod[20];
 int UzrPar[20],NAutoUzr;
-
-char *get_first();
-char *get_next();
 
 char this_auto_file[200];
 char fort3[200];

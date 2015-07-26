@@ -32,13 +32,7 @@
 #define MAX_LEN_SBOX 25
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
-double atof();
-
 FITINFO fin;
-
-char *get_first();
-char *get_next();
-
 
 int (*solver)();
 

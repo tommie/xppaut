@@ -84,7 +84,6 @@ noinst_HEADERS = \
 	rubber.h \
 	run_auto.h \
 	scrngif.h \
-	shoot.h \
 	simplenet.h \
 	stiff.h \
 	storage.h \

@@ -1,26 +1,19 @@
 #include "parserslow.h"
 
-#include <time.h>
-#include "ggets.h"
-#include "tabular.h"
-#include "strutil.h"
-
-#include <stdlib.h>
-
-#ifndef HAVE_WCTYPE_H
-# include <ctype.h>
-#else
-# include <wctype.h>
-#endif
-
+#include <ctype.h>
 #include <math.h>
-/* #include <malloc.h> */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
-
-#include "xpplim.h"
+#include "comline.h"
+#include "delay_handle.h"
 #include "getvar.h"
+#include "ggets.h"
+#include "strutil.h"
+#include "tabular.h"
+#include "xpplim.h"
 
 #define FUN1TYPE 9
 #define FUN2TYPE 1
@@ -102,9 +95,6 @@ typedef struct
          int pri;
         } SYMBOL;
 
-extern int NODE;
-
-
 int nsrand48(int seed);
 
 #define DFNORMAL 1
@@ -113,7 +103,6 @@ int nsrand48(int seed);
 
 /* #define COM(a) my_symb[toklist[(a)]].com */
 int             ERROUT;
-extern int DelayFlag;
 int NDELAYS=0;
 /*double pow2(); */
 double get_delay();
@@ -130,10 +119,6 @@ int RandSeed=12345678;
 #ifndef M_PI
 # define M_PI	3.14159265358979323846264338327950288
 #endif
-
-
-extern int newseed;
-extern int del_stab_flag;
 
 double CurrentIndex=0;
 int SumIndex=1;

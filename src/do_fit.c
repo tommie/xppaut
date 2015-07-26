@@ -13,6 +13,7 @@
 #include "form_ode.h"
 #include "gear.h"
 #include "ggets.h"
+#include "integrate.h"
 #include "load_eqn.h"
 #include "odesol2.h"
 #include "parserslow.h"
@@ -34,7 +35,6 @@
 
 FITINFO fin;
 
-int (*solver)();
 
 void init_fit_info()
 {

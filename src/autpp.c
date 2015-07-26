@@ -1,10 +1,10 @@
 #include <stdlib.h>
+#include "f2c.h"
 #include "autlim.h"
 #include "auto_nox.h"
 #include "derived.h"
-#include "f2c.h"
-#include "homsup.h"
 #include "load_eqn.h"
+#include "odesol2.h"
 #include "parserslow.h"
 #include "pp_shoot.h"
 

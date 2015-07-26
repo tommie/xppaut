@@ -5,8 +5,8 @@
 
 #include "flags.h"
 #include "gear.h"
-#include "homsup.h"
 #include "markov.h"
+#include "odesol2.h"
 #include "xpplim.h"
 
 #define RKQS 8

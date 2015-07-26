@@ -14,7 +14,6 @@
 #include "ggets.h"
 #include "graf_par.h"
 #include "graphics.h"
-#include "homsup.h"
 #include "init_conds.h"
 #include "integrate.h"
 #include "load_eqn.h"
@@ -25,6 +24,7 @@
 #include "my_ps.h"
 #include "my_svg.h"
 #include "numerics.h"
+#include "odesol2.h"
 #include "parserslow.h"
 #include "pop_list.h"
 #include "struct.h"
@@ -40,8 +40,8 @@ int NCBatch=0;
 int NullStyle=0; /* 1 is with little vertical/horizontal lines */
 
 int XNullColor=2,YNullColor=7;
-int NULL_HERE,num_x_n,num_y_n,num_index,
-	null_ix,null_iy,WHICH_CRV;
+int num_x_n,num_y_n,num_index,
+    null_ix,null_iy,WHICH_CRV;
 float null_dist,*X_n,*Y_n,*saver,*NTop,*NBot;
 int DF_GRID=10,DF_FLAG=0,DF_IX=-1,DF_IY=-1;
 int DFIELD_TYPE=0;

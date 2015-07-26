@@ -244,6 +244,7 @@ extern int NJMP;
 extern int NMESH;
 extern int NPltV;
 extern double NULL_ERR;
+extern int NULL_HERE;
 extern char options[100];
 extern int PAR_FOL;
 extern int PAUSER;

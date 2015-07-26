@@ -1,6 +1,10 @@
-#ifndef _kinescope_h_
-#define _kinescope_h_
+#ifndef XPPAUT_KINESCOPE_H
+#define XPPAUT_KINESCOPE_H
 
+/* --- Data --- */
+extern int mov_ind;
+
+/* --- Functions --- */
 void do_movie_com(int c);
 void reset_film(void);
 int film_clip(void);
@@ -12,6 +16,4 @@ void save_movie(char *basename, int fmat);
 void auto_play(void);
 void too_small(void);
 
-#endif
-
-
+#endif /* XPPAUT_KINESCOPE_H */

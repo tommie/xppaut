@@ -82,8 +82,6 @@ BROWSER my_browser;
 float *old_rep;
 int REPLACE=0,R_COL=0;
 
-float **storage;
-
 float **get_browser_data()
 {
   return my_browser.data;

@@ -1,0 +1,27 @@
+#!/bin/bash -e
+#
+# Tool to list all symbols that are defined in more than one object file.
+#
+#   $ ./tools/xrefsym src/*.o
+#
+
+# ls-symbols lists all defined symbols of the given object files.
+# Debug and relocation symbols are ignored.
+# Output is one line per (file, symbol) pair.
+ls-symbols() {
+    nm --defined-only "$@" | awk -vfname="$1" '
+        !$0 { next; }
+        /\.o:$/ { fname = $1; sub(/:/, "", fname); next; }
+        $2 !~ /[rd]/ { print fname, $3; }'
+}
+
+# group-files takes lines of (file, symbol) and outputs (symbol, file*).
+group-files() {
+    sort -k2,2 -k1,1 | awk '
+        $2 != sym && sym { printf "%s%s\n", sym, fnames; fnames = ""; }
+        { sym = $2; fnames = fnames " " $1; }
+        END { if (sym) printf "%s%s\n", sym, fnames; }'
+}
+
+# Output all symbols defined in more than one file.
+ls-symbols "$@" | group-files | awk 'NF > 2 { print; }'

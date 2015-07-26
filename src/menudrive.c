@@ -39,7 +39,6 @@
 #include "txtread.h"
 #include "bitmap/alert.bitmap"
 
-int screen;
 int status;
 
 typedef struct {

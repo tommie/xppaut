@@ -17,7 +17,6 @@ typedef struct {
 
 /* --- Data --- */
 extern HOMOCLIN my_hom;
-extern int (*rhs)();
 
 /* --- Functions --- */
 double hom_bcs();

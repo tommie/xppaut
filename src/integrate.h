@@ -27,6 +27,7 @@ extern int MyStart;
 extern double MyTime;
 extern RANGE range;
 extern int RANGE_FLAG;
+extern int (*solver)(double *y, double *tim, double dt, int nstep, int neq, int *ist, double *work);
 extern int SuppressBounds;
 extern int SuppressOut;
 extern XPPVEC xpv;

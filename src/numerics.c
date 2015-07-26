@@ -57,7 +57,6 @@ typedef struct {
 POINCARE_MAP my_pmap;
 
 
-int (*solver)();
 float *fft_data,*hist_data,color_scale,min_scale;
 
 int cv_bandflag=0,cv_bandupper=1,cv_bandlower=1;

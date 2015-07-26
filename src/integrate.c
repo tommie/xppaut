@@ -142,7 +142,7 @@ int PSLineStyle;
 
 RANGE range;
 
-int (*solver)();
+int (*solver)(double *y, double *tim, double dt, int nstep, int neq, int *ist, double *work);
 
 void init_ar_ic()
 {

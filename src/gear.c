@@ -10,11 +10,11 @@
 #include "form_ode.h"
 #include "ggets.h"
 #include "graphics.h"
-#include "homsup.h"
 #include "integrate.h"
 #include "load_eqn.h"
 #include "markov.h"
 #include "menudrive.h"
+#include "odesol2.h"
 #include "xpplim.h"
 
 #define DING ping()

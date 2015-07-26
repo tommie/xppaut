@@ -5,11 +5,11 @@
 #include "f2c.h"
 #include "form_ode.h"
 #include "load_eqn.h"
+#include "odesol2.h"
 
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
 #define COMPZERO 1e-13
-int (*rhs)();
 HOMOCLIN my_hom;
 
 

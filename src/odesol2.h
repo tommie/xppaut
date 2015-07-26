@@ -1,8 +1,10 @@
-#ifndef _odesol2_h_
-#define _odesol2_h_
+#ifndef XPPAUT_ODESOL2_H
+#define XPPAUT_ODESOL2_H
 
+/* --- Data --- */
+extern int (*rhs)(double t, double *y, double *ydot, int neq);
 
-
+/* --- Functions --- */
 int symplect3(double *y, double *tim, double dt, int nt, int neq, int *istart, double *work);
 int discrete(double *y, double *tim, double dt, int nt, int neq, int *istart, double *work);
 int bak_euler(double *y, double *tim, double dt, int nt, int neq, int *istart, double *work);
@@ -24,4 +26,4 @@ void get_band_jac(double *a, double *y, double t, double *ypnew, double *ypold, 
 int bandfac(double *a, int ml, int mr, int n);
 void bandsol(double *a, double *b, int ml, int mr, int n);
 
-#endif
+#endif /* XPPAUT_ODESOL2_H */

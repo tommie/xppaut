@@ -23,6 +23,7 @@
 #include "lunch-new.h"
 #include "markov.h"
 #include "my_rhs.h"
+#include "odesol2.h"
 #include "parserslow.h"
 #include "pop_list.h"
 #include "xpplim.h"
@@ -31,7 +32,6 @@
 #define MAX_LEN_SBOX 25
 #define READEM 1
 
-int (*rhs)();
 float **my_adj;
 int adj_len;
 float **my_h;

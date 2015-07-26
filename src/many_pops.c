@@ -70,7 +70,6 @@ LABEL lb[MAXLAB];
 GROB grob[MAXGROB];
 GRAPH graph[MAXPOP];
 CURVE frz[MAXFRZ];
-NCLINE nclines[MAXNCLINE];
 GRAPH *MyGraph;
 int SimulPlotFlag=0;
 int current_pop;

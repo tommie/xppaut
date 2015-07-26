@@ -9,7 +9,7 @@
 #include "eig_list.h"
 #include "gear.h"
 #include "ggets.h"
-#include "homsup.h"
+#include "odesol2.h"
 #include "xpplim.h"
 
 #define Z(a,b) z[(a)+n*(b)]

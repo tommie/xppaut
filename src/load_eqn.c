@@ -25,6 +25,7 @@
 #include "histogram.h"
 #include "init_conds.h"
 #include "integrate.h"
+#include "kinescope.h"
 #include "lunch-new.h"
 #include "main.h"
 #include "many_pops.h"
@@ -62,7 +63,6 @@ INTERN_SET intern_set[MAX_INTERN_SET];
 int Nintern_set=0;
 
 double last_ic[MAXODE];
-int (*solver)();
 
 char delay_string[MAXODE][80];
 int itor[MAXODE];
@@ -71,8 +71,7 @@ int itor[MAXODE];
 char this_file[XPP_MAX_NAME];
 char this_internset[XPP_MAX_NAME];
 float oldhp_x,oldhp_y,my_pl_wid,my_pl_ht;
-int mov_ind;
-int  storind,STORFLAG,INFLAG,MAXSTOR;
+int  STORFLAG,INFLAG;
 double x_3d[2],y_3d[2],z_3d[2];
 int IXPLT,IYPLT,IZPLT;
 int AXES,TIMPLOT,PLOT_3D;

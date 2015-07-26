@@ -59,10 +59,6 @@
 
 #define FR_P 10  /* freq vs par   */
 #define AV_P 11 /* ubar vs par */
-#define SPER 3
-#define UPER 4
-#define CSEQ 1
-#define CUEQ 2
 
 #define DISCRETE 0
 

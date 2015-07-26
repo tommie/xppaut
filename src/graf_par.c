@@ -43,11 +43,6 @@ NCLINE nclines[MAXNCLINE];
 int PS_Color=1;
 
 
-#define SPER 3
-#define UPER 4
-#define SEQ 1
-#define UEQ 2
-
 #define lsSEQ 0
 #define lsUEQ 1
 #define lsSPER 8
@@ -1427,7 +1422,7 @@ void add_bd_crv(x,y,len,type,ncrv)
   i=lsSEQ;
   if(type==UPER)i=lsUPER;
   if(type==SPER)i=lsSPER;
-  if(type==UEQ)i=lsUEQ;
+  if(type==CUEQ)i=lsUEQ;
   my_bd.color[ncrv]=i;
 }
 

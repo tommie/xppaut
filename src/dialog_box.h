@@ -5,6 +5,12 @@
 #include <X11/Xlib.h>
 #include "xpplim.h"
 
+/* --- Macros --- */
+/* get_dialog return values */
+#define FORGET_ALL   0
+#define DONE_WITH_THIS 1
+#define ALL_DONE 2
+
 /* --- Types --- */
 typedef struct {
   Window mes;
@@ -20,8 +26,5 @@ typedef struct {
 
 /* --- Functions --- */
 int get_dialog(char *wname, char *name, char *value, char *ok, char *cancel, int max);
-int dialog_event_loop(DIALOG *d, int max, int *pos, int *col);
-void display_dialog(Window w, DIALOG d, int pos, int col);
-
 
 #endif /* XPPAUT_DIALOG_BOX_H */

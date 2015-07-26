@@ -9,9 +9,6 @@
 #include "main.h"
 #include "many_pops.h"
 
-#define ALL_DONE 2
-#define DONE_WITH_THIS 1
-#define FORGET_ALL   0
 
 #define EV_MASK (ButtonPressMask 	|\
 		KeyPressMask		|\
@@ -24,6 +21,11 @@
 		StructureNotifyMask	|\
 		EnterWindowMask		|\
 		LeaveWindowMask)
+
+
+static int dialog_event_loop(DIALOG *d, int max, int *pos, int *col);
+static void display_dialog(Window w, DIALOG d, int pos, int col);
+
 
 int get_dialog(wname,name,value,ok,cancel,max)
 char *wname,*name,*value,*ok,*cancel;
@@ -95,7 +97,7 @@ int max;
  return(status);
 }
 
-int dialog_event_loop(d,max,pos,col)
+static int dialog_event_loop(d,max,pos,col)
 DIALOG *d;
  int max;
  int *pos,*col;
@@ -156,7 +158,7 @@ DIALOG *d;
 
 
 
-void display_dialog(w,d,pos,col)
+static void display_dialog(w,d,pos,col)
 Window w;
 DIALOG d;
 int pos,col;
@@ -173,37 +175,3 @@ int pos,col;
 	/* showchar('_',DCURX*strlen(d.input_s),0,d.input); */
       }
 }
-/*  Uses Dialog boxes for input of numbers  */
-/*
-
-new_float(name,value)
-char *name;
-double *value;
-{
- char tvalue[100];
- int status;
- sprintf(tvalue,"%.16g",*value);
-
- status=get_dialog(name,name,tvalue,"Ok","Cancel",30);
- if(status==FORGET_ALL||strlen(tvalue)==0)return;
- if(tvalue[0]=='%')
-  {
-	do_calc(&tvalue[1],value);
-	return;
-  }
- *value=atof(tvalue);
- }
-
- */
-/* new_int(name,value)
-char *name;
-int *value;
-{
- char tvalue[100];
- int status;
- sprintf(tvalue,"%d",*value);
- status=get_dialog(name,name,tvalue,"Ok","Cancel",30);
- if(status==FORGET_ALL||strlen(tvalue)==0)return;
- *value=atoi(tvalue);
- }
- */

@@ -634,7 +634,7 @@ void ani_newskip()
   XGetInputFocus(display,&w,&rev);
   sprintf(bob,"%d",vcr.inc);
   status=get_dialog("Frame skip","Increment:",bob,"Ok","Cancel",20);
-  if(status!=0){
+  if(status!=FORGET_ALL){
     vcr.inc=atoi(bob);
     if(vcr.inc<=0)vcr.inc=1;
   }

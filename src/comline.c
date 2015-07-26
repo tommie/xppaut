@@ -8,6 +8,7 @@
 #include "form_ode.h"
 #include "ggets.h"
 #include "integrate.h"
+#include "load_eqn.h"
 #include "lunch-new.h"
 #include "main.h"
 

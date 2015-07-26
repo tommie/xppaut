@@ -13,6 +13,7 @@
 #include "form_ode.h"
 #include "ggets.h"
 #include "init_conds.h"
+#include "load_eqn.h"
 #include "main.h"
 #include "many_pops.h"
 #include "mykeydef.h"

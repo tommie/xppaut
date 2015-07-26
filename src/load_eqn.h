@@ -223,6 +223,7 @@ extern double NEWT_ERR;
 extern int Nintern_set;
 extern int NJMP;
 extern int NMESH;
+extern OptionsSet notAlreadySet;
 extern int NPltV;
 extern double NULL_ERR;
 extern int NULL_HERE;

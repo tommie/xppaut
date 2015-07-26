@@ -2,7 +2,7 @@
 #define XPPAUT_MAIN_H
 
 #include <X11/Xlib.h>
-#include "load_eqn.h"
+#include "xpplim.h"
 
 /* --- Macros --- */
 /* FixWindowSize(flag) values */
@@ -37,7 +37,6 @@ extern unsigned int MyBackColor;
 extern unsigned int MyForeColor;
 extern unsigned int MyDrawWinColor;
 extern unsigned int MyMainWinColor;
-extern OptionsSet notAlreadySet;
 extern int OVERRIDE_LOGFILE;
 extern int OVERRIDE_QUIET;
 extern int PaperWhite;

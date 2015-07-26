@@ -18,6 +18,7 @@
 #include "ggets.h"
 #include "init_conds.h"
 #include "integrate.h"
+#include "load_eqn.h"
 #include "main.h"
 #include "many_pops.h"
 #include "math.h"

@@ -15,6 +15,7 @@
 #include "init_conds.h"
 #include "integrate.h"
 #include "kinescope.h"
+#include "load_eqn.h"
 #include "main.h"
 #include "many_pops.h"
 #include "markov.h"

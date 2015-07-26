@@ -45,6 +45,7 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "init_conds.h"
 #include "kinescope.h"
 #include "lunch-new.h"
+#include "load_eqn.h"
 #include "main.h"
 #include "many_pops.h"
 #include "markov.h"

@@ -9,6 +9,7 @@
 
 #include "ggets.h"
 #include "many_pops.h"
+#include "load_eqn.h"
 #include "main.h"
 
 

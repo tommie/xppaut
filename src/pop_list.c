@@ -9,6 +9,7 @@
 #include "form_ode.h"
 #include "ggets.h"
 #include "graf_par.h"
+#include "load_eqn.h"
 #include "main.h"
 #include "many_pops.h"
 #include "menudrive.h"

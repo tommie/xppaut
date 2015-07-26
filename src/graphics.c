@@ -29,6 +29,7 @@
 #include "calc.h"
 #include "color.h"
 #include "graf_par.h"
+#include "load_eqn.h"
 #include "main.h"
 #include "many_pops.h"
 #include "my_ps.h"

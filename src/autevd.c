@@ -30,8 +30,6 @@ typedef struct {
 */
 EIGVAL my_ev;
 
-double sign();
-int imin();
 double dreal_(z)
 dcomplex *z;
 {

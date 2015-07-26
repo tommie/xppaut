@@ -16,6 +16,7 @@ typedef struct {
 } FIXINFO;
 
 /* --- Data --- */
+extern FILE *convertf;
 extern int ConvertStyle;
 extern double default_ic[MAXODE];
 extern double default_val[MAXPAR];

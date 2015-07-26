@@ -39,6 +39,10 @@ find-rmincludes() {
 
     for (( i=0; i<${#includes[@]}; ++i )); do
         local oldrmincludes=( "${rmincludes[@]}" )
+        if [[ "x${includes[$i]}" = x*"\"$(basename "$srcfile" .c).h\""* || "x${includes[$i]}" = x*"\"config.h\""* ]]; then
+            # We never want to remove the local header file or config.h.
+            continue
+        fi
         rmincludes+=( "${includes[$i]}" )
 
         echo "Building '$srcfile' without ${includes[$i]}..."
@@ -50,7 +54,13 @@ find-rmincludes() {
         if ! "$@" &>/dev/null; then
             echo "Build failed. '${includes[$i]}' is needed."
             rmincludes=( "${oldrmincludes[@]}" )
-            cp "$origfile" "$srcfile"
+            if [ ${#rmincludes[@]} -eq 0 ]; then
+                cp "$origfile" "$srcfile"
+            else
+                IFS=$'\n'
+                grep -v -F "${rmincludes[*]}" "$origfile" >"$srcfile" || true
+                IFS="$ifs"
+            fi
         fi
     done
 

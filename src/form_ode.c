@@ -15,6 +15,7 @@
 #include "integrate.h"
 #include "main.h"
 #include "markov.h"
+#include "newpars.h"
 #include "parserslow.h"
 #include "read_dir.h"
 #include "simplenet.h"
@@ -78,6 +79,9 @@ int NUMODES=0,NUMFIX=0,NUMPARAM=0,NUMMARK=0,NUMAUX=0,NUMVOLT=0,NUMSOL=0;
 
 
 FIXINFO fixinfo[MAXODE];
+
+
+static int parse_a_string(char *s1, VAR_INFO *v);
 
 
 int make_eqn()
@@ -2149,7 +2153,7 @@ void strpiece(dest,src,i0,ie)
   dest[ie-i0+1]=0;
 }
 
-int parse_a_string(s1,v)
+static int parse_a_string(s1,v)
      char *s1;
      VAR_INFO *v;
 {

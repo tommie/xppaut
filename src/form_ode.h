@@ -2,7 +2,6 @@
 #define XPPAUT_FORM_ODE_H
 
 #include <stdio.h>
-#include "newpars.h"
 #include "xpplim.h"
 
 /* --- Macros --- */
@@ -88,7 +87,6 @@ int find_the_name(char list[1949][33], int n, char *name);
 void compile_em(void);
 int formula_or_number(char *expr, double *z);
 void strpiece(char *dest, char *src, int i0, int ie);
-int parse_a_string(char *s1, VAR_INFO *v);
 void init_varinfo(void);
 void add_varinfo(int type, char *lhs, char *rhs, int nargs, char args[20][10 +1]);
 void free_varinfo(void);

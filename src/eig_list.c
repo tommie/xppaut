@@ -33,12 +33,6 @@
 		LeaveWindowMask		|\
 		EnterWindowMask)
 
-#define SIMPMASK (ButtonPressMask |\
-		  KeyPressMask	  |\
-		  ExposureMask    |\
-                  StructureNotifyMask)
-
-
 
 struct {
   Window base,stab,rest,top,close,import;

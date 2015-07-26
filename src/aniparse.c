@@ -252,14 +252,6 @@ GC ani_gc;
 */
 
 
-#define MYMASK  (ButtonPressMask 	|\
-                ButtonReleaseMask |\
-		KeyPressMask		|\
-		ExposureMask		|\
-		StructureNotifyMask	|\
-		LeaveWindowMask		|\
-		EnterWindowMask)
-
 void new_vcr()
 {
   int tt,i;

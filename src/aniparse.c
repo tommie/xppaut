@@ -123,7 +123,6 @@ int who_was_grabbed;
 
 /************************8  end grabber **********************/
 
-#define FIRSTCOLOR 30
 int on_the_fly_speed=10;
 int animation_on_the_fly=0;
 

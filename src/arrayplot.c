@@ -56,8 +56,6 @@
 #include "bitmap/array.bitmap"
 
 
-#define FIRSTCOLOR 30
-
 int aplot_range;
 int aplot_range_count=0;
 char aplot_range_stem[256]="rangearray";

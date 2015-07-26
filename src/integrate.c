@@ -63,7 +63,6 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #define MSWTCH(u,v) memcpy((void *)(u),(void *)(v),xpv.node*sizeof(double))
 
 #define ESCAPE 27
-#define FIRSTCOLOR 30
 
 #define MAXFP 400
 #define NAR_IC 50

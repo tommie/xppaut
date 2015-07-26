@@ -34,8 +34,6 @@
 #define ABORT_ALL -6
 #define TOOMANY -2
 #define BADJAC -3
-#define PARAM 1
-#define IC 2
 
 int HOMOCLINIC_FLAG=0,Homo_n;
 
@@ -240,14 +238,14 @@ int set_up_homoclinic()
   status=do_string_box(4,4,1,"Homoclinic info",n,values,45);
   HOMOCLINIC_FLAG=0;
   if(status!=0){
-    i=find_user_name(IC,values[0]);
+    i=find_user_name(ICBOX,values[0]);
     if(i>-1)
       my_hom.eleft=i;
     else {
       err_msg("No such variable");
       return 0;
     }
-    i=find_user_name(IC,values[1]);
+    i=find_user_name(ICBOX,values[1]);
     if(i>-1)
       my_hom.eright=i;
     else {
@@ -281,14 +279,14 @@ double *sect;
 
  status=do_string_box(4,4,1,"Periodic BCs",n,values,45);
  if(status!=0){
-               i=find_user_name(PARAM,values[0]);
+               i=find_user_name(PARAMBOX,values[0]);
 	       if(i>-1)
 		 *ipar=i;
 	       else {
 		 err_msg("No such parameter");
 		 return(0);
 	       }
-	       i=find_user_name(IC,values[1]);
+	       i=find_user_name(ICBOX,values[1]);
 	       if(i>-1)
 		 *ivar=i;
 	       else {
@@ -425,7 +423,7 @@ static char *n[]={"*2Range over","Steps","Start","End",
  status=do_string_box(7,7,1,"Range Shoot",n,values,45);
  if(status!=0){
    strcpy(shoot_range.item,values[0]);
-   i=find_user_name(PARAM,shoot_range.item);
+   i=find_user_name(PARAMBOX,shoot_range.item);
    if(i<0){
         err_msg("No such parameter");
        return(0);

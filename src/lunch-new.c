@@ -21,9 +21,6 @@
 #include "storage.h"
 #include "volterra2.h"
 
-#define PARAMBOX 1
-
-double atof();
 
 int set_type=0;
 

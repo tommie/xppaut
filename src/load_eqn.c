@@ -41,9 +41,6 @@
 #include "userbut.h"
 #include "volterra2.h"
 
-#define PARAM 1
-#define IC 2
-
 
 #define DFNORMAL 1
 #define MAXOPT 1000
@@ -733,12 +730,12 @@ void do_intern_set(name1,value)
   char name[20];
   convert(name1,name);
 
-  i=find_user_name(IC,name);
+  i=find_user_name(ICBOX,name);
   if(i>-1){
     last_ic[i]=atof(value);
   }
   else {
-    i=find_user_name(PARAM,name);
+    i=find_user_name(PARAMBOX,name);
     if(i>-1){
       set_val(name,atof(value));
     }

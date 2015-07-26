@@ -66,8 +66,6 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #define FIRSTCOLOR 30
 
 #define MAX_LEN_SBOX 25
-#define PARAM 1
-#define IC 2
 
 #define MAXFP 400
 #define NAR_IC 50
@@ -236,7 +234,7 @@ static char *n[]={"*2Range over","Steps","Start","End",
  status=do_string_box(7,7,1,"Range Equilibria",n,values,45);
  if(status!=0){
    strcpy(eq_range.item,values[0]);
-   i=find_user_name(PARAM,eq_range.item);
+   i=find_user_name(PARAMBOX,eq_range.item);
    if(i<0){
         err_msg("No such parameter");
        return(0);
@@ -285,19 +283,19 @@ int range_item()
 {
  int i;
  char bob[256];
- i=find_user_name(PARAM,range.item);
+ i=find_user_name(PARAMBOX,range.item);
  if(i>-1){
-   range.type=PARAM;
+   range.type=PARAMBOX;
    range.index=i;
  }
  else {
-   i=find_user_name(IC,range.item);
+   i=find_user_name(ICBOX,range.item);
    if(i<=-1){
      sprintf(bob," %s is not a parameter or variable !",range.item);
      err_msg(bob);
      return(0);
    }
-   range.type=IC;
+   range.type=ICBOX;
    range.index=i;
  }
  return 1;
@@ -307,19 +305,19 @@ int range_item2()
 {
  int i;
  char bob[256];
- i=find_user_name(PARAM,range.item2);
+ i=find_user_name(PARAMBOX,range.item2);
  if(i>-1){
-   range.type2=PARAM;
+   range.type2=PARAMBOX;
    range.index2=i;
  }
  else {
-   i=find_user_name(IC,range.item2);
+   i=find_user_name(ICBOX,range.item2);
    if(i<=-1){
      sprintf(bob," %s is not a parameter or variable !",range.item2);
      err_msg(bob);
      return(0);
    }
-   range.type2=IC;
+   range.type2=ICBOX;
    range.index2=i;
  }
  return 1;
@@ -349,21 +347,6 @@ int set_up_range()
  status=do_string_box(8,8,1,"Range Integrate",n,values,45);
  if(status!=0){
    strcpy(range.item,values[0]);
-   /* i=find_user_name(PARAM,range.item);
-   if(i>-1){
-     range.type=PARAM;
-     range.index=i;
-   }
-   else {
-     i=find_user_name(IC,range.item);
-     if(i<=-1){
-       err_msg("No such name!");
-       return(0);
-     }
-     range.type=IC;
-     range.index=i;
-   }
-   */
    if(range_item()==0)return 0;
    range.steps=atoi(values[1]);
    if(range.steps<=0)range.steps=10;
@@ -705,7 +688,7 @@ int flag; /* 0 for 1-param 1 for 2 parameter 2 for Auto range */
  PAUSER=0;
 nit2=0;
 if(range.rtype==2)nit2=range.steps2;
-if(range.type==PARAM)get_val(range.item,&temp);
+if(range.type==PARAMBOX)get_val(range.item,&temp);
  alloc_liap(nit); /* make space */
  if(range.rtype>0){
  itype2=range.type2;
@@ -714,7 +697,7 @@ if(range.type==PARAM)get_val(range.item,&temp);
  phigh2=range.phigh2;
   if(range.rtype==2)dpar2=(phigh2-plow2)/(double)nit2;
   else dpar2=(phigh2-plow2)/(double)nit;
-  if(range.type2==PARAM)get_val(range.item2,&temp2);
+  if(range.type2==PARAMBOX)get_val(range.item2,&temp2);
 
  }
 
@@ -753,7 +736,7 @@ if(range.type==PARAM)get_val(range.item,&temp);
 
 
 
-     if(itype==IC)x[ivar]=p;
+     if(itype==ICBOX)x[ivar]=p;
      else {
        set_val(range.item,p);
        redo_all_fun_tables();
@@ -761,7 +744,7 @@ if(range.type==PARAM)get_val(range.item,&temp);
 
      }
      if(range.rtype>0){
-       if(itype2==IC)x[ivar2]=p2;
+       if(itype2==ICBOX)x[ivar2]=p2;
        else {
 	 set_val(range.item2,p2);
 	 redo_all_fun_tables();
@@ -834,9 +817,9 @@ if(fabs(MyTime)>=TRANS&&STORFLAG==1&&POIMAP==0)
  }
  if(oldic==1)get_ic(1,x);
  else get_ic(0,x);
- if(range.type==PARAM)set_val(range.item,temp);
+ if(range.type==PARAMBOX)set_val(range.item,temp);
  if(range.rtype>0)
-   if(range.type2==PARAM)set_val(range.item2,temp2);
+   if(range.type2==PARAMBOX)set_val(range.item2,temp2);
  evaluate_derived();
 MyGraph->color[0]=color;
  INFLAG=1;

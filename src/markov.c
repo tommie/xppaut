@@ -18,7 +18,6 @@
 #include "parserslow.h"
 #include "xpplim.h"
 
-double get_ivar();
 #define IA 16807
 #define IM 2147483647
 #define AM (1.0/IM)
@@ -31,14 +30,6 @@ double get_ivar();
 #define PI 3.1415926
 
 long int myrandomseed=-1;
-double ndrand48();
-double ran1();
-double evaluate();
-double new_state();
-double atof();
-
-
-
 
 
 typedef struct {
@@ -61,8 +52,6 @@ int stoch_len;
 int STOCH_FLAG,STOCH_HERE,N_TRIALS;
 int Wiener[MAXPAR];
 int NWiener;
-double normal();
-
 
 
 void add_wiener(index)

@@ -162,7 +162,6 @@ double do_ishift(double shift, double variable);
 double do_delay_shift(double delay, double shift, double variable);
 double do_delay(double delay, double i);
 void one_arg(void);
-double normal(double mean, double std);
 double max(double x, double y);
 double min(double x, double y);
 

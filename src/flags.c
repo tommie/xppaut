@@ -107,7 +107,8 @@ FLAG flag[MAXFLAG];
 int NFlags=0;
 
 double STOL=1.e-10;
-double evaluate();
+
+
 int add_global(cond,sign,rest)
      char *cond;
      int sign;

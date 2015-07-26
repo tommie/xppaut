@@ -87,11 +87,6 @@ int NUMODES=0,NUMFIX=0,NUMPARAM=0,NUMMARK=0,NUMAUX=0,NUMVOLT=0,NUMSOL=0;
 
 FIXINFO fixinfo[MAXODE];
 
-char *get_first(/* char *string,char *src */);
-char *get_next(/* char *src */);
-
-char *getsi();
-double atof();
 
 int make_eqn()
   {

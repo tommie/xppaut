@@ -129,11 +129,6 @@ typedef struct {
 #define INTERP 30
 #define FINDEXT 35  /* find extrema in list of variables */
 
-char *get_first(/* char *string,char *src */);
-char *get_next(/* char *src */);
-
-double evaluate();
-
 NETWORK my_net[MAXNET];
 int n_network=0;
 double net_interp(double x, int i)

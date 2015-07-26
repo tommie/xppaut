@@ -16,7 +16,7 @@
 #include "numerics.h"
 #include "odesol2.h"
 
-#define DING ping()
+
 int UnstableManifoldColor=5;
 int StableManifoldColor=8;
 double ShootIC[8][MAXODE];
@@ -140,7 +140,7 @@ int maxit, n,*ierr;
   for(i=0;i<n;i++)x[i]=old_x[i];
   return;
  }
- DING;
+ ping();
  /* for(i=0;i<n;i++)xl[i]=(float)x[i]; */
 
  for(i=0;i<n*n;i++){

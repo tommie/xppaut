@@ -12,7 +12,6 @@
 #include "odesol2.h"
 
 #define Z(a,b) z[(a)+n*(b)]
-#define DING ping()
 
 /* The
  code here replaces the do_sing code if the equation is
@@ -119,7 +118,6 @@ if(i==0&&okroot==1&&AlphaMax>0)
   i=2;
 
  create_eq_box(abs(i),2,0,0,0,x,ev,n);
- /* DING; */
  del_stab_flag=1;
  free(ev);
  if(okroot==1)*stabinfo=AlphaMax;

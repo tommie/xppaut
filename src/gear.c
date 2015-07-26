@@ -13,13 +13,13 @@
 #include "homsup.h"
 #include "integrate.h"
 #include "load_eqn.h"
+#include "markov.h"
 #include "menudrive.h"
 #include "xpplim.h"
 
 #define DING ping()
 int UnstableManifoldColor=5;
 int StableManifoldColor=8;
-double ndrand48();
 double ShootIC[8][MAXODE];
 int ShootICFlag;
 int ShootIndex;
@@ -27,16 +27,6 @@ int ShootType[8];
 int gear_pivot[MAXODE];
 
 
-
-double amax(/* double,double */);
-double sign(/* double,double */);
-char status();
-
-double sdot(/* int n,double *sx,int incx,double *sy,int incy */);
-
-double sgnum(/* double x,double y */);
-double Max(/* double x,double y */);
-double Min(/* double x,double y */);
 double pertst[7][2][3]={{{2,3,1},{2,12,1}},
                         {{4.5,6,1},{12,24,1}},
 			{{7.333,9.167,.5},{24,37.89,2}},

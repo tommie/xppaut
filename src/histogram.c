@@ -17,12 +17,6 @@
 #include "xpplim.h"
 
 
-double evaluate();
-double ndrand48();
-
-void mycor(),mycor2();
-float *get_data_col();
-
 int spec_col=1,spec_wid=512,spec_win=2,spec_col2=1,spec_type=0;
 /* type =0 for PSD
    type =1 for crossspectrum

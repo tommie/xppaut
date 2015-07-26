@@ -36,6 +36,7 @@ extern int NSYM_START;
 extern int NUPAR;
 extern char *ode_names[MAXODE];
 extern int *plotlist;
+extern int PrimeStart;
 extern char *save_eqn[MAXLINES];
 extern char upar_names[MAXPAR][11];
 extern char uvar_names[MAXODE][12];

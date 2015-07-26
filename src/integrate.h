@@ -20,6 +20,7 @@ extern double MyData[MAXODE];
 extern int MyStart;
 extern double MyTime;
 extern RANGE range;
+extern int RANGE_FLAG;
 extern int SuppressBounds;
 extern int SuppressOut;
 

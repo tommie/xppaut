@@ -1,23 +1,16 @@
 #include "my_rhs.h"
+
+#include <stdlib.h>
+
 #include "dae_fun.h"
-#include "main.h"
 #include "extra.h"
-#include <stdlib.h> 
-#include "xpplim.h"
-#include "shoot.h"
+#include "form_ode.h"
 #include "getvar.h"
+#include "main.h"
+#include "parserslow.h"
+#include "shoot.h"
 #include "simplenet.h"
-
-/* #define Set_ivar(a,b) variables[(a)]=(b) */
-
-
-
-extern BC_STRUCT my_bc[MAXODE];
-extern int FIX_VAR,NMarkov,PrimeStart;
-extern int *my_ode[];
-
-extern double variables[];
-extern int NVAR,NODE;
+#include "xpplim.h"
 
 double evaluate(/* int *ar */);
 
@@ -30,7 +23,7 @@ int main(argc,argv)
      int argc;
 {
   do_main(argc,argv);
-  
+
   exit(0);
 }
 
@@ -45,8 +38,8 @@ void extra(y__y, t,nod,neq)
   SETVAR(i+1,y__y[i]);
   for(i=nod+FIX_VAR;i<nod+FIX_VAR+NMarkov;i++)SETVAR(i+1,y__y[i-FIX_VAR]);
   for(i=nod;i<nod+FIX_VAR;i++)
-  SETVAR(i+1,evaluate(my_ode[i])); 
-  do_in_out(); 
+  SETVAR(i+1,evaluate(my_ode[i]));
+  do_in_out();
   for(i=nod+NMarkov;i<neq;i++)
   y__y[i]=evaluate(my_ode[i+FIX_VAR-NMarkov]);
 }
@@ -62,7 +55,7 @@ void extra(y__y, t,nod,neq)
   for(i=neq;i<neq+FIX_VAR;i++)
     SETVAR(i+1,evaluate(my_ode[i]));
   eval_all_nets();
-  do_in_out(); 
+  do_in_out();
   } */
 void set_fix_rhs(t,y)
      double t,*y;
@@ -76,7 +69,7 @@ void set_fix_rhs(t,y)
   for(i=NODE;i<NODE+FIX_VAR;i++)
     SETVAR(i+1,evaluate(my_ode[i]));
   eval_all_nets();
-  do_in_out(); 
+  do_in_out();
 }
 
 
@@ -96,15 +89,15 @@ int neq;
     /*printf("WTF %g\n",evaluate(my_ode[1]));
     */
     eval_all_nets();
-    
+
     do_daes();
-    do_in_out(); 
+    do_in_out();
  for(i=0;i<NODE;i++)
   {
     ydot[i]=evaluate(my_ode[i]);
   }
  if(neq>NODE)vec_rhs(t,y,ydot,neq);
-	
+
  return(1);
 }
 
@@ -113,9 +106,9 @@ void update_based_on_current()
   int i;
    for(i=NODE;i<NODE+FIX_VAR;i++)
     SETVAR(i+1,evaluate(my_ode[i]));
-    
+
   eval_all_nets();
-  do_in_out(); 
+  do_in_out();
 }
 
 void fix_only()
@@ -133,7 +126,7 @@ void rhs_only(double *y,double *ydot)
     ydot[i]=evaluate(my_ode[i]);
   }
 }
- 
+
 void vec_rhs( t,y,ydot,neq)
 double t,*y,*ydot;
 int neq;
@@ -141,8 +134,3 @@ int neq;
 
 
 }
-
-
-
-
-

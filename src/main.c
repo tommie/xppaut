@@ -78,7 +78,6 @@
 
 #define TOPBUTTONCOLOR 27
 
-#define BITMAPDEPTH 1
 #define TOO_SMALL 0
 #define BIG_ENOUGH 1
 

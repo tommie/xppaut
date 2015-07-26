@@ -4,6 +4,12 @@
 #include <X11/Xlib.h>
 #include "load_eqn.h"
 
+/* --- Macros --- */
+/* FixWindowSize(flag) values */
+#define FIX_MAX_SIZE 1
+#define FIX_MIN_SIZE 2
+#define FIX_SIZE 3
+
 /* --- Data --- */
 extern int allwinvis;
 extern char anifile[XPP_MAX_NAME];

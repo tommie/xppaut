@@ -71,9 +71,6 @@
 #include "userbut.h"
 #include "bitmap/pp.bitmap"
 
-#define FIX_SIZE 3
-#define FIX_MIN_SIZE 2
-#define FIX_MAX_SIZE 1
 #define lowbit(x) ((x) & (~(x) + 1))
 
 #define TOPBUTTONCOLOR 27

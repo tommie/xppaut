@@ -57,7 +57,6 @@
 
 
 #define FIRSTCOLOR 30
-#define FIX_MIN_SIZE 2
 
 int aplot_range;
 int aplot_range_count=0;

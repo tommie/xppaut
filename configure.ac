@@ -30,8 +30,7 @@ AC_CHECK_HEADERS([ \
     string.h \
     strings.h \
     sys/time.h \
-    unistd.h \
-    wctype.h])
+    unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL

@@ -1,11 +1,7 @@
 /* A simple animator */
 #include "aniparse.h"
 
-#ifndef HAVE_WCTYPE_H
-# include <ctype.h>
-#else
-# include <wctype.h>
-#endif
+#include <ctype.h>
 #include <fcntl.h>
 #include <libgen.h>
 #include <math.h>

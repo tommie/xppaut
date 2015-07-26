@@ -1,10 +1,6 @@
 #include "form_ode.h"
 
-#ifndef HAVE_WCTYPE_H
-# include <ctype.h>
-#else
-# include <wctype.h>
-#endif
+#include <ctype.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>

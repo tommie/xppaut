@@ -12,7 +12,6 @@
 #include "simplenet.h"
 #include "xpplim.h"
 
-double evaluate(/* int *ar */);
 
 int MAIN__()
 {

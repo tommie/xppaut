@@ -35,16 +35,6 @@
 #include "volterra2.h"
 
 #define MAX_LEN_SBOX 25
-#define VOLTERRA 6
-#define BACKEUL 7
-#define RKQS 8
-#define STIFF 9
-#define CVODE 10
-#define GEAR 5
-#define DP5 11
-#define DP83 12
-#define RB23 13
-#define SYMPLECT 14
 
 typedef struct {
   double tmod;
@@ -54,6 +44,8 @@ typedef struct {
 } POINCARE_MAP;
 
 POINCARE_MAP my_pmap;
+
+int METHOD;
 
 
 float *fft_data,*hist_data,color_scale,min_scale;

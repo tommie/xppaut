@@ -5,10 +5,9 @@
 #include "flags.h"
 #include "gear.h"
 #include "markov.h"
+#include "numerics.h"
 #include "odesol2.h"
 
-#define RKQS 8
-#define STIFF 9
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #define MIN(a,b) ((a)<(b)?(a):(b))
 #define SIGN(a,b) ((b)>=0.0 ? fabs(a):-fabs(a))

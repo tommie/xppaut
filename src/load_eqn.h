@@ -226,7 +226,6 @@ extern int IY_PLT[10];
 extern int IZ_PLT[10];
 extern double last_ic[MAXODE];
 extern int MaxEulIter;
-extern int METHOD;
 extern int MultiWin;
 extern double MY_XHI;
 extern double MY_XLO;

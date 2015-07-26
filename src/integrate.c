@@ -73,15 +73,6 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 
 #define MAXFP 400
 #define NAR_IC 50
-#define VOLTERRA 6
-#define BACKEUL 7
-#define RKQS 8
-#define STIFF 9
-#define GEAR 5
-#define CVODE 10
-#define DP5 11
-#define DP83 12
-#define RB23 13
 
 int MakePlotFlag=0;
 

@@ -89,7 +89,7 @@ double POIPLN;
 
 int MaxEulIter;
 double EulTol;
-int NMESH,NJMP,METHOD,color_flag,NC_ITER;
+int NMESH,NJMP,color_flag,NC_ITER;
 int EVEC_ITER;
 int BVP_MAXIT,BVP_FLAG;
 

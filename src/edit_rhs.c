@@ -13,6 +13,7 @@
 #include "main.h"
 #include "many_pops.h"
 #include "menus.h"
+#include "numerics.h"
 #include "parserslow.h"
 #include "pop_list.h"
 

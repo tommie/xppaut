@@ -13,6 +13,7 @@
 #include "load_eqn.h"
 #include "markov.h"
 #include "menudrive.h"
+#include "numerics.h"
 #include "odesol2.h"
 
 #define DING ping()

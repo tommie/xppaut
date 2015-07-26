@@ -15,6 +15,7 @@
 #include "ggets.h"
 #include "integrate.h"
 #include "load_eqn.h"
+#include "numerics.h"
 #include "odesol2.h"
 #include "parserslow.h"
 #include "pop_list.h"
@@ -23,13 +24,6 @@
 
 /*  this is also X free ! */
 
-#define GEAR 5
-#define RKQS 8
-#define STIFF 9
-#define CVODE 10
-#define DP5 11
-#define DP83 12
-#define RB23 13
 #define MAX_LEN_SBOX 25
 #define MAX(a,b) ((a)>(b)?(a):(b))
 

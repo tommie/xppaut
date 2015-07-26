@@ -4,6 +4,7 @@
 #include "auto_nox.h"
 #include "derived.h"
 #include "load_eqn.h"
+#include "numerics.h"
 #include "odesol2.h"
 #include "parserslow.h"
 #include "pp_shoot.h"

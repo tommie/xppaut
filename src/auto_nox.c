@@ -26,6 +26,7 @@
 #include "menus.h"
 #include "my_ps.h"
 #include "my_rhs.h"
+#include "numerics.h"
 #include "parserslow.h"
 #include "pop_list.h"
 #include "pp_shoot.h"

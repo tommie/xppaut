@@ -5,19 +5,13 @@
 #include "form_ode.h"
 #include "ggets.h"
 #include "integrate.h"
-#include "load_eqn.h"
+#include "numerics.h"
 
 float **storage;
 double *WORK;
 int MAXSTOR,storind;
 int IWORK[10000];
 
-#define BACKEUL 7
-#define VOLTERRA 6
-#define STIFF 9
-#define GEAR 5
-#define RB23 13
-#define SYMPLECT 14
 
 void init_alloc_info()
 {

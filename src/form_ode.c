@@ -14,6 +14,7 @@
 #include "ggets.h"
 #include "init_conds.h"
 #include "integrate.h"
+#include "load_eqn.h"
 #include "main.h"
 #include "markov.h"
 #include "newpars.h"

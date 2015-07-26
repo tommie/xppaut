@@ -1,7 +1,7 @@
 #ifndef XPPAUT_READ_DIR_H
 #define XPPAUT_READ_DIR_H
 
-#include "load_eqn.h"
+#include "xpplim.h"
 
 /* --- Macros --- */
 /* Let's try to be consistent with file name buffer sizes and any strings that

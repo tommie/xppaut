@@ -50,7 +50,6 @@
 #define WDMARK .001
 #define HTMARK .0016
 
-double atof();
 typedef struct {
   float xs,ys,xe,ye;
   double size;
@@ -80,9 +79,7 @@ int MINI_H=240;
 int MINI_W=320;
 
 int ActiveWinList[MAXPOP];
-double signum();
 
-Window make_window();
 
 int select_table()
 {

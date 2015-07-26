@@ -58,7 +58,6 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "numerics.h"
 #include "odesol2.h"
 #include "parserslow.h"
-#include "phsplan.h"
 #include "pop_list.h"
 #include "pp_shoot.h"
 #include "stiff.h"

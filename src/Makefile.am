@@ -52,7 +52,6 @@ noinst_HEADERS = \
 	autlim.h \
 	getvar.h \
 	macsysdirent.h \
-	phsplan.h \
 	userbut.h \
 	auto_define.h \
 	derived.h \

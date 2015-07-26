@@ -248,6 +248,7 @@ extern char options[100];
 extern int PAR_FOL;
 extern int PAUSER;
 extern int PLOT_3D;
+extern int POIEXT;
 extern int POIMAP;
 extern double POIPLN;
 extern int POISGN;

@@ -36,7 +36,7 @@
 #include "struct.h"
 #include "xpplim.h"
 
-double atof();
+
 NCLINE nclines[MAXNCLINE];
 int PS_Color=1;
 

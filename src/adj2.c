@@ -31,9 +31,6 @@
 #define MAX_LEN_SBOX 25
 #define READEM 1
 
-double evaluate();
-double ndrand48();
-
 int (*rhs)();
 float **my_adj;
 int adj_len;

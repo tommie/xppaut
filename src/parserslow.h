@@ -46,6 +46,7 @@ int add_2d_table(char *name, char *file);
 int add_file_table(int index, char *file);
 int add_table_name(int index, char *name);
 int add_form_table(int index, int nn, double xlo, double xhi, char *formula);
+double evaluate(int *equat);
 void set_old_arg_names(int narg);
 void set_new_arg_names(int narg, char args[10][11]);
 int add_ufun_name(char *name, int index, int narg);

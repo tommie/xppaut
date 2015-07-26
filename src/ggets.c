@@ -26,7 +26,6 @@
 
 #define ESCAPE 27
 char *info_message;
-double atof();
 int MSStyle=0;
 int done=0;
 int CURS_X,CURS_Y;

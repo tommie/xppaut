@@ -37,11 +37,6 @@
 		EnterWindowMask		|\
 		LeaveWindowMask)
 
-char *get_next(),*get_first();
-Window make_window();
-
-
-
 
 void reset_ebox(sb,pos,col)
      EDIT_BOX *sb;

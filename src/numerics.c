@@ -1,32 +1,36 @@
-
+/* The input is primitive and eventually, I want to make it so
+   that it uses nice windows for input.
+   For now, I just will let it remain command driven
+ */
 #include "numerics.h"
 
-
-#include "menudrive.h"
-#include <stdlib.h>
+#include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <strings.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <math.h>
+
 #include "adj2.h"
 #include "browse.h"
-#include "integrate.h"
-#include "pop_list.h"
-#include "volterra2.h"
-#include "menu.h"
+#include "color.h"
+#include "delay_handle.h"
+#include "flags.h"
 #include "ggets.h"
+#include "graf_par.h"
+#include "integrate.h"
+#include "load_eqn.h"
+#include "many_pops.h"
+#include "menu.h"
+#include "menudrive.h"
+#include "menus.h"
+#include "parserslow.h"
+#include "pop_list.h"
 #include "pp_shoot.h"
 #include "storage.h"
-#include "delay_handle.h"
-#include "graf_par.h"
-
-extern Window main_win,info_pop;
-extern Display *display;
-extern int DCURY,NDELAYS;
-extern int RandSeed;
 #include "struct.h"
-extern GRAPH *MyGraph;
+#include "volterra2.h"
+
 #define MAX_LEN_SBOX 25
 #define VOLTERRA 6
 #define BACKEUL 7
@@ -39,21 +43,7 @@ extern GRAPH *MyGraph;
 #define RB23 13
 #define SYMPLECT 14
 
-extern int NKernel,MyStart,MaxPoints;
-extern int NFlags;
-extern double STOL;
-extern double MyTime;
-extern char *info_message,*meth_hint[];
-extern int DelayGrid;
-extern double OmegaMax,AlphaMax;
 double atof();
-extern BROWSER my_browser;
-
-/*   This is numerics.c
- *   The input is primitive and eventually, I want to make it so
-	that it uses nice windows for input.
-	For now, I just will let it remain command driven
-*/
 
 typedef struct {
   double tmod;
@@ -66,49 +56,19 @@ POINCARE_MAP my_pmap;
 
 
 int (*solver)();
-extern  double DELTA_T,TEND,T0,TRANS,
-	NULL_ERR,EVEC_ERR,NEWT_ERR;
-extern double BOUND,DELAY,TOLER,ATOLER,HMIN,HMAX;
 float *fft_data,*hist_data,color_scale,min_scale;
-extern double POIPLN;
-
-extern double BVP_TOL,BVP_EPS;
-
-
-extern int NMESH,NJMP,METHOD,NC_ITER;
-extern int EVEC_ITER;
-extern int BVP_MAXIT,BVP_NL,BVP_NR;
-
-extern int POIMAP,POIVAR,POISGN,SOS;
-
- extern int HIST,HVAR,hist_ind,FOREVER,INFLAG;
-extern int MaxEulIter;
-extern double EulTol;
-
-extern int AutoEvaluate;
 
 int  gear();
- int discrete();
- int euler();
- int mod_euler();
- int rung_kut();
- int adams();
- int volterra();
- int bak_euler();
- int symplect3();
+int discrete();
+int euler();
+int mod_euler();
+int rung_kut();
+int adams();
+int volterra();
+int bak_euler();
+int symplect3();
 
 int cv_bandflag=0,cv_bandupper=1,cv_bandlower=1;
-extern int COLOR,color_total,color_min;
-extern Window command_pop;
-
-/*   This is the input for the various functions */
-
-/*   I will need access to storage  */
-
-extern float **storage;
-extern int storind;
-
-extern int NODE,NEQ; /* as well as the number of odes etc  */
 
 void chk_volterra()
 {

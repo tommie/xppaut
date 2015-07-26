@@ -1,7 +1,6 @@
 #ifndef XPPAUT_PARSERSLOW_H
 #define XPPAUT_PARSERSLOW_H
 
-#include "volterra.h"
 #include "xpplim.h"
 
 /* --- Macros --- */
@@ -10,6 +9,12 @@
 #define GETVAR(i) ((i)<NVAR ? variables[i] : 0.0)
 
 /* --- Types --- */
+typedef struct {
+  double k_n1,k_n,sum,betnn,mu,*al,*cnv;
+  int *formula,flag,*kerform;
+  char name[20],*expr,*kerexpr;
+}KERNEL;
+
 typedef struct {
   int narg;
   char args[MAXARG][11];

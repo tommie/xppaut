@@ -94,7 +94,6 @@ noinst_HEADERS = \
 	tutor.h \
 	txtread.h \
 	userbut.h \
-	volterra.h \
 	volterra2.h \
 	xpplim.h \
 	$(bitmap_headers)

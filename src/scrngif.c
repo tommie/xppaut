@@ -27,9 +27,6 @@
   * LOOKUP nodes will be <= 2 * noOfArrays, etc.  */
 #define GifPutShort(i, fout)    {fputc(i&0xff, fout); fputc(i>>8, fout);}
 
- unsigned char *AddCodeToBuffer(int, short, unsigned char *);
- void ClearTree(int, GifTree *);
- int GifEncode();
  unsigned int debugFlag;
  int UseGlobalMap=0;
  int GifFrameDelay=5,GifFrameLoop=1000;

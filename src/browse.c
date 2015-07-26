@@ -40,8 +40,6 @@
 		return;}
 
 
-#define BMAXCOL 20
-
 #define MYMASK  (ButtonPressMask 	|\
                 ButtonReleaseMask |\
 		KeyPressMask		|\

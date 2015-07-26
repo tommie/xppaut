@@ -125,12 +125,6 @@ typedef struct
 
 FIXPTGUESS fixptguess;
 
-typedef struct
-{
-  int nvec,node;
-  double *x;
-} XPPVEC;
-
 XPPVEC xpv;
 int SuppressOut=0;
 int SuppressBounds=0;

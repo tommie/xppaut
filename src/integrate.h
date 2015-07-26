@@ -12,6 +12,12 @@ typedef struct {
   int rtype;
 } RANGE;
 
+typedef struct
+{
+  int nvec,node;
+  double *x;
+} XPPVEC;
+
 /* --- Data --- */
 extern int DelayErr;
 extern double LastTime;
@@ -23,6 +29,7 @@ extern RANGE range;
 extern int RANGE_FLAG;
 extern int SuppressBounds;
 extern int SuppressOut;
+extern XPPVEC xpv;
 
 /* --- Functions --- */
 void init_ar_ic(void);

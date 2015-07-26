@@ -17,8 +17,6 @@
 #define DONE_THIS 1
 #define RESET_ALL 4
 
-#define MAXUFUN 50
-
 
 
 /*  This is a edit box widget which handles a list of

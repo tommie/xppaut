@@ -49,10 +49,6 @@ struct {
   double plow,phigh;
 } shoot_range;
 
-double atof();
-
-double evaluate();
-
 /*   more general mixed boundary types   */
 
 void do_bc(y__0,t0,y__1,t1,f,n)

@@ -71,8 +71,6 @@ int mark_ibrs,mark_ibre;
 int mark_ipts,mark_ipte;
 int mark_ixs,mark_ixe,mark_iys,mark_iye;
 
-double atof();
-
 AUTOWIN AutoW;
 DIAGRAM *CUR_DIAGRAM;
 

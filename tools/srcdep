@@ -1,0 +1,87 @@
+#!/bin/bash -e
+#
+# Tool to display dependencies between source file modules.
+#
+# Shows object file symbol dependencies.
+#
+# A "module" is a source file and a header file sharing the same filename stem.
+# It is compiled to an object file, also with the same stem.
+#
+# The output is in Graphviz format with one vertex per module. The width
+# of the edges describe how many symbols are shared. The width of node boxes
+# show the number of modules depending on it.
+#
+#   $ ./tools/srcdep <srcdir> <builddir> | dot -Tsvgz >srcdep.svgz
+#
+
+# ls-symbols lists all symbols of the given object files.
+# Debug and relocation symbols are ignored.
+# Output is one line per (file, symbol) pair. The third column is the type.
+ls-symbols() {
+    nm "$@" | awk -vfname="$1" '
+        !$0 { next; }
+        /\.o:$/ { fname = $1; sub(/:/, "", fname); next; }
+        NF == 2 && $1 !~ /[rd]/ { print fname, $2, $1; }
+        NF == 3 && $2 !~ /[rd]/ { print fname, $3, $2; }'
+}
+
+# get-symbol-use returns lines of (count, definer, user), one for each
+# (definer, user) pair.
+get-symbol-use-count() {
+    local srcdir=$1 builddir=$2
+    local moduleobjs=( \
+        $(comm -1 -2 \
+               <(comm -1 -2 \
+                      <(cd "$srcdir" && ls *.c | sed -e 's;\.c$;.o;' | sort) \
+                      <(cd "$srcdir" && ls *.h | sed -e 's;\.h$;.o;' | sort)) \
+               <(cd "$builddir" && ls *.o)) )
+
+    local defsymfile=$(mktemp)
+    tmpfiles+=( "$defsymfile" )
+    (cd "$builddir" && ls-symbols --defined-only "${moduleobjs[@]}" | sort -b -k2,2 -k1,1) >"$defsymfile"
+
+    local undefsymfile=$(mktemp)
+    tmpfiles+=( "$undefsymfile" )
+    (cd "$builddir" && ls-symbols --undefined-only "${moduleobjs[@]}" | sort -b -k2,2 -k1,1) >"$undefsymfile"
+
+    echo "Found $(wc -l "$defsymfile" | cut -d' ' -f1) defined symbols and $(wc -l "$undefsymfile" | cut -d' ' -f1) references." >&2
+
+    join -j2 -t' ' "$defsymfile" "$undefsymfile" | sort -k4,4 -k2,2 | cut -d' ' -f2,4 | uniq -c
+}
+
+# generate-digraph produces output suitable as input to dot(1).
+generate-digraph() {
+    local joinedfile=$1
+
+    echo 'digraph deps {'
+    echo '  rankdir=LR;'
+    echo '  edge [tooltip="\E"];'
+
+    # Configure nodes.
+    awk '{ print $2; }' "$joinedfile" | sort | uniq -c | awk '{ printf "  \"%s\" [penwidth=%f];\n", $2, 1+0.2*$1; }'
+
+    # Configure edges.
+    awk '{ printf "  \"%s\" -> \"%s\" [penwidth=%f];\n", $3, $2, 1+0.2*$1; }' "$joinedfile"
+
+    echo '}'
+}
+
+tmpfiles=()
+cleanup() {
+    rm -f "${tmpfiles[@]}"
+}
+trap cleanup EXIT
+
+if [ $# -ne 2 ]; then
+    echo "usage: $(basename "$0") <srcdir> <builddir>" >&2
+    exit 1
+fi
+
+srcdir=$1
+builddir=$2
+
+joinedfile=$(mktemp)
+tmpfiles+=( "$joinedfile" )
+get-symbol-use-count "$srcdir" "$builddir" >"$joinedfile"
+
+generate-digraph "$joinedfile"

@@ -70,15 +70,6 @@ FILE *ap_fp;
 GC aplot_gc;
 int first_aplot_press;
 
-#define MYMASK  (ButtonPressMask 	|\
-                ButtonReleaseMask |\
-		KeyPressMask		|\
-		ExposureMask		|\
-		StructureNotifyMask	|\
-		LeaveWindowMask		|\
-		EnterWindowMask)
-
-
 
 void draw_one_array_plot(char *bob)
 {

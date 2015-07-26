@@ -15,13 +15,6 @@
 #define Z(a,b) z[(a)+n*(b)]
 #define DING ping()
 
-double amax();
-
-/*typedef struct{
-  double r,i;
-}COMPLEX;
-*/
-
 /* The
  code here replaces the do_sing code if the equation is
    a delay differential equation.

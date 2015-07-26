@@ -12,7 +12,6 @@
 #define ALL_DONE 2
 #define DONE_WITH_THIS 1
 #define FORGET_ALL   0
-#define FORGET_THIS 3
 
 #define EV_MASK (ButtonPressMask 	|\
 		KeyPressMask		|\

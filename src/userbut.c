@@ -10,6 +10,7 @@
 #include "ggets.h"
 #include "kbs.h"
 #include "main.h"
+#include "pop_list.h"
 
 #define USERBUTCOLOR 24
 #define USERBUTMAX 20
@@ -18,7 +19,6 @@ int nuserbut=0;
 
 USERBUT userbut[USERBUTMAX];
 
-Window make_fancy_window();
 
 void user_button_events(XEvent report)
 {

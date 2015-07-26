@@ -42,9 +42,6 @@
 
 #define BMAXCOL 20
 
-double evaluate();
-double atof();
-
 #define MYMASK  (ButtonPressMask 	|\
                 ButtonReleaseMask |\
 		KeyPressMask		|\

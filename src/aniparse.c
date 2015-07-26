@@ -122,15 +122,12 @@ int n_ani_grab=0;
 int show_grab_points=0;
 int ani_grab_flag=0;
 int who_was_grabbed;
-double get_ivar(int);
 
 /************************8  end grabber **********************/
 
 #define FIRSTCOLOR 30
 int on_the_fly_speed=10;
 int animation_on_the_fly=0;
-double evaluate();
-double atof();
 
 int aniflag;
 int LastAniColor;
@@ -197,11 +194,6 @@ int ani_text_color;
 int ani_text_font;
 
 GC ani_gc;
-
-
-
-char *get_first(/* char *string,char *src */);
-char *get_next(/* char *src */);
 
 
 /* Colors

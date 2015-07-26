@@ -9,7 +9,7 @@
 # ls-macros lists all defined macros of the given files.
 # Output is one line per (file, symbol) pair.
 get-macros() {
-    sed -r -e 's:\s*#\s*define\s+([^( ]+)[( ].*:\1: p ; d'
+    sed -r -e 's:^\s*#\s*define\s+([^( \t]+)[( \t].*:\1: p ; d'
 }
 
 if [ $# -ne 1 ]; then

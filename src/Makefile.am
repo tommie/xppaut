@@ -91,7 +91,6 @@ noinst_HEADERS = \
 	choice_box.h \
 	eig_list.h \
 	integrate.h \
-	my_pars.h \
 	shoot.h \
 	xpplim.h \
 	my_ps.h \

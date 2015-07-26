@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "f2c.h"
+
 #include "autevd.h"
 #include "autlib1.h"
 #include "autlib2.h"
@@ -20,7 +22,7 @@
 #include "browse.h"
 #include "derived.h"
 #include "diagram.h"
-#include "f2c.h"
+#include "form_ode.h"
 #include "ggets.h"
 #include "graf_par.h"
 #include "graphics.h"
@@ -28,7 +30,9 @@
 #include "integrate.h"
 #include "kinescope.h"
 #include "load_eqn.h"
+#include "main.h"
 #include "many_pops.h"
+#include "markov.h"
 #include "menudrive.h"
 #include "menus.h"
 #include "my_ps.h"

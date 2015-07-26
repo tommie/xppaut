@@ -11,6 +11,7 @@
 
 #include "browse.h"
 #include "ggets.h"
+#include "main.h"
 #include "pop_list.h"
 #include "struct.h"
 

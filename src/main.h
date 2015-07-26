@@ -17,6 +17,8 @@ extern int DCURXs;
 extern int DCURY;
 extern int DCURYb;
 extern int DCURYs;
+extern int DisplayHeight;
+extern int DisplayWidth;
 extern int DoTutorial;
 extern XFontStruct *big_font;
 extern XFontStruct *small_font;
@@ -46,6 +48,7 @@ extern double SLIDER1HI;
 extern double SLIDER2HI;
 extern double SLIDER3HI;
 extern int tfBell;
+extern int TipsFlag;
 extern int TrueColorFlag;
 extern int use_ani_file;
 extern int use_intern_sets;
@@ -64,6 +67,7 @@ extern float xppvermaj;
 extern float xppvermin;
 extern int Xup;
 
+extern Atom deleteWindowAtom;
 extern Display *display;
 extern GC gc;
 extern GC font_gc;
@@ -72,6 +76,7 @@ extern GC small_gc;
 extern int screen;
 extern Window command_pop;
 extern Window draw_win;
+extern Window main_win;
 extern Window info_pop;
 
 /* --- Functions --- */

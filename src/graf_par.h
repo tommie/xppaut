@@ -36,6 +36,7 @@ typedef struct {
 /* --- Data --- */
 extern int AutoFreezeFlag;
 extern int colorline[12];
+extern char *color_names[12];
 extern int PS_Color;
 
 /* --- Functions --- */

@@ -14,6 +14,7 @@
 #include "color.h"
 #include "derived.h"
 #include "diagram.h"
+#include "form_ode.h"
 #include "ggets.h"
 #include "init_conds.h"
 #include "integrate.h"

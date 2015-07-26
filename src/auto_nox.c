@@ -31,19 +31,7 @@
 #include "pp_shoot.h"
 #include "run_auto.h"
 
-#define PACK_AUTO 0
-#define PACK_LBF 1
 #define PARAM_BOX 1
-
-#define RUBBOX 0
-#define RUBLINE 1
-
-#define RIGHT 6
-#define LEFT 2
-#define ESC 27
-#define TAB 10
-#define BAD 0
-#define FINE 13
 
 #define UPT 6
 #define SPT 7
@@ -62,8 +50,6 @@
 #define FP2 5
 #define HB2 6
 
-#define STD_WID 460       /* golden mean  */
-#define STD_HGT 284
 #define MAX_LEN_SBOX 25
 #define HI_P 0  /* uhi vs par */
 #define NR_P 1  /* norm vs par */
@@ -73,7 +59,6 @@
 
 #define FR_P 10  /* freq vs par   */
 #define AV_P 11 /* ubar vs par */
-#define SPECIAL 5
 #define SPER 3
 #define UPER 4
 #define CSEQ 1

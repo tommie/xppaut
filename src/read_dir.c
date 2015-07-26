@@ -8,12 +8,6 @@
 
 #include "ggets.h"
 
-#define EOS '\0'
-#define NENTRIES 100
-#define streq(a,b) (! strcmp((a),(b)))
-
-#define SYSV
-
 #define put_msg plintf
 
 /*static int	file_entry_cnt, dir_entry_cnt;

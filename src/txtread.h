@@ -1,8 +1,9 @@
-#ifndef _txtread_h
-#define _txtread_h
+#ifndef XPPAUT_TXTREAD_H
+#define XPPAUT_TXTREAD_H
 
+#include <X11/Xlib.h>
 
-
+/* --- Functions --- */
 void txt_view_events(XEvent ev);
 void txtview_keypress(XEvent ev);
 void enter_txtview(Window w, int val);
@@ -14,5 +15,4 @@ void redraw_txtview_text(void);
 void init_txtview(void);
 void make_txtview(void);
 
-
-#endif
+#endif /* XPPAUT_TXTREAD_H */

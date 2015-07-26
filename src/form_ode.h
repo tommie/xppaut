@@ -9,13 +9,20 @@
 /* --- Macros --- */
 #define MAXVNAM 33
 #define MAXLINES 5000
+#define MAXCOMMENTS 500
 
 /* --- Types --- */
+typedef struct {
+  char *text,*action;
+  int aflag;
+} ACTION;
+
 typedef struct {
   char *name,*value;
 } FIXINFO;
 
 /* --- Data --- */
+extern ACTION comments[MAXCOMMENTS];
 extern FILE *convertf;
 extern int ConvertStyle;
 extern double default_ic[MAXODE];
@@ -25,6 +32,7 @@ extern FIXINFO fixinfo[MAXODE];
 extern int FIX_VAR;
 extern BC_STRUCT my_bc[MAXODE];
 extern int *my_ode[MAXODE];
+extern int n_comments;
 extern int N_plist;
 extern int NCON;
 extern int NCON_START;

@@ -1,50 +1,36 @@
-#include <stdlib.h> 
+#include "config.h"
+#include "txtread.h"
+
+#ifndef HAVE_WCTYPE_H
+# include <ctype.h>
+#else
+# include <wctype.h>
+#endif
+#include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 #include <X11/keysym.h>
 #include <X11/keysymdef.h>
-#include <math.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 
+#include "browse.h"
+#include "form_ode.h"
 #include "ggets.h"
 #include "graphics.h"
+#include "init_conds.h"
 #include "load_eqn.h"
+#include "many_pops.h"
+#include "mykeydef.h"
 #include "numerics.h"
 #include "pop_list.h"
-#include "init_conds.h"
-#include "many_pops.h"
-
-#include "txtread.h"
-#include "browse.h"
-
-
-#ifndef WCTYPE
-#include <ctype.h>
-#else
-#include <wctype.h>
-#endif
-
 #include "bitmap/txtview.bitmap"
-#include "mykeydef.h"
-#define MAXLINES 5000
-#define MAXCOMMENTS 500
 
 #define xds(a) { XDrawString(display,w,small_gc,5,CURY_OFFs,a,strlen(a));\
 		return;}
-typedef struct {
-  char *text,*action;
-  int aflag;
-} ACTION;
-extern char *save_eqn[MAXLINES];
-extern ACTION comments[MAXCOMMENTS];
-extern int n_comments,NLINES;
 
-extern Display *display;
-extern int screen;
-extern GC gc, small_gc;
-extern int DCURX,DCURXs,DCURY,DCURYs,CURY_OFFs,CURY_OFF;
-#define MYMASK  (ButtonPressMask 	|\
+#define MYMASK  (ButtonPressMask 	|       \
                 ButtonReleaseMask |\
 		KeyPressMask		|\
 		ExposureMask		|\
@@ -86,7 +72,7 @@ void txt_view_events(XEvent ev)
    break;
  case ButtonPress:
    txtview_press(ev.xbutton.window,ev.xbutton.x,ev.xbutton.y);
-    break;   
+    break;
  case KeyPress:
    txtview_keypress(ev);
    break;
@@ -108,18 +94,18 @@ void txtview_keypress(XEvent ev)
    if(ks==PGDN){txtview_press(txtview.pgdn,0,0); return;}
    if(ks==HOME){txtview_press(txtview.home,0,0); return;}
    if(ks==END){txtview_press(txtview.end,0,0); return;}
-   
+
  }
 }
 
-void enter_txtview(Window w,int val) 
+void enter_txtview(Window w,int val)
 {
   if(w==txtview.up||w==txtview.down||w==txtview.pgup||
      w==txtview.pgdn||w==txtview.home||w==txtview.end||
      w==txtview.src||w==txtview.action||w==txtview.kill)
     XSetWindowBorderWidth(display,w,val);
 }
- 
+
 
 void do_txt_action(char *s)
 {
@@ -144,14 +130,14 @@ void resize_txtview(int w,int h)
 }
 
 void txtview_press(Window w,int x,int y)
-{ 
+{
   int j;
   int nt;
   if(txtview.which==1)
     nt=n_comments;
   else
     nt=NLINES;
-  
+
   if(w==txtview.text){
     if(txtview.which==0)return;
     if(x>(2*txtview.dw))return;
@@ -161,8 +147,8 @@ void txtview_press(Window w,int x,int y)
     return;
   }
 
-  
-  
+
+
   if(w==txtview.up){
     if(txtview.first>0){
       txtview.first-=1;
@@ -199,7 +185,7 @@ void txtview_press(Window w,int x,int y)
     txtview.first=j;
     redraw_txtview_text();
   }
-   
+
   if(w==txtview.pgdn){
     j=txtview.first+txtview.nlines;
     if(j<nt){
@@ -207,19 +193,19 @@ void txtview_press(Window w,int x,int y)
       redraw_txtview_text();
     }
   }
-  
+
   if(w==txtview.src){
     txtview.which=0;
     redraw_txtview_text();
   }
-     
+
   if(w==txtview.action){
     if(n_comments>0){
       txtview.which=1;
       redraw_txtview_text();
     }
   }
-   
+
 }
 
 
@@ -239,11 +225,11 @@ void redraw_txtview(Window w)
   if(w==txtview.kill)
     xds("Kill");
   if(w==txtview.home)
-    xds("Home");  
+    xds("Home");
   if(w==txtview.end)
     xds("End");
   if(w==txtview.src)
-    xds("Source");  
+    xds("Source");
   if(w==txtview.action)
     xds("Action");
 }
@@ -257,7 +243,7 @@ void redraw_txtview_text()
       txtview.nlines,NLINES,txtview.first); */
    j=i+txtview.first;
    switch(txtview.which){
-   case 0: 
+   case 0:
      if(j<NLINES){
        XDrawString(display,txtview.text,gc,txtview.dw,i*txtview.dh+CURY_OFFs,
 		   save_eqn[j],strlen(save_eqn[j]));
@@ -290,7 +276,7 @@ void make_txtview()
   Window base;
  int ww=9*DCURXs,hh=DCURYs+4;
   static char *wname[]={"Text Viewer"},*iname[]={"Txtview"};
-  
+
   /*XWMHints wm_hints;
   */
   XTextProperty winname,iconname;
@@ -309,7 +295,7 @@ void make_txtview()
   size_hints.x=0;
   size_hints.y=0;
   /*wm_hints.initial_state=IconicState;
-  wm_hints.flags=StateHint; 
+  wm_hints.flags=StateHint;
   */
   XSetWMProperties(display,base,&winname,&iconname,
 		   NULL,0,&size_hints,NULL,NULL);
@@ -331,22 +317,3 @@ void make_txtview()
   txtview.dh=DCURY;
   txtview.dw=DCURX;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

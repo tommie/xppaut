@@ -35,8 +35,6 @@
 
 #define MAXONLY 1000
 
-#define MAXCOMMENTS 500
-
 int IN_INCLUDED_FILE=0;
 char uvar_names[MAXODE][12];
 char *ode_names[MAXODE];
@@ -50,11 +48,6 @@ int start_var_info=0;
 int *my_ode[MAXODE];
 
 int leng[MAXODE];
-
-typedef struct {
-  char *text,*action;
-  int aflag;
-} ACTION;
 
 char errmsg[256];
 

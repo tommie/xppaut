@@ -7,13 +7,15 @@
 #define MAXARG 20
 #define SETVAR(i,x) do { if((i)<NVAR) variables[i]=(x); } while (0)
 #define GETVAR(i) ((i)<NVAR ? variables[i] : 0.0)
+/* KERNEL.flag values */
+#define CONV 2
 
 /* --- Types --- */
 typedef struct {
   double k_n1,k_n,sum,betnn,mu,*al,*cnv;
   int *formula,flag,*kerform;
   char name[20],*expr,*kerexpr;
-}KERNEL;
+} KERNEL;
 
 typedef struct {
   int narg;

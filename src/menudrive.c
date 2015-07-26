@@ -1,67 +1,47 @@
-#include <stdlib.h>
-
-#include <sys/wait.h>
-#include <unistd.h>
 /* the menu for XPP commands
    this calls any command
    it also has lots of the direct X Gui stuff
-
 */
-
-#include "browse.h"
-#include "calc.h"
-#include "init_conds.h"
-#include "kinescope.h"
-#include "main.h"
-#include "bitmap/alert.bitmap"
-
-#include "graf_par.h"
-#include "integrate.h"
-#include "lunch-new.h"
-#include "edit_rhs.h"
-#include "many_pops.h"
-#include "torus.h"
-#include "nullcline.h"
-#include "numerics.h"
-#include "markov.h"
-#include "extra.h"
-#include "pop_list.h"
-#include "tabular.h"
-#include "pp_shoot.h"
-#include "adj2.h"
-#include "txtread.h"
-#include "auto_nox.h"
-#include "ggets.h"
-
+#include "menudrive.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/wait.h>
 #include <X11/Xlib.h>
-#include "menudrive.h"
-#include "tutor.h"
+
+#include "adj2.h"
+#include "auto_nox.h"
+#include "browse.h"
+#include "calc.h"
+#include "edit_rhs.h"
+#include "extra.h"
+#include "ggets.h"
+#include "graf_par.h"
+#include "init_conds.h"
+#include "integrate.h"
+#include "kinescope.h"
 #include "load_eqn.h"
-extern char this_file[XPP_MAX_NAME];
-extern char *info_message,*ic_hint[],*sing_hint[],
-*null_hint[],*flow_hint[],*null_freeze[], *bvp_hint[],*color_hint[],
-  *stoch_hint[];
-extern char *no_hint[],*wind_hint[],*view_hint[],*frz_hint[];
-extern char *graf_hint[], *cmap_hint[],*half_hint[],*map_hint[];
-extern char *text_hint[];
-extern char *edit_hint[];
-extern char *adj_hint[];
-extern char *phas_hint[],*kin_hint[],*view_hint[],*tab_hint[];
-extern Window info_pop,main_win,draw_win;
-extern int POIMAP;
-extern int DCURY,DCURX;
-extern int DF_FLAG,tfBell,TipsFlag;
-extern int SimulPlotFlag,current_pop,num_pops,ActiveWinList[];
-extern int DisplayHeight,DisplayWidth;
-extern int AutoFreezeFlag,NTable;
-extern Display *display;
+#include "lunch-new.h"
+#include "main.h"
+#include "many_pops.h"
+#include "markov.h"
+#include "menus.h"
+#include "nullcline.h"
+#include "numerics.h"
+#include "parserslow.h"
+#include "pop_list.h"
+#include "pp_shoot.h"
+#include "tabular.h"
+#include "torus.h"
+#include "tutor.h"
+#include "txtread.h"
+#include "bitmap/alert.bitmap"
+
 int screen;
 int status;
 
-extern int TORUS;
 typedef struct {
   Window w;
   char text[256];

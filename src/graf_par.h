@@ -34,6 +34,7 @@ typedef struct {
 } BD;
 
 /* --- Data --- */
+extern int AutoFreezeFlag;
 extern int colorline[12];
 extern int PS_Color;
 

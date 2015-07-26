@@ -1,21 +1,18 @@
-#include <stdlib.h> 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xos.h>
-#include <X11/Xatom.h>
-#include <stdio.h>
-#define RUBBOX 0
-#define RUBLINE 1
 #include "rubber.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <X11/Xatom.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
+#include <X11/Xutil.h>
+
 #include "ggets.h"
 #include "many_pops.h"
+#include "main.h"
 
-extern Window draw_win;
-extern Display *display;
-extern int screen;
-extern int xor_flag,xorfix;
-extern GC gc,gc_graph;
-extern unsigned int MyBackColor,MyForeColor,MyMainWinColor,MyDrawWinColor,GrFore,GrBack;
+#define RUBBOX 0
+#define RUBLINE 1
 
 
 int rubber(x1,y1,x2,y2,w,f)
@@ -34,34 +31,34 @@ int rubber(x1,y1,x2,y2,w,f)
    if(xorfix)
    {
    	XSetForeground(display,gc,MyDrawWinColor);
- 	XSetBackground(display,gc,MyForeColor);  
-   	/*XSetForeground(display,gc,GrFore);*/ 
+ 	XSetBackground(display,gc,MyForeColor);
+   	/*XSetForeground(display,gc,GrFore);*/
    }
-   
+
    XSelectInput(display,w,
    KeyPressMask|ButtonPressMask|ButtonReleaseMask|
 		PointerMotionMask|ButtonMotionMask|ExposureMask);
   while(!there)
   {
    XNextEvent(display,&ev);
-   switch(ev.type){ 
+   switch(ev.type){
        case Expose: do_expose(ev);
         	xor_flag=1;
   		chk_xor();
    		if(xorfix)
    		{
    			XSetForeground(display,gc,MyDrawWinColor);
- 			XSetBackground(display,gc,MyForeColor);  
+ 			XSetBackground(display,gc,MyForeColor);
      			/*XSetForeground(display,gc,GrFore);*/
-     		} 
+     		}
 		break;
-     
+
         case KeyPress:
 		if(state>0)break;  /* too late Bozo   */
 		there=1;
                 error=1;
 		break;
-	case ButtonPress: 
+	case ButtonPress:
 		if(state>0)break;
 		state=1;
 		dragx=ev.xkey.x;
@@ -90,7 +87,7 @@ int rubber(x1,y1,x2,y2,w,f)
    if(xorfix)
    {
    	/*XSetForeground(display,gc,GrBack); */
-  	XSetForeground(display,gc,MyForeColor);   
+  	XSetForeground(display,gc,MyForeColor);
   	XSetBackground(display,gc,MyDrawWinColor);
    }
 
@@ -106,7 +103,7 @@ ButtonReleaseMask|ButtonMotionMask);
   if(error)return(0);
   return(1);
  }
- 
+
 
 void rbox(i1,j1,i2,j2,w,f)
 int i1,j1,i2,j2,f;
@@ -121,9 +118,3 @@ Window w;
  if(y1>y2){y1=j2;y2=j1;}
  rectangle(x1,y1,x2,y2,w);
 }
-
-
-
-
-
-

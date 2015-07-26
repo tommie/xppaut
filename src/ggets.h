@@ -10,6 +10,7 @@
 /* --- Data --- */
 extern char *info_message;
 extern int MSStyle;
+extern int xor_flag;
 
 /* --- Functions --- */
 void ping(void);

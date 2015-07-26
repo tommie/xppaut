@@ -82,7 +82,6 @@
 
 FILESEL filesel;
 PAR_SLIDER my_par_slide[3];
-Window make_window();
 BoxList *HotBox;
 int HotBoxItem=-1;
 BoxList ICBox;
@@ -91,8 +90,6 @@ BoxList DelayBox;
 BoxList BCBox;
 
 int BoxMode;
-
-double atof();
 
 #define SB_DIM 5
 #define SB_SPC 2

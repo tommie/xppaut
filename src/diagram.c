@@ -19,9 +19,6 @@
 
 #define DALLOC(a) (double *)malloc((a)*sizeof(double))
 
-#define PACK_AUTO 0
-#define PACK_LBF 1
-
 int NBifs=0;
 DIAGRAM *bifd;
 

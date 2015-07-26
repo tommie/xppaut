@@ -101,7 +101,6 @@ typedef struct {
   int j1,j2;
 } ARRAY_IC;
 int ar_ic_defined=0;
-double ndrand48();
 ARRAY_IC ar_ic[NAR_IC];
 typedef struct
 {
@@ -127,11 +126,8 @@ FIXPTGUESS fixptguess;
 XPPVEC xpv;
 int SuppressOut=0;
 int SuppressBounds=0;
-double atof();
 int DelayErr;
 
-float **get_browser_data();
-double get_ivar();
 double  MyData[MAXODE],MyTime;
 int MyStart;
 int RANGE_FLAG;

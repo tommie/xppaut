@@ -1,12 +1,16 @@
 #include "run_auto.h"
-#include "close.h"
-#include "open.h"
-#include "auto_nox.h"
 
 #include <stdio.h>
-#include "f2c.h"
+#include <stdlib.h>
 #include <string.h>
+
+#include "close.h"
+#include "open.h"
+#include "f2c.h"
+
+#include "auto_nox.h"
 #include "tabular.h"
+
 #define IRS blbcn_1.irs
 #define IPS blbcn_1.ips
 #define ISW blcde_1.isw
@@ -17,13 +21,6 @@
 #define WAE wae_(&itp,&lw,&liw)
 #define WBV wbv_(&itp,&lw,&liw)
 #define BYE  goto L10
-
-extern void *malloc(size_t size);
-extern void free(void *ptr);
-extern char fort3[200];
-extern char fort7[200];
-extern char fort8[200];
-extern char fort9[200];
 
 struct {
     integer ndim, ips, irs, ilp, icp[20];
@@ -62,24 +59,24 @@ void run_aut(nfpar,itp)
      int nfpar,itp;
 
 {
-    extern /* Subroutine */ int bcpd_(), fnhb_(), bcpl_(), bcps_(), icpl_(), 
+    extern /* Subroutine */ int bcpd_(), fnhb_(), bcpl_(), bcps_(), icpl_(),
            fnfp_(), bctr_(), icps_(), fnlp_(), fnpl_(), funi_(), ictr_(),
            bcni_(),icni_(), bcbl_(),icbl_(),stpnbl_(),fnbl_(),fnds_(),
             fnhd_(), stpnhd_();
     extern /* Subroutine */ int init_();
     extern /* Subroutine */ int fnps_(), fntr_();
-      
+
     extern /* Subroutine */ int fnbpbv_();
     extern /* Subroutine */ int dfinit_(), autoae_();
     extern /* Subroutine */ int stpnae_(), fnspbv_(), stpnhb_();
     extern /* Subroutine */ int autobv_(), cnstnt_();
-    extern /* Subroutine */ int stpnub_(), stpnbv_(), stpnlp_(), stpnpl_(), 
+    extern /* Subroutine */ int stpnub_(), stpnbv_(), stpnlp_(), stpnpl_(),
 	    stpnps_(), stpntr_(), stpnus_();
     extern /* Subroutine */ int wae_();
     extern /* Subroutine */ int wbv_();
         olist o_1;
 
-     cllist cl_1;    
+     cllist cl_1;
     double *w=NULL;
 
     int  *iw=NULL;
@@ -95,7 +92,7 @@ void run_aut(nfpar,itp)
     o_1.ofm = 0;
     o_1.oblnk = 0;
     f_open(&o_1);
- 
+
    o_1.oerr = 0;
     o_1.ounit = 9;
     o_1.ofnmlen = strlen(fort9);
@@ -106,7 +103,7 @@ void run_aut(nfpar,itp)
     o_1.ofm = 0;
     o_1.oblnk = 0;
     f_open(&o_1);
- 
+
 
    o_1.oerr = 0;
     o_1.ounit = 3;
@@ -118,7 +115,7 @@ void run_aut(nfpar,itp)
     o_1.ofm = 0;
     o_1.oblnk = 0;
     f_open(&o_1);
- 
+
 
    o_1.oerr = 0;
     o_1.ounit = 7;
@@ -130,9 +127,9 @@ void run_aut(nfpar,itp)
     o_1.ofm = 0;
     o_1.oblnk = 0;
     f_open(&o_1);
- 
 
-  
+
+
 
     NFPAR=nfpar;
 
@@ -140,10 +137,10 @@ void run_aut(nfpar,itp)
 
 
 
- 
 
-  
-      
+
+
+
     /*   plintf("ITP=%d ISW=%d IRS=%d IPS=%d NFPAR=%d \n",ITP,ISW,IRS,IPS,NFPAR); */
 
     aisw=abs(ISW);
@@ -156,7 +153,7 @@ void run_aut(nfpar,itp)
       cnstnt_();
       dfinit_();
       set_auto();
-    
+
       if(IRS==0){
 	/*	printf("Case 1\n");
 		printf(" liw=%d lw=%d\n",liw,lw); */
@@ -191,7 +188,7 @@ void run_aut(nfpar,itp)
 	cnstnt_();
 	dfinit_();
 	set_auto();
-	
+
         if(ITP==3||(ITP/10)==3){
 	  /*  plintf("Case 3\n");
 	      plintf(" liw=%d lw=%d\n",liw,lw); */
@@ -210,7 +207,7 @@ void run_aut(nfpar,itp)
 	      autobv_(w, iw, &itp, &nfpar, fnps_, bcps_, icps_, stpnbv_, fnspbv_);
 	    }
       }
-    else 
+    else
       if(IPS==4&&aisw!=2){  /* bndry value problems 1-parameter  */
 	WBV;
 	ALLOCW;
@@ -219,17 +216,17 @@ void run_aut(nfpar,itp)
 	dfinit_();
 	set_auto();
          if(IRS==0){
-	  
+
 	    autobv_(w,iw,&itp,&nfpar,funi_,bcni_,icni_,stpnub_,fnbpbv_);
 	  }
 	  else
 	    {
-	  
+
 	      autobv_(w, iw, &itp, &nfpar, funi_, bcni_, icni_, stpnbv_, fnbpbv_);
 	    }
       }
-      
-/*        Two parameter bifurcations         ISW = +/- 2        */ 
+
+/*        Two parameter bifurcations         ISW = +/- 2        */
 
     aitp=abs(itp)/10;
     if(IPS<=1&&aisw==2&&((ITP==2)||(ITP==1))){ /* limit points  */
@@ -240,11 +237,11 @@ void run_aut(nfpar,itp)
       cnstnt_();
     dfinit_();
     set_auto();
-    
+
       autoae_(w, iw, &itp, &nfpar, fnlp_, stpnlp_);
       BYE;
     }
-    
+
     if(IPS<=1&&aisw==2&&((aitp==2)||(aitp==1))){ /* limit points continued */
       WAE;
       ALLOCW;
@@ -253,11 +250,11 @@ void run_aut(nfpar,itp)
       /* plintf("I am here - aitp=%d\n",aitp); */
     dfinit_();
     set_auto();
-    
+
       autoae_(w, iw, &itp, &nfpar, fnlp_, stpnae_);
       BYE;
     }
-    
+
     if((IPS==0||IPS==1)&&aisw==2&&ITP==3){ /* Hopf points  */
       WAE;
       ALLOCW;
@@ -265,11 +262,11 @@ void run_aut(nfpar,itp)
       cnstnt_();
     dfinit_();
     set_auto();
-    
+
       autoae_(w, iw, &itp, &nfpar, fnhb_, stpnhb_);
       BYE;
     }
-    
+
     if((IPS==0||IPS==1)&&aisw==2&&aitp==3){ /* More Hopf points  */
       WAE;
       ALLOCW;
@@ -277,7 +274,7 @@ void run_aut(nfpar,itp)
       cnstnt_();
     dfinit_();
     set_auto();
-    
+
       autoae_(w, iw, &itp, &nfpar, fnhb_, stpnae_);
       BYE;
     }
@@ -308,11 +305,11 @@ void run_aut(nfpar,itp)
       cnstnt_();
     dfinit_();
     set_auto();
-    
+
       autobv_(w, iw, &itp, &nfpar, fnpl_, bcpl_, icpl_, stpnpl_, fnbpbv_);
       BYE;
     }
-    
+
     if(IPS==2&&aisw==2&&((aitp==5)||(aitp==6))){ /* More Limits on periodics */
       WBV;
       ALLOCW;
@@ -320,11 +317,11 @@ void run_aut(nfpar,itp)
       cnstnt_();
     dfinit_();
     set_auto();
-    
+
       autobv_(w, iw, &itp, &nfpar, fnpl_, bcpl_, icpl_, stpnbv_, fnbpbv_);
       BYE;
     }
-    
+
 
   if(IPS==4&&aisw==2&&((ITP==5)||(ITP==6))){ /* Limits on bndry values */
       WBV;
@@ -333,11 +330,11 @@ void run_aut(nfpar,itp)
       cnstnt_();
     dfinit_();
     set_auto();
-    
+
       autobv_(w, iw, &itp, &nfpar, fnbl_, bcbl_, icbl_, stpnbl_, fnbpbv_);
       BYE;
     }
-    
+
     if(IPS==4&&aisw==2&&((aitp==5)||(aitp==6))){ /* More Limits on bndry values */
       WBV;
       ALLOCW;
@@ -345,11 +342,11 @@ void run_aut(nfpar,itp)
       cnstnt_();
     dfinit_();
     set_auto();
-    
+
       autobv_(w, iw, &itp, &nfpar, fnbl_, bcbl_, icbl_, stpnbv_, fnbpbv_);
       BYE;
     }
-    
+
 
 
     if(IPS==2&&aisw==2&&ITP==7){ /* continue period doub */
@@ -359,7 +356,7 @@ void run_aut(nfpar,itp)
       cnstnt_();
     dfinit_();
     set_auto();
-    
+
       autobv_(w, iw, &itp, &nfpar, fnpl_, bcpd_, icpl_, stpnpl_, fnbpbv_);
       BYE;
     }
@@ -371,8 +368,8 @@ void run_aut(nfpar,itp)
       cnstnt_();
     dfinit_();
     set_auto();
-    
-      autobv_(w, iw, &itp, &nfpar, fnpl_, bcpd_, icpl_, stpnbv_, fnbpbv_);      
+
+      autobv_(w, iw, &itp, &nfpar, fnpl_, bcpd_, icpl_, stpnbv_, fnbpbv_);
       BYE;
     }
 
@@ -383,11 +380,11 @@ void run_aut(nfpar,itp)
       cnstnt_();
     dfinit_();
     set_auto();
-    
+
       autobv_(w, iw, &itp, &nfpar, fnfp_, bcps_, icps_, stpnbv_, fnspbv_);
       BYE;
     }
-    
+
     if(IPS==2&&aisw==2&&ITP==8){ /* torus */
       WBV;
       ALLOCW;
@@ -395,7 +392,7 @@ void run_aut(nfpar,itp)
       cnstnt_();
     dfinit_();
     set_auto();
-    
+
       autobv_(w, iw, &itp, &nfpar, fntr_, bctr_, ictr_, stpntr_, fnbpbv_);
       BYE;
     }
@@ -408,13 +405,13 @@ void run_aut(nfpar,itp)
     dfinit_();
     set_auto();
      autobv_(w, iw, &itp, &nfpar, fntr_, bctr_, ictr_, stpnbv_, fnbpbv_);
-      
+
       BYE;
     }
 
-    
 
-  L10:	
+
+  L10:
 
     cl_1.cerr = 0;
     cl_1.cunit = 7;
@@ -428,30 +425,28 @@ void run_aut(nfpar,itp)
     cl_1.cunit = 9;
     cl_1.csta = 0;
     f_clos(&cl_1);
-    
+
       cl_1.cerr = 0;
     cl_1.cunit = 3;
     cl_1.csta = 0;
     f_clos(&cl_1);
-   
+
    free(w);
    free(iw);
-   
+
 
 }
 
 
-      
-      
-    
-            
-      
-      /*     Continuation of bifurcations to tori start ITP=8 
-            autobv_(w, iw, &itp, &nfpar, fntr_, bctr_, ictr_, stpntr_, fnbpbv_);
-      
-           Continuation of bifurcations to tori restart |ITP|/10=8 
-            autobv_(w, iw, &itp, &nfpar, fntr_, bctr_, ictr_, stpnbv_, fnbpbv_);
-      
-       */
-      
 
+
+
+
+
+      /*     Continuation of bifurcations to tori start ITP=8
+            autobv_(w, iw, &itp, &nfpar, fntr_, bctr_, ictr_, stpntr_, fnbpbv_);
+
+           Continuation of bifurcations to tori restart |ITP|/10=8
+            autobv_(w, iw, &itp, &nfpar, fntr_, bctr_, ictr_, stpnbv_, fnbpbv_);
+
+       */

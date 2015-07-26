@@ -1,13 +1,11 @@
 #include "stiff.h"
 
 #include <math.h>
-#include <stdlib.h>
 
 #include "flags.h"
 #include "gear.h"
 #include "markov.h"
 #include "odesol2.h"
-#include "xpplim.h"
 
 #define RKQS 8
 #define STIFF 9

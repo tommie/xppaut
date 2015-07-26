@@ -53,7 +53,6 @@ global -1 u-.2 {m=.5*m}
 #include "flags.h"
 
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
@@ -70,7 +69,6 @@ global -1 u-.2 {m=.5*m}
 #include "odesol2.h"
 #include "parserslow.h"
 #include "stiff.h"
-#include "xpplim.h"
 
 #define MY_DBL_EPS 5e-16
 

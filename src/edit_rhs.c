@@ -1,28 +1,20 @@
 #include "edit_rhs.h"
 
-#include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <X11/cursorfont.h>
 
-#include "auto_x11.h"
 #include "browse.h"
 #include "extra.h"
 #include "form_ode.h"
 #include "ggets.h"
 #include "init_conds.h"
-#include "load_eqn.h"
 #include "main.h"
 #include "many_pops.h"
 #include "menus.h"
 #include "parserslow.h"
 #include "pop_list.h"
-#include "shoot.h"
-#include "struct.h"
-#include "xpplim.h"
 
 
 #define EV_MASK (ButtonPressMask 	|\

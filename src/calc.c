@@ -1,23 +1,16 @@
 #include "calc.h"
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <X11/keysym.h>
-#include <X11/keysymdef.h>
 
 #include "browse.h"
 #include "form_ode.h"
 #include "ggets.h"
 #include "init_conds.h"
-#include "load_eqn.h"
 #include "main.h"
 #include "parserslow.h"
 #include "pop_list.h"
-#include "xpplim.h"
 
 #define PARAM 1
 #define IC 2

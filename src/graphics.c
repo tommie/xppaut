@@ -23,21 +23,16 @@
 #include "graphics.h"
 
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 
 #include "calc.h"
 #include "color.h"
 #include "graf_par.h"
-#include "load_eqn.h"
 #include "main.h"
 #include "many_pops.h"
 #include "my_ps.h"
 #include "my_svg.h"
-#include "struct.h"
 
 
 #define MAXPERPLOT 10

@@ -1,13 +1,11 @@
 #include "storage.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "form_ode.h"
 #include "ggets.h"
 #include "integrate.h"
 #include "load_eqn.h"
-#include "xpplim.h"
 
 float **storage;
 double *WORK;

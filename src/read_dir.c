@@ -1,14 +1,12 @@
 #include "read_dir.h"
 
 #include <dirent.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
 
 #include "ggets.h"
-#include "load_eqn.h"
 
 #define EOS '\0'
 #define NENTRIES 100

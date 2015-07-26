@@ -3,7 +3,6 @@
 
 #include <ctype.h>
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -11,14 +10,12 @@
 #include "comline.h"
 #include "delay_handle.h"
 #include "getvar.h"
-#include "ggets.h"
 #include "homsup.h"
 #include "markov.h"
 #include "simplenet.h"
 #include "strutil.h"
 #include "tabular.h"
 #include "volterra2.h"
-#include "xpplim.h"
 
 #define FUN1TYPE 9
 #define FUN2TYPE 1

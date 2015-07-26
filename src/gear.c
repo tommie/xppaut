@@ -1,7 +1,6 @@
 #include "gear.h"
 
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "abort.h"
@@ -15,7 +14,6 @@
 #include "markov.h"
 #include "menudrive.h"
 #include "odesol2.h"
-#include "xpplim.h"
 
 #define DING ping()
 int UnstableManifoldColor=5;

@@ -1,20 +1,13 @@
 #include "dialog_box.h"
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <X11/cursorfont.h>
-#include <X11/keysym.h>
-#include <X11/keysymdef.h>
 
 #include "browse.h"
 #include "ggets.h"
 #include "main.h"
 #include "many_pops.h"
-#include "struct.h"
 
 #define ALL_DONE 2
 #define DONE_WITH_THIS 1

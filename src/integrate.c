@@ -17,10 +17,8 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "integrate.h"
 
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <X11/Xlib.h>
 
 #include "abort.h"
 #include "adj2.h"
@@ -40,21 +38,17 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "flags.h"
 #include "form_ode.h"
 #include "gear.h"
-#include "ggets.h"
 #include "graf_par.h"
 #include "graphics.h"
 #include "histogram.h"
-#include "homsup.h"
 #include "init_conds.h"
 #include "kinescope.h"
-#include "load_eqn.h"
 #include "lunch-new.h"
 #include "main.h"
 #include "many_pops.h"
 #include "markov.h"
 #include "menudrive.h"
 #include "my_ps.h"
-#include "my_rhs.h"
 #include "my_svg.h"
 #include "numerics.h"
 #include "odesol2.h"
@@ -63,10 +57,8 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "pp_shoot.h"
 #include "stiff.h"
 #include "storage.h"
-#include "struct.h"
 #include "tabular.h"
 #include "volterra2.h"
-#include "xpplim.h"
 
 #define MSWTCH(u,v) memcpy((void *)(u),(void *)(v),xpv.node*sizeof(double))
 

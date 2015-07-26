@@ -1,7 +1,6 @@
 #include "dae_fun.h"
 
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -12,7 +11,6 @@
 #include "integrate.h"
 #include "load_eqn.h"
 #include "parserslow.h"
-#include "xpplim.h"
 
 #define MAXDAE 400
 

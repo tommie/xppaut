@@ -1,8 +1,6 @@
 #include "odesol2.h"
 
 #include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "delay_handle.h"
 #include "flags.h"
@@ -10,7 +8,6 @@
 #include "load_eqn.h"
 #include "markov.h"
 #include "numerics.h"
-#include "xpplim.h"
 
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #define MIN(a,b) ((a)<(b)?(a):(b))

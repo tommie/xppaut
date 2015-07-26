@@ -1,15 +1,12 @@
 #include "run_auto.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "close.h"
 #include "open.h"
-#include "f2c.h"
 
 #include "auto_nox.h"
-#include "tabular.h"
 
 #define IRS blbcn_1.irs
 #define IPS blbcn_1.ips

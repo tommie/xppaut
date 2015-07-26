@@ -1,7 +1,6 @@
 #include "histogram.h"
 
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -14,7 +13,6 @@
 #include "markov.h"
 #include "parserslow.h"
 #include "storage.h"
-#include "xpplim.h"
 
 
 int spec_col=1,spec_wid=512,spec_win=2,spec_col2=1,spec_type=0;

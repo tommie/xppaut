@@ -14,7 +14,6 @@
 #include "volterra2.h"
 
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "delay_handle.h"
@@ -25,8 +24,6 @@
 #include "load_eqn.h"
 #include "markov.h"
 #include "parserslow.h"
-#include "volterra.h"
-#include "xpplim.h"
 
 
 #define MAX(a,b) ((a)>(b)?(a):(b))

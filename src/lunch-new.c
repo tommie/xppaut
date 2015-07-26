@@ -1,12 +1,8 @@
 #include "lunch-new.h"
 
-#include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 
 #include "adj2.h"
 #include "arrayplot.h"
@@ -18,16 +14,12 @@
 #include "graf_par.h"
 #include "init_conds.h"
 #include "integrate.h"
-#include "load_eqn.h"
 #include "main.h"
 #include "many_pops.h"
 #include "numerics.h"
 #include "parserslow.h"
-#include "shoot.h"
 #include "storage.h"
-#include "struct.h"
 #include "volterra2.h"
-#include "xpplim.h"
 
 #define READEM 1
 #define VOLTERRA 6

@@ -3,16 +3,11 @@
 #include <ctype.h>
 #include <libgen.h>
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "f2c.h"
-
-#include "autevd.h"
 #include "autlib1.h"
 #include "autlib2.h"
-#include "autlim.h"
 #include "auto_x11.h"
 #include "axes2.h"
 #include "browse.h"
@@ -24,8 +19,6 @@
 #include "graphics.h"
 #include "init_conds.h"
 #include "integrate.h"
-#include "kinescope.h"
-#include "load_eqn.h"
 #include "main.h"
 #include "many_pops.h"
 #include "markov.h"
@@ -36,9 +29,7 @@
 #include "parserslow.h"
 #include "pop_list.h"
 #include "pp_shoot.h"
-#include "read_dir.h"
 #include "run_auto.h"
-#include "xpplim.h"
 
 #define PACK_AUTO 0
 #define PACK_LBF 1

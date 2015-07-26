@@ -1,11 +1,8 @@
 #include "form_ode.h"
 
 #include <ctype.h>
-#include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "aniparse.h"
 #include "browse.h"
@@ -14,19 +11,14 @@
 #include "derived.h"
 #include "extra.h"
 #include "flags.h"
-#include "ggets.h"
 #include "init_conds.h"
 #include "integrate.h"
-#include "load_eqn.h"
 #include "main.h"
 #include "markov.h"
-#include "newpars.h"
 #include "parserslow.h"
 #include "read_dir.h"
-#include "shoot.h"
 #include "simplenet.h"
 #include "strutil.h"
-#include "xpplim.h"
 
 #define MAXONLY 1000
 

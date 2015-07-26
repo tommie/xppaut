@@ -2,11 +2,8 @@
 #include "axes2.h"
 
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 
 #include "form_ode.h"
 #include "ggets.h"
@@ -16,8 +13,6 @@
 #include "many_pops.h"
 #include "my_ps.h"
 #include "my_svg.h"
-#include "struct.h"
-#include "xpplim.h"
 
 
 #define NOAXES 0

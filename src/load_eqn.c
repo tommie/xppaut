@@ -5,7 +5,6 @@
 #include "load_eqn.h"
 
 #include <dirent.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -14,9 +13,7 @@
 #include "auto_nox.h"
 #include "browse.h"
 #include "color.h"
-#include "dae_fun.h"
 #include "delay_handle.h"
-#include "derived.h"
 #include "extra.h"
 #include "form_ode.h"
 #include "gear.h"
@@ -43,7 +40,6 @@
 #include "txtread.h"
 #include "userbut.h"
 #include "volterra2.h"
-#include "xpplim.h"
 
 #define PARAM 1
 #define IC 2

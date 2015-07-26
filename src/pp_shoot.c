@@ -1,7 +1,6 @@
 #include "pp_shoot.h"
 
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -18,15 +17,12 @@
 #include "init_conds.h"
 #include "integrate.h"
 #include "kinescope.h"
-#include "load_eqn.h"
 #include "lunch-new.h"
 #include "main.h"
 #include "markov.h"
 #include "my_rhs.h"
 #include "parserslow.h"
 #include "pop_list.h"
-#include "shoot.h"
-#include "xpplim.h"
 
 #define MAX_LEN_SBOX 25
 #define ESCAPE 27

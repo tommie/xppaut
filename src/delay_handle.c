@@ -2,7 +2,6 @@
 #include "delay_handle.h"
 
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "form_ode.h"
@@ -11,7 +10,6 @@
 #include "integrate.h"
 #include "load_eqn.h"
 #include "parserslow.h"
-#include "xpplim.h"
 
 double AlphaMax=2,OmegaMax=2;
 

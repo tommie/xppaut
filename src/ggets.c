@@ -1,12 +1,8 @@
 #include "ggets.h"
 
-#include <math.h>
 #include <stdarg.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <X11/keysym.h>
-#include <X11/keysymdef.h>
 #include <X11/XKBlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -21,7 +17,6 @@
 #include "mykeydef.h"
 #include "newhome.h"
 #include "pop_list.h"
-#include "struct.h"
 
 
 #define ESCAPE 27

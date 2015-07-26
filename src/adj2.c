@@ -8,7 +8,6 @@
 #include "adj2.h"
 
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -26,7 +25,6 @@
 #include "odesol2.h"
 #include "parserslow.h"
 #include "pop_list.h"
-#include "xpplim.h"
 
 
 #define MAX_LEN_SBOX 25

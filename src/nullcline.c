@@ -1,14 +1,9 @@
 #include "nullcline.h"
 
 #include <math.h>
-#include <stdio.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 
-#include "abort.h"
 #include "browse.h"
 #include "form_ode.h"
 #include "ggets.h"
@@ -16,7 +11,6 @@
 #include "graphics.h"
 #include "init_conds.h"
 #include "integrate.h"
-#include "load_eqn.h"
 #include "main.h"
 #include "many_pops.h"
 #include "menudrive.h"
@@ -27,8 +21,6 @@
 #include "odesol2.h"
 #include "parserslow.h"
 #include "pop_list.h"
-#include "struct.h"
-#include "xpplim.h"
 
 
 #define MAX_LEN_SBOX 25

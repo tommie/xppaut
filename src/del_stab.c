@@ -10,7 +10,6 @@
 #include "gear.h"
 #include "ggets.h"
 #include "odesol2.h"
-#include "xpplim.h"
 
 #define Z(a,b) z[(a)+n*(b)]
 #define DING ping()

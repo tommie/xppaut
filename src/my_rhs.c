@@ -8,9 +8,7 @@
 #include "getvar.h"
 #include "main.h"
 #include "parserslow.h"
-#include "shoot.h"
 #include "simplenet.h"
-#include "xpplim.h"
 
 
 int MAIN__()

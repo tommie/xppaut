@@ -13,8 +13,6 @@ export {x,y} {xp,yp}
 #include "config.h"
 #include "extra.h"
 
-#include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 

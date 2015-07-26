@@ -38,6 +38,7 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "flags.h"
 #include "form_ode.h"
 #include "gear.h"
+#include "ggets.h"
 #include "graf_par.h"
 #include "graphics.h"
 #include "histogram.h"

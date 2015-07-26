@@ -9,6 +9,7 @@
 
 #include "comline.h"
 #include "delay_handle.h"
+#include "ggets.h"
 #include "homsup.h"
 #include "markov.h"
 #include "simplenet.h"

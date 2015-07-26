@@ -1,8 +1,7 @@
 #ifndef XPPAUT_COMLINE_H
 #define XPPAUT_COMLINE_H
 
-#include "ggets.h"
-#include "load_eqn.h"
+#include "xpplim.h"
 
 /* --- Types --- */
 typedef struct {

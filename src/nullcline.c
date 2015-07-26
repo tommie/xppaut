@@ -1,59 +1,50 @@
 #include "nullcline.h"
-#include "my_rhs.h"
-#include "numerics.h"
+
+#include <math.h>
+#include <stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+
 #include "abort.h"
 #include "browse.h"
+#include "form_ode.h"
 #include "ggets.h"
+#include "graf_par.h"
+#include "graphics.h"
+#include "homsup.h"
 #include "init_conds.h"
 #include "integrate.h"
 #include "load_eqn.h"
 #include "main.h"
-#include "graf_par.h"
-
+#include "many_pops.h"
+#include "menudrive.h"
+#include "my_rhs.h"
+#include "my_ps.h"
+#include "my_svg.h"
+#include "numerics.h"
 #include "parserslow.h"
 #include "pop_list.h"
-
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <stdio.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include "xpplim.h"
 #include "struct.h"
-#include "graphics.h"
-#include "menudrive.h"
-#include <stdio.h>
+#include "xpplim.h"
 
 
 #define MAX_LEN_SBOX 25
 #define DING ping
 #define MAX_NULL 10000
 
-extern int SuppressBounds;
-extern GRAPH *MyGraph;
-extern int PltFmtFlag;
-extern FILE *svgfile;
-
 int DFBatch=0;
 int NCBatch=0;
-extern int XPPBatch;
-
 int NullStyle=0; /* 1 is with little vertical/horizontal lines */
-extern int (*rhs)();
 
 double atof();
-extern int DRight,DLeft,DTop,DBottom;
-extern int STORFLAG;
-extern double last_ic[MAXODE];
 
-extern double DELTA_T,TEND,TRANS;
-extern int PaperWhite,DCURY;
 int XNullColor=2,YNullColor=7;
 int NULL_HERE,num_x_n,num_y_n,num_index,
 	null_ix,null_iy,WHICH_CRV;
 float null_dist,*X_n,*Y_n,*saver,*NTop,*NBot;
-extern int NMESH,NODE,NJMP,NMarkov,FIX_VAR,NEQ;
 float fnull();
 int DF_GRID=10,DF_FLAG=0,DF_IX=-1,DF_IY=-1;
 int DFIELD_TYPE=0;

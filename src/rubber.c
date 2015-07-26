@@ -11,8 +11,8 @@
 #include "many_pops.h"
 #include "main.h"
 
-#define RUBBOX 0
-#define RUBLINE 1
+
+static void rbox(int i1, int j1, int i2, int j2, Window w, int f);
 
 
 int rubber(x1,y1,x2,y2,w,f)
@@ -105,7 +105,7 @@ ButtonReleaseMask|ButtonMotionMask);
  }
 
 
-void rbox(i1,j1,i2,j2,w,f)
+static void rbox(i1,j1,i2,j2,w,f)
 int i1,j1,i2,j2,f;
 Window w;
 {

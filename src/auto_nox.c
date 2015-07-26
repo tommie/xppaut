@@ -30,6 +30,7 @@
 #include "parserslow.h"
 #include "pop_list.h"
 #include "pp_shoot.h"
+#include "rubber.h"
 #include "run_auto.h"
 
 

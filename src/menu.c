@@ -1,29 +1,24 @@
-#include "menus.h"
 #include "menu.h"
-#include "main.h"
 
-#include <stdlib.h> 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xos.h>
-#include <X11/Xatom.h>
 #include <X11/cursorfont.h>
+#include <X11/Xatom.h>
+#include <X11/Xlib.h>
+#include <X11/Xos.h>
+#include <X11/Xutil.h>
 
 #include "ggets.h"
+#include "main.h"
 #include "many_pops.h"
+#include "menudrive.h"
+#include "menus.h"
 #include "pop_list.h"
 
-#include "menudrive.h"
-
 int help_menu;
-MENUDEF my_menus[3]; 
-extern Display *display;
-extern int tfBell,TipsFlag;
-extern int DCURY,DCURX,CURY_OFF,DCURYs,DCURYb;
-extern GC gc;
-Window make_unmapped_window(); 
+MENUDEF my_menus[3];
+Window make_unmapped_window();
 void flash(num)
 int num;
 {
@@ -35,14 +30,14 @@ void add_menu(base,j,n,names,key,hint)
    Window base;
    char **names,*key,**hint;
    int j,n;
-{ 
+{
   Window w;
   int i;
     Cursor cursor;
      cursor=XCreateFontCursor(display,XC_hand2);
   w=make_plain_unmapped_window(base,0,DCURYs+DCURYb+10,16*DCURX,21*(DCURY+2)-3,1);
    my_menus[j].base=w;
-   XDefineCursor(display,w,cursor); 
+   XDefineCursor(display,w,cursor);
    my_menus[j].names=names;
    my_menus[j].n=n;
    my_menus[j].hints=hint;
@@ -75,7 +70,7 @@ void create_the_menus(base)
 
 void show_menu(j)
      int j;
-{ 
+{
   /*  XMapRaised(display,my_menus[j].base);
   XMapSubwindows(display,my_menus[j].base);
   */
@@ -87,13 +82,13 @@ void show_menu(j)
 void unshow_menu(j)
      int j;
 {
-  
+
   if(j<0)return;
   my_menus[j].visible=0;
   /* XUnmapSubwindows(display,my_menus[j].base);
    XUnmapWindow(display,my_menus[j].base); */
-   
-}  
+
+}
 
 
 void help()
@@ -131,7 +126,7 @@ void menu_crossing(win,yn)
   for(i=0;i<n;i++){
     if(win==my_menus[j].w[i]){
       XSetWindowBorderWidth(display,win,yn);
-      if(yn&&TipsFlag)bottom_msg(0,z[i]); 
+      if(yn&&TipsFlag)bottom_msg(0,z[i]);
       return;
     }
   }
@@ -181,7 +176,7 @@ void menu_button(win)
     }
   }
 }
-      
+
 void draw_help()
 {
   int i,j=help_menu,n;
@@ -217,25 +212,3 @@ menu_events(ev)
   }
 }
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

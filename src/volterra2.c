@@ -40,16 +40,6 @@ int KnFlag;
 
 int AutoEvaluate=0;
 
-double evaluate();
-double ker_val();
-double alpha1n();
-double alpbetjn();
-double betnn();
-double get_ivar();
-
-
-
-
 
 double ker_val(in)
      int in;

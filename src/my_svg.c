@@ -14,9 +14,6 @@
 #include "my_ps.h"
 #include "nullcline.h"
 
-#define LEFT 0
-#define RIGHT 2
-#define CENTER 1
 #define POINT_TYPES 8
 
 char SVGLINETYPE;
@@ -575,11 +572,11 @@ void special_put_text_svg(int x, int y, char *str, int size)
    	char anchor[7];
 
 	switch(TextJustify) {
-	case LEFT : sprintf(anchor,"start");
+	case TJ_LEFT : sprintf(anchor,"start");
 	  break;
-	case CENTER : sprintf(anchor,"middle");
+	case TJ_CENTER : sprintf(anchor,"middle");
 	  break;
-	case RIGHT : sprintf(anchor,"end");
+	case TJ_RIGHT : sprintf(anchor,"end");
 	  break;
 	default: sprintf(anchor,"start");
 	  break;
@@ -601,11 +598,11 @@ void svg_text(int x, int y, char *str)
 	char anchor[7];
 
 	switch(TextJustify) {
-	case LEFT : sprintf(anchor,"start");
+	case TJ_LEFT : sprintf(anchor,"start");
 	  break;
-	case CENTER : sprintf(anchor,"middle");
+	case TJ_CENTER : sprintf(anchor,"middle");
 	  break;
-	case RIGHT : sprintf(anchor,"end");
+	case TJ_RIGHT : sprintf(anchor,"end");
 	  break;
 	default: sprintf(anchor,"start");
 	  break;
@@ -623,33 +620,4 @@ void svg_text(int x, int y, char *str)
 
 
  	fprintf(svgfile,"      >%s</text>\n",str);
-
-    /* char ch;
-     fprintf(psfile, "0 0 0 setrgbcolor \n");
-     fprintf(psfile,"/%s findfont %d ",PS_FONT,PS_FONTSIZE*PS_SC);
-    fprintf(psfile,"scalefont setfont\n");
-    fprintf(psfile,"%d %d moveto\n",x,y);
-    if (TextAngle != 0)
-      fprintf(psfile,"currentpoint gsave translate %d rotate 0 0 moveto\n"
-	      ,TextAngle*90);
-    putc('(',psfile);
-    ch = *str++;
-    while(ch!='\0') {
-      if ( (ch=='(') || (ch==')') || (ch=='\\') )
-	putc('\\',psfile);
-      putc(ch,psfile);
-      ch = *str++;
-    }
-    switch(TextJustify) {
-    case LEFT : fprintf(psfile,") Lshow\n");
-      break;
-    case CENTER : fprintf(psfile,") Cshow\n");
-      break;
-    case RIGHT : fprintf(psfile,") Rshow\n");
-      break;
-    }
-    if (TextAngle != 0)
-      fprintf(psfile,"grestore\n");
-    PSLines=0;
-    */
 }

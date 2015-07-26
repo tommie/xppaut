@@ -3,6 +3,12 @@
 
 #include <X11/Xlib.h>
 
+/* --- Macros --- */
+/* TextJustify values */
+#define TJ_LEFT 0
+#define TJ_CENTER 1
+#define TJ_RIGHT 2
+
 /* --- Data --- */
 extern int avromfonts[5];
 extern int avsymfonts[5];

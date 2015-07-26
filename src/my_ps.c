@@ -23,9 +23,6 @@
 #define PS_SC (10)				/* scale is 1pt = 10 units */
 #define PS_VCHAR (PS_FONTSIZE*PS_SC)
 
-#define LEFT 0
-#define RIGHT 2
-#define CENTER 1
 #define POINT_TYPES 8
 int LastPtLine;
 int NoBreakLine=0;
@@ -490,11 +487,11 @@ char *str;
    ch = *str++;
  }
  switch(TextJustify) {
- case LEFT : fprintf(psfile,") Lshow\n");
+ case TJ_LEFT : fprintf(psfile,") Lshow\n");
    break;
- case CENTER : fprintf(psfile,") Cshow\n");
+ case TJ_CENTER : fprintf(psfile,") Cshow\n");
    break;
- case RIGHT : fprintf(psfile,") Rshow\n");
+ case TJ_RIGHT : fprintf(psfile,") Rshow\n");
    break;
  }
  if (TextAngle != 0)

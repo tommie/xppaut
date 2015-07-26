@@ -3,10 +3,6 @@
 
 
 #include "wsfe.h"
-#include "f2c.h"
-#include "autevd.h"
-#include "auto_x11.h"
-#include "sfe.h"
 /* autlib1.c */
 int dfinit_(void);
 int autoae_(doublereal *w, integer *iw, integer *itp, integer *ncpp, int (*funi)(void), int (*stpnt)(void));

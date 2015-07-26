@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include "autlim.h"
-#include "xpplim.h"
 
 /* --- Macros --- */
 #define MAX_AUT_PER 10

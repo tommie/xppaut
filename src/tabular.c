@@ -65,6 +65,7 @@ to be added later
 #include "init_conds.h"
 #include "many_pops.h"
 #include "parserslow.h"
+#include "read_dir.h"
 #include "simplenet.h"
 #include "storage.h"
 

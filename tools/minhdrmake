@@ -1,0 +1,84 @@
+#!/bin/bash -e
+#
+# Tool to try to compile a source file with a minimal set of include files.
+#
+# This removes one include file at a time, reinserting if compilation fails.
+#
+#   $ ./tools/minhdrmake src/main.c make -C src main.o
+#
+
+srcfile=
+origfile=
+
+cleanup() {
+    if [ -n "$origfile" ]; then
+        if [ -n "$srcfile" ]; then
+            mv "$origfile" "$srcfile"
+        else
+            rm -f "$origfile"
+        fi
+    fi
+}
+trap cleanup EXIT
+
+# backup-file creates a copy of the given file to a generated file,
+# and returns the file name.
+backup-file() {
+    local f=$(mktemp "$1.tmpXXXX")
+
+    cp "$1" "$f"
+    echo "$f"
+}
+
+get-includes() {
+    grep -E '^\s*#\s*include\s*[<"][^>"]+[">]'
+}
+
+find-rmincludes() {
+    local rmincludes=()
+
+    for (( i=0; i<${#includes[@]}; ++i )); do
+        local oldrmincludes=( "${rmincludes[@]}" )
+        rmincludes+=( "${includes[$i]}" )
+
+        echo "Building '$srcfile' without ${includes[$i]}..."
+        local ifs="$IFS"
+        IFS=$'\n'
+        grep -v -F "${rmincludes[*]}" "$origfile" >"$srcfile" || true
+        IFS="$ifs"
+
+        if ! "$@" &>/dev/null; then
+            echo "Build failed. '${includes[$i]}' is needed."
+            rmincludes=( "${oldrmincludes[@]}" )
+            cp "$origfile" "$srcfile"
+        fi
+    done
+
+    for inc in "${rmincludes[@]}"; do
+        echo "$inc"
+    done
+}
+
+if [ $# -lt 2 ]; then
+    echo "usage: $(basename "$0") <srcfile> <build-command...>" >&2
+    exit 1
+fi
+
+srcfile=$1
+shift
+ifs="$IFS"
+IFS=$'\n'
+includes=( $(get-includes <"$srcfile" || true) )
+IFS="$ifs"
+
+if [ ${#includes[@]} -eq 0 ]; then
+    # No included files.
+    exit 0
+fi
+
+origfile=$(backup-file "$srcfile")
+
+find-rmincludes "$@"
+
+# Success, so keep the newly generated file.
+srcfile=

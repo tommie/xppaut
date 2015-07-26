@@ -2,7 +2,6 @@
 #define XPPAUT_INIT_CONDS_H
 
 #include <X11/Xlib.h>
-#include "read_dir.h"
 
 /* --- Macros --- */
 #define FILESELNWIN 10

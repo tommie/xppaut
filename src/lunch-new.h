@@ -1,12 +1,9 @@
-#ifndef _lunch_new_h_
-#define _lunch_new_h_
-
+#ifndef XPPAUT_LUNCH_NEW_H
+#define XPPAUT_LUNCH_NEW_H
 
 #include <stdio.h>
-#include "form_ode.h"
 
-
-
+/* --- Functions --- */
 void file_inf(void);
 void ps_write_pars(FILE *fp);
 void do_info(FILE *fp);
@@ -24,5 +21,4 @@ void io_double(double *z, FILE *fp, int f, char *ss);
 void io_float(float *z, FILE *fp, int f, char *ss);
 void io_string(char *s, int len, FILE *fp, int f);
 
-
-#endif
+#endif /* XPPAUT_LUNCH_NEW_H */

@@ -347,7 +347,6 @@ nfcnRead    Number of function calls.
 
 #include "my_rhs.h"
 #include <stdio.h>
-#include <limits.h>
 
 typedef void (*FcnEqDiff)(unsigned n, double x, double *y, double *f);
 typedef void (*SolTrait)(long nr, double xold, double x, double* y, unsigned n, int* irtrn);

@@ -9,6 +9,7 @@
 #include "adj2.h"
 #include "browse.h"
 #include "delay_handle.h"
+#include "form_ode.h"
 #include "gear.h"
 #include "getvar.h"
 #include "ggets.h"

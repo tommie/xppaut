@@ -1,8 +1,6 @@
 #ifndef XPPAUT_AXES2_H
 #define XPPAUT_AXES2_H
 
-#include <X11/Xlib.h>
-
 /* --- Data --- */
 extern int DOING_AXES;
 extern int DOING_BOX_AXES;

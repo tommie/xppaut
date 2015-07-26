@@ -14,6 +14,7 @@
 #include "histogram.h"
 #include "init_conds.h"
 #include "integrate.h"
+#include "load_eqn.h"
 #include "my_rhs.h"
 #include "parserslow.h"
 #include "xpplim.h"

@@ -4,8 +4,11 @@
 */
 #include "autlib1.h"
 
+#include "sfe.h"
+
 #include "autevd.h"
 #include "auto_nox.h"
+#include "auto_x11.h"
 
 /* Common Block Declarations */
 

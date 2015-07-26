@@ -41,6 +41,7 @@
 #include "array_print.h"
 #include "browse.h"
 #include "color.h"
+#include "form_ode.h"
 #include "ggets.h"
 #include "init_conds.h"
 #include "integrate.h"

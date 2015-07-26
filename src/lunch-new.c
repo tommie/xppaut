@@ -22,7 +22,6 @@
 #include "volterra2.h"
 
 #define READEM 1
-#define VOLTERRA 6
 #define PARAMBOX 1
 
 double atof();

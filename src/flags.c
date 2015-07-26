@@ -62,7 +62,6 @@ global -1 u-.2 {m=.5*m}
 #include "dormpri.h"
 #include "form_ode.h"
 #include "gear.h"
-#include "getvar.h"
 #include "ggets.h"
 #include "init_conds.h"
 #include "integrate.h"

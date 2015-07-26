@@ -5,7 +5,6 @@
 #include <stdlib.h>
 
 #include "form_ode.h"
-#include "getvar.h"
 #include "ggets.h"
 #include "integrate.h"
 #include "load_eqn.h"

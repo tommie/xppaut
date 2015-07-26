@@ -1,14 +1,3 @@
-#include "simplenet.h"
-
-#include "aniparse.h"
-#include "ggets.h"
-#include "markov.h"
-#include "parserslow.h"
-#include "strutil.h"
-#include "tabular.h"
-
-#include <stdlib.h>
-#include <string.h>
 /*
   n is the number of values to return
   ncon is the number of connections each guy gets
@@ -92,26 +81,24 @@ special f=findext(type,n,skip,root)
 if type=1  mx(0)=maximum mx(1)=index
 if type=-1 mx(2)=minimum mx(3)=index
 if type=0 mx(0)=maximum mx(1)=index,mx(2)=minimum mx(3)=index
-
-
-
 */
-
+#include "simplenet.h"
 
 #include <math.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-extern int NODE;
-
+#include "aniparse.h"
+#include "fftn.h"
+#include "form_ode.h"
+#include "ggets.h"
+#include "markov.h"
+#include "parserslow.h"
+#include "strutil.h"
+#include "tabular.h"
 
 #define IC 2
- extern int fftn (int /* ndim */,
-		    const int /* dims */[],
-		    double /* Re */[],
-		    double /* Im */[],
-		    int /* isign */,
-		    double /* scaling */);
-
 
 /* simple network stuff */
 
@@ -141,9 +128,6 @@ typedef struct {
 #define GILLTYPE 25
 #define INTERP 30
 #define FINDEXT 35  /* find extrema in list of variables */
-
-
-extern double variables[];
 
 char *get_first(/* char *string,char *src */);
 char *get_next(/* char *src */);

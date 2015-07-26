@@ -7,8 +7,6 @@
 #define GREYSCALE -1
 #define REDBLUE  0
 #define ROYGBIV  1
-#define PERIODIC 2
-
 
 
 typedef struct {
@@ -318,12 +316,12 @@ void ps_rgb_bar(x,y,wid,len,fill,flag,rgb)
     if(fill>1.0)fill=1.0;
     switch(rgb)
       {
-      case 0:
+      case REDBLUE:
 	fill=1.-fill;
 	b=(float)sqrt((double)(1.0-fill*fill));
 	r=(float)sqrt((double)(fill*(2.0-fill)));
 	break;
-      case 1:
+      case ROYGBIV:
        if(fill>.4999)r=0.0;
 	else r=(float)sqrt((float)(1.-4*fill*fill));
 	g=(float)2*sqrt((double)fill*(1.-fill));

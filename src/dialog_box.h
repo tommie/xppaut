@@ -7,7 +7,7 @@
 
 /* --- Macros --- */
 /* get_dialog return values */
-#define FORGET_ALL   0
+#define FORGET_ALL 0
 #define DONE_WITH_THIS 1
 #define ALL_DONE 2
 
@@ -25,6 +25,7 @@ typedef struct {
 } DIALOG;
 
 /* --- Functions --- */
-int get_dialog(char *wname, char *name, char *value, char *ok, char *cancel, int max);
+int get_dialog(char *wname, char *name, char *value, char *ok, char *cancel,
+               int max);
 
 #endif /* XPPAUT_DIALOG_BOX_H */

@@ -18,7 +18,6 @@
 
 int help_menu;
 MENUDEF my_menus[3];
-Window make_unmapped_window();
 void flash(num)
 int num;
 {

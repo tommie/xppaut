@@ -24,8 +24,6 @@ int NDelay,del_stab_flag,WhichDelay,DelayGrid=1000;
 double variable_shift[2][MAXODE];
 double delay_list[MAXDELAY];
 
-double evaluate();
-
 
 double delay_stab_eval(delay,var)
 /* this returns appropriate values for delay jacobian */

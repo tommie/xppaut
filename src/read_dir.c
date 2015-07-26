@@ -1,59 +1,14 @@
 #include "read_dir.h"
 
-#include <unistd.h>
-#include "ggets.h"
-#include <stdlib.h>
-#include <string.h>
-#include "load_eqn.h"
-
-
-/* OSX note:
-
-IGNORE THIS -- I have included the relevant files !!  July 2002
-
-1. Make the following changes in the MAC system directories. (I
-think this is a bug in their header files.)
-
-  a. copy /usr/include/dirent.h  to your xpp directory. I'll assume
-you've called it dirent.h locally.
-
-  b. copy  /usr/include/sys/dirent.h to your xpp directory
-     (giving it a new name obviously. I called it sysdirent.h).
-
-  c. In the file read_dir.c change the #include <dirent.h>
-statement to call your local copy of dirent.h, not the one in
- /usr/include.
-
- d. In your local copy of dirent.h, change the #include<sys/dirent.h>
-statement to call your local copy of sysdirent.h
-
- e. In your local copy of sysdirent.h, change the lines:
-
-  u_int32_t d_fileno;
-  u_int16_t d_reclen;
-  u_int8_t  d_type;
-  u_int8_t  d_namlen;
- to the new lines:
-
-  unsigned long d_fileno;
-  unsigned short d_reclen;
-  unsigned char d_type;
-  unsigned char d_namlen;
-(These occur in the {\tt struct dirent}  declaration)
-and save the file.
-
-
-
-*/
-/*#ifdef MACOSX
-#include "macdirent.h"
-#else
-#include <dirent.h>
-#endif
-*/
 #include <dirent.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include <sys/stat.h>
+
+#include "ggets.h"
+#include "load_eqn.h"
 
 #define EOS '\0'
 #define NENTRIES 100
@@ -279,21 +234,8 @@ int change_directory(path)
 int get_directory(direct)
     char	   *direct;
 {
-#if defined(SYSV) || defined(SVR4)
-    extern char	   *getcwd();
-
-#else
-    extern char	   *getwd();
-
-#endif
-
-#if defined(SYSV) || defined(SVR4)
     if (getcwd(direct, 1024) == NULL) {	/* get current working dir */
 	put_msg("%s\n", "Can't get current directory");
-#else
-    if (getwd(direct) == NULL) {/* get current working dir */
-	put_msg("%s\n", direct);	/* err msg is in directory */
-#endif
 	*direct = '\0';
 	return 0;
     }

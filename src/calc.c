@@ -34,12 +34,6 @@
 		  ExposureMask    |\
                   StructureNotifyMask)
 
-
-
-
-double calculate(/* char * */);
-double evaluate();
-
 struct {
   Window base,quit,answer;
   double last_val;

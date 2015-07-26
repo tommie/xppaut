@@ -20,10 +20,10 @@
 #include "main.h"
 #include "markov.h"
 #include "my_rhs.h"
+#include "mykeydef.h"
 #include "parserslow.h"
 #include "pop_list.h"
 
-#define ESCAPE 27
 
 #define NOCHANGE 2
 #define GOODSHOT 1
@@ -485,7 +485,7 @@ void bvshoot(y,yend,err,eps,maxit,iret,n,ishow,iper,ipar,ivar,sect)
 
            {
 
-             if(esc==ESCAPE) {*iret=ABORT;break;}
+             if(esc==ESC) {*iret=ABORT;break;}
 	     if(esc=='/'){*iret=ABORT_ALL;break;}
 
            }

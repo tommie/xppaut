@@ -50,6 +50,7 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "menudrive.h"
 #include "my_ps.h"
 #include "my_svg.h"
+#include "mykeydef.h"
 #include "numerics.h"
 #include "odesol2.h"
 #include "parserslow.h"
@@ -61,8 +62,6 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "volterra2.h"
 
 #define MSWTCH(u,v) memcpy((void *)(u),(void *)(v),xpv.node*sizeof(double))
-
-#define ESCAPE 27
 
 #define MAXFP 400
 #define NAR_IC 50
@@ -2090,7 +2089,7 @@ if(Xup) cwidth=get_command_width();
 
            {
 
-             if(esc==ESCAPE) break;
+             if(esc==ESC) break;
 	     if(esc=='/'){rval=1;ENDSING=1;break;}
 
            }

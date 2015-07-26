@@ -8,17 +8,17 @@
 
 #include "parserslow.h"
 
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <string.h>
 
 
 /*********************************************************
-     This is code for read-in tables in XPP  
+     This is code for read-in tables in XPP
      This should probably be accessible from within the program
      as well.  It will probably be added to the Numerics Menu
 
      The files consist of y-values of a function evaluated at
-     equally spaced points as well as some header information.  
+     equally spaced points as well as some header information.
      They are ascii files of the form:
 
      npts <-- Integer
@@ -35,18 +35,18 @@
     form: x1 < x2 < .... < xn
     npts
     x1 y1
-    x2 y2 
+    x2 y2
      ...
     xn yn
-  
+
 
   In the creation of the file, one can instead use the following:
-  
+
  table <name> % numpts xlo xhi formula
 
  to create a "formula" table which is linearly interpolated
 
- table <name> @ filename creates an array for two-valued 
+ table <name> @ filename creates an array for two-valued
                 functions
 
  filename has the following info:
@@ -56,7 +56,7 @@
  xhi
  ylo
  yhi
- 
+
  nx*ny points as follows
 
  f(x1,y1), f(x2,y1),....,f(xn,y1),
@@ -69,18 +69,6 @@ to be added later
 
 #include <math.h>
 #include <stdio.h>
-typedef struct {
-  double xlo,xhi,dx;
-  double *y,*x;
-  int n,flag,interp,autoeval;
-  int xyvals;   
-/* flag=0 if virgin array, flag=1 if already allocated; flag=2 for function
-		         interp=0 for normal interpolation, interp=1 for 'step'
-                         interp=2 for cubic spline
-    table   and finally, xyvals=1 if both x and y vals are needed (xyvals=0
-    is faster lookup )*/
-  char filename[128],name[12];
-}TABULAR;
 
 TABULAR my_table[MAX_TAB];
 
@@ -97,7 +85,7 @@ extern float **storage;
 void set_auto_eval_flags(int f)
 {
  int i;
-  for(i=0;i<MAX_TAB;i++) 
+  for(i=0;i<MAX_TAB;i++)
     my_table[i].autoeval=f;
 }
 void set_table_name(name,index)
@@ -130,7 +118,7 @@ void new_lookup_com(int i)
  int npts;
  char newform[80];
 
-  
+
   index=select_table();
   if(index==-1)return;
   if(i==1){
@@ -143,11 +131,11 @@ void new_lookup_com(int i)
      if(status==0)return;
      ok=load_table(file,index);
      if(ok==1)strcpy(my_table[index].filename,file);
-     
+
    }
    if(my_table[index].flag==2){
      npts=my_table[index].n;
-     
+
      xlo=my_table[index].xlo;
        xhi=my_table[index].xhi;
        strcpy(newform,my_table[index].filename);
@@ -157,11 +145,11 @@ void new_lookup_com(int i)
        new_float("Xhi: ",&xhi);
        new_string("Formula :",newform);
        create_fun_table(npts,xlo,xhi,newform,index);
-       
+
    }
-   
+
 }
-    
+
 void new_lookup_ok()
 {
  char file[128];
@@ -197,13 +185,13 @@ void new_lookup_ok()
        new_float("Xhi: ",&xhi);
        new_string("Formula :",newform);
        create_fun_table(npts,xlo,xhi,newform,index);
-       
+
      }
    }
    else err_msg("Not a Table function");
  }
 }
-   
+
 double lookupxy(x,n,xv,yv)
      double x,*xv,*yv;
      int n;
@@ -257,11 +245,11 @@ double lookup(x,index)
   double x1,y1,y2;
   int i1,i2,n=my_table[index].n;
   y=my_table[index].y;
- 
+
   if(my_table[index].flag==0)return(0.0); /* Not defined   */
    if(my_table[index].xyvals==1)
     return(lookupxy(x,n,my_table[index].x,y));
-  
+
   i1=(int)((x-xlo)/dx);   /* (int)floor(x) instead of (int)x ??? */
   if(my_table[index].interp==2&&i1>0&&i1<(n-2))
     return tab_interp(xlo,dx,x,y,n,i1); /* if it is on the edge - use linear */
@@ -282,12 +270,12 @@ double lookup(x,index)
   }
   if(i1<0)return(y[0]+(y[1]-y[0])*(x-xlo)/dx);
   if(i2>=n)return(y[n-1]+(y[n-1]-y[n-2])*(x-xhi)/dx);
-  
-  
+
+
   return(0.0);
 }
-  
- 
+
+
 void init_table()
 {
   int i;
@@ -315,7 +303,7 @@ int eval_fun_table(n,xlo,xhi,formula,y)
      double xlo,xhi,*y;
 {
   int i;
-  
+
   double dx;
   double oldt;
   int command[200],ncold=NCON,nsym=NSYM;
@@ -336,8 +324,8 @@ int eval_fun_table(n,xlo,xhi,formula,y)
   NSYM=nsym;
   return(1);
 }
- 
- 
+
+
 int create_fun_table(npts,xlo,xhi,formula,index)
      int npts;
      int index;
@@ -387,7 +375,7 @@ int create_fun_table(npts,xlo,xhi,formula,index)
 
 int load_table(filename,index)
      char *filename;
-     int index; 
+     int index;
 {
   int i;
   char bobtab[100];
@@ -450,14 +438,14 @@ int load_table(filename,index)
   xhi=atof(bob);
   if(xlo>=xhi){
     err_msg("xlo >= xhi ??? ");
-    fclose(fp); 
+    fclose(fp);
     return(0);
   }
   if(my_table[index].flag==0){
    my_table[index].y=(double *)malloc(length*sizeof(double));
    if(my_table[index].y==NULL){
      err_msg("Unable to allocate table");
-     fclose(fp); 
+     fclose(fp);
      return(0);
    }
    for(i=0;i<length;i++){
@@ -470,7 +458,7 @@ int load_table(filename,index)
    my_table[index].dx=(xhi-xlo)/(length-1);
    my_table[index].flag=1;
    strcpy(my_table[index].filename,filename2);
-   fclose(fp); 
+   fclose(fp);
    return(1);
  }
   my_table[index].y=
@@ -492,36 +480,30 @@ int load_table(filename,index)
   fclose(fp);
   return(1);
 }
-   
+
 int get_lookup_len(int i)
 {
   return my_table[i].n;
 }
 
 
-/*   network stuff  
-     
+/*   network stuff
+
 table name <type> ... arguments ...
            conv   npts  weight variable_name klo khi end_cond
            sparse npts  variable filename
-           
+
       name(0 ... npts-1)
 
 conv:
-        name(i) = sum(k=klo,khi) weight(k-klo)*variable(i+k) 
+        name(i) = sum(k=klo,khi) weight(k-klo)*variable(i+k)
         with end_cond = zero means skip if off end
                       = periodic means wrap around
-        
+
 sparse:
        need a file with the structure:
        ncon i_1 w_1 ... i_ncon w_ncon
 for npts lines
  name(i) = sum(j=1,ncon_i) w_j name(i_j)
 
-*/  
-
-
-
-
-
-
+*/

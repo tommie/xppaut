@@ -116,20 +116,6 @@ extern int NODE;
 /* simple network stuff */
 
 typedef struct {
-  double xlo,xhi,dx;
-  double *y,*x;
-  int n,flag,interp,autoeval;
-  int xyvals;
-/* flag=0 if virgin array, flag=1 if already allocated; flag=2 for function
-		         interp=0 for normal interpolation, interp=1 for 'step'
-    table   and finally, xyvals=1 if both x and y vals are needed (xyvals=0
-    is faster lookup )*/
-  char filename[128],name[12];
-}TABULAR;
-
-extern TABULAR my_table[MAX_TAB];
-
-typedef struct {
   int type,ncon,n;
   char name[20];
   int root,root2;

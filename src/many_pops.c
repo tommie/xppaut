@@ -1,39 +1,42 @@
-#include "xpplim.h"
 #include "many_pops.h"
 
-#include "menudrive.h"
-#include "pop_list.h"
-#include "graphics.h"
+#include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <stdio.h>
-#include <math.h>
-#include "help_defs.h"
-#include "bitmap/graph.bitmap"
-#include "struct.h"
-#include "browse.h"
-#include "init_conds.h"
-#include "main.h"
-#include "aniparse.h"
 
-#include "load_eqn.h"
-#include "rubber.h"
-#include "ggets.h"
+#include "aniparse.h"
+#include "arrayplot.h"
+#include "auto_x11.h"
 #include "axes2.h"
-#include "txtread.h"
-#include "menu.h"
+#include "browse.h"
 #include "color.h"
-#include "nullcline.h"
+#include "eig_list.h"
+#include "ggets.h"
+#include "graf_par.h"
+#include "graphics.h"
+#include "help_defs.h"
+#include "init_conds.h"
+#include "integrate.h"
+#include "load_eqn.h"
+#include "main.h"
+#include "menu.h"
+#include "menudrive.h"
+#include "menus.h"
 #include "my_ps.h"
 #include "my_svg.h"
-#include "graf_par.h"
+#include "nullcline.h"
 #include "numerics.h"
-#include "auto_x11.h"
-#include "integrate.h"
-#include "arrayplot.h"
-#include "eig_list.h"
+#include "parserslow.h"
+#include "pop_list.h"
+#include "rubber.h"
+#include "struct.h"
+#include "tabular.h"
+#include "txtread.h"
+#include "xpplim.h"
+#include "bitmap/graph.bitmap"
 
 
 #define MAX_LEN_SBOX 25
@@ -64,59 +67,23 @@ typedef struct {
 
 MARKINFO markinfo={2,0,1,0,1,1.0};
 
-extern char *info_message;
-extern BROWSER my_browser;
-extern Atom deleteWindowAtom;
 LABEL lb[MAXLAB];
 GROB grob[MAXGROB];
 GRAPH graph[MAXPOP];
 CURVE frz[MAXFRZ];
 NCLINE nclines[MAXNCLINE];
 GRAPH *MyGraph;
-extern int help_menu,screen;
-extern int SCALEY,CURY_OFF,CURY_OFFs,DCURYs,DCURXs,DCURYb;
 int SimulPlotFlag=0;
-extern int storind;
-extern int PltFmtFlag;
-extern char *text_hint[];
-extern char *edit_hint[];
-extern char *no_hint[];
-extern Display *display;
-extern Window main_win,draw_win,command_pop,info_pop;
 int current_pop;
-extern unsigned int MyBackColor,MyForeColor,MyMainWinColor,MyDrawWinColor,GrFore,GrBack;
-extern GC gc, gc_graph,small_gc;
-extern int COLOR,color_min;
-extern int xor_flag,DCURX,DCURY;
 int num_pops;
 int MINI_H=240;
 int MINI_W=320;
 
-extern int Xup;
 int ActiveWinList[MAXPOP];
 double signum();
 
 Window make_window();
 
-typedef struct {
-  double xlo,xhi,dx;
-  double *y,*x;
-  int n,flag,interp,autoeval;
-  int xyvals;
-/* flag=0 if virgin array, flag=1 if already allocated; flag=2 for function
-		         interp=0 for normal interpolation, interp=1 for 'step'
-                         interp=2 for cubic spline
-    table   and finally, xyvals=1 if both x and y vals are needed (xyvals=0
-    is faster lookup )*/
-  char filename[128],name[12];
-}TABULAR;
-
-extern TABULAR my_table[MAX_TAB];
-
-extern int NTable;
-
-extern INTERN_SET intern_set[MAX_INTERN_SET];
-extern int Nintern_set;
 int select_table()
 {
  int i,j;

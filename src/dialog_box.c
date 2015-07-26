@@ -33,9 +33,6 @@
 		EnterWindowMask		|\
 		LeaveWindowMask)
 
-double atof();
- Window make_window();
-
 int get_dialog(wname,name,value,ok,cancel,max)
 char *wname,*name,*value,*ok,*cancel;
 int max;

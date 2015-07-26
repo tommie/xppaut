@@ -1,4 +1,3 @@
-#include <stdlib.h> 
 /*--------------------------------*-C-*---------------------------------*
  * File:
  *	fftn.c
@@ -165,16 +164,16 @@
 /*}}}*/
 #ifndef _FFTN_C
 #define _FFTN_C
-/* we use CPP to re-include this same file for double/float cases 
+/* we use CPP to re-include this same file for double/float cases
 #if !defined (lint) && !defined (__FILE__)
 Error: your compiler is sick!  define __FILE__ yourself (a string)
 eg, something like -D__FILE__=\"fftn.c\"
 #endif
 */
+#include "fftn.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "fftn.h"
 
 /*{{{ defines/constants */
 #ifndef M_PI

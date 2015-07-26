@@ -1,7 +1,8 @@
-#include <stdlib.h> 
+#include "array_print.h"
+
 #include <math.h>
 #include <stdio.h>
-#include "array_print.h"
+#include <stdlib.h>
 
 
 #define GREYSCALE -1
@@ -40,7 +41,7 @@ int array_print(filename,xtitle,ytitle,bottom,nacross,ndown,col0,row0,nskip,
     return -1;
   }
   ps_begin(0.0,0.0,xx,yy,10.,7.);
-  ps_replot(data,col0,row0,nskip,ncskip,maxrow,maxcol,nacross,ndown,zmin,zmax,type); 
+  ps_replot(data,col0,row0,nskip,ncskip,maxrow,maxcol,nacross,ndown,zmin,zmax,type);
   ps_boxit(tlo,thi,0.0,yy,zmin,zmax,xtitle,ytitle,bottom,type);
   ps_close();
   return 0;
@@ -99,7 +100,7 @@ void ps_begin(xlo,ylo,xhi,yhi,sx,sy)
   ps_scale.angle=-90.;
   ps_scale.xscale=1800.*sx*.2/(xhi-xlo);
   ps_scale.yscale=1800.*sy*.2/(yhi-ylo);
- 
+
   ps_set_text(-90.,0.0,18.0,18.0);
   ps_scale.letx=ps_scale.tx/ps_scale.xscale;
   ps_scale.lety=ps_scale.ty/ps_scale.yscale;
@@ -146,9 +147,9 @@ void ps_col_scale(y0,x0,dy,dx,n,zlo,zhi,type,mx)
 {
   int i;
   char s[100];
-  
+
   float dz=1./(float)(n-1);
-   
+
 for(i=0;i<n;i++){
     if(type==GREYSCALE)
       ps_bar(x0,y0-(i+1)*dy,dx,dy,1-(float)i*dz,0);
@@ -177,9 +178,9 @@ void ps_boxit(tlo,thi,jlo,jhi,zlo,zhi,sx,sy,sb,type)
   /* plintf(" %g %g %g %g %g %g \n",xlo,xhi,ylo,yhi,dx,dy); */
   mx=(yhi-ylo)*.25/5.6;
   ps_setline(0.0,10);
-  ps_rect(xlo,ylo,.8*dx,.8*dy);	  
+  ps_rect(xlo,ylo,.8*dx,.8*dy);
   ps_setline(z,i);
-  
+
   ps_text2(sx,xhi+.01*dx,.5*(yhi+ylo),1);
   ps_text2(sy,.5*(xhi+xlo),yhi+.01*dy,2);
   sprintf(str,"%g",tlo);
@@ -210,7 +211,7 @@ void ps_setline(fill,thick)
   ps_scale.linewid=thick;
   ps_scale.linecol=fill;
 }
- 
+
 void ps_put_char( ch,x,y)
 char ch;
 float *x, *y;
@@ -241,17 +242,17 @@ void ps_text2(str,xr,yr,icent)
   fprintf(my_plot_file,"basefont [%.4f %.4f %.4f %.4f 0 0] makefont setfont\n"
 	,a,b,c,d);
    switch(icent){
-   case 0: 
+   case 0:
      fprintf(my_plot_file,"( %s ) show \n grestore\n",str);
      break;
    case 1:  /* centered */
      fprintf(my_plot_file,"(%s) dup stringwidth pop -2 div 0 rmoveto show \n grestore\n", str);
      break;
    case 2: /* left edge */
-     fprintf(my_plot_file,"(%s) dup stringwidth pop neg 0 rmoveto show \n grestore\n", str); 
+     fprintf(my_plot_file,"(%s) dup stringwidth pop neg 0 rmoveto show \n grestore\n", str);
      break;
    case 3: /* right edge */
-     fprintf(my_plot_file,"(%s) dup stringwidth pop  0 rmoveto show \n grestore\n", str); 
+     fprintf(my_plot_file,"(%s) dup stringwidth pop  0 rmoveto show \n grestore\n", str);
      break;
    }
 }
@@ -266,7 +267,7 @@ void ps_line2(x1r,y1r,x2r,y2r)
 	  (int)x1,(int)y1,(int)x2,(int)y2);
 }
 
-void ps_set_text(angle,slant,x_size,y_size)  
+void ps_set_text(angle,slant,x_size,y_size)
      float angle,slant,x_size,y_size;
 {
  ps_scale.tx=x_size*5.0;
@@ -275,7 +276,7 @@ void ps_set_text(angle,slant,x_size,y_size)
  ps_scale.slant=slant;
 }
 
-void ps_rect(x,y,wid,len)  
+void ps_rect(x,y,wid,len)
      float x,y,wid,len;
 {
  float x1,y1,x2,y2;
@@ -296,7 +297,7 @@ void ps_bar(x,y,wid,len,fill,flag)
     ps_convert(x+wid,y+len,&x2,&y2);
     fprintf(my_plot_file,"%d %d m \n %d %d l \n %d %d l \n %d %d l \n FS\n",
 	    (int)x1,(int)y1,(int)x2,(int)y1,(int)x2,(int)y2,(int)x1,(int)y2);
-    
+
     if(flag){
       fprintf(my_plot_file,"0 G\n");
       ps_rect(x,y,wid,len);
@@ -327,7 +328,7 @@ void ps_rgb_bar(x,y,wid,len,fill,flag,rgb)
        if(fill>.4999)r=0.0;
 	else r=(float)sqrt((float)(1.-4*fill*fill));
 	g=(float)2*sqrt((double)fill*(1.-fill));
-	
+
 	if(fill<.5001)b=0.0;
 	else b=(float)sqrt((float)(4*(fill-.5)*(1.5-fill)));
 	break;
@@ -364,16 +365,3 @@ void ps_hsb_bar(x,y,wid,len,fill,flag)
   }
 
  }
-
-
-
-
-
-
-
-
-
-
-
-
-

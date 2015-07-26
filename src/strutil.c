@@ -1,6 +1,6 @@
-#include <ctype.h>
-
 #include "strutil.h"
+
+#include <ctype.h>
 
 
 void strupr(char *s)

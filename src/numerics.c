@@ -27,6 +27,7 @@
 #include "menu.h"
 #include "menudrive.h"
 #include "menus.h"
+#include "odesol2.h"
 #include "parserslow.h"
 #include "pop_list.h"
 #include "pp_shoot.h"
@@ -46,8 +47,6 @@
 #define RB23 13
 #define SYMPLECT 14
 
-double atof();
-
 typedef struct {
   double tmod;
   int maxvar,sos,type,sign;
@@ -60,16 +59,6 @@ POINCARE_MAP my_pmap;
 
 int (*solver)();
 float *fft_data,*hist_data,color_scale,min_scale;
-
-int  gear();
-int discrete();
-int euler();
-int mod_euler();
-int rung_kut();
-int adams();
-int volterra();
-int bak_euler();
-int symplect3();
 
 int cv_bandflag=0,cv_bandupper=1,cv_bandlower=1;
 

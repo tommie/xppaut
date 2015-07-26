@@ -1,0 +1,30 @@
+#!/bin/bash -e
+#
+# Tool to list unused macros in the file. It is just a text-file check,
+# so macros using other macros may trip this up.
+#
+#   $ ./tools/unusedmacros <srcfile>
+#
+
+# ls-macros lists all defined macros of the given files.
+# Output is one line per (file, symbol) pair.
+get-macros() {
+    sed -r -e 's:\s*#\s*define\s+([^( ]+)[( ].*:\1: p ; d'
+}
+
+if [ $# -ne 1 ]; then
+    echo "usage: $(basename "$0") <srcfile>" >&2
+    exit 1
+fi
+
+f=$1
+
+ifs="$IFS"
+IFS=$'\n'
+macros=( $(get-macros <"$f" | sort -u) )
+IFS='|'
+regexp="\\b${macros[*]}\\b"
+IFS=$'\n'
+used=( $(grep -E -v '^\s*#\s*define' <"$f" | grep -E -o "$regexp" | sort -u) )
+comm -2 -3 <(echo "${macros[*]}") <(echo "${used[*]}")
+IFS="$ifs"

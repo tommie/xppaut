@@ -1,7 +1,5 @@
 #include "many_pops.h"
 
-#include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
@@ -17,7 +15,6 @@
 #include "ggets.h"
 #include "graf_par.h"
 #include "graphics.h"
-#include "help_defs.h"
 #include "init_conds.h"
 #include "integrate.h"
 #include "load_eqn.h"
@@ -34,7 +31,6 @@
 #include "rubber.h"
 #include "tabular.h"
 #include "txtread.h"
-#include "xpplim.h"
 #include "bitmap/graph.bitmap"
 
 

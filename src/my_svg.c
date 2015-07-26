@@ -1,15 +1,12 @@
 #include "my_svg.h"
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include "axes2.h"
 #include "color.h"
 #include "ggets.h"
 #include "graf_par.h"
 #include "graphics.h"
-#include "lunch-new.h"
 #include "main.h"
 #include "my_ps.h"
 #include "nullcline.h"

@@ -1,11 +1,7 @@
 #include "eig_list.h"
 
-#include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <X11/keysym.h>
-#include <X11/keysymdef.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
@@ -17,10 +13,8 @@
 #include "main.h"
 #include "many_pops.h"
 #include "mykeydef.h"
-#include "newhome.h"
 #include "numerics.h"
 #include "pop_list.h"
-#include "xpplim.h"
 #include "bitmap/eqns.bitmap"
 #include "bitmap/equilib.bitmap"
 

@@ -5,15 +5,11 @@
 #include <fcntl.h>
 #include <libgen.h>
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/stat.h>
 #include <sys/time.h>
-#include <sys/types.h>
 #include <X11/Xlib.h>
-#include <X11/Xproto.h>
 #include <X11/Xutil.h>
 
 #include "browse.h"
@@ -36,7 +32,6 @@
 #include "scrngif.h"
 #include "strutil.h"
 #include "toons.h"
-#include "xpplim.h"
 #include "bitmap/aniwin.bitmap"
 
 

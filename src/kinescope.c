@@ -1,20 +1,13 @@
 /* Kinescope for X windows */
 #include "kinescope.h"
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
-#include <X11/keysym.h>
-#include <X11/keysymdef.h>
-#include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <X11/Xos.h>
-#include <X11/Xutil.h>
 
 #include "aniparse.h"
 #include "browse.h"
 #include "ggets.h"
-#include "load_eqn.h"
 #include "main.h"
 #include "mykeydef.h"
 #include "pop_list.h"

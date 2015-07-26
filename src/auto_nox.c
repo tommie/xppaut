@@ -3,7 +3,6 @@
 #include <ctype.h>
 #include <libgen.h>
 #include <math.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "autlib1.h"

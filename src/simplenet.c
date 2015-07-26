@@ -85,7 +85,6 @@ if type=0 mx(0)=maximum mx(1)=index,mx(2)=minimum mx(3)=index
 #include "simplenet.h"
 
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 

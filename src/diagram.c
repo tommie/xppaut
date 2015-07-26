@@ -1,10 +1,8 @@
 #include "diagram.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "autevd.h"
-#include "autlim.h"
 #include "auto_nox.h"
 #include "browse.h"
 #include "form_ode.h"
@@ -12,7 +10,6 @@
 #include "graf_par.h"
 #include "graphics.h"
 #include "init_conds.h"
-#include "load_eqn.h"
 #include "markov.h"
 #include "my_ps.h"
 #include "my_svg.h"

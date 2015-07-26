@@ -1,6 +1,5 @@
 #include "homsup.h"
 
-#include <stdlib.h>
 #include <math.h>
 #include "f2c.h"
 #include "form_ode.h"

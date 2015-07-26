@@ -1,4 +1,3 @@
-#include <stdlib.h> 
 /* nagroutines.f -- translated by f2c (version 19970805).
    You must link the resulting object file with the libraries:
 	-lf2c -lm   (in that order)

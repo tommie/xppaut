@@ -1,9 +1,7 @@
 #include "derived.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "calc.h"
 #include "form_ode.h"
 #include "ggets.h"
 #include "parserslow.h"

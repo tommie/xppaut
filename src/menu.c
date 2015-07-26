@@ -1,18 +1,12 @@
 #include "menu.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <X11/cursorfont.h>
-#include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <X11/Xos.h>
-#include <X11/Xutil.h>
 
 #include "ggets.h"
 #include "main.h"
 #include "many_pops.h"
-#include "menudrive.h"
 #include "menus.h"
 #include "pop_list.h"
 

@@ -9,8 +9,6 @@
 
 #include <ctype.h>
 #include <dirent.h>
-#include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
@@ -40,7 +38,6 @@
 #include "read_dir.h"
 #include "tabular.h"
 #include "volterra2.h"
-#include "xpplim.h"
 #include "bitmap/bc.bitmap"
 #include "bitmap/delay.bitmap"
 #include "bitmap/filebrowse.bitmap"

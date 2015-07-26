@@ -1,4 +1,3 @@
-#include <stdlib.h> 
 /* flowkm.f -- translated by f2c (version of 3 February 1990  3:36:42).
    You must link the resulting object file with the libraries:
 	-lF77 -lI77 -lm -lc   (in that order)

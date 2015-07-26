@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include "f2c.h"
-#include "autlim.h"
 #include "auto_nox.h"
 #include "derived.h"
 #include "load_eqn.h"

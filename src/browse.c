@@ -2,17 +2,13 @@
 
 #include <ctype.h>
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
 #include <sys/time.h>
 #include <sys/time.h>
-#include <unistd.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <X11/keysym.h>
-#include <X11/keysymdef.h>
 
 #include "comline.h"
 #include "dialog_box.h"
@@ -28,12 +24,10 @@
 #include "menudrive.h"
 #include "menus.h"
 #include "mykeydef.h"
-#include "newhome.h"
 #include "parserslow.h"
 #include "pop_list.h"
 #include "storage.h"
 #include "strutil.h"
-#include "xpplim.h"
 #include "bitmap/browse.bitmap"
 
 #define xds(a) { XDrawString(display,w,small_gc,5,CURY_OFFs,a,strlen(a));\

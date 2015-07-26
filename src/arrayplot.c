@@ -32,7 +32,6 @@
 
 #include <ctype.h>
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
@@ -52,7 +51,6 @@
 #include "many_pops.h"
 #include "pop_list.h"
 #include "scrngif.h"
-#include "xpplim.h"
 #include "bitmap/array.bitmap"
 
 

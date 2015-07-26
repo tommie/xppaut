@@ -1,14 +1,10 @@
 #include "auto_x11.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <X11/keysym.h>
-#include <X11/keysymdef.h>
 
-#include "autlim.h"
 #include "auto_nox.h"
 #include "browse.h"
 #include "color.h"
@@ -22,15 +18,12 @@
 #include "main.h"
 #include "many_pops.h"
 #include "math.h"
-#include "menudrive.h"
 #include "menus.h"
 #include "mykeydef.h"
-#include "newhome.h"
 #include "numerics.h"
 #include "parserslow.h"
 #include "pop_list.h"
 #include "rubber.h"
-#include "xpplim.h"
 #include "bitmap/auto.bitmap"
 
 

@@ -1,11 +1,9 @@
-#include <stdlib.h>
 /* autlib3.f -- translated by f2c (version of 28 December 1990  16:16:33).
    You must link the resulting object file with the libraries:
 	-lF77 -lI77 -lm -lc   (in that order)
 */
 
 #include "f2c.h"
-#include "autlim.h"
 #include "auto_nox.h"
 
 /* Common Block Declarations */

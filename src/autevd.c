@@ -2,10 +2,8 @@
 #undef abs
 
 #include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 
-#include "autlim.h"
 #include "auto_define.h"
 #include "auto_nox.h"
 #include "diagram.h"

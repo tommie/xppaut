@@ -1,8 +1,5 @@
 #include "torus.h"
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -14,7 +11,6 @@
 #include "main.h"
 #include "many_pops.h"
 #include "pop_list.h"
-#include "xpplim.h"
 #include "bitmap/info.bitmap"
 
 #define EV_MASK (ButtonPressMask 	|\

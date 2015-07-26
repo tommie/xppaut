@@ -20,15 +20,10 @@
 */
 #include "main.h"
 
-#include <dirent.h>
-#include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <X11/cursorfont.h>
-#include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <X11/Xos.h>
-#include <X11/Xproto.h>
 #include <X11/Xutil.h>
 
 #include "adj2.h"

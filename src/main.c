@@ -59,6 +59,7 @@
 #include "many_pops.h"
 #include "menu.h"
 #include "menudrive.h"
+#include "my_rhs.h"
 #include "myfonts.h"
 #include "nullcline.h"
 #include "numerics.h"
@@ -99,9 +100,7 @@ int XPPBatch=0,batch_range=0;
 char batchout[256];
 char UserOUTFILE[256];
 
- int my_rhs();
-
- int DisplayHeight,DisplayWidth;
+int DisplayHeight,DisplayWidth;
 int TrueColorFlag;
 char big_font_name[100],small_font_name[100];
 char PlotFormat[100];
@@ -110,11 +109,8 @@ int PaperWhite=-1;
 char mycommand[100];
 
 Window TopButton[6];
-Window init_win();
-Window make_fancy_window();
 /* Window win; */
 Window draw_win;
-Window make_input_strip();
 Window main_win;
 Window command_pop,info_pop;
 GC gc, gc_graph,small_gc, font_gc;

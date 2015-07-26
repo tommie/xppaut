@@ -1,3 +1,4 @@
+#include "config.h"
 #include "parserslow.h"
 
 #include <ctype.h>
@@ -11,8 +12,12 @@
 #include "delay_handle.h"
 #include "getvar.h"
 #include "ggets.h"
+#include "homsup.h"
+#include "markov.h"
+#include "simplenet.h"
 #include "strutil.h"
 #include "tabular.h"
+#include "volterra2.h"
 #include "xpplim.h"
 
 #define FUN1TYPE 9
@@ -81,8 +86,8 @@
 double zippy;
 #define PUSH(a) zippy=(a); stack[stack_pointer++]=zippy;
 
-#ifdef NOLGAMMA
-double lgamma();
+#ifndef HAVE_LGAMMA
+static double lgamma(double xx);
 #endif
 
 
@@ -95,8 +100,6 @@ typedef struct
          int pri;
         } SYMBOL;
 
-int nsrand48(int seed);
-
 #define DFNORMAL 1
 #define DFFP 2
 #define DFSTAB 3
@@ -104,14 +107,6 @@ int nsrand48(int seed);
 /* #define COM(a) my_symb[toklist[(a)]].com */
 int             ERROUT;
 int NDELAYS=0;
-/*double pow2(); */
-double get_delay();
-double delay_stab_eval();
-double lookup(),network_value();
-double atof(),poidev();
-double ndrand48();
-double ker_val();
-double hom_bcs();
 double BoxMuller;
 int BoxMullerFlag=0;
 int RandSeed=12345678;
@@ -123,71 +118,43 @@ int RandSeed=12345678;
 double CurrentIndex=0;
 int SumIndex=1;
 
-void free_ufuns(void);
-int duplicate_name(char *junk);
-int add_constant(char *junk);
-int get_type(int index);
-int check_num(int *tok, double value);
-int is_ufun(int x);
-int is_ucon(int x);
-int is_uvar(int x);
-int isvar(int y);
-int iscnst(int y);
-int isker(int y);
-int is_kernel(int x);
-int is_lookup(int x);
-void find_name(char *string, int *index);
-int alg_to_rpn(int *toklist, int *command);
-void pr_command(int *command);
-void show_where(char *string, int index);
-int function_sym(int token);
-int unary_sym(int token);
-int binary_sym(int token);
-int pure_number(int token);
-int gives_number(int token);
-int check_syntax(int oldtoken, int newtoken);
-int make_toks(char *dest, int *my_token);
-void tokeninfo(int tok);
-void find_tok(char *source, int *index, int *tok);
-double pmod(double x, double y);
-void two_args(void);
-double bessel_j(double x, double y);
-double bessel_y(double x, double y);
-double bessi(double nn, double x);
-double bessi0(double x);
-double bessi1(double x);
-char *com_name(int com);
-double do_shift(double shift, double variable);
-double do_ishift(double shift, double variable);
-double do_delay_shift(double delay, double shift, double variable);
-double do_delay(double delay, double i);
-void one_arg(void);
-double max(double x, double y);
-double min(double x, double y);
+static int is_uvar(int x);
 
-double neg(double z);
-double recip(double z);
-double heaviside(double z);
-double rndom(double z);
-double signum(double z);
+static void find_name(char *string, int *index);
+static int alg_to_rpn(int *toklist, int *command);
+static int unary_sym(int token);
+static int binary_sym(int token);
+static int make_toks(char *dest, int *my_token);
+static void tokeninfo(int tok);
+static void find_tok(char *source, int *index, int *tok);
+static void two_args(void);
+static double bessel_j(double x, double y);
+static double bessel_y(double x, double y);
+static double bessi(double nn, double x);
+static double bessi0(double x);
+static double bessi1(double x);
+static void one_arg(void);
+static double max(double x, double y);
+static double min(double x, double y);
 
-double dnot(double x);
-double dand(double x, double y);
-double dor(double x, double y);
-double dge(double x, double y);
-double dle(double x, double y);
-double deq(double x, double y);
-double dne(double x, double y);
-double dgt(double x, double y);
-double dlt(double x, double y);
+static double neg(double z);
+static double recip(double z);
+static double heaviside(double z);
+static double rndom(double z);
+static double signum(double z);
 
-double evaluate(/* int* */ );
+static double dnot(double x);
+static double dand(double x, double y);
+static double dor(double x, double y);
+static double dge(double x, double y);
+static double dle(double x, double y);
+static double deq(double x, double y);
+static double dne(double x, double y);
+static double dgt(double x, double y);
+static double dlt(double x, double y);
 
-double get_ivar(/* int i */ );
+static double eval_rpn(/* int* */ );
 
-double eval_rpn(/* int* */ );
-double ker_val();
-double pop(  );
 /* FIXXX */
 int stack_pointer,uptr;
 double constants[MAXPAR];
@@ -923,7 +890,7 @@ int x;
 
 /* IS_UVAR       */
 
-int is_uvar(x)
+static int is_uvar(x)
 int x;
 {
  if (x / MAXTYPE == VARTYPE) return(1); else return(0);
@@ -976,7 +943,7 @@ int find_lookup(name)
 
 /* FIND_NAME    */
 
-void find_name(string, index)
+static void find_name(string, index)
  char *string;
  int *index;
 {
@@ -1076,7 +1043,7 @@ int i;
 
 
 
-int alg_to_rpn(toklist,command)
+static int alg_to_rpn(toklist,command)
 int *toklist,*command;
 {
   int tokstak[500],comptr=0,tokptr=0,lstptr=0,temp;
@@ -1363,14 +1330,14 @@ int function_sym(int token) /* functions should have ( after them  */
   return(0);
 }
 
-int unary_sym(int token)
+static int unary_sym(int token)
 {
   /* ram: these are tokens not byte code, so no change here? */
   if(token==9||token==55)return(1);
   return(0);
 }
 
-int binary_sym(token)
+static int binary_sym(token)
      int token;
 {
   /* ram: these are tokens not byte code, so no change here? */
@@ -1467,7 +1434,7 @@ int check_syntax(oldtoken,newtoken) /* 1 is BAD!   */
 
 
 
-int make_toks(dest,my_token)
+static int make_toks(dest,my_token)
  char *dest;
  int *my_token;
  {
@@ -1546,7 +1513,7 @@ return(0);
 
 }
 
-void tokeninfo(tok)
+static void tokeninfo(tok)
 int tok;
 {
  plintf(" %s %d %d %d %d \n",
@@ -1626,7 +1593,7 @@ char *source,*dest;
 
 
 
-void find_tok(source,index,tok)
+static void find_tok(source,index,tok)
 char *source;
 int *index,*tok;
 {
@@ -1665,7 +1632,7 @@ double pmod(x,y)
   return(z);
 }
 
-void two_args()
+static void two_args()
 {
  fun2[4]=atan2;
  fun2[5]=pow;
@@ -1697,14 +1664,14 @@ void two_args()
      to compute them
 */
 
-double bessel_j(x,y)
+static double bessel_j(x,y)
      double x,y;
 {
  int n=(int)x;
  return(jn(n,y));
 }
 
-double bessel_y(x,y)
+static double bessel_y(x,y)
      double x,y;
 {
  int n=(int)x;
@@ -1716,7 +1683,7 @@ double bessel_y(x,y)
 #define BIGNI 1.0e-10
 
 
-double bessi(nn,x)
+static double bessi(nn,x)
 double  x;
 double nn;
 {
@@ -1747,7 +1714,7 @@ double nn;
 	}
 }
 
-double bessi0(x)
+static double bessi0(x)
 double  x;
 {
 	double  ax,ans;
@@ -1768,7 +1735,7 @@ double  x;
 	return ans;
 }
 
-double bessi1(x)
+static double bessi1(x)
 double  x;
 {
 	double ax,ans;
@@ -1937,7 +1904,7 @@ double z;
 }
 */
 
-void one_arg()
+static void one_arg()
 {
  fun1[0]=sin;
  fun1[1]=cos;
@@ -1992,31 +1959,31 @@ double normal(mean,std)
 }
 
 
-double max(x,y)
+static double max(x,y)
 double x,y;
 {
  return(((x>y)?x:y));
 }
 
-double min(x,y)
+static double min(x,y)
 double x,y;
 {
  return(((x<y)?x:y));
 }
 
-double neg(z)
+static double neg(z)
 double z;
 {
  return(-z);
 }
 
-double recip(z)
+static double recip(z)
 double z;
 {
  return(1.00/z);
 }
 
-double heaviside(z)
+static double heaviside(z)
 double z;
 {
  float w=1.0;
@@ -2024,14 +1991,14 @@ double z;
  return(w);
 }
 
-double rndom( z)
+static double rndom( z)
 double z;
 {
  /* return (z*(double)rand()/32767.00); */
   return(z*ndrand48());
 }
 
-double signum(z)
+static double signum(z)
 double z;
 
 {
@@ -2044,47 +2011,47 @@ double z;
 /*  logical stuff  */
 
 
-double dnot(x)
+static double dnot(x)
 double x;
 {
  return((double)(x==0.0));
 }
-double dand(x,y)
+static double dand(x,y)
 double x,y;
 {
  return((double)(x&&y));
 }
-double dor(x,y)
+static double dor(x,y)
 double x,y;
 {
  return((double)(x||y));
 }
-double dge(x,y)
+static double dge(x,y)
 double x,y;
 {
  return((double)(x>=y));
 }
-double dle(x,y)
+static double dle(x,y)
 double x,y;
 {
  return((double)(x<=y));
 }
-double deq(x,y)
+static double deq(x,y)
 double x,y;
 {
  return((double)(x==y));
 }
-double dne(x,y)
+static double dne(x,y)
 double x,y;
 {
  return((double)(x!=y));
 }
-double dgt(x,y)
+static double dgt(x,y)
 double x,y;
 {
  return((double)(x>y));
 }
-double dlt(x,y)
+static double dlt(x,y)
 double x,y;
 {
  return((double)(x<y));
@@ -2106,7 +2073,7 @@ double x,y;
  }
 
 
- double eval_rpn(equat)
+static double eval_rpn(equat)
  int *equat;
  {
    int i,it,in,j,*tmpeq;
@@ -2265,8 +2232,8 @@ bye: j=0;
 
 /* code for log-gamma if you dont have it */
 
-#ifdef NOLGAMMA
-double lgamma(xx)
+#ifndef HAVE_LGAMMA
+static double lgamma(xx)
 double xx;
 {
 	double x,y,tmp,ser;

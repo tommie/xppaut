@@ -49,6 +49,7 @@ AC_CHECK_FUNCS([ \
     floor \
     getcwd \
     gettimeofday \
+    lgamma \
     memmove \
     memset \
     pow \

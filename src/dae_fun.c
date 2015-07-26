@@ -16,9 +16,6 @@
 
 #define MAXDAE 400
 
-double evaluate();
-double sdot();
-
 /*    will have more stuff someday */
 
 typedef struct {

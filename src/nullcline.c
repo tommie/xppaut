@@ -27,6 +27,12 @@
 #define DING ping
 #define MAX_NULL 10000
 
+typedef struct {
+  double xlo,xhi;
+  char rv[10];
+  int nstep,ic,stor;
+} RANGE_INFO;
+
 int DFBatch=0;
 int NCBatch=0;
 int NullStyle=0; /* 1 is with little vertical/horizontal lines */

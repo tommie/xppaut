@@ -1,9 +1,12 @@
-#ifndef _xpplim_h_
-#define _xpplim_h_
+#ifndef XPPAUT_XPPLIM_H
+#define XPPAUT_XPPLIM_H
 
+/* --- Macros --- */
+#define MAXCHAR 60
 #define MAXODE 5000
 #define MAXODE1 4999
 #define MAXDELAY 50
+#define MAXENTRY 20
 #define MAXPRIMEVAR (MAXODE-10)/2
 #define MAXPAR 400
 #define MAXFLAG 2000
@@ -15,4 +18,5 @@
 #define MAXMARK 200
 #define MAX_ANI_LINES 2000
 #define MAX_INTERN_SET 500
-#endif
+
+#endif /* XPPAUT_XPPLIM_H */

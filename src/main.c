@@ -67,7 +67,6 @@
 #include "read_dir.h"
 #include "simplenet.h"
 #include "storage.h"
-#include "struct.h"
 #include "txtread.h"
 #include "userbut.h"
 #include "bitmap/pp.bitmap"

@@ -32,7 +32,6 @@
 #include "pop_list.h"
 #include "pp_shoot.h"
 #include "storage.h"
-#include "struct.h"
 #include "volterra2.h"
 
 #define MAX_LEN_SBOX 25

@@ -29,6 +29,16 @@
 #include "rubber.h"
 
 
+#define MAXNCLINE 26
+
+typedef struct {
+  Window w;
+  char name[10];
+  short use;
+  float *x_n,*y_n;
+  int ix,iy,num_x,num_y;
+} NCLINE;
+
 NCLINE nclines[MAXNCLINE];
 int PS_Color=1;
 

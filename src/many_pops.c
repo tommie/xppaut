@@ -32,7 +32,6 @@
 #include "parserslow.h"
 #include "pop_list.h"
 #include "rubber.h"
-#include "struct.h"
 #include "tabular.h"
 #include "txtread.h"
 #include "xpplim.h"
@@ -57,6 +56,15 @@ typedef struct {
   Window w;
   int type, color;
 } GROB;
+
+typedef struct {
+  Window w;
+  float x;
+  float y;
+  char s[MAXCHAR];
+  short use;
+  int font,size;
+} LABEL;
 
 typedef struct {
   int type,color;

@@ -91,7 +91,6 @@ noinst_HEADERS = \
 	simplenet.h \
 	stiff.h \
 	storage.h \
-	struct.h \
 	strutil.h \
 	tabular.h \
 	toons.h \

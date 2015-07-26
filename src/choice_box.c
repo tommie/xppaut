@@ -9,6 +9,9 @@
 #include "main.h"
 #include "pop_list.h"
 
+#define RADIO 0
+#define CHOICE 1
+
 #define ALL_DONE 2
 #define DONE_WITH_THIS 1
 #define FORGET_ALL   0

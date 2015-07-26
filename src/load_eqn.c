@@ -1,3 +1,7 @@
+/* this file has all of the phaseplane parameters defined
+   and created.  All other files should use external stuff
+   to use them. (Except eqn forming stuff)
+ */
 #include "load_eqn.h"
 
 #include <dirent.h>
@@ -28,6 +32,7 @@
 #include "my_ps.h"
 #include "nullcline.h"
 #include "numerics.h"
+#include "odesol2.h"
 #include "parserslow.h"
 #include "read_dir.h"
 #include "storage.h"
@@ -56,17 +61,9 @@ int START_LINE_TYPE=1;
 INTERN_SET intern_set[MAX_INTERN_SET];
 int Nintern_set=0;
 
-double atof();
-char *get_first();
-char *get_next();
-/*   this file has all of the phaseplane parameters defined
-     and created.  All other files should use external stuff
-    to use them. (Except eqn forming stuff)
- */
 double last_ic[MAXODE];
 int (*solver)();
 
-int rung_kut();
 char delay_string[MAXODE][80];
 int itor[MAXODE];
 /*char this_file[100];

@@ -6,10 +6,7 @@
 #include "ggets.h"
 #include "main.h"
 
-#define COLOR_SCALE 0
-#define GRAYSCALE 1
-#define RGRAYSCALE 2
-#define SOLID -1
+
 #define RED	20
 #define REDORANGE	21
 #define ORANGE	22
@@ -27,7 +24,6 @@
 #define C_COOL 3
 #define C_REDBLUE 4
 #define C_GRAY 5
-#define C_BUDGIE 6
 
 int color_mode=1,color_min,color_total,COLOR,color_max;
 int periodic=0,spectral;

@@ -70,7 +70,6 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #define MAX_LEN_SBOX 25
 #define PARAM 1
 #define IC 2
-#define BMAXCOL 20
 
 #define MAXFP 400
 #define NAR_IC 50

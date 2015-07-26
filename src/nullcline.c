@@ -39,13 +39,10 @@ int DFBatch=0;
 int NCBatch=0;
 int NullStyle=0; /* 1 is with little vertical/horizontal lines */
 
-double atof();
-
 int XNullColor=2,YNullColor=7;
 int NULL_HERE,num_x_n,num_y_n,num_index,
 	null_ix,null_iy,WHICH_CRV;
 float null_dist,*X_n,*Y_n,*saver,*NTop,*NBot;
-float fnull();
 int DF_GRID=10,DF_FLAG=0,DF_IX=-1,DF_IY=-1;
 int DFIELD_TYPE=0;
 

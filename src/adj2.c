@@ -27,8 +27,6 @@
 #include "pop_list.h"
 
 
-#define MAX_LEN_SBOX 25
-
 float **my_adj;
 int adj_len;
 float **my_h;

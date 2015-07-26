@@ -65,8 +65,6 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #define ESCAPE 27
 #define FIRSTCOLOR 30
 
-#define MAX_LEN_SBOX 25
-
 #define MAXFP 400
 #define NAR_IC 50
 

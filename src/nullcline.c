@@ -23,7 +23,6 @@
 #include "pop_list.h"
 
 
-#define MAX_LEN_SBOX 25
 #define MAX_NULL 10000
 
 typedef struct {

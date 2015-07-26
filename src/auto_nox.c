@@ -50,7 +50,6 @@
 #define FP2 5
 #define HB2 6
 
-#define MAX_LEN_SBOX 25
 #define HI_P 0  /* uhi vs par */
 #define NR_P 1  /* norm vs par */
 #define HL_P 2  /* Hi and Lo vs par  periodic only */

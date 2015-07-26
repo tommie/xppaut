@@ -75,8 +75,6 @@ want to alter the ordering below
 /**************************************************************/
 
 
-#define MAX_LEN_SBOX 25
-
 #define LINE 0
 #define RLINE 1
 #define CIRC 2

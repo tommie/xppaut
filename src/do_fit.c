@@ -24,7 +24,6 @@
 
 /*  this is also X free ! */
 
-#define MAX_LEN_SBOX 25
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
 FITINFO fin;

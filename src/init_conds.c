@@ -56,8 +56,6 @@
 #define HOTWILD 2
 #define HOTFILE 1
 
-#define MAX_LEN_SBOX 25
-
 #define BOXEVENT  (ButtonPressMask 	|\
 		KeyPressMask		|\
 		ExposureMask		|\

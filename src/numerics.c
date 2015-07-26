@@ -34,7 +34,6 @@
 #include "storage.h"
 #include "volterra2.h"
 
-#define MAX_LEN_SBOX 25
 
 typedef struct {
   double tmod;

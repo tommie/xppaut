@@ -23,7 +23,6 @@
 #include "parserslow.h"
 #include "pop_list.h"
 
-#define MAX_LEN_SBOX 25
 #define ESCAPE 27
 
 #define NOCHANGE 2

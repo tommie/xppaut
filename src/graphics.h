@@ -15,6 +15,7 @@ extern int PointType;
 extern int PS_Port;
 extern XFontStruct *romfonts[5];
 extern XFontStruct *symfonts[5];
+extern int TextAngle;
 extern int TextJustify;
 extern double THETA0;
 extern int HTic, VTic;

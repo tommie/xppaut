@@ -1,12 +1,15 @@
 #include "my_ps.h"
-#include "lunch-new.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "color.h"
 #include "ggets.h"
 #include "graphics.h"
-#include "color.h"
+#include "lunch-new.h"
+#include "main.h"
 
-#include <stdlib.h> 
-#include <stdio.h>
-#include <string.h>
 #define MAXPSLINE 100
 
 #define PS_XOFF 50
@@ -20,18 +23,13 @@
 #define PS_SC (10)				/* scale is 1pt = 10 units */
 /* #define	PS_LW (0.5*PS_SC) */		/* linewidth = 0.5 pts */
 /* #define PS_FONTSIZE 14     */        /* default is 14 point characters */
-#define PS_VCHAR (PS_FONTSIZE*PS_SC)		
+#define PS_VCHAR (PS_FONTSIZE*PS_SC)
 #define PS_HCHAR (PS_FONTSIZE*PS_SC*6/10)
 
 #define LEFT 0
 #define RIGHT 2
 #define CENTER 1
 #define POINT_TYPES 8
-extern int PointType;
-extern int PointRadius;
-extern int PS_Port;
-extern int TextJustify;
-extern int TextAngle;
 int LastPtLine;
 int NoBreakLine=0;
 int PS_FONTSIZE=14;
@@ -44,10 +42,9 @@ int PSLines;
 int LastPSX,LastPSY;
 /* this header stuff was stolen from GNUPLOT I have added  filled circles
     and open circles for bifurcation diagrams I also use Times Roman
-    since Courier is an ugly font!!  
+    since Courier is an ugly font!!
 */
 
-extern int Xup;
 char *PS_header[]={
 "/vpt2 vpt 2 mul def\n",
 "/hpt2 hpt 2 mul def\n",
@@ -55,13 +52,13 @@ char *PS_header[]={
 "/Symfnt {/Symbol findfont exch scalefont setfont} def ",
 /* flush left show */
 "/Lshow { currentpoint stroke moveto\n",
-"  0 vshift rmoveto show } def\n", 
+"  0 vshift rmoveto show } def\n",
 /* flush right show */
 "/Rshow { currentpoint stroke moveto\n",
-"  dup stringwidth pop neg vshift rmoveto show } def\n", 
+"  dup stringwidth pop neg vshift rmoveto show } def\n",
 /* centred show */
 "/Cshow { currentpoint stroke moveto\n",
-"  dup stringwidth pop -2 div vshift rmoveto show } def\n", 
+"  dup stringwidth pop -2 div vshift rmoveto show } def\n",
 /* Dash or Color Line */
 "/DL { Color {setrgbcolor [] 0 setdash pop}\n",
 " {pop pop pop 0 setdash} ifelse } def\n",
@@ -113,12 +110,12 @@ char *PS_header[]={
 "  P  } def\n",
 "/S { 2 copy A C} def\n", /* Star */
 "/K { stroke [] 0 setdash vpt 0 360 arc stroke} def ", /* Circle */
-"/F { stroke [] 0 setdash vpt 0 360 arc fill stroke } def ", /* Filled circle */ 
+"/F { stroke [] 0 setdash vpt 0 360 arc fill stroke } def ", /* Filled circle */
 NULL
 };
 
-  
-		   
+
+
 int ps_init(filename,color)
 char *filename;
 int color;
@@ -187,10 +184,10 @@ void ps_do_color(int color)
  get_ps_color(color,&r,&g,&b);
  /*  if(LastPtLine)
    fprintf(psfile,"%f %f %f RGB\n",r,g,b);
-   else */ 
-   fprintf(psfile,"%f %f %f RGb\n",r,g,b);  
- 		
- 
+   else */
+   fprintf(psfile,"%f %f %f RGb\n",r,g,b);
+
+
 }
 
 void ps_setcolor(color)
@@ -212,7 +209,7 @@ void ps_setcolor(color)
   char bob[100];
   if(color==0)i=0;
   else i=3*(color-19);
- 
+
    sprintf(bob," %.3f %.3f %.3f setrgbcolor", pscolor[i],pscolor[i+1],pscolor[i+2]);
   ps_write(bob);
 }
@@ -226,7 +223,7 @@ void ps_end()
  ps_write_pars(psfile);
  fclose(psfile);
  PltFmtFlag=0;
- if(Xup)init_x11(); 
+ if(Xup)init_x11();
 }
 
 void ps_bead(x,y)
@@ -238,8 +235,8 @@ int x,y;
 void ps_frect(x,y,w,h)
      int x,y,w,h;
 {
-	
-	fprintf(psfile," newpath %d %d M %d %d R %d %d R %d %d R closepath fill\n",x,y,0,-h,w,0,0,h);	
+
+	fprintf(psfile," newpath %d %d M %d %d R %d %d R %d %d R closepath fill\n",x,y,0,-h,w,0,0,h);
 }
 
 void ps_last_pt_off()
@@ -277,7 +274,7 @@ int xp1,yp1,xp2,yp2;
  LastPSY=yp2;
  chk_ps_lines();
  }
- 
+
 void chk_ps_lines()
 {
   PSLines++;
@@ -286,11 +283,11 @@ void chk_ps_lines()
     PSLines=0;
   }
 }
-   
+
 void ps_linetype(linetype)
 int linetype;
 {
-char *line = "ba0123456789c"; 
+char *line = "ba0123456789c";
 
 	fprintf(psfile,"LT%c\n", line[(linetype%11)+2]);
 	PSLines=0;
@@ -298,16 +295,16 @@ char *line = "ba0123456789c";
         LastPSY=-100000000;
 }
 
- 
- 
+
+
 void ps_point(x,y)
      int x,y;
- 
+
 {
   int number=PointType;
   char *point="PDABCTSKF";
   number %= POINT_TYPES;
-  if(number < -1) 
+  if(number < -1)
     number = -1;
   if(PointRadius>0)number=7;
   fprintf(psfile,"%d %d %c\n",x,y,point[number+1]);
@@ -324,7 +321,7 @@ char *str;
 
 void ps_fnt(int cf,int scale)
 {
-  if(cf==0) 
+  if(cf==0)
     fprintf(psfile,"/%s findfont %d scalefont setfont \n",PS_FONT,scale);
   else
     fprintf(psfile,"%d Symfnt\n",scale);
@@ -372,7 +369,7 @@ void special_put_text_ps(x,y,str,size)
   int cy=0;
   char tmp[256],c;
   int sub,sup,pssz;
-  static int sz[]={8,10,14,18,24};    
+  static int sz[]={8,10,14,18,24};
   /*cs=size; Not used anywhere*/
   /* plintf(" %s size %d \n",str,size); */
   fprintf(psfile, "0 0 0 setrgbcolor \n");
@@ -384,7 +381,7 @@ void special_put_text_ps(x,y,str,size)
   ps_fnt(cf,pssz);
   while(i<n){
     c=str[i];
-    if(c=='\\'){      
+    if(c=='\\'){
       i++;
       c=str[i];
       tmp[j]=0; /* end the current buffer */
@@ -393,7 +390,7 @@ void special_put_text_ps(x,y,str,size)
 	type=0;
       }
 
-      
+
       j=0;
       if(c=='0'){
         cf=0;
@@ -425,7 +422,7 @@ void special_put_text_ps(x,y,str,size)
 	cf=1;
 	ps_fnt(cf,pssz);
       }
-    
+
       i++;
     }
     else {
@@ -437,12 +434,12 @@ void special_put_text_ps(x,y,str,size)
   tmp[j]=0;
   if(strlen(tmp)>0)
     ps_show(tmp,type);
-      
+
 
 }
-    
-      
-      
+
+
+
 void fancy_ps_text(x,y,str,size,font)
      int x,y,font,size;
      char *str;
@@ -452,7 +449,7 @@ void fancy_ps_text(x,y,str,size,font)
   char ch;
     fprintf(psfile, "0 0 0 setrgbcolor \n");
   switch(font){
- 
+
    case 1:
      fprintf(psfile,"/Symbol findfont %d ",sz[size]*PS_SC);
      fprintf(psfile,"scalefont setfont\n");
@@ -507,20 +504,3 @@ char *str;
    fprintf(psfile,"grestore\n");
  PSLines=0;
 }
-
-
-
- 
- 
-
-
-
-
-
-
-
-
-
-
-
-

@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include "flags.h"
 #include "ggets.h"
+#include "my_rhs.h"
 #include "storage.h"
 
 static long      nfcn, nstep, naccpt, nrejct;

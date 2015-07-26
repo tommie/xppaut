@@ -344,8 +344,6 @@ nfcnRead    Number of function calls.
 
 */
 
-
-#include "my_rhs.h"
 #include <stdio.h>
 
 typedef void (*FcnEqDiff)(unsigned n, double x, double *y, double *f);
@@ -449,18 +447,3 @@ extern long naccptRead (void);
 extern long nrejctRead (void);
 extern double hRead (void);
 extern double xRead (void);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

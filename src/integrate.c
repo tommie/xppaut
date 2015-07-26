@@ -50,6 +50,7 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "markov.h"
 #include "menudrive.h"
 #include "my_ps.h"
+#include "my_rhs.h"
 #include "my_svg.h"
 #include "mykeydef.h"
 #include "numerics.h"

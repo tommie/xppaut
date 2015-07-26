@@ -25,13 +25,6 @@
 #define xds(a) { XDrawString(display,w,small_gc,5,CURY_OFFs,a,strlen(a));\
 		return;}
 
-#define MYMASK  (ButtonPressMask 	|       \
-                ButtonReleaseMask |\
-		KeyPressMask		|\
-		ExposureMask		|\
-		StructureNotifyMask	|\
-		LeaveWindowMask		|\
-		EnterWindowMask)
 
 typedef struct {
   Window up,down,pgup,pgdn,kill,home,end,base,text,src,action;

@@ -59,7 +59,6 @@
 #define FIRSTCOLOR 30
 #define FIX_MIN_SIZE 2
 
-double atof();
 int aplot_range;
 int aplot_range_count=0;
 char aplot_range_stem[256]="rangearray";
@@ -69,7 +68,6 @@ int plot3d_auto_redraw=0;
 FILE *ap_fp;
 GC aplot_gc;
 int first_aplot_press;
-int do_range(double *, int);
 
 #define MYMASK  (ButtonPressMask 	|\
                 ButtonReleaseMask |\

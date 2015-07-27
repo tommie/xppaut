@@ -3,12 +3,12 @@
 #include <math.h>
 #include <stdio.h>
 
-
+/* --- Macros --- */
 #define GREYSCALE -1
 #define REDBLUE  0
 #define ROYGBIV  1
 
-
+/* --- Types --- */
 typedef struct {
   float xmin,xmax,ymin,ymax;
   float xscale,yscale,xoff,yoff;
@@ -17,9 +17,24 @@ typedef struct {
   int linewid;
   } DEVSCALE;
 
-FILE *my_plot_file;
+/* --- Forward Declarations --- */
+static void ps_replot(float **z, int col0, int row0, int nskip, int ncskip, int maxrow, int maxcol, int nacross, int ndown, double zmin, double zmax, int type);
+static void ps_begin(double xlo, double ylo, double xhi, double yhi, double sx, double sy);
+static void ps_convert(double x, double y, float *xs, float *ys);
+static void ps_col_scale(double y0, double x0, double dy, double dx, int n, double zlo, double zhi, int type, double mx);
+static void ps_boxit(double tlo, double thi, double jlo, double jhi, double zlo, double zhi, char *sx, char *sy, char *sb, int type);
+static void ps_close(void);
+static void ps_setline(double fill, int thick);
+static void ps_text2(char *str, double xr, double yr, int icent);
+static void ps_set_text(double angle, double slant, double x_size, double y_size);
+static void ps_rect(double x, double y, double wid, double len);
+static void ps_bar(double x, double y, double wid, double len, double fill, int flag);
+static void ps_rgb_bar(double x, double y, double wid, double len, double fill, int flag, int rgb);
+static void ps_hsb_bar(double x, double y, double wid, double len, double fill, int flag);
 
-DEVSCALE ps_scale;
+/* --- Data --- */
+static FILE *my_plot_file;
+static DEVSCALE ps_scale;
 
 int array_print(filename,xtitle,ytitle,bottom,nacross,ndown,col0,row0,nskip,
  ncskip, maxrow,maxcol,data,zmin,zmax,tlo,thi,type)
@@ -209,20 +224,6 @@ void ps_setline(fill,thick)
   ps_scale.linecol=fill;
 }
 
-void ps_put_char( ch,x,y)
-char ch;
-float *x, *y;
- {
-  float xp=*x,yp=*y;
-  char str[4];
-  str[0]=ch;
-  str[1]='\0';
-  ps_text2(str,xp,yp,0);
- }
-
-
-
-
 void ps_text2(str,xr,yr,icent)
      char *str;
      float xr,yr;
@@ -252,16 +253,6 @@ void ps_text2(str,xr,yr,icent)
      fprintf(my_plot_file,"(%s) dup stringwidth pop  0 rmoveto show \n grestore\n", str);
      break;
    }
-}
-
-void ps_line2(x1r,y1r,x2r,y2r)
-     float x1r,y1r,x2r,y2r;
-{
-  float x1,y1,x2,y2;
-  ps_convert(x1r,y1r,&x1,&y1);
-  ps_convert(x2r,y2r,&x2,&y2);
-  fprintf(my_plot_file,"%d %d m \n %d %d l S\n",
-	  (int)x1,(int)y1,(int)x2,(int)y2);
 }
 
 void ps_set_text(angle,slant,x_size,y_size)

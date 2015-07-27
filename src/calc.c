@@ -26,6 +26,15 @@
 		  ExposureMask    |\
                   StructureNotifyMask)
 
+/* --- Forward Declarations --- */
+static double calculate(char *expr, int *ok);
+static void draw_calc(Window w);
+static int has_eq(char *z, char *w, int *where);
+static void ini_calc_string(char *name, char *value, int *pos, int *col);
+static void make_calc(double z);
+static void quit_calc(void);
+
+/* --- Data --- */
 struct {
   Window base,quit,answer;
   double last_val;
@@ -35,8 +44,7 @@ struct {
 
 
 
-void draw_calc(w)
-Window w;
+static void draw_calc(Window w)
 {
  char bob[100];
  if(w==my_calc.answer){
@@ -51,9 +59,7 @@ Window w;
  }
 }
 
-void make_calc(z)
-double z;
-
+static void make_calc(double z)
 {
  int width,height;
  static char *name[]={"Answer"};
@@ -90,7 +96,7 @@ double z;
  XFlush(display);
 }
 
-void quit_calc()
+static void quit_calc(void)
 {
  my_calc.use=0;
  XSelectInput(display,my_calc.quit,SIMPMASK);
@@ -100,9 +106,7 @@ void quit_calc()
  clr_command();
 }
 
-void ini_calc_string(name,value,pos,col)
-int *pos,*col;
-char *name,*value;
+static void ini_calc_string(char *name, char *value, int *pos, int *col)
 {
  strcpy(value," ");
  strcpy(name,"Formula:");
@@ -112,7 +116,7 @@ char *name,*value;
  display_command(name,value,2,0);
 }
 
-void q_calc()
+void q_calc(void)
 {
  char value[80],name[10];
  double z=0.0;
@@ -145,9 +149,7 @@ void q_calc()
  }
 
 
-int do_calc(temp,z)
-char *temp;
-double *z;
+int do_calc(char *temp, double *z)
  {
  char val[15];
  int ok;
@@ -192,9 +194,7 @@ double *z;
 }
 
 
-int has_eq(z, w, where)
- int *where;
- char *z,*w;
+int has_eq(char *z, char *w, int *where)
  {
   int i;
   for(i=0;i<strlen(z);i++)
@@ -207,9 +207,7 @@ int has_eq(z, w, where)
  }
 
 
- double calculate(expr,ok)
- char *expr;
- int *ok;
+double calculate(char *expr, int *ok)
  {
   int com[400],i;
   double z=0.0;

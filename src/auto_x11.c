@@ -36,20 +36,37 @@
 
 #define MYMASK  (ButtonPressMask|KeyPressMask|ExposureMask|StructureNotifyMask	|LeaveWindowMask|EnterWindowMask| ButtonMotionMask)
 
+/* --- Types --- */
+typedef struct  {
+  Window canvas, axes,numerics,grab,next,run,clear,redraw,base,per;
+  Window info,param,file,abort,stab,hint,kill;
+} AUTOWIN;
 
+static void a_msg(int i, int v);
+static void auto_kill(void);
+static void clear_msg(void);
+static void find_point(int ibr,int pt);
+static Window lil_button(Window root, int x, int y, char *name);
+static void MarkAuto(int x,int y);
+static int query_special(char* title,char *nsymb);
+static void RedrawMark();
+static void XORCross(int x, int y);
+
+/* --- Data --- */
 int AutoRedrawFlag=1;
-int STD_HGT_var =0;
-int STD_WID_var =0;
-int Auto_extra_wid,Auto_extra_hgt;
-int Auto_x0,Auto_y0;
 /* stuff for marking a branch  */
 int mark_flag=0;
 int mark_ibrs,mark_ibre;
 int mark_ipts,mark_ipte;
 int mark_ixs,mark_ixe,mark_iys,mark_iye;
 
-AUTOWIN AutoW;
-DIAGRAM *CUR_DIAGRAM;
+static int STD_HGT_var =0;
+static int STD_WID_var =0;
+static int Auto_extra_wid,Auto_extra_hgt;
+static int Auto_x0,Auto_y0;
+
+static AUTOWIN AutoW;
+static DIAGRAM *CUR_DIAGRAM;
 
 
 /* ****************************************************

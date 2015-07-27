@@ -25,6 +25,7 @@
 #include "odesol2.h"
 #include "parserslow.h"
 #include "pop_list.h"
+#include "storage.h"
 
 /* --- Forward Declarations --- */
 static int create_transpose(void);

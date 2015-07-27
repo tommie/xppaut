@@ -32,7 +32,7 @@
 #include "pp_shoot.h"
 #include "rubber.h"
 #include "run_auto.h"
-
+#include "storage.h"
 
 #define UPT 6
 #define SPT 7

@@ -24,6 +24,7 @@
 #include "mykeydef.h"
 #include "parserslow.h"
 #include "pop_list.h"
+#include "storage.h"
 
 
 #define NOCHANGE 2

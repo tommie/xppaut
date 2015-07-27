@@ -16,6 +16,7 @@
 #include "load_eqn.h"
 #include "my_rhs.h"
 #include "parserslow.h"
+#include "storage.h"
 
 #define IA 16807
 #define IM 2147483647

@@ -13,6 +13,7 @@
 #include "markov.h"
 #include "my_ps.h"
 #include "my_svg.h"
+#include "storage.h"
 
 #define DALLOC(a) (double *)malloc((a)*sizeof(double))
 

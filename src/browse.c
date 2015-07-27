@@ -48,31 +48,55 @@
 		  ExposureMask    |\
                   StructureNotifyMask)
 
+/* --- Forward Declarations --- */
+static int add_stor_col(char *name, char *formula, BROWSER *b);
+static Window br_button_data(Window root, int row, int col, char *name, int iflag);
+static void browse_but_on(BROWSER *b, int i, Window w, int yn);
+static void browse_button(XEvent ev, BROWSER *b);
+static void browse_keypress(XEvent ev, int *used, BROWSER *b);
+static int check_for_stor(float **data);
+static void chk_seq(char *f, int *seq, double *a1, double *a2);
+static void data_add_col(BROWSER *b);
+static void data_del_col(BROWSER *b);
+static void data_down(BROWSER *b);
+static void data_end(BROWSER *b);
+static void data_find(BROWSER *b);
+static void data_first(BROWSER *b);
+static void data_get(BROWSER *b);
+static void data_home(BROWSER *b);
+static void data_last(BROWSER *b);
+static void data_left(BROWSER *b);
+static void data_pgdn(BROWSER *b);
+static void data_pgup(BROWSER *b);
+static void data_read(BROWSER *b);
+static void data_replace(BROWSER *b);
+static void data_restore(BROWSER *b);
+static void data_right(BROWSER *b);
+static void data_table(BROWSER *b);
+static void data_unreplace(BROWSER *b);
+static void data_up(BROWSER *b);
+static void data_write(BROWSER *b);
+static void del_stor_col(char *var, BROWSER *b);
+static void display_browser(Window w, BROWSER b);
+static void draw_data(BROWSER b);
+static void enter_browser(XEvent ev, BROWSER *b, int yn);
+static void expose_browser(XEvent ev, BROWSER b);
+static void find_value(int col, double val, int *row, BROWSER b);
+static void kill_browser(BROWSER *b);
+static void make_browser(BROWSER *b, char *wname, char *iname, int row, int col);
+static void make_d_table(double xlo, double xhi, int col, char *filename, BROWSER b);
+static void redraw_browser(BROWSER b);
+static void replace_column(char *var, char *form, float **dat, int n);
+static void resize_browser(Window win, BROWSER *b);
+static void unreplace_column(void);
+static void write_browser_data(FILE *fp, BROWSER *b);
 
-
+/* --- Data --- */
 /*  The one and only primitive data browser   */
-
-/*typedef struct {
-		Window base,upper;
-		Window find,up,down,pgup,pgdn,home,end,left,right;
-		Window first,last,restore,write,get,close;
-		Window load,repl,unrepl,table,addcol,delcol;
-                Window main;
-                Window label[BMAXCOL];
-                Window time;
-		Window hint;
-		char hinttxt[256];
-		int dataflag,xflag;
-		int col0,row0,ncol,nrow;
-		int maxrow,maxcol;
-                float **data;
-		int istart,iend;
-                } BROWSER;
-*/
 BROWSER my_browser;
 
-float *old_rep;
-int REPLACE=0,R_COL=0;
+static float *old_rep;
+static int REPLACE=0,R_COL=0;
 
 float **get_browser_data()
 {
@@ -342,7 +366,7 @@ int n;
  int intflag=0;
  int dif_var=-1;
  int seq=0;
- double a1,a2,da=0.0;
+ double a1=0,a2,da=0.0;
  float old=0.0,dt,derv=0.0;
  float sum=0.0;
  if(n<2)return;
@@ -641,15 +665,6 @@ void  redraw_browser(b)
     }
 
   }
-}
-
-
-void  new_browse_dat(new_dat,dat_len)
- int dat_len;
- float **new_dat;
-{
- my_browser.data=new_dat;
- refresh_browser(dat_len);
 }
 
 
@@ -1519,22 +1534,3 @@ void  data_restore(b)
   restore(b->istart,b->iend);
 
   }
-
-
-
-void get_col_list(s,cl,n)
-     int *n,*cl;
-     char *s;
-{
-  int len,i;
-
-  char sp[256];
-  convert(s,sp);
-  len=strlen(sp);
-  if(len==0){
-    for(i=0;i<*n;i++)
-      cl[i]=i;
-    return;
-  }
-
-}

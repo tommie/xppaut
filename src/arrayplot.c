@@ -53,16 +53,48 @@
 #include "scrngif.h"
 #include "bitmap/array.bitmap"
 
+/* --- Types --- */
+typedef struct {
+  Window base,wclose,wedit,wprint,wstyle,wscale,wmax,wmin,wplot,wredraw,wtime,wgif,wrange,wfit;
+  int index0,indexn,alive,nacross,ndown,plotdef;
+  int height,width,ploth,plotw;
+  int nstart,nskip,ncskip;
+  char name[20];
+  double tstart,tend,zmin,zmax,dt;
+  char xtitle[256],ytitle[256],filename[256],bottom[256];
+  int type;
+} APLOT;
 
+/* --- Forward Declarations --- */
+static void apbutton(Window w);
+static void create_arrayplot(APLOT *ap, char *wname, char *iname);
+static void destroy_aplot(void);
+static void display_aplot(Window w, APLOT ap);
+static void draw_aplot(APLOT ap);
+static void draw_scale(APLOT ap);
+static int editaplot(APLOT *ap);
+static void get_root(char *s, char *sroot, int *num);
+static void gif_aplot(void);
+static void gif_aplot_all(char *,int);
+static void init_arrayplot(APLOT *ap);
+static void print_aplot(APLOT *ap);
+static void redraw_aplot(APLOT ap);
+static void reset_aplot_axes(APLOT ap);
+static void scale_aplot(APLOT *ap, double *zmax, double *zmin);
+static void set_acolor(int);
+static void tag_aplot(char *);
+static void wborder(Window w, int i, APLOT ap);
+
+/* --- Data --- */
 int aplot_range;
-int aplot_range_count=0;
-char aplot_range_stem[256]="rangearray";
-int aplot_still=1,aplot_tag=0;
-APLOT aplot;
-int plot3d_auto_redraw=0;
-FILE *ap_fp;
-GC aplot_gc;
-int first_aplot_press;
+static int aplot_range_count=0;
+static char aplot_range_stem[256]="rangearray";
+static int aplot_still=1,aplot_tag=0;
+static APLOT aplot;
+static int plot3d_auto_redraw=0;
+static FILE *ap_fp;
+static GC aplot_gc;
+static int first_aplot_press;
 
 
 void draw_one_array_plot(char *bob)
@@ -593,18 +625,6 @@ void gif_aplot()
   sprintf(filename,"%s.gif",this_file);
   if(!file_selector("GIF plot",filename,"*.gif"))return;
   gif_aplot_all(filename,1);
-}
-
-
-void grab_aplot_screen(ap)
-     APLOT ap;
-{
-
- Window temp=draw_win;
- draw_win=ap.wplot;
- if(film_clip()==0)
-   err_msg("Out of film!");
- draw_win=temp;
 }
 
 void redraw_aplot(ap)

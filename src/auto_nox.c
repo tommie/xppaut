@@ -62,14 +62,81 @@
 
 #define DISCRETE 0
 
+/* --- Types --- */
+typedef struct {
+  int plot,var,icp1,icp2,icp3,icp4,icp5;
+  double xmin,ymin,xmax,ymax;
+} AUTOAX;
+
+/* --- Forward Declarations --- */
+static void appendf(char *old, char *new);
+static void auto_2p_branch(int ips);
+static void auto_2p_fixper(void);
+static void auto_2p_hopf(void);
+static void auto_2p_limit(int ips);
+static void auto_branch_choice(int ibr, int ips);
+static void auto_default(void);
+static void auto_err(char *s);
+static void auto_extend_bvp(void);
+static void auto_extend_ss(void);
+static void auto_fit(void);
+static void auto_line(double x1i, double y1i, double x2i, double y2i);
+static int auto_name_to_index(char *s);
+static void auto_new_discrete(void);
+static void auto_new_per(void);
+static void auto_new_ss(void);
+static int auto_par_to_name(int index, char *s);
+static void auto_period_double(void);
+static void auto_start_at_bvp(void);
+static void auto_start_at_per(void);
+static void auto_start_choice(void);
+static void auto_start_diff_ss(void);
+static void auto_switch_bvp(void);
+static void auto_switch_per(void);
+static void auto_switch_ss(void);
+static void auto_torus(void);
+static void auto_twopar_double(void);
+static void auto_zoom_in(int i1, int j1, int i2, int j2);
+static void auto_zoom_out(int i1, int j1, int i2, int j2);
+static int chk_auto_bnds(int ix, int iy);
+static void close_auto(int flag);
+static void colset(int type);
+static void colset2(int flag2);
+static void copyf(char *old, char *new);
+static void deletef(char *old);
+static void do_auto(int iold, int isave, int itp);
+static void get_a_row(double *u, double *t, int n, FILE *fp);
+static void get_auto_str(char *xlabel, char *ylabel);
+static void hopf_choice(void);
+static void info_header(int flag2, int icp1, int icp2);
+static void keep_last_plot(int flag);
+static void load_auto(void);
+static void load_auto_graph(FILE *fp);
+static void load_auto_numerics(FILE *fp);
+static void load_auto_orbit(void);
+static void load_last_plot(int flag);
+static void make_q_file(FILE *fp);
+static int move_to_label(int mylab, int *nrow, int *ndim, FILE *fp);
+static int noinfo(char *s);
+static void open_auto(int flag);
+static void per_doub_choice(void);
+static void periodic_choice(void);
+static void pscolset2(int flag2);
+static void renamef(char *old, char *new);
+static int reset_auto(void);
+static void save_auto(void);
+static void save_auto_graph(FILE *fp);
+static void save_auto_numerics(FILE *fp);
+static void save_q_file(FILE *fp);
+static void torus_choice(void);
+
+/* --- Data --- */
 int SEc=20;
 int UEc=0;
 int SPc=26;
 int UPc=28;
 int HBc=0;
 int LPc=20;
-
-
 
 int auto_ntst=15,auto_nmx=200,auto_npr=50,auto_ncol=4;
 double auto_ds=.02,  auto_dsmax=.5,  auto_dsmin=.001;
@@ -78,15 +145,9 @@ double  auto_xmax=2.5,  auto_xmin=-.5,auto_ymax=3.0,auto_ymin=-3.0;
 double auto_epsl=1e-4,auto_epsu=1e-4,auto_epss=1e-4;
 int auto_var=0;
 
-int is_3_there=0;
-
 int load_all_labeled_orbits=1;
 
-
 ROTCHK blrtn;
-
-
-
 
 GRABPT grabpt;
 
@@ -103,20 +164,21 @@ char fort3[200];
 char fort7[200];
 char fort8[200];
 char fort9[200];
-char TMPSWAP[200];
 
 unsigned int DONT_XORCross=0;
-
-
-double XfromAuto,YfromAuto;
-int FromAutoFlag=0;
 
 BIFUR Auto;
 
 int NewPeriodFlag;
 
-AUTOAX Old1p;
-AUTOAX Old2p;
+static int is_3_there=0;
+static char TMPSWAP[200];
+
+static double XfromAuto,YfromAuto;
+static int FromAutoFlag=0;
+
+static AUTOAX Old1p;
+static AUTOAX Old2p;
 
 /* color plot stuff */
 void colset(int type )
@@ -820,18 +882,6 @@ void auto_xy_plot(x,y1,y2,par1,par2,per,uhigh,ulow,ubar,a)
     break;
   }
 }
-
-int plot_point(flag2,icp1,icp2)
-     int flag2,icp1,icp2;
-{
-  int j=1;
-  if(icp1!=Auto.icp1)j=0;
-  if(flag2>0&&icp2!=Auto.icp2)j=0;
-  return(j);
-}
-
-
-
 
 void add_ps_point(par,per,uhigh,ulow,ubar,a,type,flg,lab,npar,icp1,icp2,flag2,
 	  evr,evi)

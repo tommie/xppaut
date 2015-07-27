@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "aniparse.h"
 #include "browse.h"
 #include "comline.h"
 #include "dae_fun.h"

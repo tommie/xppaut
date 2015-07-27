@@ -1,7 +1,22 @@
 #include "strutil.h"
 
 #include <ctype.h>
+#include <string.h>
 
+void de_space(char *s)
+{
+  int n = strlen(s);
+  int i, j = 0;
+  char ch;
+  for (i = 0; i < n; i++) {
+    ch = s[i];
+    if (!isspace(ch)) {
+      s[j] = ch;
+      j++;
+    }
+  }
+  s[j] = 0;
+}
 
 void strupr(char *s)
 {

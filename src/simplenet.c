@@ -88,7 +88,6 @@ if type=0 mx(0)=maximum mx(1)=index,mx(2)=minimum mx(3)=index
 #include <stdlib.h>
 #include <string.h>
 
-#include "aniparse.h"
 #include "fftn.h"
 #include "form_ode.h"
 #include "ggets.h"

@@ -61,6 +61,7 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "pp_shoot.h"
 #include "stiff.h"
 #include "storage.h"
+#include "strutil.h"
 #include "tabular.h"
 #include "volterra2.h"
 

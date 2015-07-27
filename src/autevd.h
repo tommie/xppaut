@@ -7,11 +7,6 @@
 /* --- Types --- */
 typedef doublecomplex dcomplex;
 
-typedef struct {
-  int pt,br;
-  double evr[NAUTO],evi[NAUTO];
-} EIGVAL;
-
 /* --- Data --- */
 extern int DiagFlag;
 

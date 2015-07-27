@@ -15,16 +15,15 @@
 #define SEQ 1
 #define UEQ 2
 
-
-int DiagFlag=0;
-/*typedef struct {double r,i;} dcomplex;
-
+/* --- Types --- */
 typedef struct {
   int pt,br;
   double evr[NAUTO],evi[NAUTO];
 } EIGVAL;
-*/
-EIGVAL my_ev;
+
+/* --- Data --- */
+int DiagFlag=0;
+static EIGVAL my_ev;
 
 double dreal_(z)
 dcomplex *z;

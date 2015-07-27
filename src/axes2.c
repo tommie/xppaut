@@ -18,6 +18,19 @@
 #define SIGNIF (0.01)		/* less than one hundredth of a tic mark */
 #define CheckZero(x,tic) (fabs(x) < ((tic) * SIGNIF) ? 0.0 : (x))
 
+/* --- Forward Declarations --- */
+static double dbl_raise(double x, int y);
+static void draw_unit_cube(void);
+static void draw_xtics(char *s2, double start, double incr, double end);
+static void draw_ytics(char *s1, double start, double incr, double end);
+static void find_max_min_tic(double *tmin, double *tmax, double tic);
+static void Frame_3d(void);
+static void get_title_str(char *s1, char *s2, char *s3);
+static double make_tics(double tmin, double tmax);
+static void make_title(char *str);
+static void re_title(void);
+
+/* --- Data --- */
 int DOING_AXES=0;
 int DOING_BOX_AXES=0;
 

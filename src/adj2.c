@@ -26,14 +26,7 @@
 #include "parserslow.h"
 #include "pop_list.h"
 
-
-float **my_adj;
-int adj_len;
-float **my_h;
-float *my_liap[2];
-
-
-
+/* --- Types --- */
 struct {
   int here,col0,ncol,colskip;
   int row0,nrow,rowskip;
@@ -41,14 +34,29 @@ struct {
   char firstcol[11];
 } my_trans;
 
-int TRANPOSE_HERE=0;
-int LIAP_FLAG=0;
-int LIAP_N,LIAP_I;
-double ADJ_EPS=1.e-8,ADJ_ERR=1.e-3;
-int ADJ_MAXIT=20,ADJ_HERE=0,H_HERE=0,h_len,HODD_EV=0;
+/* --- Forward Declarations --- */
+static int create_transpose(void);
+static void adj_back(void);
+static void h_back(void);
+static void adjoint_parameters(void);
+static int make_h(float **orb, float **adj, float **h, int nt, double dt, int node,int silent);
+static int adjoint(float **orbit, float **adjnt, int nt, double dt, double eps, double minerr, int maxit, int node);
+static int step_eul(double **jac, int k, int k2, double *yold, double *work, int node, double dt);
+static void norm_vec(double *v, double *mu, int n);
+static int hrw_liapunov(double *liap, int batch, double eps);
+
+/* --- Data --- */
 int AdjRange=0;
-int *coup_fun[MAXODE];
-char *coup_string[MAXODE];
+static float **my_adj;
+static int adj_len;
+static float **my_h;
+static float *my_liap[2];
+static int LIAP_FLAG=0;
+static int LIAP_N,LIAP_I;
+static double ADJ_EPS=1.e-8,ADJ_ERR=1.e-3;
+static int ADJ_MAXIT=20,ADJ_HERE=0,H_HERE=0,h_len,HODD_EV=0;
+static int *coup_fun[MAXODE];
+static char *coup_string[MAXODE];
 
 void init_trans()
 {
@@ -124,7 +132,7 @@ int do_transpose()
 
 }
 
-int create_transpose()
+static int create_transpose()
 {
   int i,j;
   int inrow,incol;
@@ -177,7 +185,7 @@ void data_back()
  refresh_browser(storind);
 }
 
-void adj_back()
+static void adj_back()
 {
  if(ADJ_HERE){
    set_browser_data(my_adj,1);
@@ -188,7 +196,7 @@ void adj_back()
  }
 }
 
-void h_back()
+static void h_back()
 {
  if(H_HERE){
    set_browser_data(my_h,1);
@@ -246,7 +254,7 @@ static char key[]="nmaohpr";
 }
 
 
-void adjoint_parameters()
+static void adjoint_parameters()
 {
   new_int("Maximum iterates :",&ADJ_MAXIT);
   new_float("Adjoint error tolerance :",&ADJ_ERR);
@@ -309,7 +317,7 @@ void dump_h_stuff(fp,f)
 }
 
 
-int make_h(orb,adj,h,nt,dt,node,silent)
+static int make_h(orb,adj,h,nt,dt,node,silent)
 float **orb,**adj,**h;
 double dt;
 int node,nt,silent;
@@ -397,31 +405,6 @@ void new_adjoint()
  }
  ping();
 }
-/* this computes the periodic orbit and stores it in
-   the usual place  given initial data and period */
-
-
-
-void test_test()
-{
-  double x[2];
-  x[0]=.35249;
-  x[1]=.2536;
-  compute_one_orbit(x,14.6);
-
-}
-
-void compute_one_orbit(double *ic,double per)
-{
-  double oldtotal=TEND;
-  TEND=per;
-  /*   plintf(" %g %g \n",ic[0],ic[1]); */
-  run_from_x(ic);
-  new_adjoint();
-  TEND=oldtotal;
-}
-
-
 
 
 /*    ADJOINT ROUTINE
@@ -444,7 +427,7 @@ void compute_one_orbit(double *ic,double per)
     t in the first column.
   */
 
-int adjoint(orbit,adjnt,nt,dt,eps,minerr,maxit,node)
+static int adjoint(orbit,adjnt,nt,dt,eps,minerr,maxit,node)
  float **orbit,**adjnt;
  double dt,eps,minerr;
  int nt,node,maxit;
@@ -585,62 +568,7 @@ int adjoint(orbit,adjnt,nt,dt,eps,minerr,maxit,node)
    return(rval);
  }
 
-
-
-void eval_rhs(jac,k1,k2,t,y,yp,node)
-     double t,**jac,*y,*yp;
-     int node,k1,k2;
-{
-  int i;
-  int j;
-  for(j=0;j<node;j++){
-    yp[j]=0.0;
-    for(i=0;i<node;i++)
- yp[j]=yp[j]+(jac[i+j*node][k1]*(1.0-t)+jac[i+j*node][k2]*t)*y[i];
-  }
-}
-
-int rk_interp(jac,k1,k2,y,work,neq,del,nstep)
-double *y,del,*work,**jac;
-int neq,k1,k2,nstep;
-{
- int i,j;
- double *yval[3],dt=del/nstep;
- double t=0.0,t1,t2;
- yval[0]=work;
- yval[1]=work+neq;
- yval[2]=work+neq+neq;
- for(j=0;j<nstep;j++)
- {
-  eval_rhs(jac,k1,k2,t/del,y,yval[1],neq);
-  for(i=0;i<neq;i++)
-  {
-   yval[0][i]=y[i]+dt*yval[1][i]/6.00;
-   yval[2][i]=y[i]+dt*yval[1][i]*0.5;
-  }
-  t1=t+.5*dt;
-  eval_rhs(jac,k1,k2,t1/del,yval[2],yval[1],neq);
-  for(i=0;i<neq;i++)
-  {
-   yval[0][i]=yval[0][i]+dt*yval[1][i]/3.00;
-   yval[2][i]=y[i]+.5*dt*yval[1][i];
-  }
-  eval_rhs(jac,k1,k2,t1/del,yval[2],yval[1],neq);
-  for(i=0;i<neq;i++)
-  {
-   yval[0][i]=yval[0][i]+dt*yval[1][i]/3.000;
-   yval[2][i]=y[i]+dt*yval[1][i];
-  }
-  t2=t+dt;
-  eval_rhs(jac,k1,k2,t2/del,yval[2],yval[1],neq);
-  for(i=0;i<neq;i++)y[i]=yval[0][i]+dt*yval[1][i]/6.00;
-  t=t2;
- }
-return(1);
-}
-
-
-int step_eul(jac,k,k2,yold,work,node,dt)
+static int step_eul(jac,k,k2,yold,work,node,dt)
 double *work,*yold,**jac,dt;
 int k,k2,node;
 {
@@ -727,7 +655,7 @@ void do_this_liaprun(int i,double p)
 }
 
 
-void norm_vec(v,mu,n) /* returns the length of the vector and the unit vector */
+static void norm_vec(v,mu,n) /* returns the length of the vector and the unit vector */
      double *v,*mu;
      int n;
 {
@@ -744,7 +672,7 @@ void norm_vec(v,mu,n) /* returns the length of the vector and the unit vector */
 }
 
 
-int hrw_liapunov(double *liap,int batch,double eps)
+static int hrw_liapunov(double *liap,int batch,double eps)
 {
  double y[MAXODE];
  double yp[MAXODE],nrm,dy[MAXODE];

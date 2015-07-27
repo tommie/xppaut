@@ -238,6 +238,7 @@ extern int POISGN;
 extern int POIVAR;
 extern int RunImmediately;
 extern int SHOOT;
+extern int silent;
 extern int SOS;
 extern int START_LINE_TYPE;
 extern int STORFLAG;

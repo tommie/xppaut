@@ -1,14 +1,10 @@
-#ifndef _cv2_h_
-#define _cv2_h_
+#ifndef XPPAUT_CV2_H
+#define XPPAUT_CV2_H
 
-
-/* cv2.c */
-void start_cv(double *y, double t, int n, double tout, double *atol, double *rtol);
-void end_cv(void);
-void cvode_err_msg(int kflag);
-int cvode(int *command, double *y, double *t, int n, double tout, int *kflag, double *atol, double *rtol);
+/* --- Functions --- */
 int ccvode(int *command, double *y, double *t, int n, double tout, int *kflag, double *atol, double *rtol);
+int cvode(int *command, double *y, double *t, int n, double tout, int *kflag, double *atol, double *rtol);
+void cvode_err_msg(int kflag);
+void end_cv(void);
 
-
-#endif
-
+#endif /* XPPAUT_CV2_H */

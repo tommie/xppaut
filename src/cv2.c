@@ -25,11 +25,15 @@
 #include "my_rhs.h"
 #include "numerics.h"
 
-double cv_ropt[OPT_SIZE];
-  int cv_iopt[OPT_SIZE];
+/* --- Forward Declarations --- */
 static void cvf();
+
+/* --- Data --- */
+double cv_ropt[OPT_SIZE];
+int cv_iopt[OPT_SIZE];
 void *cvode_mem;
 N_Vector ycv;
+
 void start_cv(y,t,n,tout,atol,rtol)
      double *y,t,tout,*atol,*rtol;
      int n;

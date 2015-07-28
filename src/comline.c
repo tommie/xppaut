@@ -55,23 +55,23 @@
 #define DFDRAW 39
 #define NCDRAW 40
 
-char setfilename[XPP_MAX_NAME];
-char parfilename[XPP_MAX_NAME];
-char icfilename[XPP_MAX_NAME];
+/* --- Types --- */
+typedef struct {
+  char name[10];
+  int len;
+} VOCAB;
+
+/* --- Forward Declarations --- */
+static int is_set_name(SET_NAME *set, char *nam);
+static int parse_it(char *com);
+
+/* --- Data --- */
 char includefilename[MaxIncludeFiles][XPP_MAX_NAME];
 
-
 int NincludedFiles=0;
-int select_intern_sets=0;
 
 int Nintern_2_use=0;
 
-
-SET_NAME *sets2use,*setsNOTuse;
-
-int loadsetfile=0;
-int loadparfile=0;
-int loadicfile=0;
 int loadincludefile=0;
 int querysets=0;
 int querypars=0;
@@ -79,13 +79,19 @@ int queryics=0;
 int dryrun=0;
 int noicon=1;
 int newseed=0;
-typedef struct {
-  char name[10];
-  int len;
 
-} VOCAB;
+static char setfilename[XPP_MAX_NAME];
+static char parfilename[XPP_MAX_NAME];
+static char icfilename[XPP_MAX_NAME];
+static int select_intern_sets=0;
 
-VOCAB my_cmd[NCMD]=
+static SET_NAME *sets2use,*setsNOTuse;
+
+static int loadsetfile=0;
+static int loadparfile=0;
+static int loadicfile=0;
+
+static const VOCAB my_cmd[NCMD]=
 {
   {"-m",3},
   {"-xorfix",7},
@@ -128,10 +134,10 @@ VOCAB my_cmd[NCMD]=
   {"-noout",5},
   {"-dfdraw",7},
   {"-ncdraw",7},
- };
+};
 
 
-int is_set_name(set,nam)
+static int is_set_name(set,nam)
 SET_NAME *set;
 char * nam;
 {
@@ -447,7 +453,7 @@ int if_needed_load_ic()
   return(1);
 }
 
-int parse_it(com)
+static int parse_it(com)
      char *com;
 {
   int j;

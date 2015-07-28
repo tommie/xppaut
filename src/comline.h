@@ -6,7 +6,7 @@
 /* --- Types --- */
 typedef struct {
   char *name;
-  struct SET_NAME * next;
+  struct SET_NAME *next;
 } SET_NAME;
 
 /* --- Data --- */

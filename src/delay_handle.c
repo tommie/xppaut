@@ -10,16 +10,17 @@
 #include "load_eqn.h"
 #include "parserslow.h"
 
+/* --- Data --- */
 double AlphaMax=2,OmegaMax=2;
 
-double *DelayWork;
-int LatestDelay;
-int MaxDelay;
 int DelayFlag=0;
 
 int NDelay,del_stab_flag,WhichDelay,DelayGrid=1000;
 double variable_shift[2][MAXODE];
 double delay_list[MAXDELAY];
+static double *DelayWork;
+static int LatestDelay;
+static int MaxDelay;
 
 
 double delay_stab_eval(delay,var)

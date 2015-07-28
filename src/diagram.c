@@ -15,10 +15,15 @@
 #include "my_svg.h"
 #include "storage.h"
 
+/* --- Macros --- */
 #define DALLOC(a) (double *)malloc((a)*sizeof(double))
 
-int NBifs=0;
+/* --- Forward Declarations --- */
+static void edit_diagram(DIAGRAM *d, int ibr, int ntot, int itp, int lab, int nfpar, double a, double *uhi, double *ulo, double *u0, double *ubar, double *par, double per, int n, int icp1, int icp2, int flag2, double *evr, double *evi, double tp);
+
+/* --- Data --- */
 DIAGRAM *bifd;
+int NBifs=0;
 
 void start_diagram(n)
      int n;
@@ -40,43 +45,6 @@ void start_diagram(n)
   DiagFlag=0;
 }
 
-int find_diagram(irs,n,index,ibr,ntot,itp,nfpar,a,uhi,ulo,u0,par,per,icp1,icp2)
-     int *index,*ibr,*ntot,*itp,*nfpar,*icp1,*icp2,irs,n;
-     double *par,*per,*a;
-     double *uhi,*ulo,*u0;
-{
-  int i,found=0;
-  DIAGRAM *d;
-  d=bifd;
-
-  while(d->next!=NULL){
-    if(d->lab==irs){
-      found=1;
-      break;
-    }
-    d=d->next;
-  }
-  if(found){
-    *ibr=d->ibr;
-    *ntot=d->ntot;
-    *index=d->index;
-    *itp=d->itp;
-    *nfpar=d->nfpar;
-    *a=d->norm;
-    par=d->par;
-    *icp1=d->icp1;
-    *icp2=d->icp2;
-    *per=d->per;
-    for(i=0;i<n;i++){
-      u0[i]=d->u0[i];
-      ulo[i]=d->ulo[i];
-      uhi[i]=d->uhi[i];
-    }
-    return(1);
-  }
-  return(0);
-}
-
 void edit_start(ibr,ntot,itp,lab,nfpar,a,uhi,ulo,u0,ubar,
 par,per,n,icp1,icp2,evr,evi)
      int ibr,ntot,itp,lab,nfpar,n,icp1,icp2;
@@ -88,7 +56,7 @@ par,per,n,icp1,icp2,evr,evi)
 	       par,per,n,icp1,icp2,AutoTwoParam,evr,evi,blrtn.torper);
 }
 
-void edit_diagram(d,ibr,ntot,itp,lab,nfpar,a,uhi,ulo,u0,ubar,
+static void edit_diagram(d,ibr,ntot,itp,lab,nfpar,a,uhi,ulo,u0,ubar,
 	     par,per,n,icp1,icp2,
 	     flag2,evr,evi,tp)
      DIAGRAM *d;

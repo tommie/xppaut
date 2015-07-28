@@ -12,6 +12,21 @@
 
 #define Z(a,b) z[(a)+n*(b)]
 
+/* --- Forward Declarations --- */
+static double c_abs(COMPLEX z);
+static COMPLEX cdif(COMPLEX z, COMPLEX w);
+static COMPLEX cdiv(COMPLEX z, COMPLEX w);
+static COMPLEX cexp2(COMPLEX z);
+static COMPLEX cmlt(COMPLEX z, COMPLEX w);
+static int find_positive_root(double *coef, double *delay, int n, int m, double rad, double err, double eps, double big, int maxit, double *rr);
+static double get_arg(double *delay, double *coef, int m, int n, COMPLEX lambda);
+static void make_z(COMPLEX *z, double *delay, int n, int m, double *coef, COMPLEX lambda);
+static int plot_args(double *coef, double *delay, int n, int m, int npts, double almax, double wmax);
+static void process_root(double real, double im);
+static COMPLEX rtoc(double x, double y);
+static void switch_rows(COMPLEX *z, int i1, int i2, int n);
+static int test_sign(double old, double new);
+
 /* The
  code here replaces the do_sing code if the equation is
    a delay differential equation.
@@ -22,7 +37,7 @@ void do_delay_sing(x,eps,err,big,maxit,n,ierr,stabinfo)
      int *ierr,n,maxit;
      float *stabinfo;
 {
-      double rr[2];
+  double rr[2] = {0, 0};
 
  double colnorm=0,colmax,colsum;
  double *work,old_x[MAXODE],sign;
@@ -122,19 +137,6 @@ if(i==0&&okroot==1&&AlphaMax>0)
  if(okroot==1)*stabinfo=AlphaMax;
 }
 
-
-
-
-
-COMPLEX csum(z,w)
-     COMPLEX z,w;
-{
-  COMPLEX sum;
-  sum.r=z.r+w.r;
-  sum.i=z.i+w.i;
-  return sum;
-}
-
 COMPLEX cdif(z,w)
      COMPLEX z,w;
 {
@@ -195,30 +197,6 @@ COMPLEX rtoc(x,y)
   return sum;
 }
 
-void cprintn(z)
-     COMPLEX z;
-{
-  plintf(" %g + i %g \n",z.r,z.i);
-}
-
-void cprint(z)
-     COMPLEX z;
-{
-printf("(%g,%g) ",z.r,z.i);
-}
-
-void cprintarr(z,n,m)
-     COMPLEX *z;
-     int n,m;
-{
-  int i,j;
-  for(i=0;i<m;i++){
-    for(j=0;j<n;j++)
-      cprint(z[i+m*j]);
-    plintf("\n");
-  }
-}
-
 double c_abs(z)
      COMPLEX z;
 {
@@ -255,28 +233,6 @@ COMPLEX cdeterm(z,n)
   sum=sign;
   for(j=0;j<n;j++)
     sum=cmlt(sum,Z(j,j));
-  return sum;
-}
-COMPLEX cxdeterm(z,n)
-     COMPLEX *z;
-     int n;
-{
-  int i,j,k;
-  COMPLEX ajj,sum,mult;
-  for(j=0;j<n;j++){
-    ajj=Z(j,j);
-    for(i=j+1;i<n;i++){
-      mult=cdiv(Z(i,j),ajj);
-      for(k=j+1;k<n;k++){
-        Z(i,k)=cdif(Z(i,k),cmlt(mult,Z(j,k)));
-      }
-    }
-  }
- /* now it should be diagonalized */
-  sum=rtoc(1.0,0.0);
-  for(j=0;j<n;j++){
-    sum=cmlt(sum,Z(j,j));
-  }
   return sum;
 }
 

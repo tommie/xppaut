@@ -1,3 +1,4 @@
+/*  this is also X free ! */
 #include "do_fit.h"
 
 #include <math.h>
@@ -21,12 +22,22 @@
 #include "stiff.h"
 #include "storage.h"
 
-/*  this is also X free ! */
-
+/* --- Macros --- */
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
-FITINFO fin;
+/* --- Forward Declarations --- */
+static void get_fit_info(double *y, double *a, double *t0, int *flag, double eps, double *yfit, double **yderv, int npts, int npars, int nvars, int *ivar, int *ipar);
+static int get_fit_params(void);
+static int marlevstep(double *t0, double *y0, double *y, double *sig, double *a, int npts, int nvars, int npars, int *ivar, int *ipar, double *covar, double *alpha, double *chisq, double *alambda, double *work, double **yderv, double *yfit, double *ochisq, int ictrl, double eps);
+static int mrqcof(double *t0, double *y0, double *y, double *sig, double *a, int npts, int nvars, int npars, int *ivar, int *ipar, double *alpha, double *chisq, double *beta, double **yderv, double *yfit, double eps);
+static void parse_collist(char *collist, int *icols, int *n);
+static void parse_parlist(char *parlist, int *ipars, int *n);
+static void parse_varlist(char *varlist, int *ivars, int *n);
+static void print_fit_info(void);
+static int run_fit(char *filename, int npts, int npars, int nvars, int maxiter, int ndim, double eps, double tol, int *ipar, int *ivar, int *icols, double *y0, double *a, double *yfit);
 
+/* --- Data --- */
+static FITINFO fin;
 
 void init_fit_info()
 {
@@ -44,7 +55,7 @@ void init_fit_info()
   fin.file[0]=0;
 }
 
-void get_fit_info(y,a,t0,flag,eps,yfit,yderv,npts,npars,nvars,ivar,ipar)
+static void get_fit_info(y,a,t0,flag,eps,yfit,yderv,npts,npars,nvars,ivar,ipar)
      int *flag,*ivar,*ipar,npts,npars,nvars;
      double *y,*a,eps,**yderv,*yfit,*t0;
 /*
@@ -167,28 +178,6 @@ if(METHOD==CVODE)
  *flag=1;
      for(i=0;i<NODE;i++)
 	y[i]=yold[i];
-
- /*printem(yderv,yfit,t0,npars,nvars,npts);  */
-}
-
-
-
-void printem(yderv,yfit,t0,npars,nvars,npts)
-     double **yderv,*yfit,*t0;
-     int npars,nvars,npts;
-{
-  int i,j,k;
-  int ioff;
-  for(i=0;i<npts;i++){
-    plintf(" %8.5g ",t0[i]);
-    ioff=nvars*i;
-    for(j=0;j<nvars;j++){
-      plintf(" %g ",yfit[ioff+j]);
-      for(k=0;k<npars;k++)
-	printf(" %g ",yderv[k][ioff+j]);
-    }
-    plintf(" \n");
-  }
 }
 
 int one_step_int(y,t0,t1,istart)
@@ -290,7 +279,7 @@ if(METHOD==RKQS||METHOD==STIFF){
 
 
 
-void print_fit_info()
+static void print_fit_info()
 {
   int i;
   plintf("dim=%d maxiter=%d npts=%d file=%s tol=%g eps=%g\n",
@@ -307,7 +296,7 @@ void print_fit_info()
 void test_fit()
 {
  double *yfit,a[1000],y0[1000];
- int nvars,npars,i,ok;
+ int nvars=0,npars,i,ok;
  char collist[30],parlist1[30],parlist2[30],varlist[30];
  fin.nvars=0;
  fin.npars=0;
@@ -394,7 +383,7 @@ void test_fit()
 
 
 
-int run_fit( filename,  /* string */
+static int run_fit( filename,  /* string */
 	npts,npars,nvars,maxiter,ndim,  /* ints */
 	eps,tol, /* doubles */
 	ipar,ivar,icols, /* int arrays */
@@ -550,7 +539,7 @@ int run_fit( filename,  /* string */
   return(1);
 }
 
-int marlevstep(t0,y0,y,sig,a,npts,nvars,npars,
+static int marlevstep(t0,y0,y,sig,a,npts,nvars,npars,
 	   ivar,ipar,covar,alpha,chisq,alambda,work,
 	   yderv,yfit,ochisq,ictrl,eps)
      double *t0,*y0,*y,*sig,*a,*covar,*alpha,*chisq,*alambda,*work,
@@ -650,7 +639,7 @@ sigma  weights on nvars
   return(1);
 }
 
- int mrqcof(t0,y0,y,sig,a,npts,nvars,npars,
+static int mrqcof(t0,y0,y,sig,a,npts,nvars,npars,
 	 ivar,ipar,alpha,chisq,beta,
 	 yderv,yfit,eps)
     double *t0,*y0,*y,*sig,*a,*alpha,*chisq,*beta,**yderv,*yfit,eps;
@@ -704,7 +693,7 @@ sigma  weights on nvars
 
 
 
-int get_fit_params()
+static int get_fit_params()
 {
   static char *n[]={"File", "Fitvar","Params","Tolerance","Npts",
 		    "NCols","To Col","Params","Epsilon","Max iter"};
@@ -739,7 +728,7 @@ int get_fit_params()
 
 /* gets a list of the data columns to use ... */
 
-void parse_collist(collist,icols,n)
+static void parse_collist(collist,icols,n)
      int *icols,*n;
      char *collist;
 {
@@ -762,7 +751,7 @@ void parse_collist(collist,icols,n)
   *n=i;
 }
 
-void parse_varlist(varlist,ivars,n)
+static void parse_varlist(varlist,ivars,n)
      int *n,*ivars;
      char *varlist;
 {
@@ -787,7 +776,7 @@ void parse_varlist(varlist,ivars,n)
 }
 
 
-void parse_parlist(parlist,ipars,n)
+static void parse_parlist(parlist,ipars,n)
      int *n,*ipars;
      char *parlist;
 {

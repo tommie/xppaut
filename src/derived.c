@@ -1,3 +1,4 @@
+/* Derived parameter stuff !!  */
 #include "derived.h"
 
 #include <stdlib.h>
@@ -6,28 +7,19 @@
 #include "ggets.h"
 #include "parserslow.h"
 
-/* Derived parameter stuff !!  */
+/* --- Macros --- */
 #define MAXDERIVED 200
 
+/* --- Types --- */
 typedef struct {
   int index,*form;
   char *rhs;
   double value;
 } DERIVED;
 
-DERIVED derived[MAXDERIVED];
-int nderived=0;
-
-/* clean up derived stuff */
-void free_derived()
-{
-  int i;
-  for(i=0;i<nderived;i++){
-      free(derived[i].form);
-      free(derived[i].rhs);
-  }
-  nderived=0;
-}
+/* --- Data --- */
+static DERIVED derived[MAXDERIVED];
+static int nderived=0;
 
 /* This compiles all of the formulae
 It is called only once during the session

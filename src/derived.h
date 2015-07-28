@@ -1,11 +1,9 @@
-#ifndef _derived_h
-#define _derived_h
+#ifndef XPPAUT_DERIVED_H
+#define XPPAUT_DERIVED_H
 
-
-void free_derived(void);
+/* --- Functions --- */
+int add_derived(char *name, char *rhs);
 int compile_derived(void);
 void evaluate_derived(void);
-int add_derived(char *name, char *rhs);
 
- 
-#endif
+#endif /* XPPAUT_DERIVED_H */

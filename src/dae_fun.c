@@ -11,16 +11,15 @@
 #include "load_eqn.h"
 #include "parserslow.h"
 
+/* --- Macros --- */
 #define MAXDAE 400
 
-/*    will have more stuff someday */
-
+/* --- Types --- */
 typedef struct {
   double *work;
   int *iwork;
   int status;
 } DAEWORK;
-DAEWORK dae_work;
 
 typedef struct {
   char name[12],*rhs;
@@ -34,10 +33,17 @@ typedef struct {
   int *form;
 } DAE_EQN;
 
-SOLV_VAR svar[MAXDAE];
-DAE_EQN aeqn[MAXDAE];
+/* --- Forward Declarations --- */
+static void get_dae_fun(double *y, double *f);
+static void init_dae_work(void);
+static int solve_dae(void);
 
-int nsvar=0,naeqn=0;
+/* --- Data --- */
+static DAEWORK dae_work;
+static SOLV_VAR svar[MAXDAE];
+static DAE_EQN aeqn[MAXDAE];
+
+static int nsvar=0,naeqn=0;
 
 
 /* this adds an algebraically defined variable  and a formula
@@ -161,7 +167,7 @@ void err_dae()
   dae_work.status=1;
 }
 
-void init_dae_work()
+static void init_dae_work()
 {
 
   dae_work.work=(double *)malloc(sizeof(double)*(nsvar*nsvar+10*nsvar));
@@ -169,7 +175,7 @@ void init_dae_work()
   dae_work.status=1;
 }
 
-void get_dae_fun(y,f)
+static void get_dae_fun(y,f)
      double *f,*y;
 {
   int i;
@@ -194,7 +200,7 @@ void do_daes()
 }
 
 /* Newton solver for algebraic stuff */
-int solve_dae()
+static int solve_dae()
 {
   int i,j,n;
   int info;

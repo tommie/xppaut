@@ -25,6 +25,13 @@
 #define C_REDBLUE 4
 #define C_GRAY 5
 
+/* --- Forward Declarations --- */
+static int rfun(double y, int per);
+static int gfun(double y, int per);
+static int bfun(double y, int per);
+static void make_cmaps(int *r, int *g, int *b, int n, int type);
+
+/* --- Data --- */
 int color_mode=1,color_min,color_total,COLOR,color_max;
 int periodic=0,spectral;
 int custom_color=0;
@@ -36,17 +43,6 @@ int custom_color=0;
 XColor	color[MAX_COLORS];
 /* int	pixel[MAX_COLORS];
  */
-
-
-void tst_color(w)
-Window w;
-{
- int i;
- for(i=0;i<color_total;i++){
-   set_color(i+color_min);
-   XDrawLine(display,w,gc_graph,0,2*i+20,50,2*i+20);
- }
-}
 
 void set_scolor(col)
 int col;
@@ -76,7 +72,7 @@ int col;
 }
 
 /* this makes alot of nice color maps */
-void make_cmaps(r,g,b,n,type)
+static void make_cmaps(r,g,b,n,type)
  int n, *r,*g,*b,type;
 {
  double x;
@@ -154,7 +150,7 @@ void make_cmaps(r,g,b,n,type)
  }
 }
 
- int rfun(y,per)
+static int rfun(y,per)
   double y;
   int per;
 {
@@ -166,7 +162,7 @@ void make_cmaps(r,g,b,n,type)
   return((int)(3.*255*sqrt((.333334-x)*(x+.33334))));
 }
 
-int gfun(y,per)
+static int gfun(y,per)
  double y;
  int per;
 {
@@ -174,7 +170,7 @@ int gfun(y,per)
  return( (int)(3.*255*sqrt((.6666667-y)*(y))));
 }
 
-int bfun(y,per)
+static int bfun(y,per)
 double y;
 int per;
 {

@@ -18,11 +18,12 @@
 #include "newhome.h"
 #include "pop_list.h"
 
+static void clr_line_at(Window w, int col0, int pos, int n);
+static void put_string_at(Window w, int col, char *s, int off);
 
 char *info_message;
 int MSStyle=0;
-int done=0;
-int CURS_X,CURS_Y;
+static int CURS_X,CURS_Y;
 int xor_flag;
 
 void ping()
@@ -70,18 +71,6 @@ void  set_back()
   XSetForeground(display,gc,MyBackColor);
  }
 
-void showchar(ch,col,row,or)
-int col,row;
-Window or;
-char ch;
-{
- char bob[2];
- bob[0]=ch;
- chk_xor();
- XDrawString(display,or,gc,col,row+CURY_OFF,bob,1);
-
-}
-
 void chk_xor()
  {
   if(xor_flag==1)
@@ -90,39 +79,9 @@ void chk_xor()
     XSetFunction(display,gc,GXcopy);
  }
 
-
-
-
-
-
-
-
-
-
-
-
-void set_gcurs( y,  x)
-int y,x;
-{
- CURS_X=x;
- CURS_Y=y;
-}
-
 void clr_command()
 {
  blank_screen(command_pop);
-}
-
-void draw_info_pop(win)
-     Window win;
-{
-   if(win==info_pop)
-    {
-       XClearWindow(display,info_pop);
-      BaseCol();
-      XDrawString(display,info_pop,gc,5,CURY_OFF,info_message,
-		  strlen(info_message));
-    }
 }
 
 void bottom_msg(line,msg)
@@ -133,21 +92,6 @@ char *msg;
  BaseCol();
  strcpy(info_message,msg);
  XDrawString(display,info_pop,gc,5,CURY_OFF,msg,strlen(msg));
-}
-/*
-clr_menbar()
-{
-  blank_screen(menu_pop);
- }
-*/
-void gputs(string,win)
-char *string;
-Window win;
-{
-int xloc=CURS_X*DCURX,yloc=CURS_Y*DCURY;
- Ftext( xloc, yloc, string,win );
- CURS_X+=strlen(string);
-
 }
 
 void err_msg(string)
@@ -211,17 +155,6 @@ int *com;
 
 
 }
-
-void gpos_prn(string,row,col)
-int row,col;
-char *string;
-{
-  clr_command();
- Ftext(0,row*DCURY,string,command_pop);
- CURS_X=strlen(string);
-}
-
-
 
 void put_command(string)
 char *string;
@@ -306,18 +239,6 @@ void cput_text()
   XDestroyWindow(display,temp);
  }
 
- /*
- are_you_sure()
- {
-  char ch;
-  gpos_prn("Are you sure? (Y/N)<N>",0,0);
-  ping();
-  ch = (char)getchi();
-  if(ch=='y'||ch=='Y')return(1);
-  return(0);
- }
-*/
-
 int get_mouse_xy(x,y,w)
  Window w;
  int *x,*y;
@@ -380,32 +301,6 @@ Window w;
 {
  XDrawRectangle(display,w,gc,x,y,x2-x,y2-y);
 }
-
-/*
-getuch()
-{
- int ch;
- ch=getchi();
- if(ch>64&&ch<96)ch+=32;
- return(ch);
-}
-
-*/
-void setfillstyle(type,color)
-int type,color;
-{
-  if(type>-1)XSetFillStyle(display,gc,FillSolid);
-  if(color>0)XSetForeground(display,gc,MyForeColor);
-  else XSetForeground(display,gc,MyBackColor);
-}
-
-void circle( x,y,radius,w)
-int x,y,radius;
-Window w;
-{
- XDrawArc(display,w,gc,x-radius,y-radius,2*radius,2*radius,0,360*64);
-}
-
 
 void xline(x0,y0,x1,y1,w)
 int x0,y0,x1,y1;
@@ -605,27 +500,6 @@ void edit_window(w,pos,value,col,done,ch)
    XFlush(display);
 
  }
-
-
-
-
-void do_backspace(pos,value,col,w)
- int *pos,*col;
- char *value;
- Window w;
- {
-	char oldch;
- 				*pos=*pos-1;
-				oldch=value[*pos];
-				value[*pos]='\0';
-				if(*col<(SCALEX-DCURX))
-				set_back();
-				showchar('_',*col,0,w);
-				*col=*col-DCURX;
-				showchar(oldch,*col,0,w);
-				set_fore();
-				showchar('_',*col,0,w);
-}
 
 void edit_command_string(ev,name,value,done,pos,col)
  XEvent ev;

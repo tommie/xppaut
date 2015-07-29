@@ -9,6 +9,68 @@
 #include "my_rhs.h"
 #include "storage.h"
 
+/* --- Types --- */
+typedef void (*FcnEqDiff)(unsigned n, double x, double *y, double *f);
+typedef void (*SolTrait)(long nr, double xold, double x, double* y, unsigned n, int* irtrn);
+
+/* --- Forward Declarations --- */
+static int dop853
+ (unsigned n,      /* dimension of the system <= UINT_MAX-1*/
+  FcnEqDiff fcn,   /* function computing the value of f(x,y) */
+  double x,        /* initial x-value */
+  double* y,       /* initial values for y */
+  double xend,     /* final x-value (xend-x may be positive or negative) */
+  double* rtoler,  /* relative error tolerance */
+  double* atoler,  /* absolute error tolerance */
+  int itoler,      /* switch for rtoler and atoler */
+  SolTrait solout, /* function providing the numerical solution during integration */
+  int iout,        /* switch for calling solout */
+  FILE* fileout,   /* messages stream */
+  double uround,   /* rounding unit */
+  double safe,     /* safety factor */
+  double fac1,     /* parameters for step size selection */
+  double fac2,
+  double beta,     /* for stabilized step size control */
+  double hmax,     /* maximal step size */
+  double h,        /* initial step size */
+  long nmax,       /* maximal number of allowed steps */
+  int meth,        /* switch for the choice of the coefficients */
+  long nstiff,     /* test for stiffness */
+  unsigned nrdens, /* number of components for which dense outpout is required */
+  unsigned* icont, /* indexes of components for which dense output is required, >= nrdens */
+  unsigned licont,  /* declared length of icon */
+  double *work
+ );
+static int dopri5
+ (unsigned n,      /* dimension of the system <= UINT_MAX-1*/
+  FcnEqDiff fcn,   /* function computing the value of f(x,y) */
+  double x,        /* initial x-value */
+  double* y,       /* initial values for y */
+  double xend,     /* final x-value (xend-x may be positive or negative) */
+  double* rtoler,  /* relative error tolerance */
+  double* atoler,  /* absolute error tolerance */
+  int itoler,      /* switch for rtoler and atoler */
+  SolTrait solout, /* function providing the numerical solution during integration */
+  int iout,        /* switch for calling solout */
+  FILE* fileout,   /* messages stream */
+  double uround,   /* rounding unit */
+  double safe,     /* safety factor */
+  double fac1,     /* parameters for step size selection */
+  double fac2,
+  double beta,     /* for stabilized step size control */
+  double hmax,     /* maximal step size */
+  double h,        /* initial step size */
+  long nmax,       /* maximal number of allowed steps */
+  int meth,        /* switch for the choice of the coefficients */
+  long nstiff,     /* test for stiffness */
+  unsigned nrdens, /* number of components for which dense outpout is required */
+  unsigned* icont, /* indexes of components for which dense output is required, >= nrdens */
+  unsigned licont , /* declared length of icon */
+  double *work
+ );
+static void dprhs(unsigned n, double t, double *y, double *f);
+
+/* --- Data --- */
 static long      nfcn, nstep, naccpt, nrejct;
 static double    hout, xold, xout;
 static unsigned  nrds, *indir;
@@ -77,48 +139,6 @@ int dormprin(istart,y,t,n,tout,tol,atol,flag,kflag)
   }
   return(-1);
 }
-
-
-long nfcnRead (void)
-{
-  return nfcn;
-
-} /* nfcnRead */
-
-
-long nstepRead (void)
-{
-  return nstep;
-
-} /* stepRead */
-
-
-long naccptRead (void)
-{
-  return naccpt;
-
-} /* naccptRead */
-
-
-long nrejctRead (void)
-{
-  return nrejct;
-
-} /* nrejct */
-
-
-double hRead (void)
-{
-  return hout;
-
-} /* hRead */
-
-
-double xRead (void)
-{
-  return xout;
-
-} /* xRead */
 
 
 static double sign (double a, double b)
@@ -927,35 +947,6 @@ int dop853
 
 } /* dop853 */
 
-
-
-/* dense output function */
-double contd8 (unsigned ii, double x)
-{
-  unsigned i;
-  double   s, s1;
-
-  i = UINT_MAX;
-
-  if (!indir)
-    i = ii;
-  else
-    i = indir[ii];
-
-  if (i == UINT_MAX)
-  {
-    plintf ("No dense output available for %uth component", ii);
-    return 0.0;
-  }
-
-  s = (x - xold) / hout;
-  s1 = 1.0 - s;
-
-  return rcont1[i]+s*(rcont2[i]+s1*(rcont3[i]+s*(rcont4[i]+s1*(rcont5[i]+
-	 s*(rcont6[i]+s1*(rcont7[i]+s*rcont8[i]))))));
-
-} /* contd8 */
-
 /************    dopri5  ***************************/
 static double hinit5 (unsigned n, FcnEqDiff fcn, double x, double* y,
 	      double posneg, double* f0, double* f1, double* yy1, int iord,
@@ -1494,29 +1485,3 @@ int dopri5
 
 
 } /* dopri5 */
-
-/* dense output function */
-double contd5 (unsigned ii, double x)
-{
-  unsigned i;
-  double   theta, theta1;
-
-  i = UINT_MAX;
-
-  if (!indir)
-    i = ii;
-  else
-    i = indir[ii];
-
-  if (i == UINT_MAX)
-  {
-    plintf ("No dense output available for %uth component", ii);
-    return 0.0;
-  }
-
-  theta = (x - xold) / hout;
-  theta1 = 1.0 - theta;
-
-  return rcont1[i] + theta*(rcont2[i] + theta1*(rcont3[i] + theta*(rcont4[i] + theta1*rcont5[i])));
-
-} /* contd5 */

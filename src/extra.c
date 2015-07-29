@@ -47,6 +47,10 @@ typedef struct {
 } DLFUN;
 
 DLFUN dlf;
+
+static int get_export_count(char *s);
+static void parse_inout(char *l, int flag);
+
 #ifdef HAVE_LIBDL
 /* this loads a dynamically linked library of the
    users choice
@@ -177,15 +181,7 @@ void add_export_list(char *in,char *out)
 
 }
 
-void check_inout()
-{
-  int i;
-  for(i=0;i<in_out.nin;i++)
-    plintf(" type=%d index=%d \n",in_out.intype[i],in_out.in[i]);
-  for(i=0;i<in_out.nout;i++)
-  plintf(" type=%d index=%d \n",in_out.outtype[i],in_out.out[i]);
-}
-int get_export_count(char *s)
+static int get_export_count(char *s)
 {
   int i=0;
   int j;
@@ -204,7 +200,7 @@ void do_export_list()
  /* check_inout(); */
 }
 
-void parse_inout(char *l,int flag)
+static void parse_inout(char *l,int flag)
 {
   int i=0,j=0;
   int k=0,index;

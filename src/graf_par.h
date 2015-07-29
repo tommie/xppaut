@@ -16,7 +16,7 @@
 
 #define REAL_SMALL 1.e-6
 #define MAXBIFCRV 100
-#define lmax(a,b) ((a>b) ? a : b)
+#define lmax(a, b) ((a > b) ? a : b)
 
 /* --- Types --- */
 typedef struct {
@@ -28,8 +28,8 @@ typedef struct {
 } MOV3D;
 
 typedef struct {
-  float *x[MAXBIFCRV],*y[MAXBIFCRV];
-  int color[MAXBIFCRV],npts[MAXBIFCRV],nbifcrv;
+  float *x[MAXBIFCRV], *y[MAXBIFCRV];
+  int color[MAXBIFCRV], npts[MAXBIFCRV], nbifcrv;
   Window w;
 } BD;
 

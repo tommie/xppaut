@@ -43,13 +43,29 @@
 #define min(a,b) ((a<b) ? a : b)
 #define SYMSIZE .00175
 
+static void bead(int x1, int y1);
+static void bead_x11(int x, int y);
+static int clip3d(double x1, double y1, double z1, double x2, double y2, double z2, float *x1p, float *y1p, float *z1p, float *x2p, float *y2p, float *z2p);
+static void draw_symbol(double x, double y, double size, int my_symb);
+static void fancy_put_text_x11(int x, int y, char *str, int size, int font);
+static void frect(int x1, int y1, int w, int h);
+static void init_graph(int i);
+static void line_nabs(double x1_out, double y1_out, double x2_out, double y2_out);
+static void line_x11(int xp1, int yp1, int xp2, int yp2);
+static void pers_line(double x, double y, double z, double xp, double yp, double zp);
+static void point(int x, int y);
+static void point_x11(int xp, int yp);
+static void rect_x11(int x, int y, int w, int h);
+static void rot_3dvec(double x, double y, double z, float *xp, float *yp, float *zp);
+static void set_line_style_x11(int ls);
+static void text_abs(double x, double y, char *text);
+
 double THETA0=45,PHI0=45;
 int PS_Port=0;
-int DX_0,DY_0,D_WID,D_HGT;
-int D_FLAG;
+static int D_FLAG;
 int PointRadius=0;
 
-char dashes[10][5] = { {0}, {1,6,0},
+static char dashes[10][5] = { {0}, {1,6,0},
    {0}, {4,2,0}, {1,3,0}, {4,4,0}, {1,5,0}, {4,4,4,1,0}, {4,2,0}, {1,3,0}
    };
 
@@ -58,7 +74,7 @@ int avsymfonts[5],avromfonts[5];
 
 int DLeft,DRight,DTop,DBottom,VTic,HTic,VChar,HChar,XDMax,YDMax;
 double XMin,YMin,XMax,YMax;
-int LineType=0,PointType=-1,TextJustify,TextAngle;
+int PointType=-1,TextJustify,TextAngle;
 
 void get_scale(x1,y1,x2,y2)
 double *x1,*y1,*x2,*y2;
@@ -753,35 +769,6 @@ float x,y,z,*xp,*yp,*zp;
  *zp=(z-MyGraph->zbar)*MyGraph->dz;
 }
 
-
-double proj3d(double theta,double phi,double x,double y,double z,int in)
-{
-  double ct=cos(DEGTORAD*theta),st=sin(DEGTORAD*theta);
- double sp=sin(DEGTORAD*phi),cp=cos(DEGTORAD*phi);
- double rm[3][3];
- double vt[3],vnew[3];
- int i,j;
- rm[0][0]=ct;
- rm[0][1]=st;
- rm[0][2]=0.0;
- rm[1][0]=-cp*st;
- rm[1][1]=cp*ct;
- rm[1][2]=sp;
- rm[2][0]=st*sp;
- rm[2][1]=-sp*ct;
- rm[2][2]=cp;
- vt[0]=x;
- vt[1]=y;
- vt[2]=z;
-
- for(i=0;i<3;i++){
-	vnew[i]=0.0;
-	for(j=0;j<3;j++)vnew[i]=vnew[i]+rm[i][j]*vt[j];
-	}
-
- return vnew[in];
-}
-
 int threedproj(x2p,y2p,z2p,xp,yp)
 float x2p,y2p,z2p,*xp,*yp;
 {
@@ -811,18 +798,6 @@ char *s;
  float xp,yp;
 if(threedproj(x,y,z,&xp,&yp)) text_abs(xp,yp,s);
 }
-
-
-
-
-void text_3d(x,y,z,s)
-float x,y,z;
-char *s;
-{
- float xp,yp;
-if(threed_proj(x,y,z,&xp,&yp)) text_abs(xp,yp,s);
-}
-
 
 int threed_proj(x,y,z,xp,yp)
 float x,y,z,*xp,*yp;

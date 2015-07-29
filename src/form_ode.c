@@ -24,30 +24,66 @@
 
 #define MAXONLY 1000
 
-int IN_INCLUDED_FILE=0;
+/* --- Forward Declarations --- */
+static void add_comment(char *s);
+static void add_only(char *s);
+static void add_varinfo(int type, char *lhs, char *rhs, int nargs, char args[20][10 +1]);
+static void advance_past_first_word(char** sptr);
+static void break_up_list(char *rhs);
+static int check_if_ic(char *big);
+static void clrscr(void);
+static void compile_em(void);
+static int compiler(char *bob, FILE *fptr);
+static int do_new_parser(FILE *fp, char *first, int nnn);
+static int extract_args(char *s1, int i0, int *ie, int *narg, char args[20][10 +1]);
+static int extract_ode(char *s1, int *ie, int i1);
+static void find_ker(char *string, int *alt);
+static int find_the_name(char list[1949][33], int n, char *name);
+static void format_list(char **s, int n);
+static int formula_or_number(char *expr, double *z);
+static void free_varinfo(void);
+static int get_a_filename(char *filename, char *wild);
+static char* get_next2(char** tokens_ptr);
+static int if_end_include(char *old);
+static int if_include_file(char *old, char *nf);
+static void init_varinfo(void);
+static int is_comment(char *s);
+static void list_em(char *wild);
+static char* new_string2(char* old, int length); /* for parsing par, init with whitespace correctly */
+static int next_nonspace(char *s1, int i0, int *i1);
+static int not_ker(char *s, int i);
+static void read_a_line(FILE *fp, char *s);
+static int read_eqn(void);
+static void remove_blanks(char *s1);
+static void show_syms(void);
+static void strcpy_trim(char* dest, char* source);
+static void strncpy_trim(char* dest, char* source, int n);
+static int strparse(char *s1, char *s2, int i0, int *i1);
+static void strpiece(char *dest, char *src, int i0, int ie);
+static void take_apart(char *bob, double *value, char *name);
+static void welcome(void);
+
+static int IN_INCLUDED_FILE=0;
 char uvar_names[MAXODE][12];
 char *ode_names[MAXODE];
 char upar_names[MAXPAR][11];
 char *save_eqn[MAXLINES];
 double default_val[MAXPAR];
 
-VAR_INFO *my_varinfo;
-int start_var_info=0;
+static VAR_INFO *my_varinfo;
+static int start_var_info=0;
 
 int *my_ode[MAXODE];
 
-int leng[MAXODE];
+static int leng[MAXODE];
 
-char errmsg[256];
-
-char *onlylist[MAXONLY];
+static char *onlylist[MAXONLY];
 int *plotlist;
-int N_only=0,N_plist;
+static int N_only=0;
+int N_plist;
 
 ACTION comments[MAXCOMMENTS];
-ACTION *orig_comments;
-int orig_ncomments=0;
-int is_a_map=0;
+static int is_a_map=0;
 int n_comments=0;
 BC_STRUCT my_bc[MAXODE];
 
@@ -56,27 +92,26 @@ double default_ic[MAXODE];
 int NODE,NUPAR,NLINES;
 int PrimeStart;
 int NCON_START,NSYM_START;
-int BVP_NL,BVP_NR,BVP_N;
+static int BVP_NL,BVP_NR,BVP_N;
 
 #define cstringmaj MYSTR1
 #define cstringmin MYSTR2
 
 int ConvertStyle=0;
 FILE *convertf;
-int OldStyle=1;
-int NCON_ORIG,NSYM_ORIG;
-int IN_VARS;
+static int OldStyle=1;
+static int NCON_ORIG,NSYM_ORIG;
+static int IN_VARS;
 int NMarkov;
 
 int FIX_VAR;
 
-int ICREATE=0;
 int NEQ_MIN;
 int EqType[MAXODE];
-int Naux=0;
-char aux_names[MAXODE][12];
+static int Naux=0;
+static char aux_names[MAXODE][12];
 
-int NUMODES=0,NUMFIX=0,NUMPARAM=0,NUMMARK=0,NUMAUX=0,NUMVOLT=0,NUMSOL=0;
+static int NUMODES=0,NUMFIX=0,NUMPARAM=0,NUMMARK=0,NUMAUX=0,NUMVOLT=0,NUMSOL=0;
 
 
 FIXINFO fixinfo[MAXODE];
@@ -93,19 +128,6 @@ int make_eqn()
    FIX_VAR=0;
    NMarkov=0;
 
-   /* initscr(); */
-   /*
-   pos_prn("*(r)ead or (c)reate:",0,0);
-   ch=getuch();
-   pos_prn("",0,0);
-   okay=0;
-   switch(ch)
-   {
-    case 'r':okay=read_eqn(); break;
-    case 'c': okay=create_eqn();break;
-      default : read_eqn();break;
-   }
-   */
    okay=read_eqn();
 
    return(okay);
@@ -144,49 +166,6 @@ int disc(string)
    if(strcmp(end,"dis")==0||strcmp(end,"dif")==0)return(1);
    return(0);
   }
-
-void dump_src()
-{
-  int i;
-  for(i=0;i<NLINES;i++)
-    plintf("%s",save_eqn[i]);
-}
-
-void dump_comments()
-{
-  int i;
-  for(i=0;i<n_comments;i++)
-    plintf("%s\n",comments[i].text);
-}
-
-/*
-  read_eqn()
-  {
-   char string[200];
-   FILE *fptr;
-   int okay,i;
-   okay=0;
-getfile:
-   pos_prn("File to read or <Enter> for directory:",0,0);
-   getsi(string);
-   if(strlen(string)==0)
-   {
-    get_dir();
-    goto getfile;
-   }
-   if((fptr=fopen(string,"r"))==NULL)
-   {
-    plintf("\n Cannot open %s \n",string);
-    return(0);
-   }
-   strcpy(this_file,string);
-   clrscr();
-   okay=get_eqn(fptr);
-   close(fptr);
-   for(i=0;i<NLINES;i++)free(save_eqn[i]);
-   return(okay);
- }
-*/
 
 void format_list(char **s,int n)
 {
@@ -481,61 +460,7 @@ int get_eqn(fptr)
   plintf("XPPAUT %g.%g Copyright (C) 2002-now  Bard Ermentrout \n",xppvermaj,xppvermin);
     return(1);
 }
-/*
-write_eqn()
-{
-    char string[100];
-    FILE *fptr;
-    int i;
-    if(NLINES==0)
-    {
-     plintf(" There is no current equation!\n");
-     exit(0);
-    }
-    wipe_out();
-    pos_prn("Name of file to save:",0,0);
-    getsi(string);
-    if((fptr=fopen(string,"w"))==NULL)
-    {
-     plintf("\nCannot open %s\n",string);
-     return;
-    }
-    strcpy(this_file,string);
-    for(i=0;i<NLINES;i++)
-    {
-     fputs(save_eqn[i],fptr);
-     free(save_eqn[i]);
-    }
-    fclose(fptr);
-   }
 
-
-  create_eqn()
-  {
-    int okay;
-    FILE *fptr;
-    char junk[10];
-    wipe_out();
-     fptr=stdin;
-   welcome();
-   fgets(junk,10,fptr);
-   okay=get_eqn(fptr);
-   if(okay==1)write_eqn();
-   return(okay);
-  }
-
-  wipe_out()
-{
-   clrscr();
-  }
-
-  char *getsi( bob)
-  char *bob;
-  {
-   return(gets(bob));
-  }
-
-*/
 int compiler(bob,fptr)
      char *bob;
      FILE *fptr;
@@ -962,12 +887,6 @@ int compiler(bob,fptr)
   return(done);
 }
 
-void list_upar()
-{
- int i;
- for(i=0;i<NUPAR;i++)printf(" %s",upar_names[i]);
-}
-
 void welcome()
 {
  plintf("\n The commands are: \n");
@@ -1105,38 +1024,10 @@ void find_ker(string,alt)   /* this extracts the integral operators from the str
 
 }
 
-void pos_prn(s,x,y)
-char *s;
-int x,y;
-{
- plintf("%s\n",s);
- }
-
 void clrscr()
 {
  system("clear");
  }
-
-
-
-int getuch()
-{
-  int ch;
-  ch=getchi();
-  if(ch>64&&ch<96)ch+=32;
-  return(ch);
-}
-
-
-/***   remove this for full PP   ***/
-
-int getchi()
- {
-   return(getchar());
- }
-
-
-
 
 /*   This is the new improved parser for input files.
      It is much more natural.  The format is as follows:
@@ -2874,69 +2765,6 @@ void subsk(big,new,k,flag)
   new[inew]=0;
 
 }
-
-void keep_orig_comments()
-{
-  int i;
-
-  if(orig_ncomments>0)return; /* already stored these so return */
-  if(n_comments==0)return; /* nothing to keep ! */
-  orig_comments=(ACTION *)malloc(sizeof(ACTION)*n_comments);
-  for(i=0;i<n_comments;i++){
-    orig_comments[i].text=(char *)malloc(strlen(comments[i].text)+1);
-    if(comments[i].aflag)
-      orig_comments[i].action=(char *)malloc(strlen(comments[i].action)+1);
-    strcpy(orig_comments[i].text,comments[i].text);
-    if(comments[i].aflag)
-      strcpy(orig_comments[i].action,comments[i].action);
-    orig_comments[i].aflag=comments[i].aflag;
-  }
-
-}
-
-void default_comments()
-{
-  int i;
-  if(orig_ncomments==0)return;
-  /* first free up the comments */
-  free_comments();
-  for(i=0;i<orig_ncomments;i++){
-    comments[i].text=(char *)malloc(strlen(orig_comments[i].text)+1);
-    strcpy(comments[i].text,orig_comments[i].text);
-    if(orig_comments[i].aflag){
-      comments[i].action=(char *)malloc(strlen(orig_comments[i].action)+1);
-      strcpy(comments[i].action,orig_comments[i].action);
-    }
-    comments[i].aflag=orig_comments[i].aflag;
-  }
-}
-
-void free_comments()
-{
-  int i;
-  for(i=0;i<n_comments;i++){
-     free(comments[i].text);
-      if(comments[i].aflag)
-	free(comments[i].action);
-  }
-  n_comments=0;
-}
-
-void new_comment(FILE *f)
-{
-  char bob[256];
-  char ted[256];
-  keep_orig_comments();
-  free_comments();
-  while(!feof(f)){
-    fgets(bob,256,f);
-    sprintf(ted,"@%s",bob);
-    add_comment(ted);
-  }
-
-
-}
-
 
 void add_comment(char *s)
 {

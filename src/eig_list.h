@@ -3,7 +3,9 @@
 
 #include <X11/Xlib.h>
 
-void create_eq_box(int cp, int cm, int rp, int rm, int im, double *y, double *ev, int n);
+/* --- Functions --- */
+void create_eq_box(int cp, int cm, int rp, int rm, int im, double *y,
+                   double *ev, int n);
 void create_eq_list(void);
 void draw_eq_box(Window w);
 void draw_eq_list(Window w);

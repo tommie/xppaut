@@ -11,7 +11,7 @@
 
 /* --- Types --- */
 typedef struct {
-  char *text,*action;
+  char *text, *action;
   int aflag;
 } ACTION;
 
@@ -22,9 +22,7 @@ typedef struct {
   int side;
 } BC_STRUCT;
 
-typedef struct {
-  char *name,*value;
-} FIXINFO;
+typedef struct { char *name, *value; } FIXINFO;
 
 /* --- Data --- */
 extern ACTION comments[MAXCOMMENTS];

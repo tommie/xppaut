@@ -18,7 +18,10 @@
 #include "parserslow.h"
 #include "pop_list.h"
 
-
+/* --- Macros --- */
+#define NEQMAXFOREDIT 20
+#define MAX_N_EBOX MAXODE
+#define MAX_LEN_EBOX 86
 #define EV_MASK (ButtonPressMask 	|\
 		KeyPressMask		|\
 		ExposureMask		|\
@@ -31,8 +34,26 @@
 		EnterWindowMask		|\
 		LeaveWindowMask)
 
+/* --- Types --- */
+typedef struct {
+		Window base,ok,cancel,reset;
+		Window win[MAX_N_EBOX];
+		char name[MAX_N_EBOX][MAX_LEN_EBOX],
+		     value[MAX_N_EBOX][MAX_LEN_EBOX],
+		     rval[MAX_N_EBOX][MAX_LEN_EBOX];
+		int n,hot;
+		} EDIT_BOX;
 
-void reset_ebox(sb,pos,col)
+/* --- Forward Declarations --- */
+static int do_edit_box(int n, char *title, char **names, char **values);
+static int e_box_event_loop(EDIT_BOX *sb, int *pos, int *col);
+static void enew_editable(EDIT_BOX *sb, int inew, int *pos, int *col, int *done, Window *w);
+static void ereset_hot(int inew, EDIT_BOX *sb);
+static void expose_ebox(EDIT_BOX *sb, Window w, int pos, int col);
+static void make_ebox_windows(EDIT_BOX *sb, char *title);
+static void reset_ebox(EDIT_BOX *sb, int *pos, int *col);
+
+static void reset_ebox(sb,pos,col)
      EDIT_BOX *sb;
      int *pos,*col;
 {
@@ -56,7 +77,7 @@ void reset_ebox(sb,pos,col)
 }
 
 
-int do_edit_box(n,title,names,values)
+static int do_edit_box(n,title,names,values)
 int n;
 char **names,**values,*title;
 {
@@ -97,7 +118,7 @@ char **names,**values,*title;
 
  }
 
-void expose_ebox(sb,w,pos,col)
+static void expose_ebox(sb,w,pos,col)
 EDIT_BOX *sb;
 Window w;
 int pos,col;
@@ -119,7 +140,7 @@ int pos,col;
 
 
 
-void ereset_hot(inew,sb)
+static void ereset_hot(inew,sb)
 int inew;
 EDIT_BOX *sb;
 {
@@ -133,7 +154,7 @@ EDIT_BOX *sb;
 		strlen(sb->value[i]),0);
  }
 
-void enew_editable(sb,inew,pos,col,done,w)
+static void enew_editable(sb,inew,pos,col,done,w)
  int inew;
  EDIT_BOX *sb;
  int *pos,*col,*done;
@@ -148,7 +169,7 @@ void enew_editable(sb,inew,pos,col,done,w)
   }
 
 
-int e_box_event_loop(sb,pos,col)
+static int e_box_event_loop(sb,pos,col)
  EDIT_BOX *sb;
  int *col,*pos;
 {
@@ -216,7 +237,7 @@ int e_box_event_loop(sb,pos,col)
      }
 
 
-void make_ebox_windows(sb,title)
+static void make_ebox_windows(sb,title)
 char *title;
 EDIT_BOX *sb;
 {

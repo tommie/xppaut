@@ -1,5 +1,5 @@
 /*  This is an edit box widget which handles a list of
-	editable strings
+        editable strings
  */
 #ifndef XPPAUT_EDIT_RHS_H
 #define XPPAUT_EDIT_RHS_H

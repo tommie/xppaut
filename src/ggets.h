@@ -20,7 +20,8 @@ void chk_xor(void);
 void clr_command(void);
 void cput_text(void);
 void display_command(char *name, char *value, int pos, int col);
-void edit_command_string(XEvent ev, char *name, char *value, int *done, int *pos, int *col);
+void edit_command_string(XEvent ev, char *name, char *value, int *done,
+                         int *pos, int *col);
 void edit_window(Window w, int *pos, char *value, int *col, int *done, int ch);
 void err_msg(char *string);
 int get_key_press(XEvent *ev);

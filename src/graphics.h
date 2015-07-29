@@ -29,7 +29,8 @@ extern int HTic, VTic;
 /* --- Functions --- */
 void bead_abs(double x1, double y1);
 void change_current_linestyle(int new, int *old);
-int clip(double x1, double x2, double y1, double y2, float *x1_out, float *y1_out, float *x2_out, float *y2_out);
+int clip(double x1, double x2, double y1, double y2, float *x1_out,
+         float *y1_out, float *x2_out, float *y2_out);
 void copy_graph(int i, int l);
 void eq_symb(double *x, int type);
 void fancy_text_abs(double x, double y, char *old, int size, int font);
@@ -43,8 +44,10 @@ void init_ps(void);
 void init_svg(void);
 void init_x11(void);
 void line(int x1, int y1, int x2, int y2);
-void line3d(double x01, double y01, double z01, double x02, double y02, double z02);
-void line3dn(double xs1, double ys1, double zs1, double xsp1, double ysp1, double zsp1);
+void line3d(double x01, double y01, double z01, double x02, double y02,
+            double z02);
+void line3dn(double xs1, double ys1, double zs1, double xsp1, double ysp1,
+             double zsp1);
 void line_3d(double x, double y, double z, double xp, double yp, double zp);
 void line_abs(double x1, double y1, double x2, double y2);
 void make_rot(double theta, double phi);

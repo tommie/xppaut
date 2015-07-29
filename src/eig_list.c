@@ -44,7 +44,11 @@ struct{
 
 } eq_list;
 
-
+/* --- Forward Declarations --- */
+static void eq_box_button(Window w);
+static void eq_box_import(void);
+static void eq_list_down(void);
+static void eq_list_up(void);
 
 void draw_eq_list(w)
 Window w;

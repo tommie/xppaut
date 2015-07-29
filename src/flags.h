@@ -15,7 +15,6 @@ int one_flag_step_euler(double *y, double dt, double *work, int neq, double *tim
 int one_flag_step_discrete(double *y, double dt, double *work, int neq, double *tim, int *istart);
 int one_flag_step_heun(double *y, double dt, double *yval[2], int neq, double *tim, int *istart);
 int one_flag_step_rk4(double *y, double dt, double *yval[3], int neq, double *tim, int *istart);
-void printflaginfo(void);
 int one_flag_step_gear(int neq, double *t, double tout, double *y, double hmin, double hmax, double eps, int mf, double *error, int *kflag, int *jstart, double *work, int *iwork);
 int one_flag_step_rosen(double *y, double *tstart, double tfinal, int *istart, int n, double *work, int *ierr);
 int one_flag_step_dp(int *istart, double *y, double *t, int n, double tout, double *tol, double *atol, int flag, int *kflag);

@@ -98,7 +98,7 @@ typedef struct {
 } FLAG;
 
 /* #define Set_ivar(a,b) variables[(a)]=(b) */
-FLAG flag[MAXFLAG];
+static FLAG flag[MAXFLAG];
 int NFlags=0;
 
 double STOL=1.e-10;
@@ -576,15 +576,6 @@ int one_flag_step_rk4(y,dt,yval,neq,tim,istart)
     }
   }
   return(1);
-}
-
-void printflaginfo()
-{
-  int i;
-  for(i=0;i<NFlags;i++){
-    plintf(" flag %d: tstart=%g f0=%g f1=%g hit=%d tol=%g\n",
-	   i, flag[i].tstar,flag[i].f0,flag[i].f1,flag[i].hit,fabs(flag[i].f0-flag[i].f1));
-  }
 }
 
 int one_flag_step_gear(neq,t, tout,y, hmin,

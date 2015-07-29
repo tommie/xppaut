@@ -40,6 +40,40 @@ typedef struct {
   int ix,iy,num_x,num_y;
 } NCLINE;
 
+static void add_bd_crv(float *x, float *y, int len, int type, int ncrv);
+static int alter_curve(char *title, int in_it, int n);
+static void axes_opts(void);
+static void check_flags(void);
+static void check_val(double *x1, double *x2, double *xb, double *xd);
+static void corner_cube(double *xlo, double *xhi, double *ylo, double *yhi);
+static int create_crv(int ind);
+static void create_ps(void);
+static void delete_frz(void);
+static void delete_frz_crv(int i);
+static void draw_bd(Window w);
+static void draw_freeze_key(void);
+static void draw_frozen_cline(int index, Window w);
+static void edit_curve(void);
+static void edit_frz(void);
+static void edit_frz_crv(int i);
+static void export_graf_data(void);
+static void fit_window(void);
+static void free_bd(void);
+static int freeze_crv(int ind);
+static void frz_bd(void);
+static void get_2d_view(int ind);
+static void get_3d_view(int ind);
+static int get_frz_index(Window w);
+static void kill_frz(void);
+static void movie_rot(double start, double increment, int nclip, int angle);
+static void new_curve(void);
+static void pretty(double *x1, double *x2);
+static void read_bd(FILE *fp);
+static void set_key(int x, int y);
+static void user_window(void);
+static void zoom_in(int i1, int j1, int i2, int j2);
+static void zoom_out(int i1, int j1, int i2, int j2);
+
 NCLINE nclines[MAXNCLINE];
 int PS_Color=1;
 
@@ -591,51 +625,6 @@ void movie_rot(start,increment,nclip,angle)
   MyGraph->Phi=phiold;
 }
 
-void test_rot()
-{
- int done=0;
- int kp;
- XEvent ev;
- double theta=MyGraph->Theta,phi=MyGraph->Phi;
- redraw_cube(theta,phi);
- while(done==0){
-    XNextEvent(display,&ev);
-   if(ev.type==KeyPress){
-      kp=get_key_press(&ev);
-      switch(kp){
-      case UP:
-        phi=phi+1;
-        redraw_cube(theta,phi);
-        break;
-      case DOWN:
-	phi=phi-1;
-        redraw_cube(theta,phi);
-        break;
-      case LEFT:
-	theta=theta+1;
-        redraw_cube(theta,phi);
-        break;
-      case RIGHT:
-	theta=theta-1;
-        redraw_cube(theta,phi);
-        break;
-      case FINE:
-       done=1;
-       break;
-      case ESC:
-       done=-1;
-       break;
-      }
-   }
- }
- if(done==1){
-   MyGraph->Phi=phi;
-   MyGraph->Theta=theta;
- }
- redraw_the_graph();
-
-}
-
 void get_3d_par_com()
 {
 
@@ -692,61 +681,6 @@ void get_3d_par_com()
 	     }
 
 }
-
-
-void get_3d_par_noper()
-{
-
- static char *n[]={"Theta","Phi","Movie(Y/N)",
-                   "Vary (theta/phi)","Start angle", "Increment",
-		   "Number increments"};
- char values[10][MAX_LEN_SBOX];
- int status;
-
- int nclip=8,angle=0;
- double start,increment=45;
-  if(MyGraph->grtype<5)return;
-
-
- sprintf(values[0],"%g",MyGraph->Theta);
- sprintf(values[1],"%g",MyGraph->Phi);
- sprintf(values[2],"%s",mov3d.yes);
- sprintf(values[3],"%s",mov3d.angle);
- sprintf(values[4],"%g",mov3d.start);
- sprintf(values[5],"%g",mov3d.incr);
- sprintf(values[6],"%d",mov3d.nclip);
-
- status=do_string_box(7,7,1,"3D Parameters",n,values,28);
- if(status!=0){
-   /* MyGraph->PerspFlag=atoi(values[0]);
-	      MyGraph->ZPlane=atof(values[1]);
-	      MyGraph->ZView=atof(values[2]); */
-	      MyGraph->Theta=atof(values[0]);
-	      MyGraph->Phi=atof(values[1]);
-             if(values[2][0]=='y'|| values[2][0]=='Y'){
-	      strcpy(mov3d.yes,values[2]);
-	      strcpy(mov3d.angle,values[3]);
-              start=atof(values[4]);
-	      increment=atof(values[5]);
-	      nclip=atoi(values[6]);
-	      mov3d.start=start;
-	      mov3d.incr=increment;
-	      mov3d.nclip=nclip;
-	      angle=0;
-              if(mov3d.angle[0]=='p'||mov3d.angle[0]=='P')
-		angle=1;
-	      /*     XRaiseWindow(display,MyGraph->w); */
-	      movie_rot(start,increment,nclip,angle);
-	     }
-
-                make_rot(MyGraph->Theta,MyGraph->Phi);
-	    /*  Redraw the picture   */
-	       redraw_the_graph();
-
-	     }
-
-}
-
 
 void window_zoom_com(int c)
 {
@@ -919,15 +853,6 @@ void graph_all(list,n,type)
 
 }
 
-
-int find_color(in)
-int in;
-{
- int i;
- for(i=0;i<=10;i++)
- if(in==colorline[i])return(i);
- return(0);
-}
 
 int alter_curve(title,in_it,n)
 char *title;

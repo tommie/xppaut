@@ -16,87 +16,38 @@
 #include "numerics.h"
 #include "odesol2.h"
 
+static double Max(double x, double y);
+static double Min(double x, double y);
+static void get_evec(double *a, double *anew, double *b, double *bp, int n, int maxit, double err, int *ipivot, double eval, int *ierr);
+static void getjac(double *x, double *y, double *yp, double *xp, double eps, double *dermat, int n);
+static void hqr(int n, int low, int igh, double *h, double *ev, int *ierr);
+static int imin(int x, int y);
+static int isamax(int n, double *sx, int incx);
+static void orthes(int n, int low, int igh, double *a, double *ort);
+static void pr_evec(double *x, double *ev, int n, int pr, double eval,int type);
+static void saxpy(int n, double sa, double *sx, int incx, double *sy, int incy);
+static double sdot(int n, double *sx, int incx, double *sy, int incy);
+static double sgnum(double x, double y);
+static double sign(double x, double y);
+static double sqr2(double z);
+static void sscal(int n, double sa, double *sx, int incx);
 
 int UnstableManifoldColor=5;
 int StableManifoldColor=8;
 double ShootIC[8][MAXODE];
 int ShootICFlag;
 int ShootIndex;
-int ShootType[8];
-int gear_pivot[MAXODE];
+static int ShootType[8];
+static int gear_pivot[MAXODE];
 
 
-double pertst[7][2][3]={{{2,3,1},{2,12,1}},
+static double pertst[7][2][3]={{{2,3,1},{2,12,1}},
                         {{4.5,6,1},{12,24,1}},
 			{{7.333,9.167,.5},{24,37.89,2}},
 			{{10.42,12.5,.1667},{37.89,53.33,1}},
 			{{13.7,15.98,.04133},{53.33,70.08,.3157}},
 			{{17.15,1,.008267},{70.08,87.97,.07407}},
 			{{1,1,1},{87.97,1,.0139}}};
-
-
-
-void silent_fixpt(double *x,double eps,double err,double big,int maxit,int n,
-	     double *er,double *em,int *ierr)
-{
-  int kmem,i,j;
-
-
-
- double *work,*eval,*b,*bp,*oldwork,*ework;
- double temp,old_x[MAXODE];
-
-
- kmem=n*(2*n+5)+50;
- *ierr=0;
- if((work=(double *)malloc(sizeof(double)*kmem))==NULL)
- {
-  err_msg("Insufficient core ");
-  *ierr=1;
-  return;
- }
-
- for(i=0;i<n;i++)old_x[i]=x[i];
- oldwork=work+n*n;
- eval=oldwork+n*n;
- b=eval+2*n;
- bp=b+n;
- ework=bp+n;
- rooter(x,err,eps,big,work,ierr,maxit,n);
- if(*ierr!=0)
- {
-  free(work);
-  for(i=0;i<n;i++)x[i]=old_x[i];
-  return;
- }
-
- for(i=0;i<n*n;i++){
-  oldwork[i]=work[i];
-
- }
-/* Transpose for Eigen        */
-  for(i=0;i<n;i++)
- {
-  for(j=i+1;j<n;j++)
-  {
-   temp=work[i+j*n];
-   work[i+j*n]=work[i*n+j];
-   work[i*n+j]=temp;
-  }
- }
- eigen(n,work,eval,ework,ierr);
- if(*ierr!=0)
- {
-    free(work);
-  return;
- }
-  for(i=0;i<n;i++)
- {
-  er[i]=eval[2*i];
-  em[i]=eval[2*i+1];
- }
-} /* end silent fixed point  */
-
 
 
 
@@ -571,47 +522,6 @@ double eval;
 
  }
  */
-}
-
-void get_complex_evec(m,evr,evm,br,bm,n,maxit,err,ierr)
-     double *m,*br,*bm;
-     double evr,evm,err;
-     int n,maxit,*ierr;
-{
-  double *a,*anew;
-  int *ipivot;
-  double *b,*bp;
-  int nn=2*n;
-  int i,j,k;
-  a=(double *)malloc(nn*nn*sizeof(double));
-  anew=(double *)malloc(nn*nn*sizeof(double));
-  b=(double *)malloc(nn*sizeof(double));
-  bp=(double *)malloc(nn*sizeof(double));
-  ipivot=(int *)malloc(nn*sizeof(int));
-  for(i=0;i<nn;i++){
-    for(j=0;j<nn;j++){
-      k=j*nn+i;
-      a[k]=0.0;
-      if((j<n) && (i<n))a[k]=m[k];
-      if((j>=n)&&(i>=n))a[k]=m[(j-n)*nn+(i-n)];
-      if(i==j)a[k]=a[k]-evr;
-      if((i-n)==j)a[k]=evm;
-      if((j-n)==i)a[k]=-evm;
-    }
-  }
-  /* print_mat(a,6,6); */
-  get_evec(a,anew,b,bp,nn,maxit,err,ipivot,0.0,ierr);
-  if(*ierr==0){
-    for(i=0;i<n;i++){
-      br[i]=b[i];
-      bm[i]=b[i+n];
-    }
-  }
-  free(a);
-  free(anew);
-  free(b);
-  free(bp);
-  free(ipivot);
 }
 
 void get_evec(a,anew,b,bp, n, maxit,

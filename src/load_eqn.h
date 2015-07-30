@@ -265,7 +265,7 @@ void set_X_vals(void);
 void set_all_vals(void);
 void set_internopts(OptionsSet *mask);
 void set_internopts_xpprc_and_comline(void);
-void set_option(char *s1, char *s2,int force,OptionsSet *mask);
+void set_option(char *s1, char *s2, int force, OptionsSet *mask);
 void stor_internopts(char *s1);
 
 #endif /* XPPAUT_LOAD_EQN_H */

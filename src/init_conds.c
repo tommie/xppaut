@@ -50,6 +50,8 @@
 #include "bitmap/param.bitmap"
 #include "bitmap/start.bitmap"
 
+#define FILESELNWIN 10
+
 #define HOTWILD 2
 #define HOTFILE 1
 
@@ -65,133 +67,89 @@
 #define EDIT_ESC 2
 #define EDIT_DONE 3
 
-FILESEL filesel;
-PAR_SLIDER my_par_slide[3];
-BoxList *HotBox;
-int HotBoxItem=-1;
-BoxList ICBox;
+typedef struct {
+  int n,n0,here;
+  Window base,cancel,ok,up,dn,pgup,pgdn,file,wild,w[FILESELNWIN],dir,home,start;
+  Window fw,ww;
+  char wildtxt[256],filetxt[256];
+  int nwin,minwid,minhgt;
+  int off,pos,hot;
+  char title[256];
+} FILESEL;
+
+typedef struct {
+  int use,pos,l;
+  char parname[20];
+  double lo,hi,val;
+  int hgt;
+  int type,index;
+  Window left,right,top,main,slide,go;
+} PAR_SLIDER;
+
+static void add_edit_float(BoxList *b, int i, double z);
+static void add_editval(BoxList *b, int i, char *string);
+static void box_enter(BoxList b, Window w, int val);
+static void box_list_scroll(BoxList *b, int i);
+static int button_selector(Window w);
+static void check_box_cursor(void);
+static void create_file_selector(char *title, char *file, char *wild);
+static void crossing_selector(Window w, int c);
+static void destroy_box(BoxList *b);
+static void destroy_selector(void);
+static void display_box(BoxList b, Window w);
+static void display_file_sel(FILESEL f, Window w);
+static void do_box_button(BoxList *b, Window w);
+static void do_box_key(BoxList *b, XEvent ev, int *used);
+static int do_file_select_events(void);
+static void do_slide_button(int w, PAR_SLIDER *p);
+static void do_slide_motion(Window w, int x, PAR_SLIDER *p,int state);
+static void do_slide_release(int w, PAR_SLIDER *p);
+static void draw_editable(Window win, char *string, int off, int cursor, int mc);
+static void draw_slider(Window w, int x, int hgt, int l);
+static int edit_bitem(BoxList *b, int i, int ch);
+static int edit_fitem(int ch, char *string, Window w, int *off1, int *pos1, int mc);
+static void enter_slider(Window w, PAR_SLIDER *p, int val);
+static void expose_selector(Window w);
+static void expose_slider(Window w, PAR_SLIDER *p);
+static void fs_scroll(int i);
+static void get_nrow_from_hgt(int h, int *n, int *w);
+static void justify_string(Window w1, char *s1);
+static void load_entire_box(BoxList *b);
+static void make_box_list(BoxList *b, char *wname, char *iname, int n, int type, int use);
+static void make_box_list_window(BoxList *b, int type);
+static void make_par_slider(Window base, int x, int y, int width, int index);
+static void new_wild(void);
+static void put_edit_cursor(Window w, int pos);
+static void redraw_directory(void);
+static void redraw_entire_box(BoxList *b);
+static void redraw_file_list(void);
+static void redraw_fs_text(char *string, Window w, int flag);
+static void redraw_slide(PAR_SLIDER *p);
+static int selector_key(XEvent ev);
+static void set_default_ics(void);
+static void set_default_params(void);
+static void set_slide_pos(PAR_SLIDER *p);
+static void set_up_arry(void);
+static void set_up_pp(void);
+static void set_up_xvt(void);
+static void set_value_from_box(BoxList *b, int i);
+static void stringintersect(char *target, char *sother);
+static int to_float(char *s, double *z);
+
+static FILESEL filesel;
+static PAR_SLIDER my_par_slide[3];
+static BoxList *HotBox;
+static int HotBoxItem=-1;
+static BoxList ICBox;
 BoxList ParamBox;
-BoxList DelayBox;
-BoxList BCBox;
+static BoxList DelayBox;
+static BoxList BCBox;
 
 int BoxMode;
 
 #define SB_DIM 5
 #define SB_SPC 2
-/* scroll-list gadget */
 
-void create_scroll_list(Window base,int x,int y,int width,
-		   int height,SCROLL_LIST *sl)
-{
-
-int tst=(DCURYs+3)+2*(SB_DIM+SB_SPC);
-if(height<tst)height=tst;
-
-sl->n=0;
-sl->n0=0;
-sl->pos=0;
-sl->v=NULL;
-sl->twid=width;
-sl->text=make_window(base,x,y,width,height,1);
-sl->up=make_window(base,x+width+SB_SPC,y,SB_DIM,SB_DIM,1);
-sl->side=make_window(base,x+width+SB_SPC,y+SB_DIM+SB_SPC,
-SB_DIM,height-2*(SB_DIM+SB_SPC),1);
-sl->down=make_window(base,x+width+SB_SPC,y+height-2*SB_DIM-SB_SPC,
-		     SB_DIM,SB_DIM,1);
-sl->npos=height-2*(SB_DIM+SB_SPC);
-sl->max=height/(DCURYs+3);
-}
-
-
-void free_scroll_list(SCROLL_LIST *sl)
-{
- int n=sl->n;
- int i;
- for(i=0;i<n;i++)free(sl->v[i]);
- free(sl->v);
- sl->v=NULL;
- sl->n=0;
-}
-
-void add_scroll_item(char *v,SCROLL_LIST *sl)
-{
-  int n=sl->n;
-  int m=strlen(v);
-  sl->v=(char **)realloc((void *)sl->v,(n+1)*sizeof(char *));
-  sl->v[n]=(char *)malloc((m+1));
-  strcpy(sl->v[n],v);
-  sl->n=n+1;
-}
-
-int expose_scroll_list(Window w,SCROLL_LIST sl)
-{
-  int i;
-  if(w==sl.up){
-    XClearWindow(display,w);
-    XDrawLine(display,w,small_gc,0,SB_DIM,SB_DIM/2,0);
-    XDrawLine(display,w,small_gc,SB_DIM,SB_DIM,SB_DIM/2,0);
-    return 1;
-  }
-  if(w==sl.down){
-    XClearWindow(display,w);
-    XDrawLine(display,w,small_gc,0,0,SB_DIM/2,SB_DIM);
-    XDrawLine(display,w,small_gc,SB_DIM,0,SB_DIM/2,SB_DIM);
-    return 1;
-  }
-  if(w==sl.side){
-    XClearWindow(display,w);
-    for(i=0;i<4;i++)
-       XDrawLine(display,w,small_gc,0,sl.npos+i,SB_DIM,sl.npos+i);
-    return 1;
-  }
-  if(w==sl.text){
-    redraw_scroll_list(sl);
-    return 1;
-  }
-  return(0);
-}
-
-void redraw_scroll_list(SCROLL_LIST sl)
-{
- int i,n=sl.n,j;
- int y;
- if(n==0)return; /* nothing there */
- XClearWindow(display,sl.text);
- for(i=0;i<sl.max;i++){
-  j=i+sl.n0;
-  if(j<n){
-    XDrawString(display,sl.text,small_gc,0,CURY_OFFs+i*(DCURYs+3),
-		sl.v[j],strlen(sl.v[j]));
-    if(j==sl.ihot){
-        y=CURY_OFFs+(i+1)*(DCURYs+3)-3;
-       XDrawLine(display,sl.text,small_gc,0,y,sl.twid,y);
-       XDrawLine(display,sl.text,small_gc,0,y+1,sl.twid,y+1);
-    }
-  }
- }
-}
-void c_hints()
-{
-  int i,index;
-  plintf("#include <math.h>\n\n extern double constants[]; \n");
-  plintf("main(argc,argv)\n char **argv; \n int argc;\n{\n do_main(argc,argv);\n }\n");
-
-  plintf("/* defines for %s  */ \n",this_file);
-  for(i=0;i<NUPAR;i++){
-    index=get_param_index(upar_names[i]);
-    plintf("#define %s constants[%d]\n",upar_names[i],index);
-  }
-  for(i=0;i<NODE;i++){
-    plintf("#define %s y[%d]\n",uvar_names[i],i);
-    plintf("#define %sDOT ydot[%d]\n",uvar_names[i],i);
-  }
-  for(i=NODE;i<NEQ;i++)
-    plintf("#define %s y[%d]\n",uvar_names[i],i);
-  plintf("my_rhs(t,y,ydot,neq)\n double t,*y,*ydot; \n int neq;\n{\n  }\n");
-  plintf("set_fix_rhs(t,y,neq)\n double y,*y;\n int neq;\n{\n }\n");
-  plintf("extra(y,t,nod,neq)\n double t,*y; \n int nod,neq;\n{\n  }\n");
-
-}
 /* CLONE */
 void clone_ode()
 {
@@ -2025,25 +1983,6 @@ void box_enter(b,w,val)
 
 }
 
-
-int find_the_box(b,w,index)
-BoxList b;
-Window w;
-int *index;
-{
- int i;
- if(b.xuse==0)return(0);
- for(i=0;i<b.nwin;i++)
- if(w==b.we[i]){
-		*index=i+b.n0;
-		return(1);
- }
- *index=-1;
- return(0);
-}
-
-
-
 void set_up_xvt()
 {
   int i;
@@ -2622,15 +2561,6 @@ void check_box_cursor()
 		HotBox->off[HotBoxItem],HotBox->pos[HotBoxItem],
 		HotBox->mc);
   HotBoxItem=-1;
-}
-
-
-void prt_focus()
-{
-  Window focus;
-  int rev;
-   XGetInputFocus(display,&focus,&rev);
-   plintf(" focus=%d\n",focus);
 }
 
 

@@ -12,20 +12,20 @@
 
 /* --- Types --- */
 typedef struct {
-  int use,type,xuse;
-  int n,n0;
-  int nwin,minwid,minhgt;
-  Window up,dn;
-  Window pgup,pgdn;
+  int use, type, xuse;
+  int n, n0;
+  int nwin, minwid, minhgt;
+  Window up, dn;
+  Window pgup, pgdn;
   Window base;
-  Window cancel,ok,def,go,close;
-  Window xvt,pp,arr;
+  Window cancel, ok, def, go, close;
+  Window xvt, pp, arr;
   Window *w;
   Window *we;
   Window *ck;
-  char **value,*iname,*wname;
+  char **value, *iname, *wname;
   int *isck;
-  int mc,*off,*pos;
+  int mc, *off, *pos;
 } BoxList;
 
 /* --- Data --- */

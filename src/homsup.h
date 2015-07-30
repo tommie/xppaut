@@ -19,15 +19,7 @@ typedef struct {
 extern HOMOCLIN my_hom;
 
 /* --- Functions --- */
-double hom_bcs();
-void do_projection();
-int pdfdu_();
-int projection_();
-int hqr3loc_();
-int split_();
-int exchng_();
-int qrstep_();
-int orthes_();
-int ortran_();
+void do_projection(double *x0,double t0,double *x1,double t1);
+double hom_bcs(double x);
 
 #endif /* XPPAUT_HOMSUP_H */

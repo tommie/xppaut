@@ -9,10 +9,17 @@
 #define MAX(a,b) ((a)>(b)?(a):(b))
 
 #define COMPZERO 1e-13
+
+static int exchng_();
+static int hqr3loc_();
+static int orthes_();
+static int ortran_();
+static int pdfdu_();
+static int projection_();
+static int qrstep_();
+static int split_();
+
 HOMOCLIN my_hom;
-
-
-
 
 static integer c__1 = 1;
 static integer c__2 = 2;

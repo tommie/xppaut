@@ -76,6 +76,23 @@
 #define cstringmaj MYSTR1
 #define cstringmin MYSTR2
 
+static void check_for_quiet(int argc, char **argv);
+static void do_events(unsigned int min_wid, unsigned int min_hgt);
+static void do_vis_env(void);
+static void getGC(GC *gc);
+static int getxcolors(XWindowAttributes *win_info, XColor **colors);
+static void init_X(void);
+static Window init_win(unsigned int bw, char *icon_name, char *win_name, int x, int y, unsigned int min_wid, unsigned int min_hgt, int argc, char **argv);
+static void load_fonts(void);
+static void make_pops(void);
+static void make_top_buttons(void);
+static void set_big_font(void);
+static void test_color_info(void);
+static void top_button_cross(Window w, int b);
+static void top_button_events(XEvent report);
+static void top_button_press(Window w);
+static void xpp_events(XEvent report, int min_wid, int min_hgt);
+
 int allwinvis=0;
 int use_intern_sets=1;
 int use_ani_file=0;
@@ -96,15 +113,14 @@ char big_font_name[100],small_font_name[100];
 char PlotFormat[100];
 
 int PaperWhite=-1;
-char mycommand[100];
 
-Window TopButton[6];
+static Window TopButton[6];
 /* Window win; */
 Window draw_win;
 Window main_win;
 Window command_pop,info_pop;
 GC gc, gc_graph,small_gc, font_gc;
-unsigned int Black,White;
+static unsigned int Black,White;
 char UserBlack[8];
 char UserWhite[8];
 char UserMainWinColor[8];
@@ -144,7 +160,7 @@ double SLIDER1INIT=0.5;
 double SLIDER2INIT=0.5;
 double SLIDER3INIT=0.5;
 
-int ALREADY_SWAPPED=0;
+static int ALREADY_SWAPPED=0;
 
 /*Set this to 1 if you want the tutorial to come up at start-up
 as default behavior
@@ -154,8 +170,6 @@ int DoTutorial=0;
 OptionsSet notAlreadySet;
 
 XFontStruct *big_font,*small_font;
-
- int popped=0;
 
 void do_main(argc,argv)
 char **argv;
@@ -493,7 +507,6 @@ getGC(&font_gc);
  if(COLOR)MakeColormap();
 
  set_big_font();
-// set_small_font();
 
 XSetFont(display,small_gc,small_font->fid);
 
@@ -829,7 +842,6 @@ void init_X ()
     MakeColormap ();
 
   set_big_font ();
-/* set_small_font(); */
 
   XSetFont (display, small_gc, small_font->fid);
   /*make_pops();*/
@@ -862,17 +874,6 @@ void set_big_font()
  CURY_OFF=CURY_OFFb;
  XSetFont(display,gc,big_font->fid);
 }
-
-void set_small_font()
-{
-  DCURX=DCURXs;
- DCURY=DCURYs;
- CURY_OFF=CURY_OFFs;
- XSetFont(display,gc,small_font->fid);
-}
-
-
-
 
 void xpp_events(XEvent report,int min_wid,int min_hgt)
 {

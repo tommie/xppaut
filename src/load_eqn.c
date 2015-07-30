@@ -45,8 +45,14 @@
 #define DFNORMAL 1
 #define MAXOPT 1000
 
-char *interopt[MAXOPT];
-int Nopts=0;
+static void do_intern_set(char *name1, char *value);
+static void fil_flt(FILE *fpt, double *val);
+static void fil_int(FILE *fpt, int *val);
+static void read_defaults(FILE *fp);
+static void split_apart(char *bob, char *name, char *value);
+
+static char *interopt[MAXOPT];
+static int Nopts=0;
 int RunImmediately=0;
 int IX_PLT[10],IY_PLT[10],IZ_PLT[10],NPltV;
 int MultiWin=0;
@@ -59,11 +65,9 @@ double last_ic[MAXODE];
 
 char delay_string[MAXODE][80];
 int itor[MAXODE];
-/*char this_file[100];
- */
 char this_file[XPP_MAX_NAME];
 char this_internset[XPP_MAX_NAME];
-float oldhp_x,oldhp_y,my_pl_wid,my_pl_ht;
+static float oldhp_x,oldhp_y,my_pl_wid,my_pl_ht;
 int  STORFLAG,INFLAG;
 double x_3d[2],y_3d[2],z_3d[2];
 int IXPLT,IYPLT,IZPLT;

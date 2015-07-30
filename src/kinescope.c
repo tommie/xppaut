@@ -14,15 +14,24 @@
 #include "scrngif.h"
 
 #define MAXFILM 250
-int ks_ncycle=1;
-int ks_speed=50;
+
+static void auto_play(void);
+static void make_anigif(void);
+static void play_back(void);
+static void save_kine(void);
+static void save_movie(char *basename, int fmat);
+static int show_frame(int i, int h, int w);
+static void too_small(void);
+
+static int ks_ncycle=1;
+static int ks_speed=50;
 int mov_ind;
 typedef struct {
 		unsigned int h,w;
 		Pixmap xi;
 		} MOVIE;
 
-MOVIE movie[MAXFILM];
+static MOVIE movie[MAXFILM];
 
 void do_movie_com(int c)
 

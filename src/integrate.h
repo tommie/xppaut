@@ -6,15 +6,14 @@
 
 /* --- Type --- */
 typedef struct {
-  char item[30],item2[30];
-  int steps,steps2,reset,oldic,index,index2,cycle,type,type2,movie;
-  double plow,phigh,plow2,phigh2;
+  char item[30], item2[30];
+  int steps, steps2, reset, oldic, index, index2, cycle, type, type2, movie;
+  double plow, phigh, plow2, phigh2;
   int rtype;
 } RANGE;
 
-typedef struct
-{
-  int nvec,node;
+typedef struct {
+  int nvec, node;
   double *x;
 } XPPVEC;
 
@@ -27,7 +26,8 @@ extern int MyStart;
 extern double MyTime;
 extern RANGE range;
 extern int RANGE_FLAG;
-extern int (*solver)(double *y, double *tim, double dt, int nstep, int neq, int *ist, double *work);
+extern int (*solver)(double *y, double *tim, double dt, int nstep, int neq,
+                     int *ist, double *work);
 extern int SuppressBounds;
 extern int SuppressOut;
 extern XPPVEC xpv;
@@ -47,7 +47,8 @@ void find_equilib_com(int com);
 void get_ic(int it, double *x);
 void init_ar_ic(void);
 void init_range(void);
-int integrate(double *t, double *x, double tend, double dt, int count, int nout, int *start);
+int integrate(double *t, double *x, double tend, double dt, int count, int nout,
+              int *start);
 int ode_int(double *y, double *t, int *istart, int ishow);
 void restore(int i1, int i2);
 void run_now(void);

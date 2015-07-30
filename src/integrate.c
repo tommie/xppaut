@@ -79,8 +79,8 @@ typedef struct {
   char var[NAR_IC];
   int j1,j2;
 } ARRAY_IC;
-int ar_ic_defined=0;
-ARRAY_IC ar_ic[NAR_IC];
+static int ar_ic_defined=0;
+static ARRAY_IC ar_ic[NAR_IC];
 typedef struct
 {
   int n,flag;
@@ -91,7 +91,7 @@ typedef struct
   int t1,t2,t3,t4;
 } FIXPTLIST;
 
-FIXPTLIST fixptlist;
+static FIXPTLIST fixptlist;
 
 typedef struct
 {
@@ -100,7 +100,30 @@ typedef struct
   double xlo[MAXODE],xhi[MAXODE];
 } FIXPTGUESS;
 
-FIXPTGUESS fixptguess;
+static void batch_integrate_once(void);
+static void do_batch_dry_run(void);
+static void do_eq_range(double *x);
+static void do_monte_carlo_search(int append, int stuffbrowse,int ishoot);
+static void do_new_array_ic(char *new, int j1, int j2);
+static void do_plot(float *oldxpl, float *oldypl, float *oldzpl, float *xpl, float *ypl, float *zpl);
+static void do_start_flags(double *x, double *t);
+static void evaluate_ar_ic(char *v, char *f, int j1, int j2);
+static int form_ic(void);
+static void init_monte_carlo(void);
+static void monte_carlo(void);
+static void plot_one_graph(float *xv, float *xvold, int node, int neq, double ddt, int *tc);
+static void plot_the_graphs(float *xv, float *xvold, int node, int neq, double ddt, int *tc);
+static int range_item(void);
+static int range_item2(void);
+static int set_array_ic(void);
+static int set_up_eq_range(void);
+static int set_up_range(void);
+static int set_up_range2(void);
+static int stor_full(void);
+static void store_new_array_ic(char *new, int j1, int j2, char *formula);
+static int write_this_run(char *file, int i);
+
+static FIXPTGUESS fixptguess;
 
 XPPVEC xpv;
 int SuppressOut=0;
@@ -111,9 +134,8 @@ double  MyData[MAXODE],MyTime;
 int MyStart;
 int RANGE_FLAG;
 double LastTime;
-int STOP_FLAG=0;
-int PSLineStyle;
- struct {
+static int STOP_FLAG=0;
+static struct {
          char item[30];
 	 int steps,shoot,col,movie;
 	 double plow,phigh;
@@ -214,7 +236,7 @@ void init_range()
  init_monte_carlo();
 }
 
-int set_up_eq_range()
+static int set_up_eq_range()
 {
 static char *n[]={"*2Range over","Steps","Start","End",
 		     "Shoot (Y/N)",
@@ -279,7 +301,7 @@ void cont_integ()
 }
 
 
-int range_item()
+static int range_item()
 {
  int i;
  char bob[256];
@@ -301,7 +323,7 @@ int range_item()
  return 1;
 }
 
-int range_item2()
+static int range_item2()
 {
  int i;
  char bob[256];
@@ -323,7 +345,7 @@ int range_item2()
  return 1;
 }
 
-int set_up_range()
+static int set_up_range()
 {
  static char *n[]={"*3Range over","Steps","Start","End",
 		     "Reset storage (Y/N)",
@@ -370,7 +392,7 @@ int set_up_range()
  return(0);
 }
 
-int set_up_range2()
+static int set_up_range2()
 {
  static char *n[]={"*3Vary1","Start1","End1",
                    "*3Vary2","Start2","End2","Steps",
@@ -432,7 +454,7 @@ sprintf(values[6],"%d",range.steps);
  return(0);
 }
 
-void init_monte_carlo()
+static void init_monte_carlo()
 {
   int i;
   fixptguess.tol=.001;
@@ -445,7 +467,7 @@ void init_monte_carlo()
   fixptlist.n=0;
 }
 
-void monte_carlo()
+static void monte_carlo()
 {
   int append=0;
   int i=0,done=0,ishoot=0;
@@ -478,7 +500,7 @@ void monte_carlo()
 
 
 
-void do_monte_carlo_search(int append, int stuffbrowse,int ishoot)
+static void do_monte_carlo_search(int append, int stuffbrowse,int ishoot)
 {
   int i,j,k,m,n=fixptguess.n;
   int ierr,new=1;
@@ -561,7 +583,7 @@ void do_monte_carlo_search(int append, int stuffbrowse,int ishoot)
 
 
 
-void do_eq_range(x)
+static void do_eq_range(x)
 double *x;
 {
  double parlo,parhi,dpar,temp;
@@ -937,7 +959,7 @@ void batch_integrate()
 }
 
 
-void do_batch_dry_run()
+static void do_batch_dry_run()
 {
 	if (!dryrun){return;}
 
@@ -987,7 +1009,7 @@ void do_batch_dry_run()
 
 
 
-void batch_integrate_once()
+static void batch_integrate_once()
 {
  if (dryrun){return;}
  FILE *fp;
@@ -1059,7 +1081,7 @@ void batch_integrate_once()
   */
 }
 
-int write_this_run(file,i)
+static int write_this_run(file,i)
      char *file;
      int i;
 {
@@ -1276,22 +1298,7 @@ void do_init_data(int com)
 usual_integrate_stuff(x);
 DELTA_T=old_dt;
 }
-void run_from_x(double *x)
-{
 
-  plintf(" %g %g \n",x[0],x[1]);
- MyStart=1;
- RANGE_FLAG=0;
- DelayErr=0;
- reset_dae();
- MyTime=T0;
- /* get_ic(2,x); */
-  STORFLAG=1;
-  POIEXT=0;
-  storind=0;
-  reset_browser();
-  usual_integrate_stuff(x);
-}
 void run_now()
 {
 
@@ -1311,7 +1318,7 @@ void run_now()
  }
 
 
-void do_start_flags(double *x,double *t)
+static void do_start_flags(double *x,double *t)
 {
  int iflagstart=1;
  double tnew=*t;
@@ -1348,7 +1355,7 @@ void usual_integrate_stuff(x)
     u[5..20]=f([j])
 */
 
-void do_new_array_ic(new,j1,j2)
+static void do_new_array_ic(new,j1,j2)
      char *new;
      int j1,j2;
 {
@@ -1385,7 +1392,7 @@ void do_new_array_ic(new,j1,j2)
 
 }
 
-void store_new_array_ic(new,j1,j2,formula)
+static void store_new_array_ic(new,j1,j2,formula)
      char *new,*formula;
      int j1,j2;
 {
@@ -1417,7 +1424,7 @@ void store_new_array_ic(new,j1,j2,formula)
   strcpy(ar_ic[ihot].formula,formula);
 }
 
-void evaluate_ar_ic(v,f,j1,j2)
+static void evaluate_ar_ic(v,f,j1,j2)
      char *v,*f;
      int j1,j2;
 {
@@ -1493,7 +1500,7 @@ void arr_ic_start()
 
 }
 
-int set_array_ic()
+static int set_array_ic()
 {
  char junk[50];
  char new[50];
@@ -1554,7 +1561,7 @@ int set_array_ic()
    return 1;
 }
 
-int form_ic()
+static int form_ic()
 {
   int ans;
   while(1){
@@ -2271,7 +2278,7 @@ void send_output(double *y,double t)
   }
 }
 
-  void  do_plot(oldxpl,oldypl, oldzpl,xpl,  ypl, zpl)
+static void  do_plot(oldxpl,oldypl, oldzpl,xpl,  ypl, zpl)
    float *oldxpl, *oldypl, *oldzpl,*xpl,  *ypl,*zpl;
 {
 	int ip,np=MyGraph->nvars;
@@ -2363,7 +2370,7 @@ int ip,np=MyGraph->nvars;
 }
 
 
-void plot_the_graphs(float *xv,float *xvold,int node,int neq,double ddt,int *tc)
+static void plot_the_graphs(float *xv,float *xvold,int node,int neq,double ddt,int *tc)
 {
   int i;
   int ic=current_pop;
@@ -2380,7 +2387,7 @@ void plot_the_graphs(float *xv,float *xvold,int node,int neq,double ddt,int *tc)
  make_active(ic);
 }
 
-void plot_one_graph(float *xv,float *xvold,int node,int neq,double ddt,int *tc)
+static void plot_one_graph(float *xv,float *xvold,int node,int neq,double ddt,int *tc)
 {
  int *IXPLT,*IYPLT,*IZPLT;
  int NPlots,ip;
@@ -2562,7 +2569,7 @@ void stop_integration()
 
 
 
-int stor_full()
+static int stor_full()
 {
 
  char ch;

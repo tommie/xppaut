@@ -3,9 +3,9 @@
 
 /* --- Types --- */
 typedef struct {
-  int nbins,nbins2,type,col,col2,fftc;
-  double xlo,xhi;
-  double ylo,yhi;
+  int nbins, nbins2, type, col, col2, fftc;
+  double xlo, xhi;
+  double ylo, yhi;
   char cond[80];
 } HIST_INFO;
 
@@ -28,6 +28,6 @@ void compute_sd(void);
 void compute_stacor(void);
 void hist_back(void);
 int new_2d_hist(void);
-void post_process_stuff();
+void post_process_stuff(void);
 
 #endif /* XPPAUT_HISTOGRAM_H */

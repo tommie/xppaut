@@ -14,25 +14,34 @@
 #include "parserslow.h"
 #include "storage.h"
 
+static int cross_spectrum(float *data, float *data2, int nr, int win, int w_type, float *pow, int type);
+static void fft(float *data, float *ct, float *st, int nmodes, int length);
+static void fftxcorr(float *data1, float *data2, int length, int nlag, float *cr, int flag);
+static void four_back(void);
+static int get_col_info(int *col, char *prompt);
+static void just_fourier(int flag);
+static void just_sd(int flag);
+static void mycor2(float *x, float *y, int n, int nbins, float *z, int flag);
+static void new_four(int nmodes, int col);
+static void new_hist(int nbins, double zlo, double zhi, int col, int col2, char *condition, int which);
+static int spectrum(float *data, int nr, int win, int w_type, float *pow);
+static int two_d_hist(int col1, int col2, int ndat, int n1, int n2, double xlo, double xhi, double ylo, double yhi);
 
 int spec_col=1,spec_wid=512,spec_win=2,spec_col2=1,spec_type=0;
 /* type =0 for PSD
    type =1 for crossspectrum
    type =2 for coherence
-
-
 */
 
 int post_process=0;
 
 HIST_INFO hist_inf = {100,100,0,1,1,0,0,1,0,1,""};
 
-int hist_len,four_len;
-float *my_hist[MAXODE+1];
-float *my_four[MAXODE+1];
-int HIST_HERE,FOUR_HERE;
-
-float total_time;
+static int hist_len,four_len;
+static float *my_hist[MAXODE+1];
+static float *my_four[MAXODE+1];
+static int HIST_HERE;
+int FOUR_HERE;
 
 int two_d_hist(int col1,int col2,int ndat,int n1,int n2,double xlo,double xhi,double ylo,double yhi)
      /*
@@ -128,8 +137,6 @@ void new_four(nmodes,col)
  for(i=3;i<=NEQ;i++)my_four[i]=storage[i];
 for(i=0;i<length;i++)my_four[0][i]=(float)i/total;
 /* for(i=0;i<length;i++)my_four[0][i]=(float)i; */
- /*  sft(my_browser.data[col],my_four[1],my_four[2],length,storind);
-  */
  bob=get_data_col(col);
     fft(bob,my_four[1],my_four[2],nmodes,storind);
  four_back();
@@ -335,7 +342,6 @@ void new_hist(nbins,zlo,zhi,col,col2,condition,which)
     return;
   }
   if(which==2){
-    /* mycor(storage[col],storage[col2],storind,zlo,zhi,nbins,my_hist[1],1); */
     mycor2(storage[col],storage[col2],storind,nbins,my_hist[1],1);
     hist_back();
     ping();
@@ -758,37 +764,6 @@ void compute_stacor()
 	   hist_inf.xhi,hist_inf.col,0,hist_inf.cond,1);
 }
 
-void mycor(float *x,float *y, int n,  double zlo, double zhi, int nbins, float *z, int flag)
-{
-  int i,j;
-  int k,count=0;
-  float sum,avx=0.0,avy=0.0;
-  double dz=(zhi-zlo)/(double)nbins,jz;
-  if(flag){
-    for(i=0;i<n;i++){
-      avx+=x[i];
-      avy+=y[i];
-    }
-    avx=avx/(float)n;
-    avy=avy/(float)n;
-  }
-  for(j=0;j<=nbins;j++){
-    sum=0.0;
-    count=0;
-    jz=dz*j+zlo;
-    for(i=0;i<n;i++){
-      k=i+(int)jz;
-      if((k>=0)&&(k<n)){
-	count++;
-	sum+=(x[i]-avx)*(y[k]-avy);
-      }
-    }
-    if(count>0)
-      sum=sum/count;
-    z[j]=sum;
-  }
-}
-
 void mycor2(float *x,float *y, int n, int nbins, float *z, int flag)
 {
   int i,j;
@@ -831,36 +806,6 @@ void compute_hist()
 	   hist_inf.xhi,hist_inf.col,0,hist_inf.cond,0);
 }
 
-
-
-void sft(data,ct,st,nmodes,grid)
-int grid,nmodes;
-float *data,*ct,*st;
-{
- int i,j;
- double sums,sumc;
- double tpi=6.28318530717959;
- double dx,xi,x;
- dx=tpi/(grid);
- for(j=0;j<nmodes;j++){
-   sums=0.0;
-   sumc=0.0;
-   xi=j*dx;
-   for(i=0;i<grid;i++){
-    x=i*xi;
-     sumc+=(cos(x)*data[i]);
-     sums+=(sin(x)*data[i]);
-   }
-   if(j==0){
-   ct[j]=sumc/(float)grid;
-   st[j]=sums/(float)grid;
- }
-   else{
-     ct[j]=2.*sumc/(float)grid;
-   st[j]=2.*sums/(float)grid;
-   }
- }
-}
 /* experimental -- does it work */
 /* nlag should be less than length/2 */
 void fftxcorr(float *data1,float *data2,int length,int nlag,float *cr,int flag)

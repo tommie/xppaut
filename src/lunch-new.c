@@ -23,7 +23,14 @@
 #include "volterra2.h"
 
 
-int set_type=0;
+static void do_info(FILE *fp);
+static void dump_eqn(FILE *fp);
+static void io_exprs(int f, FILE *fp);
+static void io_graph(int f, FILE *fp);
+static void io_numerics(int f, FILE *fp);
+static void io_parameters(int f, FILE *fp);
+
+static int set_type=0;
 
 
 void file_inf()
@@ -653,20 +660,6 @@ char bob[256];
  fprintf(fp,"%.16g  %s\n",*z,ss);
 }
 
-void io_float(z,fp,f,ss)
-int f;
-FILE *fp;
-char *ss;
-float *z;
-{
- char bob[256];
-if(f==READEM){
-   fgets(bob,255,fp);
-   *z=(float)atof(bob);
- }
- else
- fprintf(fp,"%.16g   %s\n",*z,ss);
-}
 /*
 io_int_array(k,n,fp,f)
 int n,f,*k;

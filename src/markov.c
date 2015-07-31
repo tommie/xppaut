@@ -29,7 +29,19 @@
 #define RNMX (1.0-EPS)
 #define PI 3.1415926
 
-long int myrandomseed=-1;
+static void add_markov_entry(int index, int j, int k, char *expr);
+static int compile_markov(int index, int j, int k);
+static void  compute_em(void);
+static void create_markov(int nstates, double *st, int type, char *name);
+static void extract_expr(char *source, char *dest, int *i0);
+static void  free_stoch(void);
+static double gammln(double xx);
+static void  init_stoch(int len);
+static double new_state(double old, int index, double dt);
+static double ran1(long *idum);
+static void update_markov(double *x, double t, double dt);
+
+static long int myrandomseed=-1;
 
 
 typedef struct {
@@ -42,13 +54,14 @@ typedef struct {
   char name[12];
 } MARKOV;
 
-MARKOV markov[MAXMARK];
+static MARKOV markov[MAXMARK];
 
 
-float *my_mean[MAXODE],*my_variance[MAXODE];
-int stoch_len;
+static float *my_mean[MAXODE],*my_variance[MAXODE];
+static int stoch_len;
 
-int STOCH_FLAG,STOCH_HERE,N_TRIALS;
+int STOCH_FLAG;
+static int STOCH_HERE,N_TRIALS;
 int Wiener[MAXPAR];
 int NWiener;
 
@@ -191,7 +204,7 @@ int old_build_markov(fptr,name)
  return index;
 }
 
-void extract_expr(source,dest,i0)
+static void extract_expr(source,dest,i0)
      char *source,*dest;
      int *i0;
 {
@@ -220,7 +233,7 @@ void extract_expr(source,dest,i0)
 
 
 
-void create_markov(nstates,st,type,name)
+static void create_markov(nstates,st,type,name)
      int nstates,type;
      double *st;
      char *name;
@@ -251,7 +264,7 @@ void create_markov(nstates,st,type,name)
 
 }
 
-void add_markov_entry(index,j,k,expr)
+static void add_markov_entry(index,j,k,expr)
      int index,j,k;
      char *expr;
 {
@@ -301,7 +314,7 @@ void compile_all_markov()
   }
 }
 
-int compile_markov(index,j,k)
+static int compile_markov(index,j,k)
      int index,j,k;
 {
   char *expr;
@@ -322,7 +335,7 @@ int compile_markov(index,j,k)
 }
 
 
-void update_markov(x,t,dt)
+static void update_markov(x,t,dt)
      double *x,t,dt;
 {
   int i;
@@ -344,7 +357,7 @@ void update_markov(x,t,dt)
 
 
 
-double new_state(old,index,dt)
+static double new_state(old,index,dt)
      double old,dt;
      int index;
 {
@@ -555,7 +568,7 @@ void variance_back()
 }
 
 
-void compute_em()
+static void compute_em()
 {
   double *x;
   x=&MyData[0];
@@ -565,7 +578,7 @@ void compute_em()
   redraw_ics();
 }
 
-void free_stoch()
+static void free_stoch()
 {
   int i;
   if(STOCH_HERE){
@@ -579,7 +592,7 @@ void free_stoch()
 }
 
 
-void init_stoch(len)
+static void init_stoch(len)
      int len;
 {
   int i,j;
@@ -637,7 +650,7 @@ void do_stats(ierr)
 
   }
 }
-double gammln(double xx)
+static double gammln(double xx)
 {
 	double x,y,tmp,ser;
 	static double cof[6]={76.18009172947146,-86.50532032941677,
@@ -702,7 +715,7 @@ void nsrand48(int seed)
 }
 
 
-double ran1(idum)
+static double ran1(idum)
 long *idum;
 {
 	int j;

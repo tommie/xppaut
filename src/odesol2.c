@@ -12,6 +12,12 @@
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #define MIN(a,b) ((a)<(b)?(a):(b))
 
+static int abmpc(double *y, double *t, double dt, int neq);
+static int bandfac(double *a, int ml, int mr, int n);
+static void bandsol(double *a, double *b, int ml, int mr, int n);
+static void get_band_jac(double *a, double *y, double t, double *ypnew, double *ypold, int n, double eps, double scal);
+static void get_the_jac(double t, double *y, double *yp, double *ypnew, double *dfdy, int neq, double eps, double scal);
+
 int (*rhs)();
 
 double coefp[]={ 6.875/3.00,-7.375/3.00,4.625/3.00,-.375},

@@ -9,11 +9,8 @@
 #include "parserslow.h"
 #include "simplenet.h"
 
+static void vec_rhs(double t, double *y, double *ydot, int neq);
 
-int MAIN__()
-{
-	return(0);
-}
 int main(argc,argv)
      char **argv;
      int argc;
@@ -123,7 +120,7 @@ void rhs_only(double *y,double *ydot)
   }
 }
 
-void vec_rhs( t,y,ydot,neq)
+static void vec_rhs( t,y,ydot,neq)
 double t,*y,*ydot;
 int neq;
 {

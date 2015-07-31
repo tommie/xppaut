@@ -1,6 +1,7 @@
 #include "nullcline.h"
 
 #include <math.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -26,22 +27,52 @@
 
 #define MAX_NULL 10000
 
+/* --- Types --- */
+typedef struct {
+  float x,y,z;
+} Pt;
+
+typedef struct nclines {
+  float *xn,*yn;
+  int nmx,nmy;
+  int n_ix,n_iy;
+  struct nclines *n,*p;
+} NCLINES;
+
 typedef struct {
   double xlo,xhi;
   char rv[10];
   int nstep,ic,stor;
 } RANGE_INFO;
 
+static void add_froz_cline(float *xn, int nmx, int n_ix, float *yn, int nmy, int n_iy);
+static void clear_froz_cline(void);
+static void do_cline(int ngrid, double x1, double y1, double x2, double y2);
+static void do_range_clines(void);
+static void dump_clines(FILE *fp, float *x, int nx, float *y, int ny);
+static float fnull(double x, double y);
+static void get_max_dfield(double *y, double *ydot, double u0, double v0, double du, double dv, int n, int inx, int iny, double *mdf);
+static int interpolate(Pt p1, Pt p2, double z, float *x, float *y);
+static void new_nullcline(int course, double xlo, double ylo, double xhi, double yhi, float *stor, int *npts);
+static void quad_contour(Pt p1, Pt p2, Pt p3, Pt p4);
+static void redraw_froz_cline(int flag);
+static void restor_null(float *v, int n, int d);
+static void save_frozen_clines(char *fn);
+static void save_the_nullclines(void);
+static void start_ncline(void);
+static void stor_null(double x1, double y1, double x2, double y2);
+
 int DFBatch=0;
 int NCBatch=0;
 int NullStyle=0; /* 1 is with little vertical/horizontal lines */
 
 int XNullColor=2,YNullColor=7;
-int num_x_n,num_y_n,num_index,
+static int num_x_n,num_y_n,num_index,
     null_ix,null_iy,WHICH_CRV;
-float null_dist,*X_n,*Y_n,*saver,*NTop,*NBot;
-int DF_GRID=10,DF_FLAG=0,DF_IX=-1,DF_IY=-1;
-int DFIELD_TYPE=0;
+static float *X_n,*Y_n,*saver,*NTop,*NBot;
+int DF_GRID=10,DF_FLAG=0;
+static int DF_IX=-1,DF_IY=-1;
+static int DFIELD_TYPE=0;
 
 int DOING_DFIELD=0;
 
@@ -49,11 +80,11 @@ char ColorVia[15]="speed";
 double ColorViaLo=0,ColorViaHi=1;
 int ColorizeFlag=0;
 
-RANGE_INFO ncrange;
+static RANGE_INFO ncrange;
 
-NCLINES *ncperm;
-int n_nstore=0;
-int ncline_cnt;
+static NCLINES *ncperm;
+static int n_nstore=0;
+static int ncline_cnt;
 
 void froz_cline_stuff_com(int i)
 {
@@ -698,32 +729,6 @@ void dump_clines(fp,x,nx,y,ny) /* gnuplot format */
 
 }
 
-void dump_clines_old(fp,x,nx,y,ny)
-     FILE *fp;
-     float *x,*y;
-     int nx,ny;
-{
-    int i,ix,iy;
-    int n;
-    n=nx;
-    if(n<ny)n=ny;
-    for(i=0;i<n;i++){
-      if(i>=nx)
-	ix=nx-1;
-      else
-	ix=i;
-      if(i>=ny)
-	iy=ny-1;
-      else
-	iy=i;
-      fprintf(fp,"%g %g %g %g \n",x[4*ix],x[4*ix+1],y[4*iy],y[4*iy+1]);
-      fprintf(fp,"%g %g %g %g \n",x[4*ix+2],x[4*ix+3],y[4*iy+2],y[4*iy+3]);
-
-
-    }
-
-}
-
 void restor_null(v,n,d) /* d=1 for x and 2 for y  */
      float *v;
      int n,d;
@@ -915,38 +920,6 @@ Pt p1,p2,p3,p4;
 
 }
 
-
-void triangle_contour(p1,p2,p3)
-
-Pt p1,p2,p3;
-{
- float x[3],y[3];
- int count=0;
- if(p1.z*p2.z<=0.0)
- /* if(((0.0<=p1.z)&&(0.0>=p2.z))||
-	((0.0>=p1.z)&&(0.0<=p2.z))) */
-	if(interpolate(p1,p2,0.0,&x[count],&y[count]))count++;
-if( p1.z*p3.z<=0.0)
-/*  if(((0.0<=p1.z)&&(0.0>=p3.z))||
-	((0.0>=p1.z)&&(0.0<=p3.z))) */
-
-	if(interpolate(p1,p3,0.0,&x[count],&y[count]))count++;
-if(p2.z*p3.z<=0.0)
-  /* if(((0.0<=p3.z)&&(0.0>=p2.z))||
-	((0.0>=p3.z)&&(0.0<=p2.z))) */
-	if(interpolate(p3,p2,0.0,&x[count],&y[count]))count++;
-
- if(count==2){
-   line_abs(x[0],y[0],x[1],y[1]);
-   stor_null(x[0],y[0],x[1],y[1]);
- }
-
-
- }
-
-
-
-
 void do_cline(ngrid,x1,y1,x2,y2)
 int ngrid;
 float x1,y1,x2,y2;
@@ -985,16 +958,6 @@ float x1,y1,x2,y2;
      p[2].x=x;
      p[2].y=y;
      p[2].z=NBot[i];
- /*      Uncomment for triangle contour
-      p[4].x=.25*(p[0].x+p[1].x+p[2].x+p[3].x);
-     p[4].y=.25*(p[0].y+p[1].y+p[2].y+p[3].y);
-     p[4].z=.25*(p[0].z+p[1].z+p[2].z+p[3].z);
-
-
-     triangle_contour(p[0],p[1],p[4]);
-     triangle_contour(p[1],p[4],p[2]);
-     triangle_contour(p[4],p[3],p[2]);
-     triangle_contour(p[0],p[4],p[3]); */
  /*   Uncomment for quad contour     */
      quad_contour(p[0],p[1],p[2],p[3]);
      /*     FlushDisplay(); */

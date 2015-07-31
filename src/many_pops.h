@@ -10,7 +10,7 @@
 
 /* --- Types --- */
 typedef struct {
-  Window w,w_info;
+  Window w, w_info;
   int Use;
   int Restore;
   int Nullrestore;
@@ -20,28 +20,28 @@ typedef struct {
   int Height;
   int nvars;
   double rm[3][3];
-  double min_scale,color_scale;
-  double xmin,ymin,zmin,xmax,ymax,zmax,xorg,yorg,zorg;
-  double xbar,ybar,zbar,dx,dy,dz;
-  int xv[MAXPERPLOT],yv[MAXPERPLOT],zv[MAXPERPLOT];
-  int line[MAXPERPLOT],color[MAXPERPLOT];
-  double Theta,Phi;
-  double ZPlane,ZView;
-  double xlo,ylo,xhi,yhi,oldxlo,oldxhi,oldylo,oldyhi;
-  int grtype,ThreeDFlag,TimeFlag,PerspFlag;
-  int xshft,yshft,zshft;
-  int xorgflag,yorgflag,zorgflag;
-  int ColorFlag,ColorValue;
-  char xlabel[30],ylabel[30],zlabel[30];
+  double min_scale, color_scale;
+  double xmin, ymin, zmin, xmax, ymax, zmax, xorg, yorg, zorg;
+  double xbar, ybar, zbar, dx, dy, dz;
+  int xv[MAXPERPLOT], yv[MAXPERPLOT], zv[MAXPERPLOT];
+  int line[MAXPERPLOT], color[MAXPERPLOT];
+  double Theta, Phi;
+  double ZPlane, ZView;
+  double xlo, ylo, xhi, yhi, oldxlo, oldxhi, oldylo, oldyhi;
+  int grtype, ThreeDFlag, TimeFlag, PerspFlag;
+  int xshft, yshft, zshft;
+  int xorgflag, yorgflag, zorgflag;
+  int ColorFlag, ColorValue;
+  char xlabel[30], ylabel[30], zlabel[30];
   char gr_info[256];
 } GRAPH;
 
 typedef struct {
   Window w;
-  char key[20],name[10];
-  short use,type;
-  float *xv,*yv,*zv;
-  int len,color;
+  char key[20], name[10];
+  short use, type;
+  float *xv, *yv, *zv;
+  int len, color;
 } CURVE;
 
 /* --- Data --- */

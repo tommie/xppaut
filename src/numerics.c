@@ -31,20 +31,12 @@
 #include "storage.h"
 #include "volterra2.h"
 
-
-typedef struct {
-  double tmod;
-  int maxvar,sos,type,sign;
-  char section[256];
-  int formula[256];
-} POINCARE_MAP;
-
-POINCARE_MAP my_pmap;
+static void check_pos(int *j);
+static void get_method(void);
+static void ruelle(void);
 
 int METHOD;
 
-
-float *fft_data,*hist_data,color_scale,min_scale;
 
 int cv_bandflag=0,cv_bandupper=1,cv_bandlower=1;
 
@@ -314,57 +306,6 @@ void ruelle()
    if(MyGraph->yshft<0)MyGraph->yshft=0;
    if(MyGraph->zshft<0)MyGraph->zshft=0;
 }
-
-void init_numerics()
-/*    these are the default values of the numerical parameters   */
-{
-
-  DELTA_T=.05;
-TEND=20.0;
-T0=0.0;
-TRANS=0.0;
- NULL_ERR=.001;
- EVEC_ERR=.001;
- NEWT_ERR=.001;
- BOUND=100.0;
- DELAY=0.0;
-TOLER=.00001;
-HMIN=.001;
-HMAX=1.0;
-
-POIPLN=0.0;
- NMESH=50;
-NJMP=1;
- METHOD=4;
-NC_ITER=100;
-EVEC_ITER=100;
-
-/* new improved poincare map */
-
-my_pmap.maxvar=1;
-my_pmap.type=0;
-my_pmap.sos=0;
-my_pmap.sign=1;
-my_pmap.tmod=8.*atan(1.0);
-sprintf(my_pmap.section," ");
-
-POIMAP=0;
-POIVAR=1;
-POISGN=1;
-SOS=0;
-
-}
-
-void meth_dialog()
-{
-  /*static char *n[]={"*6Method","Abs tol","Rel Tol","DtMin","DtMax",
-		    "Banded(y/n)","UpperBand","LowerBand"};*/
-   char values[8][MAX_LEN_SBOX];
-   sprintf(values[0],"%d",METHOD);
-   sprintf(values[1],"%g",ATOLER);
-   sprintf(values[2],"%g",TOLER);
-}
-
 
 void compute_one_period(double period,double *x,char *name)
 {

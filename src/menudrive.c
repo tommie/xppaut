@@ -38,18 +38,16 @@
 #include "txtread.h"
 #include "bitmap/alert.bitmap"
 
-int status;
+static void do_file_com(int com);
+
+static int status;
 
 typedef struct {
   Window w;
   char text[256];
   int here;} MSGBOXSTRUCT;
 
-MSGBOXSTRUCT MsgBox;
-
-
-char *getenv();
-
+static MSGBOXSTRUCT MsgBox;
 
 void do_tutorial()
 {
@@ -425,7 +423,7 @@ void make_adj()
    run_the_commands(M_UAN+i);
 }
 
-void do_file_com(int com)
+static void do_file_com(int com)
 {
   switch(com){
   case M_FT:

@@ -18,7 +18,7 @@
 #define M_ID 12
 #define M_IB 13
 
-#define MAX_M_I 13 
+#define MAX_M_I 13
 
 
 #define M_C  20
@@ -222,50 +222,43 @@
 #define M_UC 410
 
 
-void xpp_hlp(void);
+void FlushDisplay(void);
+int GetMouseXY(int *x, int *y);
+void KillMessageBox(void);
 void MessageBox(char *m);
 void RedrawMessageBox(Window w);
-void KillMessageBox(void);
 int TwoChoice(char *c1, char *c2, char *q, char *key);
-int GetMouseXY(int *x, int *y);
-void FlushDisplay(void);
-void clear_draw_window(void);
-void drw_all_scrns(void);
-void clr_all_scrns(void);
-void run_the_commands(int com);
-void do_stochast(void);
-void get_pmap_pars(void);
-void set_col_par(void);
-void make_adj(void);
-void do_file_com(int com);
-void do_gr_objs(void);
-void new_lookup(void);
-void find_bvp(void);
-void change_view(void);
-void do_windows(void);
 void add_a_curve(void);
-void do_movie(void);
-void do_torus(void);
-void window_zoom(void);
-void direct_field(void);
-void new_clines(void);
-void froz_cline_stuff(void);
-void find_equilibrium(void);
-void ini_data_menu(void);
-void new_param(void);
+void change_view(void);
+void clear_draw_window(void);
 void clear_screens(void);
-void x_vs_t(void);
-void redraw_them_all(void);
-void get_3d_par(void);
-void edit_xpprc();
+void clr_all_scrns(void);
+void direct_field(void);
+void do_gr_objs(void);
+void do_movie(void);
+void do_stochast(void);
+void do_torus(void);
 void do_tutorial();
+void do_windows(void);
+void drw_all_scrns(void);
+void edit_xpprc();
+void find_bvp(void);
+void find_equilibrium(void);
+void froz_cline_stuff(void);
+void get_3d_par(void);
+void get_pmap_pars(void);
+void ini_data_menu(void);
+void make_adj(void);
+void new_clines(void);
+void new_lookup(void);
+void new_param(void);
+void redraw_them_all(void);
+void run_the_commands(int com);
+void set_col_par(void);
+void window_zoom(void);
+void x_vs_t(void);
+void xpp_hlp(void);
 
 
 
 #endif
-
-
-
-
-
-

@@ -11,18 +11,6 @@
 #define FILE_ENTRIES 16
 #define NUM_ENTRIES 18
 
-/* --- Types --- */
-typedef struct {
-  Window base;
-  Window title;
-  Window w[25];
-  char key[25];
-  char **names;
-  char **hints;
-  int n;
-  int visible;
-} MENUDEF;
-
 /* --- Data --- */
 extern char *main_menu[];
 extern char *num_menu[];

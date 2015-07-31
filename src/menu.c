@@ -10,6 +10,18 @@
 #include "menus.h"
 #include "pop_list.h"
 
+/* --- Types --- */
+typedef struct {
+  Window base;
+  Window title;
+  Window w[25];
+  char key[25];
+  char **names;
+  char **hints;
+  int n;
+  int visible;
+} MENUDEF;
+
 /* --- Forward Declarations --- */
 static void add_menu(Window base, int j, int n, char **names, char *key,
                      char **hint);

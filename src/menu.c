@@ -10,8 +10,13 @@
 #include "menus.h"
 #include "pop_list.h"
 
+static void add_menu(Window base, int j, int n, char **names, char *key, char **hint);
+static void show_menu(int j);
+static void unshow_menu(int j);
+
 int help_menu;
-MENUDEF my_menus[3];
+static MENUDEF my_menus[3];
+
 void flash(num)
 int num;
 {
@@ -19,7 +24,7 @@ int num;
 
 
 
-void add_menu(base,j,n,names,key,hint)
+static void add_menu(base,j,n,names,key,hint)
    Window base;
    char **names,*key,**hint;
    int j,n;
@@ -61,7 +66,7 @@ void create_the_menus(base)
 }
 
 
-void show_menu(j)
+static void show_menu(j)
      int j;
 {
   /*  XMapRaised(display,my_menus[j].base);
@@ -72,7 +77,7 @@ void show_menu(j)
   help_menu=j;
 }
 
-void unshow_menu(j)
+static void unshow_menu(j)
      int j;
 {
 

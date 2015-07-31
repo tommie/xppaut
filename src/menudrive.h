@@ -3,6 +3,7 @@
 
 #include <X11/Xlib.h>
 
+/* --- Macros --- */
 #define M_IR 0
 #define M_I2 1
 #define M_IL 2
@@ -20,8 +21,7 @@
 
 #define MAX_M_I 13
 
-
-#define M_C  20
+#define M_C 20
 
 #define M_NN 31
 #define M_NR 32
@@ -34,7 +34,6 @@
 #define M_NFD 38
 #define M_NFR 39
 #define M_NFA 40
-
 
 #define M_SG 50
 #define M_SM 51
@@ -57,7 +56,6 @@
 #define M_AN 81
 #define M_AC 82
 
-
 #define M_KC 90
 #define M_KR 91
 #define M_KP 92
@@ -65,8 +63,6 @@
 #define M_KS 94
 #define M_KM 95
 #define M_KX 96
-
-
 
 #define M_GA 100
 #define M_GD 101
@@ -98,8 +94,6 @@
 #define M_GCB 134
 #define M_GCG 135
 
-
-
 #define M_P 140
 
 #define M_EE 141
@@ -109,8 +103,6 @@
 #define M_X 143
 
 #define M_3 144
-
-
 
 #define M_MC 150
 #define M_MK 151
@@ -131,7 +123,7 @@
 #define M_TEC 171
 #define M_TED 172
 
-#define M_V2  180
+#define M_V2 180
 #define M_V3 181
 #define M_VA 182
 #define M_VT 183
@@ -141,7 +133,6 @@
 #define M_BS 192
 #define M_BP 193
 #define M_BH 194
-
 
 #define M_FP 200
 #define M_FW 201
@@ -160,7 +151,6 @@
 #define M_FEF 213
 #define M_FES 214
 #define M_FEL 215
-
 
 #define M_FX 216
 #define M_FU 217
@@ -221,7 +211,7 @@
 #define M_UE 409
 #define M_UC 410
 
-
+/* --- Functions --- */
 void FlushDisplay(void);
 int GetMouseXY(int *x, int *y);
 void KillMessageBox(void);
@@ -258,7 +248,5 @@ void set_col_par(void);
 void window_zoom(void);
 void x_vs_t(void);
 void xpp_hlp(void);
-
-
 
 #endif

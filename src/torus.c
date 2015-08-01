@@ -25,7 +25,13 @@
 		EnterWindowMask		|\
 		LeaveWindowMask)
 
-struct {
+static void choose_torus(void);
+static void do_torus_events(void);
+static void draw_tor_var(int i);
+static void draw_torus_box(Window win);
+static void make_tor_box(char *title);
+
+static struct {
          Window base,done,cancel;
 	 Window w[MAXODE];
        } torbox;

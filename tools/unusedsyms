@@ -1,0 +1,60 @@
+#!/bin/bash -e
+#
+# Tool to show exported symbols that are not used by other modules.
+#
+# A "module" is a source file and a header file sharing the same filename stem.
+# It is compiled to an object file, also with the same stem.
+#
+#   $ ./tools/unusedsyms <srcdir> <builddir>
+#
+
+# ls-symbols lists all symbols of the given object files.
+# Debug and relocation symbols are ignored.
+# Output is one line per (file, symbol) pair. The third column is the type.
+ls-symbols() {
+    nm "$@" | awk -vfname="$1" '
+        !$0 { next; }
+        /\.o:$/ { fname = $1; sub(/:/, "", fname); next; }
+        NF == 2 && $1 !~ /[rd]/ { print fname, $2, $1; }
+        NF == 3 && $2 !~ /[rd]/ { print fname, $3, $2; }'
+}
+
+# get-symbol-use returns lines of (count, definer, user), one for each
+# (definer, user) pair.
+get-symbol-use() {
+    local srcdir=$1 builddir=$2
+    local moduleobjs=( \
+        $(comm -1 -2 \
+               <(comm -1 -2 \
+                      <(cd "$srcdir" && ls *.c | sed -e 's;\.c$;.o;' | sort) \
+                      <(cd "$srcdir" && ls *.h | sed -e 's;\.h$;.o;' | sort)) \
+               <(cd "$builddir" && ls *.o)) )
+
+    local defsymfile=$(mktemp)
+    tmpfiles+=( "$defsymfile" )
+    (cd "$builddir" && ls-symbols --defined-only "${moduleobjs[@]}" | awk '$3 ~ /[[:upper:]]/ { print $2, $1; }' | sort -b -k1,1 -k2,2) >"$defsymfile"
+
+    local undefsymfile=$(mktemp)
+    tmpfiles+=( "$undefsymfile" )
+    (cd "$builddir" && ls-symbols --undefined-only "${moduleobjs[@]}" | awk '{ print $2, $1; }' | sort -b -k1,1 -k2,2) >"$undefsymfile"
+
+    echo "Found $(wc -l "$defsymfile" | cut -d' ' -f1) defined symbols and $(wc -l "$undefsymfile" | cut -d' ' -f1) references." >&2
+
+    join -j1 -t' ' -v1 "$defsymfile" "$undefsymfile" | uniq
+}
+
+tmpfiles=()
+cleanup() {
+    rm -f "${tmpfiles[@]}"
+}
+trap cleanup EXIT
+
+if [ $# -ne 2 ]; then
+    echo "usage: $(basename "$0") <srcdir> <builddir>" >&2
+    exit 1
+fi
+
+srcdir=$1
+builddir=$2
+
+get-symbol-use "$srcdir" "$builddir"

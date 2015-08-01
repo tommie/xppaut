@@ -36,9 +36,16 @@
 #define TOOMANY -2
 #define BADJAC -3
 
+static void bad_shoot(int iret);
+static void bvshoot(double *y, double *yend, double err, double eps, int maxit, int *iret, int n, int ishow, int iper, int ipar, int ivar, double sect);
+static void do_sh_range(double *ystart, double *yend);
+static void last_shot(int flag);
+static int set_up_periodic(int *ipar, int *ivar, double *sect, int *ishow);
+static int set_up_sh_range(void);
+
 int HOMOCLINIC_FLAG=0,Homo_n;
 
-struct {
+static struct {
   char item[30];
   int steps,side,cycle,movie;
   double plow,phigh;

@@ -73,7 +73,7 @@
 #define THOUS 10000
 #define DOUB_EPS 2.23E-15
 #define POP stack[--stack_pointer]
-double zippy;
+static double zippy;
 #define PUSH(a) zippy=(a); stack[stack_pointer++]=zippy;
 
 #ifndef HAVE_LGAMMA
@@ -93,16 +93,16 @@ typedef struct
 /* #define COM(a) my_symb[toklist[(a)]].com */
 int             ERROUT;
 int NDELAYS=0;
-double BoxMuller;
-int BoxMullerFlag=0;
+static double BoxMuller;
+static int BoxMullerFlag=0;
 int RandSeed=12345678;
 
 #ifndef M_PI
 # define M_PI	3.14159265358979323846264338327950288
 #endif
 
-double CurrentIndex=0;
-int SumIndex=1;
+static double CurrentIndex=0;
+static int SumIndex=1;
 
 static int is_uvar(int x);
 
@@ -142,14 +142,14 @@ static double dlt(double x, double y);
 static double eval_rpn(/* int* */ );
 
 /* FIXXX */
-int stack_pointer,uptr;
+static int stack_pointer,uptr;
 double constants[MAXPAR];
 double variables[MAXODE1];
 int *ufun[MAXUFUN];
 char *ufun_def[MAXUFUN];
 char ufun_names[MAXUFUN][12];
 int narg_fun[MAXUFUN];
-double stack[200],ustack[200];
+static double stack[200],ustack[200];
 
 KERNEL kernel[MAXKER];
 int NKernel;
@@ -161,7 +161,7 @@ int NTable;
 UFUN_ARG ufun_arg[MAXUFUN];
 
 
-SYMBOL my_symb[MAX_SYMBS]=
+static SYMBOL my_symb[MAX_SYMBS]=
 {
    {"(",1,999,0,1},      /*  0   */
    {")",1,999,0,2},
@@ -267,8 +267,8 @@ int NSYM=STDSYM;
 
 /*     pointers to functions    */
 
-double (*fun1[50])(/* double */ );
-double (*fun2[50])(/* double,double */ );
+static double (*fun1[50])(/* double */ );
+static double (*fun2[50])(/* double,double */ );
 
 
 /*************************

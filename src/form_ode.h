@@ -37,7 +37,6 @@ extern BC_STRUCT my_bc[MAXODE];
 extern int *my_ode[MAXODE];
 extern int n_comments;
 extern int N_plist;
-extern int NCON;
 extern int NCON_START;
 extern int NEQ_MIN;
 extern int NLINES;

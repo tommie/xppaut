@@ -23,17 +23,30 @@
   * LOOKUP nodes will be <= 2 * noOfArrays, etc.  */
 #define GifPutShort(i, fout)    {fputc(i&0xff, fout); fputc(i>>8, fout);}
 
- unsigned int debugFlag;
- int UseGlobalMap=0;
- int GifFrameDelay=5,GifFrameLoop=1000;
- int chainlen = 0, maxchainlen = 0, nodecount = 0, lookuptypes = 0, nbits;
- short need = 8;
- GifTree *empty[256], GifRoot = {LOOKUP, 0, 0, empty, NULL, NULL},
+static void ClearTree(int cc, GifTree *root);
+static int GifEncode(FILE *fout, unsigned char *pixels, int depth, int siz);
+static void GifLoop(FILE *fout, unsigned int repeats);
+static void gif_stuff(Window win, FILE *fp, int task);
+static void local_to_global(void);
+static void make_gif(unsigned char *pixels, int cols, int rows, FILE *dst);
+static int make_local_map(unsigned char *pixels, unsigned char *ppm, int h, int w);
+static int ppmtopix(unsigned char r, unsigned char g, unsigned char b, int *n);
+static int use_global_map(unsigned char *pixels, unsigned char *ppm, int h, int w);
+static void write_global_header(int cols, int rows, FILE *dst);
+static void write_local_header(int cols, int rows, FILE *fout, int colflag, int delay);
+
+static unsigned int debugFlag;
+static int UseGlobalMap=0;
+static int GifFrameDelay=5,GifFrameLoop=1000;
+static int chainlen = 0, maxchainlen = 0, nodecount = 0, lookuptypes = 0;
+static short need = 8;
+static GifTree *empty[256], GifRoot = {LOOKUP, 0, 0, empty, NULL, NULL},
          *topNode, *baseNode, **nodeArray, **lastArray;
 
-GIFCOL gifcol[256];
-GIFCOL gifGcol[256];
-int NGlobalColors=0;
+static GIFCOL gifcol[256];
+static GIFCOL gifGcol[256];
+static int NGlobalColors=0;
+
 void set_global_map(int flag)
 {
   if(NGlobalColors==0){  /* Cant use it if it aint there */

@@ -12,6 +12,12 @@
 #define USERBUTCOLOR 24
 #define USERBUTMAX 20
 
+static int find_kbs(char *sc);
+static int get_button_info(char *s, char *bname, char *sc);
+static void user_button_cross(Window w, int b);
+static void user_button_draw(Window w);
+static void user_button_press(Window w);
+
 int nuserbut=0;
 
 USERBUT userbut[USERBUTMAX];
@@ -35,7 +41,7 @@ switch(report.type){
     break;
   }
 }
-void user_button_press(Window w)
+static void user_button_press(Window w)
 {
   int i;
   for(i=0;i<nuserbut;i++)
@@ -55,7 +61,7 @@ void  draw_all_user_buttons()
 	}
 }
 
-void user_button_draw(Window w)
+static void user_button_draw(Window w)
 {
   int i;
   for(i=0;i<nuserbut;i++){
@@ -68,7 +74,7 @@ void user_button_draw(Window w)
   }
 }
 
-void user_button_cross(Window w,int b)
+static void user_button_cross(Window w,int b)
 {
   int i;
   for(i=0;i<nuserbut;i++)
@@ -78,7 +84,7 @@ void user_button_cross(Window w,int b)
     }
 }
 
-int get_button_info(char *s,char *bname,char *sc)
+static int get_button_info(char *s,char *bname,char *sc)
 {
   int i=0,j=0,f=0,n=strlen(s);
   char c;
@@ -111,7 +117,7 @@ int get_button_info(char *s,char *bname,char *sc)
  return(1);
 }
 
-int find_kbs(char *sc)
+static int find_kbs(char *sc)
 {
   int i=0;
   while(1){

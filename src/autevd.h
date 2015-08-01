@@ -2,7 +2,6 @@
 #define XPPAUT_AUTEVD_H
 
 #include "f2c.h"
-#include "autlim.h"
 
 /* --- Types --- */
 typedef doublecomplex dcomplex;

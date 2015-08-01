@@ -1,7 +1,6 @@
 #ifndef XPPAUT_AUTO_NOX_H
 #define XPPAUT_AUTO_NOX_H
 
-#include <stdio.h>
 #include "autlim.h"
 
 /* --- Macros --- */

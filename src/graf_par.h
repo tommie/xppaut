@@ -1,7 +1,6 @@
 #ifndef XPPAUT_GRAF_PAR_H
 #define XPPAUT_GRAF_PAR_H
 
-#include <stdio.h>
 #include <X11/Xlib.h>
 
 /* --- Macros --- */

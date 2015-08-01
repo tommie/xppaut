@@ -10,7 +10,6 @@
 #include "graf_par.h"
 #include "graphics.h"
 #include "init_conds.h"
-#include "markov.h"
 #include "my_ps.h"
 #include "my_svg.h"
 #include "storage.h"

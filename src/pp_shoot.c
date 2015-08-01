@@ -19,7 +19,6 @@
 #include "load_eqn.h"
 #include "lunch-new.h"
 #include "main.h"
-#include "markov.h"
 #include "my_rhs.h"
 #include "mykeydef.h"
 #include "parserslow.h"

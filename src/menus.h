@@ -1,8 +1,6 @@
 #ifndef XPPAUT_MENUS_H
 #define XPPAUT_MENUS_H
 
-#include <X11/Xlib.h>
-
 /* --- Macros --- */
 #define MAIN_MENU 0
 #define FILE_MENU 1

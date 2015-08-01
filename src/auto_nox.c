@@ -21,7 +21,6 @@
 #include "load_eqn.h"
 #include "main.h"
 #include "many_pops.h"
-#include "markov.h"
 #include "menudrive.h"
 #include "menus.h"
 #include "my_ps.h"

@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include "f2c.h"
 #include "auto_nox.h"
 #include "derived.h"

@@ -44,7 +44,6 @@
 #include "ggets.h"
 #include "init_conds.h"
 #include "integrate.h"
-#include "kinescope.h"
 #include "load_eqn.h"
 #include "lunch-new.h"
 #include "main.h"

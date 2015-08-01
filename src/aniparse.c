@@ -68,7 +68,6 @@ want to alter the ordering below
 */
 #include "aniparse.h"
 
-#include <ctype.h>
 #include <fcntl.h>
 #include <libgen.h>
 #include <math.h>

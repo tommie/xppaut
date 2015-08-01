@@ -1,8 +1,6 @@
 #ifndef XPPAUT_COLOR_H
 #define XPPAUT_COLOR_H
 
-#include <X11/Xlib.h>
-
 /* --- Macros --- */
 #define FIRSTCOLOR 30
 

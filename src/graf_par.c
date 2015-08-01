@@ -23,7 +23,6 @@
 #include "menudrive.h"
 #include "my_ps.h"
 #include "my_svg.h"
-#include "mykeydef.h"
 #include "nullcline.h"
 #include "pop_list.h"
 #include "rubber.h"

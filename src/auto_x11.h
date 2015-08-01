@@ -19,10 +19,11 @@ void FillCircle(int x, int y, int r);
 void LineWidth(int wid);
 void auto_button(XEvent ev);
 void auto_enter(Window w, int v);
-void auto_get_info( int *n, char *pname);
+void auto_get_info(int *n, char *pname);
 void auto_keypress(XEvent ev, int *used);
 void auto_motion(XEvent ev);
-int auto_pop_up_list(char *title, char **list, char *key, int n, int max, int def, int x, int y, char **hints, char *httxt);
+int auto_pop_up_list(char *title, char **list, char *key, int n, int max,
+                     int def, int x, int y, char **hints, char *httxt);
 int auto_rubber(int *i1, int *j1, int *i2, int *j2, int flag);
 void auto_set_mark(int i);
 void auto_stab_line(int x, int y, int xp, int yp);

@@ -3,8 +3,7 @@
 #include <ctype.h>
 #include <string.h>
 
-void de_space(char *s)
-{
+void de_space(char *s) {
   int n = strlen(s);
   int i, j = 0;
   char ch;
@@ -18,25 +17,20 @@ void de_space(char *s)
   s[j] = 0;
 }
 
-void strupr(char *s)
-{
-  int i=0;
-  while(s[i])
-    {
-      if(islower(s[i]))
-        s[i]-=32;
-      i++;
-    }
+void strupr(char *s) {
+  int i = 0;
+  while (s[i]) {
+    if (islower(s[i]))
+      s[i] -= 32;
+    i++;
+  }
 }
 
-
-void strlwr(char *s)
-{
-  int i=0;
-  while(s[i])
-    {
-      if(isupper(s[i]))
-        s[i]+=32;
-      i++;
-    }
+void strlwr(char *s) {
+  int i = 0;
+  while (s[i]) {
+    if (isupper(s[i]))
+      s[i] += 32;
+    i++;
+  }
 }

@@ -20,6 +20,12 @@
 #define xds(a) { XDrawString(display,w,small_gc,5,CURY_OFFs,a,strlen(a));\
 		return;}
 
+static void do_txt_action(char *s);
+static void enter_txtview(Window w, int val);
+static void redraw_txtview_text(void);
+static void resize_txtview(int w, int h);
+static void txtview_keypress(XEvent ev);
+static void txtview_press(Window w, int x, int y);
 
 typedef struct {
   Window up,down,pgup,pgdn,kill,home,end,base,text,src,action;
@@ -27,7 +33,7 @@ typedef struct {
   int dh,dw;
 } TXTVIEW;
 
-TXTVIEW txtview;
+static TXTVIEW txtview;
 /*
   [Up]   [Down]  [PgUp]  [PgDn] [Kill]
   [Home] [End]   [Src]   [Actn]

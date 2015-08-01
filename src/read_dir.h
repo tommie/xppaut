@@ -11,8 +11,8 @@
 
 /* --- Types --- */
 typedef struct {
-  char **dirnames,**filenames;
-  int nfiles,ndirs;
+  char **dirnames, **filenames;
+  int nfiles, ndirs;
 } FILEINFO;
 
 /* --- Data --- */
@@ -24,6 +24,6 @@ int change_directory(char *path);
 void free_finfo(FILEINFO *ff);
 int get_directory(char *direct);
 int get_fileinfo(char *wild, char *direct, FILEINFO *ff);
-int get_fileinfo_tab(char *wild, char *direct, FILEINFO *ff,char *wild2);
+int get_fileinfo_tab(char *wild, char *direct, FILEINFO *ff, char *wild2);
 
 #endif /* XPPAUT_READ_DIR_H */

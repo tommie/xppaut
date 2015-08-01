@@ -126,8 +126,17 @@ typedef struct {
 #define INTERP 30
 #define FINDEXT 35  /* find extrema in list of variables */
 
-NETWORK my_net[MAXNET];
-int n_network=0;
+static void evaluate_network(int ind);
+static void fft_conv(int it, int n, double *values, double *yy, double *fftr, double *ffti, double *dr, double *di);
+static int gilparse(char *s, int *ind, int *nn);
+static void init_net(double *v, int n);
+static int is_network(char *s);
+static double net_interp(double x, int i);
+static void update_fft(int ind);
+
+static NETWORK my_net[MAXNET];
+static int n_network=0;
+
 double net_interp(double x, int i)
 {
   int jlo=(int)x;

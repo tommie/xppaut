@@ -84,14 +84,3 @@ WORK=NULL;
 err_msg("Cannot allocate sufficient storage");
    exit(0);
 }
-
-
-void free_storage(ncol)
-int ncol;
-{
-  int i;
-  for(i=0;i<ncol;i++)free(storage[i]);
-  free(storage);
-  if(WORK)free(WORK);
-
-}

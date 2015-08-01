@@ -6,7 +6,6 @@
 /* --- Data --- */
 extern int NWiener;
 extern int STOCH_FLAG;
-extern int storind;
 
 /* --- Functions --- */
 void add_markov(int nstate, char *name);

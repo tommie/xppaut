@@ -18,7 +18,6 @@
 #include "load_eqn.h"
 #include "main.h"
 #include "many_pops.h"
-#include "markov.h"
 #include "menu.h"
 #include "menus.h"
 #include "menudrive.h"
@@ -28,6 +27,7 @@
 #include "nullcline.h"
 #include "pop_list.h"
 #include "rubber.h"
+#include "storage.h"
 
 /* --- Macros --- */
 #define MAXNCLINE 26

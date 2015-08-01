@@ -28,8 +28,15 @@
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #define MIN(a,b) ((a)<(b)?(a):(b))
 
-int CurrentPoint;
-int KnFlag;
+static double alpbetjn(double mu, double dt, int l);
+static double alpha1n(double mu, double dt, double t, double t0);
+static double betnn(double mu, double dt, double t0, double t);
+static void get_kn(double *y, double t);
+static void init_sums(double t0, int n, double dt, int i0, int iend, int ishift);
+static int volt_step(double *y, double t, double dt, int neq, double *yg, double *yp, double *yp2, double *ytemp, double *errvec, double *jac);
+
+static int CurrentPoint;
+static int KnFlag;
 
 
 int AutoEvaluate=0;

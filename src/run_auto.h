@@ -1,11 +1,7 @@
+#ifndef XPPAUT_RUN_AUTO_H
+#define XPPAUT_RUN_AUTO_H
 
-#ifndef _run_auto_h_
-#define _run_auto_h_
-
-
-/* run_auto.c */
+/* --- Functions --- */
 void run_aut(int nfpar, int itp);
 
-
-#endif
-
+#endif /* XPPAUT_RUN_AUTO_H */

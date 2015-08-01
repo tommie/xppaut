@@ -16,6 +16,21 @@
 #include "bitmap/alert.bitmap"
 #include "bitmap/info.bitmap"
 
+#define MAX_N_SBOX 20
+
+#define FORGET_ALL 0
+#define DONE_ALL 2
+#define FORGET_THIS 3
+#define DONE_THIS 1
+
+#define SB_PLOTTABLE 0
+#define SB_VARIABLE 1
+#define SB_PARAMETER 2
+#define SB_PARVAR 3
+#define SB_COLOR 4
+#define SB_MARKER 5
+#define SB_METHOD 6
+
 #define EV_MASK (ButtonPressMask 	|\
 		KeyPressMask		|\
 		ExposureMask		|\
@@ -28,7 +43,73 @@
 		EnterWindowMask		|\
 		LeaveWindowMask)
 
-SCRBOX_LIST scrbox_list[10];
+/* --- Types --- */
+/*  This is a string box widget which handles a list of
+    editable strings
+ */
+typedef struct {
+  Window base,ok,cancel;
+  Window win[MAX_N_SBOX];
+  char name[MAX_N_SBOX][MAX_LEN_SBOX],
+       value[MAX_N_SBOX][MAX_LEN_SBOX];
+  int n,hot;
+  int hgt,wid;
+  int hh[MAX_N_SBOX];
+} STRING_BOX;
+
+typedef struct {
+  char **list;
+  int n;
+} SCRBOX_LIST;
+
+/*  This is a new improved pop_up widget */
+typedef struct {
+  Window base,tit;
+  Window *w;
+  char *title;
+  char **entries;
+  char **hints;
+  int n,max;
+  char *key;
+  int hot;
+} POP_UP;
+
+typedef struct {
+  Window base,slide,close,text;
+  int i0;
+  int exist,len,nlines;
+  char **list;
+} TEXTWIN;
+
+typedef struct {
+  Window base,slide;
+  Window *w;
+  int nw,nent,i0;
+  int len,exist;
+  char **list;
+} SCROLLBOX;
+
+static void create_scroll_box(Window root, int x0, int y0, int nent, int nw, char **list, SCROLLBOX *sb);
+static void crossing_scroll_box(Window w, int c, SCROLLBOX sb);
+static void destroy_scroll_box(SCROLLBOX *sb);
+static void draw_pop_up(POP_UP p, Window w);
+static void expose_choice(char *choice1, char *choice2, char *msg, Window c1, Window c2, Window wm, Window w);
+static void expose_resp_box(char *button, char *message, Window wb, Window wm, Window w);
+static void expose_sbox(STRING_BOX sb, Window w, int pos, int col);
+static void expose_scroll_box(Window w, SCROLLBOX sb);
+static int get_x_coord_win(Window win);
+static void make_sbox_windows(STRING_BOX *sb, int row, int col, char *title, int maxchar);
+static Window make_unmapped_icon_window(Window root,int x,int y,int width,int height,int bw,int icx,int icy,unsigned char* icdata);
+static void new_editable(STRING_BOX *sb, int inew, int *pos, int *col, int *done, Window *w);
+static void redraw_scroll_box(SCROLLBOX sb);
+static void reset_hot(int inew, STRING_BOX *sb);
+static int s_box_event_loop(STRING_BOX *sb, int *pos, int *col, SCROLLBOX *scrb);
+static int scroll_box_motion(XEvent ev, SCROLLBOX *sb);
+static void scroll_popup(STRING_BOX *sb, SCROLLBOX *scrb);
+static int select_scroll_item(Window w, SCROLLBOX sb);
+static void set_sbox_item(STRING_BOX *sb, int item);
+
+static SCRBOX_LIST scrbox_list[10];
 
 void set_window_title(Window win,char *string)
 {
@@ -116,7 +197,7 @@ scrbox_list[3].n=n;
 
 }
 
-int get_x_coord_win(Window win)
+static int get_x_coord_win(Window win)
 {
  int x,y;
  unsigned int h,w,bw,d;
@@ -125,7 +206,7 @@ int get_x_coord_win(Window win)
  return(x);
 }
 
-void destroy_scroll_box(SCROLLBOX *sb)
+static void destroy_scroll_box(SCROLLBOX *sb)
 {
   if(sb->exist==1){
     sb->exist=0;
@@ -136,8 +217,8 @@ void destroy_scroll_box(SCROLLBOX *sb)
 }
 
 
-void create_scroll_box(Window root,int x0,int y0,int nent,
-		  int nw,char **list,SCROLLBOX *sb)
+static void create_scroll_box(Window root,int x0,int y0,int nent,
+                              int nw,char **list,SCROLLBOX *sb)
 {
  int slen=0;
  int i,hgt,wid;
@@ -163,7 +244,7 @@ void create_scroll_box(Window root,int x0,int y0,int nent,
  sb->exist=1;
 }
 
-void expose_scroll_box(Window w,SCROLLBOX sb)
+static void expose_scroll_box(Window w,SCROLLBOX sb)
 {
  int i;
  /*int flag=-1;*/
@@ -177,7 +258,7 @@ void expose_scroll_box(Window w,SCROLLBOX sb)
 }
 
 
-void redraw_scroll_box(SCROLLBOX sb)
+static void redraw_scroll_box(SCROLLBOX sb)
 {
   int i,p;
   int i0=sb.i0;
@@ -195,7 +276,7 @@ void redraw_scroll_box(SCROLLBOX sb)
   }
 }
 
-void crossing_scroll_box(Window w, int c,SCROLLBOX sb)
+static void crossing_scroll_box(Window w, int c,SCROLLBOX sb)
 {
  int i;
  for(i=0;i<sb.nw;i++){
@@ -206,7 +287,7 @@ void crossing_scroll_box(Window w, int c,SCROLLBOX sb)
  }
 }
 
-int scroll_box_motion(XEvent ev,SCROLLBOX *sb)
+static int scroll_box_motion(XEvent ev,SCROLLBOX *sb)
 {
   int x;
   Window w;
@@ -227,7 +308,7 @@ int scroll_box_motion(XEvent ev,SCROLLBOX *sb)
   return 1;
 }
 
-int select_scroll_item(Window w,SCROLLBOX sb)
+static int select_scroll_item(Window w,SCROLLBOX sb)
 {
   int i;
   int item=-1;
@@ -240,7 +321,7 @@ int select_scroll_item(Window w,SCROLLBOX sb)
   return -1;
 }
 
-void scroll_popup(STRING_BOX *sb,SCROLLBOX *scrb)
+static void scroll_popup(STRING_BOX *sb,SCROLLBOX *scrb)
 {
   int hw=DCURYs+4;
   int ihot=sb->hot;
@@ -307,7 +388,7 @@ int do_string_box(n,row,col,title,names,values,maxchar)
 
 }
 
-void expose_sbox(sb,w,pos,col)
+static void expose_sbox(sb,w,pos,col)
 STRING_BOX sb;
 Window w;
 int pos,col;
@@ -349,7 +430,7 @@ int flag;
 }
 
 
-void reset_hot(inew,sb)
+static void reset_hot(inew,sb)
 int inew;
 STRING_BOX *sb;
 {
@@ -363,7 +444,7 @@ STRING_BOX *sb;
 		strlen(sb->value[i]),0);
  }
 
-void new_editable(sb,inew,pos,col,done,w)
+static void new_editable(sb,inew,pos,col,done,w)
  int inew;
  STRING_BOX *sb;
  int *pos,*col,*done;
@@ -377,7 +458,7 @@ void new_editable(sb,inew,pos,col,done,w)
   *w=sb->win[inew];
   }
 
-void set_sbox_item(STRING_BOX *sb,int item)
+static void set_sbox_item(STRING_BOX *sb,int item)
 {
   int i=sb->hot;
   int id=sb->hh[i];
@@ -388,7 +469,7 @@ void set_sbox_item(STRING_BOX *sb,int item)
 }
 
 
-int s_box_event_loop(sb,pos,col,scrb)
+static int s_box_event_loop(sb,pos,col,scrb)
  STRING_BOX *sb;
  SCROLLBOX *scrb;
  int *col,*pos;
@@ -504,7 +585,7 @@ int s_box_event_loop(sb,pos,col,scrb)
 
 
 
-void make_sbox_windows(sb,row,col,title,maxchar)
+static void make_sbox_windows(sb,row,col,title,maxchar)
 int row,col,maxchar;
 char *title;
 STRING_BOX *sb;
@@ -803,7 +884,7 @@ Window make_unmapped_window(root,x,y,width,height,bw)
          }
 
 
-void bin_prnt_byte(int x,int *arr)
+static void bin_prnt_byte(int x,int *arr)
 {
    int n=0;
    for(n=7; n>=0; n--)
@@ -1082,7 +1163,7 @@ Window make_plain_window(root,x,y,width,height,bw)
          }
 
 
-void expose_resp_box(button,message,wb,wm,w)
+static void expose_resp_box(button,message,wb,wm,w)
     Window w,wb,wm;
     char *button,*message;
    {
@@ -1176,7 +1257,7 @@ void respond_box(button,message)
 	         }
 
 
-void expose_choice(choice1,choice2,msg,c1,c2,wm,w)
+static void expose_choice(choice1,choice2,msg,c1,c2,wm,w)
  Window c1,c2,wm,w;
  char *choice1,*choice2,*msg;
 {
@@ -1376,7 +1457,7 @@ Window *root,hwin;
 
   }
 
-void draw_pop_up(p,w)
+static void draw_pop_up(p,w)
  POP_UP p;
  Window w;
  {

@@ -10,6 +10,12 @@
 
 #define put_msg plintf
 
+static int cmpstringp(const void *p1, const void *p2);
+static int fil_count(char *direct, int *ndir, int *nfil, char *wild, int *mld, int *mlf);
+static int IsDirectory(char *root, char *path);
+static void MakeFullPath(char *root, char *filename, char *pathname);
+static int wild_match(char *string, char *pattern);
+
 /*static int	file_entry_cnt, dir_entry_cnt;
 static char   **file_list, **dir_list;
 static char   **filelist, **dirlist;

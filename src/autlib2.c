@@ -3511,7 +3511,7 @@ OF MULTIPLIERS IN UNIT CIRCLE =\002,i3)";
 
 
 /* Order the Floquet multipliers by distance from z=1. */
-    send_mult(*ibr,*ntot+1,blbcn_1.ndim,(dcomplex *)&ev[1]);
+    send_mult(*ibr,*ntot+1,blbcn_1.ndim,&ev[1]);
     i__1 = blbcn_1.ndim - 1;
     for (i = 1; i <= i__1; ++i) {
 	amin = blrcn_1.rlarge;
@@ -4012,7 +4012,7 @@ L2:
        blbcn_1.par[11] = abs(atan2((d_imag(&ev[loc1])), (dreal_(&ev[loc1]))));
 
 /* SGLE   PAR(12)= ASIN(AIMAG(EV(LOC1))) */
-    } else if (dreal_((dcomplex*)&ev[loc1]) < -blrcn_1.half) {
+    } else if (dreal_(&ev[loc1]) < -blrcn_1.half) {
 /* SGLE ELSE IF( REAL(EV(LOC1)).LT.-HALF)THEN */
 /*       ** period doubling */
 	*itp = blitp_1.itpst * 10 + 7;

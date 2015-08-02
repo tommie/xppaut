@@ -2254,7 +2254,7 @@ e12.5),50(/,23x,2(2x,2e12.5)))";
 /* L1: */
 	  }
       }
-  send_eigen(*ibr,*ntot+1,blbcn_1.ndim,(dcomplex*)&ev[1]);
+  send_eigen(*ibr,*ntot+1,blbcn_1.ndim,&ev[1]);
 /* Compute the smallest real part. */
 
     rimhb = blrcn_1.zero;
@@ -2266,13 +2266,13 @@ e12.5),50(/,23x,2(2x,2e12.5)))";
 	    goto L2;
 	}
 /* SGLE    IF(AIMAG(EV(I)).EQ.ZERO)GOTO 2 */
-	ar = (d__1 = dreal_((dcomplex*)&ev[i]), abs(d__1));
+	ar = (d__1 = dreal_(&ev[i]), abs(d__1));
 /* SGLE    AR= ABS( REAL(EV(I))) */
 	if (ar > arev) {
 	    goto L2;
 	}
 	arev = ar;
-	rev = dreal_((dcomplex*)&ev[i]);
+	rev = dreal_(&ev[i]);
 /* SGLE      REV= REAL(EV(I)) */
 	rimhb = (d__1 = d_imag(&ev[i]), abs(d__1));
 /* SGLE      RIMHB= ABS(AIMAG(EV(I))) */
@@ -2288,7 +2288,7 @@ L2:
     nins1 = 0;
     i__1 = blbcn_1.ndim;
     for (i = 1; i <= i__1; ++i) {
-	if (dreal_((dcomplex*)&ev[i]) <= blrcn_1.zero) {
+	if (dreal_(&ev[i]) <= blrcn_1.zero) {
 	    ++nins1;
 	}
 /* SGLE    IF( REAL(EV(I)).LE.ZERO)NINS1=NINS1+1 */
@@ -4732,7 +4732,7 @@ static char fmt_101[] = "(\002 *** ERROR RETURN FROM IMSL ROUTINE -EIG\
 RF-\002)";
 static cilist io___312 = { 0, 9, 0, fmt_101, 0 };
 
-eigrf_(a,ndim,m1a,(dcomplex*)ev,wkev,ier);
+eigrf_(a,ndim,m1a,ev,wkev,ier);
 if(*ier!=0){
 s_wsfe(&io___312);
 	e_wsfe();
@@ -4786,7 +4786,7 @@ RF-\002)";
     /* Function Body */
     *ier = 0;
 
-    eigrf_(&a[a_offset], ndim, m1a, (dcomplex*)&ev[1], &wkev[1], ier);
+    eigrf_(&a[a_offset], ndim, m1a, &ev[1], &wkev[1], ier);
 
   /*  ier1 = 129;
     ier2 = *ndim + 128;

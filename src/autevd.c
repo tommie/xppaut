@@ -25,9 +25,9 @@ typedef struct {
 int DiagFlag = 0;
 static EIGVAL my_ev;
 
-double dreal_(dcomplex *z) { return (z->r); }
+double dreal_(doublecomplex *z) { return (z->r); }
 
-void send_eigen(int ibr, int ntot, int n, dcomplex *ev) {
+void send_eigen(int ibr, int ntot, int n, doublecomplex *ev) {
   int i;
   double er, cs, sn;
   my_ev.pt = abs(ntot);
@@ -41,7 +41,7 @@ void send_eigen(int ibr, int ntot, int n, dcomplex *ev) {
   }
 }
 
-void send_mult(int ibr, int ntot, int n, dcomplex *ev) {
+void send_mult(int ibr, int ntot, int n, doublecomplex *ev) {
   int i;
   my_ev.pt = abs(ntot);
   my_ev.br = abs(ibr);
@@ -98,7 +98,7 @@ void addbif_(int *ibr, int *ntot, int *itp, int *lab, int *npar, double *a,
 
 double etime_(double *z) { return (0.0); }
 
-int eigrf_(double *a, int *n, int *m, dcomplex *ecv, double *work, int *ier) {
+int eigrf_(double *a, int *n, int *m, doublecomplex *ecv, double *work, int *ier) {
   double ev[400];
   int i;
   eigen(*n, a, ev, work, ier);

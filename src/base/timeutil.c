@@ -1,6 +1,7 @@
 #include "timeutil.h"
 
 #include <stdlib.h>
+#include <time.h>
 #include <sys/time.h>
 
 int gettimenow(void) {
@@ -19,17 +20,8 @@ int gettimenow(void) {
 }
 
 void waitasec(int msec) {
-  struct timeval tim;
-  double sec = (double)msec / 1000;
-  double t1, t2;
-  gettimeofday(&tim, NULL);
-  t1 = tim.tv_sec + (tim.tv_usec / 1000000.0);
-
-  while (1) {
-    gettimeofday(&tim, NULL);
-    t2 = tim.tv_sec + (tim.tv_usec / 1000000.0);
-
-    if ((t2 - t1) > sec)
-      return;
-  }
+  struct timespec rgt;
+  rgt.tv_sec = msec / 1000;
+  rgt.tv_nsec = (msec % 1000) * 1000000l;
+  nanosleep(&rgt, NULL);
 }

@@ -2,7 +2,6 @@
  * their current initial data, parameters, BCs etc
  *
  * This also has the slider boxes
- * This also has the file selector gadget
  * This also has the clone gadget
  */
 #include "init_conds.h"

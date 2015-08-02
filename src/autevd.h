@@ -1,8 +1,6 @@
 #ifndef XPPAUT_AUTEVD_H
 #define XPPAUT_AUTEVD_H
 
-#include "f2c.h"
-
 /* --- Functions --- */
 void init_auto(int ndim, int nbc, int ips, int irs, int ilp, int ntst, int isp,
                int isw, int nmx, int npr, double ds, double dsmin, double dsmax,

@@ -157,25 +157,17 @@ void do_auto_range(void) {
 
 void auto_get_info(int *n, char *pname) {
   int i1, i2, ibr;
-  DIAGRAM *d, *dnew;
 
   if (mark_flag == 2) {
     i1 = abs(mark_ipts);
     ibr = mark_ibrs;
     i2 = abs(mark_ipte);
     *n = abs(i2 - i1);
-    d = bifd;
-    while (1) {
+    for (DIAGRAM *d = bifd; d; d = d->next) {
       if (d->ibr == ibr && ((d->ntot == i1) || (d->ntot == (-i1)))) {
         strcpy(pname, upar_names[AutoPar[d->icp1]]);
         break;
       }
-      dnew = d->next;
-      if (dnew == NULL) {
-
-        break;
-      }
-      d = dnew;
     }
   }
 }
@@ -194,11 +186,7 @@ void auto_set_mark(int i) {
 
 void find_point(int ibr, int pt) {
   int i;
-  DIAGRAM *d, *dnew;
-  if (NBifs < 2)
-    return;
-  d = bifd;
-  while (1) {
+  for (DIAGRAM *d = bifd; d; d = d->next) {
     if (d->ibr == ibr &&
         ((d->ntot == pt) ||
          (d->ntot ==
@@ -216,12 +204,6 @@ void find_point(int ibr, int pt) {
         set_total(d->per);
       break;
     }
-    dnew = d->next;
-    if (dnew == NULL) {
-
-      break;
-    }
-    d = dnew;
   }
 }
 
@@ -275,7 +257,7 @@ void traverse_diagram(void) {
   XEvent ev;
   int kp;
   mark_flag = 0;
-  if (NBifs < 2)
+  if (bifd == NULL)
     return;
 
   d = bifd;
@@ -926,7 +908,7 @@ void resize_auto_window(XEvent ev) {
 
     int ix, iy;
 
-    if (NBifs < 2)
+    if (bifd == NULL)
       return;
     traverse_out(CUR_DIAGRAM, &ix, &iy, 1);
   }

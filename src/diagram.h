@@ -17,7 +17,6 @@ typedef struct diagram {
 
 /* --- Data --- */
 extern DIAGRAM *bifd;
-extern int NBifs;
 
 /* --- Functions --- */
 void add_diagram(int ibr, int ntot, int itp, int lab, int nfpar, double a,
@@ -25,17 +24,12 @@ void add_diagram(int ibr, int ntot, int itp, int lab, int nfpar, double a,
                  double *par, double per, int n, int icp1, int icp2, int flag2,
                  double *evr, double *evi);
 void bound_diagram(double *xlo, double *xhi, double *ylo, double *yhi);
-void edit_start(int ibr, int ntot, int itp, int lab, int nfpar, double a,
-                double *uhi, double *ulo, double *u0, double *ubar, double *par,
-                double per, int n, int icp1, int icp2, double *evr,
-                double *evi);
 void kill_diagrams(void);
 void load_browser_with_branch(int ibr, int pts, int pte);
 int load_diagram(FILE *fp, int node);
 void post_auto(void);
 void redraw_diagram(void);
 int save_diagram(FILE *fp, int n);
-void start_diagram(int n);
 void svg_auto(void);
 void write_info_out(void);
 void write_init_data_file(void);

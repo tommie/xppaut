@@ -1227,7 +1227,6 @@ void init_auto_win()
 {
   int i;
   if(NODE>NAUTO)return;
-  start_diagram(NODE);
   for(i=0;i<10;i++){
     Auto.period[i]=11.+3.*i;
     Auto.uzrpar[i]=10;
@@ -1327,10 +1326,9 @@ void plot_stab(evr,evi,n)
 int yes_reset_auto()
 {
   char string[256];
-  if(NBifs<=1)return(0);
+  if(bifd == NULL)return(0);
  kill_diagrams();
  FromAutoFlag=0;
-    NBifs=1;
     grabpt.flag=0;
     sprintf(string,"%s.p",this_auto_file);
     deletef(string);
@@ -1344,7 +1342,7 @@ int yes_reset_auto()
 int reset_auto()
 {
   char ch;
-    if(NBifs<=1)return(0);
+    if(bifd == NULL)return(0);
     ch=(char)TwoChoice("YES","NO","Destroy AUTO diagram & files","yn");
     if(ch!='y')return(0);
 
@@ -1488,7 +1486,7 @@ void auto_new_ss()
   int ans;
   int opn=NO_OPEN_3,cls=OVERWRITE;
   NewPeriodFlag=0;
-  if(NBifs>1){
+  if(bifd != NULL){
     ans=reset_auto();
     if ((ans!=0) || (ans!=1))
     {
@@ -1516,7 +1514,7 @@ void auto_new_discrete()
   int ans;
   int opn=NO_OPEN_3,cls=OVERWRITE;
   NewPeriodFlag=0;
-  if(NBifs>1){
+  if(bifd != NULL){
     ans=reset_auto();
     if ((ans!=0) || (ans!=1))
     {
@@ -2238,7 +2236,7 @@ void load_auto()
   /*char filename[256];*/
   char filename[XPP_MAX_NAME];
   int status;
-  if(NBifs>1){
+  if(bifd != NULL){
     ok=reset_auto();
     if(ok==0)return;
   }

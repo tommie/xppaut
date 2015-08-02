@@ -3,9 +3,6 @@
 
 #include "f2c.h"
 
-/* --- Data --- */
-extern int DiagFlag;
-
 /* --- Functions --- */
 int get_bif_type(int ibr, int ntot, int lab);
 void init_auto(int ndim, int nbc, int ips, int irs, int ilp, int ntst, int isp,

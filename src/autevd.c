@@ -59,8 +59,6 @@ static void send_eigen(int ibr, int ntot, int n, const doublecomplex *ev);
 static void send_mult(int ibr, int ntot, int n, const doublecomplex *ev);
 
 /* --- Data --- */
-int DiagFlag = 0;
-
 static const AUTPP_CALLBACKS autpp_callbacks = {
   .add_bif = add_bif, .check_stop = check_stop_auto, .send_eigen = send_eigen, .send_mult = send_mult,
 };
@@ -143,13 +141,6 @@ static void add_bif(int ibr, int ntot, int itp, int lab, int npar, double a,
               icp2, AutoTwoParam, my_ev.evr, my_ev.evi);
   }
 
-  if (DiagFlag == 0) {
-    /* start_diagram(*ndim); */
-    edit_start(ibr, ntot, itp, lab, npar, a, (double*)uhigh, (double*)ulow, (double*)u0, (double*)ubar, blbcn_1.par,
-               per, ndim, icp1, icp2, my_ev.evr, my_ev.evi);
-    DiagFlag = 1;
-    return;
-  }
   add_diagram(ibr, ntot, itp, lab, npar, a, (double*)uhigh, (double*)ulow, (double*)u0, (double*)ubar, blbcn_1.par,
               per, ndim, icp1, icp2, AutoTwoParam, my_ev.evr, my_ev.evi);
 }

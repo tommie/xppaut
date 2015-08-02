@@ -25,34 +25,8 @@ static void edit_diagram(DIAGRAM *d, int ibr, int ntot, int itp, int lab,
                          double *evi, double tp);
 
 /* --- Data --- */
-DIAGRAM *bifd;
-int NBifs = 0;
-
-void start_diagram(int n) {
-  NBifs = 1;
-  bifd = (DIAGRAM *)malloc(sizeof(DIAGRAM));
-  bifd->prev = NULL;
-  bifd->next = NULL;
-  bifd->index = 0;
-  bifd->uhi = DALLOC(n);
-  bifd->ulo = DALLOC(n);
-  bifd->u0 = DALLOC(n);
-  bifd->ubar = DALLOC(n);
-  bifd->evr = DALLOC(n);
-  bifd->evi = DALLOC(n);
-  bifd->norm = 0;
-  bifd->lab = 0;
-
-  DiagFlag = 0;
-}
-
-void edit_start(int ibr, int ntot, int itp, int lab, int nfpar, double a,
-                double *uhi, double *ulo, double *u0, double *ubar, double *par,
-                double per, int n, int icp1, int icp2, double *evr,
-                double *evi) {
-  edit_diagram(bifd, ibr, ntot, itp, lab, nfpar, a, uhi, ulo, u0, ubar, par,
-               per, n, icp1, icp2, AutoTwoParam, evr, evi, blrtn.torper);
-}
+DIAGRAM *bifd = NULL;
+static int NBifs = 0;
 
 static void edit_diagram(DIAGRAM *d, int ibr, int ntot, int itp, int lab,
                          int nfpar, double a, double *uhi, double *ulo,
@@ -90,38 +64,37 @@ void add_diagram(int ibr, int ntot, int itp, int lab, int nfpar, double a,
                  double *uhi, double *ulo, double *u0, double *ubar,
                  double *par, double per, int n, int icp1, int icp2, int flag2,
                  double *evr, double *evi) {
-  DIAGRAM *d, *dnew;
+  DIAGRAM **d, *prev = NULL;
 
-  d = bifd;
-  while (d->next != NULL) {
-    d = (d->next);
+  d = &bifd;
+  while (*d != NULL) {
+    prev = *d;
+    d = &(*d)->next;
   }
-  d->next = (DIAGRAM *)malloc(sizeof(DIAGRAM));
-  dnew = d->next;
-  dnew->next = NULL;
-  dnew->prev = d;
-  dnew->uhi = DALLOC(n);
-  dnew->ulo = DALLOC(n);
-  dnew->u0 = DALLOC(n);
-  dnew->ubar = DALLOC(n);
-  dnew->evr = DALLOC(n);
-  dnew->evi = DALLOC(n);
-  dnew->index = NBifs;
+  *d = (DIAGRAM *)malloc(sizeof(DIAGRAM));
+  (*d)->next = NULL;
+  (*d)->prev = prev;
+  (*d)->uhi = DALLOC(n);
+  (*d)->ulo = DALLOC(n);
+  (*d)->u0 = DALLOC(n);
+  (*d)->ubar = DALLOC(n);
+  (*d)->evr = DALLOC(n);
+  (*d)->evi = DALLOC(n);
+  (*d)->index = NBifs;
   NBifs++;
-  edit_diagram(dnew, ibr, ntot, itp, lab, nfpar, a, uhi, ulo, u0, ubar, par,
-               per, n, icp1, icp2, flag2, evr, evi, blrtn.torper);
+  edit_diagram(*d, ibr, ntot, itp, lab, nfpar, a, uhi, ulo, u0, ubar, par, per,
+               n, icp1, icp2, flag2, evr, evi, blrtn.torper);
 }
 
 void kill_diagrams(void) {
-  DIAGRAM *d, *dnew;
-  d = bifd;
-  while (d->next != NULL) { /*  Move to the end of the tree  */
+  DIAGRAM *d = bifd;
+  /* Move to the end of the tree */
+  while (d != NULL && d->next != NULL) {
     d = d->next;
   }
-  while (d->prev != NULL) {
-    dnew = d->prev;
-    d->next = NULL;
-    d->prev = NULL;
+  while (d != NULL) {
+    DIAGRAM *dnew = d->prev;
+
     free(d->uhi);
     free(d->ulo);
     free(d->u0);
@@ -131,29 +104,15 @@ void kill_diagrams(void) {
     free(d);
     d = dnew;
   }
-  /*  NBifs=1;
-    bifd->prev=NULL;
-    bifd->next=NULL;
-    bifd->index=0;
-    */
-  free(bifd->uhi);
-  free(bifd->ulo);
-  free(bifd->u0);
-  free(bifd->ubar);
-  free(bifd->evr);
-  free(bifd->evi);
-  free(bifd);
-  start_diagram(NODE);
+  bifd = NULL;
+  NBifs = 0;
 }
 
 void redraw_diagram(void) {
-  DIAGRAM *d;
   int type, flag = 0;
   draw_bif_axes();
-  d = bifd;
-  if (d->next == NULL)
-    return;
-  while (1) {
+
+  for (DIAGRAM *d = bifd; d != NULL; d = d->next) {
     type = get_bif_type(d->ibr, d->ntot, d->lab);
 
     if (d->ntot == 1)
@@ -162,17 +121,12 @@ void redraw_diagram(void) {
       flag = 1;
     add_point(d->par, d->per, d->uhi, d->ulo, d->ubar, d->norm, type, flag,
               d->lab, d->nfpar, d->icp1, d->icp2, d->flag2, d->evr, d->evi);
-    d = d->next;
-    if (d == NULL)
-      break;
   }
 }
 
 void write_info_out(void) {
   /*char filename[256];*/
   char filename[XPP_MAX_NAME];
-  DIAGRAM *d;
-  int type, i;
   /*int flag=0
   */
   int status;
@@ -194,11 +148,9 @@ void write_info_out(void) {
     return;
   }
 
-  d = bifd;
-  if (d->next == NULL)
-    return;
-  while (1) {
-    type = get_bif_type(d->ibr, d->ntot, d->lab);
+  for (DIAGRAM *d = bifd; d != NULL; d = d->next) {
+    int i;
+    int type = get_bif_type(d->ibr, d->ntot, d->lab);
 
     /*if(d->ntot==1)flag=0;
     else flag=1;
@@ -226,15 +178,11 @@ void write_info_out(void) {
     for (i = 0; i < NODE; i++)
       fprintf(fp, "%g %g ", d->evr[i], d->evi[i]);
     fprintf(fp, "\n");
-    d = d->next;
-    if (d == NULL)
-      break;
   }
   fclose(fp);
 }
 
 void load_browser_with_branch(int ibr, int pts, int pte) {
-  DIAGRAM *d;
   int i, j, pt;
   /*int flag=0;
   */
@@ -251,11 +199,8 @@ void load_browser_with_branch(int ibr, int pts, int pte) {
     last = i;
   }
   nrows = last - first + 1;
-  d = bifd;
-  if (d->next == NULL)
-    return;
   j = 0;
-  while (1) {
+  for (DIAGRAM *d = bifd; d != NULL; d = d->next) {
     get_bif_type(d->ibr, d->ntot, d->lab);
     pt = abs(d->ntot);
     if ((d->ibr == ibr) && (pt >= first) && (pt <= last)) {
@@ -269,9 +214,6 @@ void load_browser_with_branch(int ibr, int pts, int pte) {
         storage[i + 1][j] = u0[i];
       j++;
     }
-    d = d->next;
-    if (d == NULL)
-      break;
   }
   storind = nrows;
   refresh_browser(nrows);
@@ -280,7 +222,6 @@ void load_browser_with_branch(int ibr, int pts, int pte) {
 void write_init_data_file(void) {
   /*char filename[256];*/
   char filename[XPP_MAX_NAME];
-  DIAGRAM *d;
   int type, i;
   /*int flag=0;
   */
@@ -303,10 +244,7 @@ void write_init_data_file(void) {
     return;
   }
 
-  d = bifd;
-  if (d->next == NULL)
-    return;
-  while (1) {
+  for (DIAGRAM *d = bifd; d != NULL; d = d->next) {
     type = get_bif_type(d->ibr, d->ntot, d->lab);
 
     /*if(d->ntot==1)flag=0;
@@ -340,9 +278,6 @@ void write_init_data_file(void) {
     for (i = 0; i < NODE; i++)
       fprintf(fp, "%g ", u0[i]);
     fprintf(fp, "\n");
-    d = d->next;
-    if (d == NULL)
-      break;
   }
   fclose(fp);
 }
@@ -350,7 +285,6 @@ void write_init_data_file(void) {
 void write_pts(void) {
   /*char filename[256];*/
   char filename[XPP_MAX_NAME];
-  DIAGRAM *d;
   int type;
   /*int flag=0;
   */
@@ -370,10 +304,7 @@ void write_pts(void) {
     return;
   }
 
-  d = bifd;
-  if (d->next == NULL)
-    return;
-  while (1) {
+  for (DIAGRAM *d = bifd; d != NULL; d = d->next) {
     type = get_bif_type(d->ibr, d->ntot, d->lab);
 
     /*if(d->ntot==1)flag=0;
@@ -394,9 +325,6 @@ void write_pts(void) {
       par2 = par[icp2];
     auto_xy_plot(&x, &y1, &y2, par1, par2, per, uhigh, ulow, ubar, a);
     fprintf(fp, "%g %g %g %d %d \n", x, y1, y2, type, abs(d->ibr));
-    d = d->next;
-    if (d == NULL)
-      break;
   }
   fclose(fp);
 }
@@ -404,7 +332,6 @@ void write_pts(void) {
 void post_auto(void) {
   /*char filename[256];*/
   char filename[XPP_MAX_NAME];
-  DIAGRAM *d;
   int type, flag = 0;
   int status;
   sprintf(filename, "auto.ps");
@@ -415,10 +342,8 @@ void post_auto(void) {
   if (!ps_init(filename, PS_Color))
     return;
   draw_ps_axes();
-  d = bifd;
-  if (d->next == NULL)
-    return;
-  while (1) {
+
+  for (DIAGRAM *d = bifd; d != NULL; d = d->next) {
     type = get_bif_type(d->ibr, d->ntot, d->lab);
     if (type < 0) {
       plintf("Unable to get bifurcation type.\n");
@@ -429,9 +354,6 @@ void post_auto(void) {
       flag = 1;
     add_ps_point(d->par, d->per, d->uhi, d->ulo, d->ubar, d->norm, type, flag,
                  d->lab, d->nfpar, d->icp1, d->icp2, d->flag2, d->evr, d->evi);
-    d = d->next;
-    if (d == NULL)
-      break;
   }
   ps_end();
   set_normal_scale();
@@ -440,7 +362,6 @@ void post_auto(void) {
 void svg_auto(void) {
   /*char filename[256];*/
   char filename[XPP_MAX_NAME];
-  DIAGRAM *d;
   int type, flag = 0;
   int status;
   sprintf(filename, "auto.svg");
@@ -451,10 +372,8 @@ void svg_auto(void) {
   if (!svg_init(filename, PS_Color))
     return;
   draw_svg_axes();
-  d = bifd;
-  if (d->next == NULL)
-    return;
-  while (1) {
+
+  for (DIAGRAM *d = bifd; d != NULL; d = d->next) {
     type = get_bif_type(d->ibr, d->ntot, d->lab);
     if (type < 0) {
       plintf("Unable to get bifurcation type.\n");
@@ -465,9 +384,6 @@ void svg_auto(void) {
       flag = 1;
     add_ps_point(d->par, d->per, d->uhi, d->ulo, d->ubar, d->norm, type, flag,
                  d->lab, d->nfpar, d->icp1, d->icp2, d->flag2, d->evr, d->evi);
-    d = d->next;
-    if (d == NULL)
-      break;
   }
   svg_end();
 
@@ -475,21 +391,14 @@ void svg_auto(void) {
 }
 
 void bound_diagram(double *xlo, double *xhi, double *ylo, double *yhi) {
-  DIAGRAM *d;
-  int type;
-
-  /*int flag=0;
-  */
   double x, y1, y2, par1, par2 = 0.0;
-  d = bifd;
-  if (d->next == NULL)
-    return;
   *xlo = 1.e16;
   *ylo = *xlo;
   *xhi = -*xlo;
   *yhi = -*ylo;
-  while (1) {
-    type = get_bif_type(d->ibr, d->ntot, d->lab);
+
+  for (DIAGRAM *d = bifd; d != NULL; d = d->next) {
+    int type = get_bif_type(d->ibr, d->ntot, d->lab);
     if (type < 1) {
       plintf("Unable to get bifurcation type.\n");
     }
@@ -510,20 +419,16 @@ void bound_diagram(double *xlo, double *xhi, double *ylo, double *yhi) {
       *ylo = y2;
     if (y1 > *yhi)
       *yhi = y1;
-    d = d->next;
-    if (d == NULL)
-      break;
   }
 }
 
 int save_diagram(FILE *fp, int n) {
-  int i;
-  DIAGRAM *d;
+  /* Store the highest index we have. */
   fprintf(fp, "%d\n", NBifs - 1);
-  if (NBifs == 1)
-    return (-1);
-  d = bifd;
-  while (1) {
+
+  for (DIAGRAM *d = bifd; d != NULL; d = d->next) {
+    int i;
+
     fprintf(fp, "%d %d %d %d %d %d %d %d %d\n", d->ibr, d->ntot, d->itp, d->lab,
             d->index, d->nfpar, d->icp1, d->icp2, d->flag2);
     for (i = 0; i < 5; i++)
@@ -533,26 +438,20 @@ int save_diagram(FILE *fp, int n) {
     for (i = 0; i < n; i++)
       fprintf(fp, "%f %f %f %f %f %f\n", d->u0[i], d->uhi[i], d->ulo[i],
               d->ubar[i], d->evr[i], d->evi[i]);
-    d = d->next;
-    if (d == NULL)
-      break;
   }
   return (1);
 }
 
 int load_diagram(FILE *fp, int node) {
-  double u0[NAUTO], uhi[NAUTO], ulo[NAUTO], ubar[NAUTO], evr[NAUTO], evi[NAUTO],
-      norm, par[5], per;
-  int i, flag = 0;
   int n;
-  int ibr, ntot, itp, lab, index, nfpar, icp1, icp2, flag2;
   fscanf(fp, "%d", &n);
-  if (n == 0) {
-    /*    start_diagram(NODE); */
-    return (-1);
-  }
 
   while (1) {
+    double u0[NAUTO], uhi[NAUTO], ulo[NAUTO], ubar[NAUTO], evr[NAUTO],
+        evi[NAUTO], norm, par[5], per;
+    int i;
+    int ibr, ntot, itp, lab, index, nfpar, icp1, icp2, flag2;
+
     fscanf(fp, "%d %d %d %d %d %d %d %d %d ", &ibr, &ntot, &itp, &lab, &index,
            &nfpar, &icp1, &icp2, &flag2);
     for (i = 0; i < 5; i++)
@@ -561,14 +460,8 @@ int load_diagram(FILE *fp, int node) {
     for (i = 0; i < node; i++)
       fscanf(fp, "%lg %lg %lg %lg %lg %lg", &u0[i], &uhi[i], &ulo[i], &ubar[i],
              &evr[i], &evi[i]);
-    if (flag == 0) {
-      edit_start(ibr, ntot, itp, lab, nfpar, norm, uhi, ulo, u0, ubar, par, per,
-                 node, icp1, icp2, evr, evi);
-      flag = 1;
-      DiagFlag = 1;
-    } else
-      add_diagram(ibr, ntot, itp, lab, nfpar, norm, uhi, ulo, u0, ubar, par,
-                  per, node, icp1, icp2, flag2, evr, evi);
+    add_diagram(ibr, ntot, itp, lab, nfpar, norm, uhi, ulo, u0, ubar, par, per,
+                node, icp1, icp2, flag2, evr, evi);
     if (index >= n)
       break;
   }

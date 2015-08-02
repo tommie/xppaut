@@ -27,6 +27,7 @@ noinst_HEADERS = \
 	auto_define.h \
 	auto_nox.h \
 	auto_x11.h \
+	autpp.h \
 	axes2.h \
 	browse.h \
 	calc.h \

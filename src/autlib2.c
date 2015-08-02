@@ -5,30 +5,19 @@
 #include "autlib2.h"
 
 #include <math.h>
+#include "autlim.h"
+#include "auto_define.h"
 #include "auto_nox.h"
-#include "auto_x11.h"
+#include "autpp.h"
 
 int FLOWK;
 /* Common Block Declarations */
-
-struct {
-    integer ndim, ips, irs, ilp, icp[20];
-    doublereal par[20];
-} blbcn_;
-
-#define blbcn_1 blbcn_
 
 struct {
     doublereal rdsold, a, rl[20], rlold[20], rldot[20];
 } blcrl_;
 
 #define blcrl_1 blcrl_
-
-struct {
-    integer ntst, ncol, iad, isp, isw, iplt, nbc, nint;
-} blcde_;
-
-#define blcde_1 blcde_
 
 struct {
     integer ndm, ndmp1, nrow, nclm, nrc, ncc, npar, nfpar, nbc0, nint0;
@@ -43,13 +32,6 @@ struct {
 #define blitp_1 blitp_
 
 struct {
-    doublereal ds, dsmin, dsmax;
-    integer iads;
-} bldls_;
-
-#define bldls_1 bldls_
-
-struct {
     doublereal detge;
     integer nins;
 } bldet_;
@@ -57,23 +39,10 @@ struct {
 #define bldet_1 bldet_
 
 struct {
-    integer npr, mxbf, iid, itmx, itnw, nwtn, jac;
-} blmax_;
-
-#define blmax_1 blmax_
-
-struct {
     doublereal half, zero, one, two, hmach, rsmall, rlarge;
 } blrcn_;
 
 #define blrcn_1 blrcn_
-
-struct {
-    integer nmx, nuzr;
-    doublereal rl0, rl1, a0, a1;
-} bllim_;
-
-#define bllim_1 bllim_
 
 struct {
     integer iuzr;
@@ -114,12 +83,6 @@ struct {
 } bldif_;
 
 #define bldif_1 bldif_
-
-struct {
-    doublereal epsl[20], epsu, epss;
-} bleps_;
-
-#define bleps_1 bleps_
 
 struct {
     doublereal delref;
@@ -3511,7 +3474,7 @@ OF MULTIPLIERS IN UNIT CIRCLE =\002,i3)";
 
 
 /* Order the Floquet multipliers by distance from z=1. */
-    send_mult(*ibr,*ntot+1,blbcn_1.ndim,&ev[1]);
+    autpp_send_mult(ibr, ntot+1, &blbcn_1.ndim, &ev[1]);
     i__1 = blbcn_1.ndim - 1;
     for (i = 1; i <= i__1; ++i) {
 	amin = blrcn_1.rlarge;
@@ -4137,7 +4100,7 @@ integer *m1df;
 	blcrl_1.a = rmnups_(m1u, &iab, &ups[ups_offset]);
     }
 /* Externel interupts */
-    byeauto_(ntot, &iflag);
+    autpp_check_stop(&iflag);
     if (*istop == 1) {
 /*        ** Maximum number of iterations reached somewhere. */
 	*itp = -9 - blitp_1.itpst * 10;
@@ -4195,7 +4158,7 @@ integer *m1df;
     }
 /*     ADD BIFURCATION */
 
-    addbif_(&ibr1, &ntot1, itp, &lab1, &blicn_1.nfpar,
+    autpp_add_bif(&ibr1, &ntot1, itp, &lab1, &blicn_1.nfpar,
 	    &blcrl_1.a, uhigh, ulow, u0, ubar, &blicn_1.ndm);
 
     wrline_(&ibr1, &ntot1, itp, &lab1, &blcrl_1.a, umx);

@@ -4,6 +4,9 @@
 */
 
 #include "f2c.h"
+
+#include "autlim.h"
+#include "auto_define.h"
 #include "auto_nox.h"
 
 /* Common Block Declarations */
@@ -13,12 +16,6 @@ struct {
 } blicn_;
 
 #define blicn_1 blicn_
-
-struct {
-    integer npr, mxbf, iid, itmx, itnw, nwtn, jac;
-} blmax_;
-
-#define blmax_1 blmax_
 
 struct {
     doublereal half, zero, one, two, hmach, rsmall, rlarge;
@@ -35,37 +32,10 @@ struct {
 #define blwif_1 blwif_
 
 struct {
-    integer ndim, ips, irs, ilp, icp[20];
-    doublereal par[20];
-} blbcn_;
-
-#define blbcn_1 blbcn_
-
-struct {
     doublereal rdsold, a, rl[20], rlold[20], rldot[20];
 } blcrl_;
 
 #define blcrl_1 blcrl_
-
-struct {
-    integer ntst, ncol, iad, isp, isw, iplt, nbc, nint;
-} blcde_;
-
-#define blcde_1 blcde_
-
-struct {
-    integer nmx, nuzr;
-    doublereal rl0, rl1, a0, a1;
-} bllim_;
-
-#define bllim_1 bllim_
-
-struct {
-    doublereal ds, dsmin, dsmax;
-    integer iads;
-} bldls_;
-
-#define bldls_1 bldls_
 
 struct {
     doublereal u1zz[NAUTO], u2zz[NAUTO], f1zz[NAUTO], f2zz[NAUTO];

@@ -6,8 +6,38 @@
 
 #include "auto_define.h"
 #include "auto_nox.h"
+#include "auto_x11.h"
+#include "autpp.h"
 #include "diagram.h"
-#include "gear.h"
+
+/* --- Macros --- */
+#define EPSU bleps_1.epsu
+#define EPSS bleps_1.epss
+#define EPSL(a) bleps_1.epsl[(a)]
+
+#define IRS blbcn_1.irs
+#define NDIM blbcn_1.ndim
+#define IPS blbcn_1.ips
+#define ILP blbcn_1.ilp
+
+#define NTST blcde_1.ntst
+#define NCOL blcde_1.ncol
+#define IAD blcde_1.iad
+#define ISP blcde_1.isp
+#define ISW blcde_1.isw
+#define NBC blcde_1.nbc
+#define NIC blcde_1.nint
+
+#define DS bldls_1.ds
+#define DSMAX bldls_1.dsmax
+#define DSMIN bldls_1.dsmin
+
+#define NMX bllim_1.nmx
+#define NUZR bllim_1.nuzr
+#define RL0 bllim_1.rl0
+#define RL1 bllim_1.rl1
+#define AUTO_A0 bllim_1.a0
+#define AUTO_A1 bllim_1.a1
 
 #define SPECIAL 5
 #define SPER 3
@@ -21,38 +51,22 @@ typedef struct {
   double evr[NAUTO], evi[NAUTO];
 } EIGVAL;
 
+/* --- Forward Declarations --- */
+static void add_bif(int ibr, int ntot, int itp, int lab, int npar, double a,
+                    const double *uhigh, const double *ulow, const double *u0,
+                    const double *ubar, int ndim);
+static void send_eigen(int ibr, int ntot, int n, const doublecomplex *ev);
+static void send_mult(int ibr, int ntot, int n, const doublecomplex *ev);
+
 /* --- Data --- */
 int DiagFlag = 0;
+
+static const AUTPP_CALLBACKS autpp_callbacks = {
+  .add_bif = add_bif, .check_stop = check_stop_auto, .send_eigen = send_eigen, .send_mult = send_mult,
+};
 static EIGVAL my_ev;
 
-double dreal_(doublecomplex *z) { return (z->r); }
-
-void send_eigen(int ibr, int ntot, int n, doublecomplex *ev) {
-  int i;
-  double er, cs, sn;
-  my_ev.pt = abs(ntot);
-  my_ev.br = abs(ibr);
-  for (i = 0; i < n; i++) {
-    er = exp((ev + i)->r);
-    cs = cos((ev + i)->i);
-    sn = sin((ev + i)->i);
-    my_ev.evr[i] = er * cs;
-    my_ev.evi[i] = er * sn;
-  }
-}
-
-void send_mult(int ibr, int ntot, int n, doublecomplex *ev) {
-  int i;
-  my_ev.pt = abs(ntot);
-  my_ev.br = abs(ibr);
-  for (i = 0; i < n; i++) {
-    my_ev.evr[i] = (ev + i)->r;
-    my_ev.evi[i] = (ev + i)->i;
-  }
-}
-
 /* Only unit 8,3 or q.prb is important; all others are unnecesary */
-
 int get_bif_type(int ibr, int ntot, int lab) {
   int type = SEQ;
   if (ibr < 0 && ntot < 0)
@@ -65,48 +79,6 @@ int get_bif_type(int ibr, int ntot, int lab) {
     type = SEQ;
   /* if(lab>0)type=SPECIAL; */
   return (type);
-}
-
-void addbif_(int *ibr, int *ntot, int *itp, int *lab, int *npar, double *a,
-             double *uhigh, double *ulow, double *u0, double *ubar, int *ndim) {
-  int type;
-  /*int evflag=0; Not used*/
-  int icp1 = blbcn_1.icp[0] - 1, icp2 = blbcn_1.icp[1] - 1;
-  double per = blbcn_1.par[10];
-  type = get_bif_type(*ibr, *ntot, *lab);
-
-  /*if(my_ev.br==abs(*ibr)&&my_ev.pt==abs(*ntot)){evflag=1;}*/
-  if (*ntot == 1) {
-    add_point(blbcn_1.par, per, uhigh, ulow, ubar, *a, type, 0, *lab, *npar,
-              icp1, icp2, AutoTwoParam, my_ev.evr, my_ev.evi);
-  } else {
-    add_point(blbcn_1.par, per, uhigh, ulow, ubar, *a, type, 1, *lab, *npar,
-              icp1, icp2, AutoTwoParam, my_ev.evr, my_ev.evi);
-  }
-
-  if (DiagFlag == 0) {
-    /* start_diagram(*ndim); */
-    edit_start(*ibr, *ntot, *itp, *lab, *npar, *a, uhigh, ulow, u0, ubar,
-               blbcn_1.par, per, *ndim, icp1, icp2, my_ev.evr, my_ev.evi);
-    DiagFlag = 1;
-    return;
-  }
-  add_diagram(*ibr, *ntot, *itp, *lab, *npar, *a, uhigh, ulow, u0, ubar,
-              blbcn_1.par, per, *ndim, icp1, icp2, AutoTwoParam, my_ev.evr,
-              my_ev.evi);
-}
-
-double etime_(double *z) { return (0.0); }
-
-int eigrf_(double *a, int *n, int *m, doublecomplex *ecv, double *work, int *ier) {
-  double ev[400];
-  int i;
-  eigen(*n, a, ev, work, ier);
-  for (i = 0; i < *n; i++) {
-    (ecv + i)->r = ev[2 * i];
-    (ecv + i)->i = ev[2 * i + 1];
-  }
-  return 0;
 }
 
 void init_auto(int ndim, int nbc, int ips, int irs, int ilp, int ntst, int isp,
@@ -151,4 +123,57 @@ void init_auto(int ndim, int nbc, int ips, int irs, int ilp, int ntst, int isp,
     EPSL(i) = epsl;
   EPSU = epsu;
   EPSS = epss;
+
+  autpp_set_callbacks(&autpp_callbacks);
+}
+
+static void add_bif(int ibr, int ntot, int itp, int lab, int npar, double a,
+                    const double *uhigh, const double *ulow, const double *u0,
+                    const double *ubar, int ndim) {
+  int type;
+  int icp1 = blbcn_1.icp[0] - 1, icp2 = blbcn_1.icp[1] - 1;
+  double per = blbcn_1.par[10];
+  type = get_bif_type(ibr, ntot, lab);
+
+  if (ntot == 1) {
+    add_point(blbcn_1.par, per, (double*)uhigh, (double*)ulow, (double*)ubar, a, type, 0, lab, npar, icp1,
+              icp2, AutoTwoParam, my_ev.evr, my_ev.evi);
+  } else {
+    add_point(blbcn_1.par, per, (double*)uhigh, (double*)ulow, (double*)ubar, a, type, 1, lab, npar, icp1,
+              icp2, AutoTwoParam, my_ev.evr, my_ev.evi);
+  }
+
+  if (DiagFlag == 0) {
+    /* start_diagram(*ndim); */
+    edit_start(ibr, ntot, itp, lab, npar, a, (double*)uhigh, (double*)ulow, (double*)u0, (double*)ubar, blbcn_1.par,
+               per, ndim, icp1, icp2, my_ev.evr, my_ev.evi);
+    DiagFlag = 1;
+    return;
+  }
+  add_diagram(ibr, ntot, itp, lab, npar, a, (double*)uhigh, (double*)ulow, (double*)u0, (double*)ubar, blbcn_1.par,
+              per, ndim, icp1, icp2, AutoTwoParam, my_ev.evr, my_ev.evi);
+}
+
+static void send_eigen(int ibr, int ntot, int n, const doublecomplex *ev) {
+  int i;
+  double er, cs, sn;
+  my_ev.pt = abs(ntot);
+  my_ev.br = abs(ibr);
+  for (i = 0; i < n; i++) {
+    er = exp((ev + i)->r);
+    cs = cos((ev + i)->i);
+    sn = sin((ev + i)->i);
+    my_ev.evr[i] = er * cs;
+    my_ev.evi[i] = er * sn;
+  }
+}
+
+static void send_mult(int ibr, int ntot, int n, const doublecomplex *ev) {
+  int i;
+  my_ev.pt = abs(ntot);
+  my_ev.br = abs(ibr);
+  for (i = 0; i < n; i++) {
+    my_ev.evr[i] = (ev + i)->r;
+    my_ev.evi[i] = (ev + i)->i;
+  }
 }

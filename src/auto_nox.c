@@ -3,8 +3,10 @@
 #include <ctype.h>
 #include <libgen.h>
 #include <math.h>
+#include <stdlib.h>
 #include <string.h>
 
+#include "autevd.h"
 #include "autlib1.h"
 #include "autlib2.h"
 #include "auto_x11.h"

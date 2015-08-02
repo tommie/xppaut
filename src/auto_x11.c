@@ -624,13 +624,12 @@ void draw_auto_info(char *bob, int x, int y) {
 
 void refreshdisplay(void) { XFlush(display); }
 
-int byeauto_(int *nt, int *iflag) {
+int check_stop_auto(void) {
   XEvent event;
   Window w;
   char ch;
   if (Auto.exist == 0)
     return (1);
-  *iflag = 0;
   while (XPending(display) > 0) {
     XNextEvent(display, &event);
     switch (event.type) {
@@ -641,15 +640,13 @@ int byeauto_(int *nt, int *iflag) {
       w = event.xbutton.window;
       if (w == AutoW.abort) {
         SBW;
-        *iflag = 1;
         return (1);
       }
       break;
     case KeyPress:
       ch = get_key_press(&event);
       if (ch == ESC) {
-        *iflag = 1;
-        return (0);
+        return (1);
       }
       break;
     }

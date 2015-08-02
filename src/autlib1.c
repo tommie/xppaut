@@ -6,55 +6,16 @@
 
 #include "sfe.h"
 
-#include "autevd.h"
-#include "auto_x11.h"
+#include "auto_define.h"
+#include "autpp.h"
 
 /* Common Block Declarations */
-
-struct {
-    integer ndim, ips, irs, ilp, icp[20];
-    doublereal par[20];
-} blbcn_;
-
-#define blbcn_1 blbcn_
-
-struct {
-    integer ntst, ncol, iad, isp, isw, iplt, nbc, nint;
-} blcde_;
-
-#define blcde_1 blcde_
 
 struct {
     doublereal thetal[20], thetau;
 } bltht_;
 
 #define bltht_1 bltht_
-
-struct {
-    doublereal ds, dsmin, dsmax;
-    integer iads;
-} bldls_;
-
-#define bldls_1 bldls_
-
-struct {
-    doublereal epsl[20], epsu, epss;
-} bleps_;
-
-#define bleps_1 bleps_
-
-struct {
-    integer nmx, nuzr;
-    doublereal rl0, rl1, a0, a1;
-} bllim_;
-
-#define bllim_1 bllim_
-
-struct {
-    integer npr, mxbf, iid, itmx, itnw, nwtn, jac;
-} blmax_;
-
-#define blmax_1 blmax_
 
 struct {
     doublereal half, zero, one, two, hmach, rsmall, rlarge;
@@ -2254,7 +2215,7 @@ e12.5),50(/,23x,2(2x,2e12.5)))";
 /* L1: */
 	  }
       }
-  send_eigen(*ibr,*ntot+1,blbcn_1.ndim,&ev[1]);
+    autpp_send_eigen(ibr, ntot+1, &blbcn_1.ndim, &ev[1]);
 /* Compute the smallest real part. */
 
     rimhb = blrcn_1.zero;
@@ -3383,7 +3344,7 @@ doublereal *u;
 	blcrl_1.a = sqrt(ss);
 /* SGLE    A= SQRT(SS) */
     }
-    byeauto_(ntot, &iflag);
+    autpp_check_stop(&iflag);
     if (*istop == 1) {
 /*        Maximum number of iterations reached somewhere. */
 	*itp = -9 - blitp_1.itpst * 10;
@@ -3411,7 +3372,7 @@ doublereal *u;
 	    ntot1 = -(*ntot);
 	}
     }
-    addbif_(ibr, &ntot1, itp, &lab1,
+    autpp_add_bif(ibr, &ntot1, itp, &lab1,
 	    &blicn_1.nfpar,&blcrl_1.a, &u[1], &u[1], &u[1], &u[1],&blicn_1.ndm);
     wrline_(ibr, &ntot1, itp, &lab1, &blcrl_1.a, &u[1]);
 

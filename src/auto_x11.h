@@ -29,7 +29,7 @@ void auto_set_mark(int i);
 void auto_stab_line(int x, int y, int xp, int yp);
 void autobw(void);
 void autocol(int col);
-int byeauto_(int *nt, int *iflag);
+int check_stop_auto(void);
 void clear_auto_info(void);
 void clear_auto_plot(void);
 void clr_stab(void);

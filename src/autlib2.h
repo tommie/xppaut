@@ -1,7 +1,7 @@
 #ifndef XPPAUT_AUTLIB2_H
 #define XPPAUT_AUTLIB2_H
 
-#include "autevd.h"
+#include "f2c.h"
 
 /* --- Data --- */
 extern int FLOWK;

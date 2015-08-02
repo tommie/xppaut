@@ -64,6 +64,7 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "strutil.h"
 #include "tabular.h"
 #include "volterra2.h"
+#include "ui-x11/file-selector.h"
 
 /* --- Macros --- */
 #define MSWTCH(u, v) memcpy((void *)(u), (void *)(v), xpv.node * sizeof(double))

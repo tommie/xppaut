@@ -27,11 +27,13 @@
 #include "pop_list.h"
 #include "storage.h"
 #include "strutil.h"
+#include "base/timeutil.h"
 #include "bitmap/browse.bitmap"
+#include "ui-x11/file-selector.h"
 
+/* --- Macros --- */
 #define xds(a) { XDrawString(display,w,small_gc,5,CURY_OFFs,a,strlen(a));\
 		return;}
-
 
 #define MYMASK  (ButtonPressMask 	|\
                 ButtonReleaseMask |\
@@ -112,48 +114,6 @@ float *get_data_col(int c)
 {
   return my_browser.data[c];
 }
-
-
-/*Excerpt from the man (Section 2) for  gettimeofday:
-"The use of the timezone structure is obsolete; the tz argument should normally be spec-
-ified as NULL.  The tz_dsttime field has never been used under Linux; it has  not  been
-and will not be supported by libc or glibc.  Each and every occurrence of this field in
-the kernel source (other than the declaration) is a bug."
-*/
-
-int gettimenow()
-{
-  struct timeval now;
-  /*struct timezone tz;
-  gettimeofday(&now,&tz);
-  */
-  gettimeofday(&now,NULL);
-  return now.tv_usec;
-}
-
-
-void waitasec(msec)
-     int msec;
-{
-  struct timeval tim;
-  /*struct timezone tz;*/
-  double sec=(double)msec/1000;
-  double t1,t2;
-  gettimeofday(&tim,NULL);
-  t1=tim.tv_sec+(tim.tv_usec/1000000.0);
-
-   while(1)
-    {
-       gettimeofday(&tim,NULL);
-       t2=tim.tv_sec+(tim.tv_usec/1000000.0);
-
-
-       if((t2-t1)>sec)
-
-       return;
-    }
-}
-
 
 int get_maxrow_browser()
 {

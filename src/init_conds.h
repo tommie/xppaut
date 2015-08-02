@@ -41,7 +41,6 @@ void do_box_expose(Window w);
 void draw_one_box(BoxList b, int index);
 void enter_slides(Window w, int val);
 void expose_slides(Window w);
-int file_selector(char *title, char *file, char *wild);
 int find_user_name(int type, char *oname);
 void initialize_box(void);
 void make_new_bc_box(void);

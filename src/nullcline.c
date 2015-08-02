@@ -4,12 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "browse.h"
 #include "form_ode.h"
 #include "ggets.h"
 #include "graf_par.h"
 #include "graphics.h"
-#include "init_conds.h"
 #include "integrate.h"
 #include "load_eqn.h"
 #include "main.h"
@@ -22,6 +20,8 @@
 #include "odesol2.h"
 #include "parserslow.h"
 #include "pop_list.h"
+#include "base/timeutil.h"
+#include "ui-x11/file-selector.h"
 
 /* --- Macros --- */
 #define MAX_NULL 10000

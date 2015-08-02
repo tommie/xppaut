@@ -42,7 +42,6 @@
 #include "color.h"
 #include "form_ode.h"
 #include "ggets.h"
-#include "init_conds.h"
 #include "integrate.h"
 #include "load_eqn.h"
 #include "lunch-new.h"
@@ -50,7 +49,9 @@
 #include "many_pops.h"
 #include "pop_list.h"
 #include "scrngif.h"
+#include "base/timeutil.h"
 #include "bitmap/array.bitmap"
+#include "ui-x11/file-selector.h"
 
 /* --- Types --- */
 typedef struct {

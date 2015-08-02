@@ -21,6 +21,7 @@
 #include "parserslow.h"
 #include "storage.h"
 #include "volterra2.h"
+#include "ui-x11/file-selector.h"
 
 /* --- Forward Declarations --- */
 static void do_info(FILE *fp);

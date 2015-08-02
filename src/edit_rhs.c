@@ -9,7 +9,6 @@
 #include "extra.h"
 #include "form_ode.h"
 #include "ggets.h"
-#include "init_conds.h"
 #include "load_eqn.h"
 #include "main.h"
 #include "many_pops.h"
@@ -17,6 +16,8 @@
 #include "numerics.h"
 #include "parserslow.h"
 #include "pop_list.h"
+#include "base/timeutil.h"
+#include "ui-x11/file-selector.h"
 
 /* --- Macros --- */
 #define NEQMAXFOREDIT 20

@@ -6,12 +6,12 @@
 #include <X11/Xos.h>
 
 #include "aniparse.h"
-#include "browse.h"
 #include "ggets.h"
 #include "main.h"
 #include "mykeydef.h"
 #include "pop_list.h"
 #include "scrngif.h"
+#include "base/timeutil.h"
 
 /* --- Macros --- */
 #define MAXFILM 250

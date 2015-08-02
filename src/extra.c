@@ -20,9 +20,9 @@ export {x,y} {xp,yp}
 #include <string.h>
 
 #include "ggets.h"
-#include "init_conds.h"
 #include "parserslow.h"
 #include "read_dir.h"
+#include "ui-x11/file-selector.h"
 
 /* --- Macros --- */
 #define PAR 0

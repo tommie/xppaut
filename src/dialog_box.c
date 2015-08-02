@@ -4,10 +4,10 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#include "browse.h"
 #include "ggets.h"
 #include "main.h"
 #include "many_pops.h"
+#include "base/timeutil.h"
 
 /* --- Macros --- */
 #define EV_MASK                                                                \

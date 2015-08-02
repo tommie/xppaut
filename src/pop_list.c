@@ -5,7 +5,6 @@
 #include <X11/cursorfont.h>
 #include <X11/Xutil.h>
 
-#include "browse.h"
 #include "form_ode.h"
 #include "ggets.h"
 #include "graf_par.h"
@@ -13,6 +12,7 @@
 #include "main.h"
 #include "many_pops.h"
 #include "menudrive.h"
+#include "base/timeutil.h"
 #include "bitmap/alert.bitmap"
 #include "bitmap/info.bitmap"
 

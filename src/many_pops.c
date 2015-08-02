@@ -31,6 +31,7 @@
 #include "rubber.h"
 #include "tabular.h"
 #include "txtread.h"
+#include "base/timeutil.h"
 #include "bitmap/graph.bitmap"
 
 /* --- Macros --- */

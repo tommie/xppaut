@@ -26,8 +26,6 @@ void edit_window(Window w, int *pos, char *value, int *col, int *done, int ch);
 void err_msg(char *string);
 int get_key_press(XEvent *ev);
 int get_mouse_xy(int *x, int *y, Window w);
-void memmov(char *s1, char *s2, int len);
-void movmem(char *s1, char *s2, int len);
 int new_float(char *name, double *value);
 int new_int(char *name, int *value);
 int new_string(char *name, char *value);

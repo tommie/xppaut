@@ -4,7 +4,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#include "browse.h"
 #include "form_ode.h"
 #include "ggets.h"
 #include "init_conds.h"
@@ -12,6 +11,7 @@
 #include "main.h"
 #include "parserslow.h"
 #include "pop_list.h"
+#include "base/timeutil.h"
 
 #define MYMASK                                                                 \
   (ButtonPressMask | KeyPressMask | ExposureMask | StructureNotifyMask |       \

@@ -48,7 +48,6 @@ void refresh_browser(int length);
 void reset_browser(void);
 void resize_my_browser(Window win);
 void set_browser_data(float **data, int col0);
-void waitasec(int msec);
 void wipe_rep(void);
 void write_mybrowser_data(FILE *fp);
 

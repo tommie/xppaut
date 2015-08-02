@@ -4,13 +4,13 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#include "browse.h"
 #include "form_ode.h"
 #include "ggets.h"
 #include "load_eqn.h"
 #include "main.h"
 #include "many_pops.h"
 #include "pop_list.h"
+#include "base/timeutil.h"
 #include "bitmap/info.bitmap"
 
 /* --- Macros --- */

@@ -13,7 +13,6 @@
 #include "form_ode.h"
 #include "ggets.h"
 #include "graphics.h"
-#include "init_conds.h"
 #include "integrate.h"
 #include "kinescope.h"
 #include "load_eqn.h"
@@ -28,6 +27,7 @@
 #include "pop_list.h"
 #include "rubber.h"
 #include "storage.h"
+#include "ui-x11/file-selector.h"
 
 /* --- Macros --- */
 #define MAXNCLINE 26

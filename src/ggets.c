@@ -8,7 +8,6 @@
 #include <X11/Xutil.h>
 
 #include "axes2.h"
-#include "browse.h"
 #include "calc.h"
 #include "graphics.h"
 #include "main.h"
@@ -17,6 +16,8 @@
 #include "mykeydef.h"
 #include "newhome.h"
 #include "pop_list.h"
+#include "strutil.h"
+#include "base/timeutil.h"
 
 /* --- Forward Declarations --- */
 static void clr_line_at(Window w, int col0, int pos, int n);
@@ -314,18 +315,6 @@ void put_string_at(Window w, int col, char *s, int off) {
   int l = strlen(s) - off;
 
   XDrawString(display, w, gc, col, CURY_OFF, s + off, l);
-}
-
-void movmem(char *s1, char *s2, int len) {
-  int i;
-  for (i = len - 1; i >= 0; i--)
-    s1[i] = s2[i];
-}
-
-void memmov(char *s1, char *s2, int len) {
-  int i;
-  for (i = 0; i < len; i++)
-    s1[i] = s2[i];
 }
 
 void edit_window(Window w, int *pos, char *value, int *col, int *done, int ch) {

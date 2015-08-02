@@ -59,12 +59,12 @@ to be added later
 
 #include "browse.h"
 #include "ggets.h"
-#include "init_conds.h"
 #include "many_pops.h"
 #include "parserslow.h"
 #include "read_dir.h"
 #include "simplenet.h"
 #include "storage.h"
+#include "ui-x11/file-selector.h"
 
 /* --- Forward Declarations --- */
 static int eval_fun_table(int n, double xlo, double xhi, char *formula,

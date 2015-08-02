@@ -34,6 +34,7 @@
 #include "rubber.h"
 #include "run_auto.h"
 #include "storage.h"
+#include "ui-x11/file-selector.h"
 
 #define UPT 6
 #define SPT 7

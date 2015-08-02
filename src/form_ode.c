@@ -11,7 +11,6 @@
 #include "extra.h"
 #include "flags.h"
 #include "ggets.h"
-#include "init_conds.h"
 #include "integrate.h"
 #include "load_eqn.h"
 #include "main.h"
@@ -21,6 +20,7 @@
 #include "read_dir.h"
 #include "simplenet.h"
 #include "strutil.h"
+#include "ui-x11/file-selector.h"
 
 /* --- Macros --- */
 #define cstringmaj MYSTR1

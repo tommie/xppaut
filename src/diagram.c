@@ -9,10 +9,10 @@
 #include "ggets.h"
 #include "graf_par.h"
 #include "graphics.h"
-#include "init_conds.h"
 #include "my_ps.h"
 #include "my_svg.h"
 #include "storage.h"
+#include "ui-x11/file-selector.h"
 
 /* --- Macros --- */
 #define DALLOC(a) (double *) malloc((a) * sizeof(double))

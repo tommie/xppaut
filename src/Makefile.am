@@ -97,7 +97,12 @@ noinst_HEADERS = \
 	userbut.h \
 	volterra2.h \
 	xpplim.h \
-	$(bitmap_headers)
+	$(base_headers) \
+	$(bitmap_headers) \
+	$(ui_x11_headers)
+
+base_headers = \
+	base/timeutil.h
 
 bitmap_headers = \
 	bitmap/alert.bitmap \
@@ -123,6 +128,10 @@ bitmap_headers = \
 	bitmap/pp.bitmap \
 	bitmap/start.bitmap \
 	bitmap/txtview.bitmap
+
+ui_x11_headers = \
+	ui-x11/editutil.h \
+	ui-x11/file-selector.h
 
 xppaut_LDADD = \
 	$(top_builddir)/cvodesrc/libcvode.a \
@@ -192,8 +201,10 @@ xppaut_SOURCES = \
 	userbut.c \
 	volterra2.c \
 	$(auto_sources) \
+	$(base_sources) \
 	$(cvode_sources) \
-	$(strutil_sources)
+	$(strutil_sources) \
+	$(ui_x11_sources)
 
 libxpp_a_SOURCES = \
 	abort.c \
@@ -258,8 +269,10 @@ libxpp_a_SOURCES = \
 	userbut.c \
 	volterra2.c \
 	$(auto_sources) \
+	$(base_sources) \
 	$(cvode_sources) \
-	$(strutil_sources)
+	$(strutil_sources) \
+	$(ui_x11_sources)
 
 auto_sources = \
 	autevd.c \
@@ -273,8 +286,15 @@ auto_sources = \
 	flowkm_small.c \
 	run_auto.c
 
+base_sources = \
+	base/timeutil.c
+
 cvode_sources = \
 	cv2.c
+
+ui_x11_sources = \
+	ui-x11/editutil.c \
+	ui-x11/file-selector.c
 
 if HAVE_STRUPR
 strutil_sources =

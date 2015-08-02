@@ -12,7 +12,6 @@
 
 #include "adj2.h"
 #include "auto_nox.h"
-#include "browse.h"
 #include "calc.h"
 #include "edit_rhs.h"
 #include "extra.h"
@@ -36,6 +35,7 @@
 #include "torus.h"
 #include "tutor.h"
 #include "txtread.h"
+#include "base/timeutil.h"
 #include "bitmap/alert.bitmap"
 
 /* --- Types --- */

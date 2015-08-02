@@ -6,7 +6,6 @@
 #include <X11/Xutil.h>
 
 #include "auto_nox.h"
-#include "browse.h"
 #include "color.h"
 #include "derived.h"
 #include "diagram.h"
@@ -24,6 +23,7 @@
 #include "parserslow.h"
 #include "pop_list.h"
 #include "rubber.h"
+#include "base/timeutil.h"
 #include "bitmap/auto.bitmap"
 
 /* --- Macros --- */

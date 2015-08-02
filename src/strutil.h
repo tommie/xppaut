@@ -3,6 +3,9 @@
 
 /* --- Functions --- */
 void de_space(char *s);
+void memmov(char *s1, const char *s2, int len);
+void movmem(char *s1, const char *s2, int len);
+void stringintersect(char *target, const char *sother);
 #ifndef HAVE_STRUPR
 void strupr(char *s);
 void strlwr(char *s);

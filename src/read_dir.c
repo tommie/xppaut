@@ -10,11 +10,11 @@
 
 /* --- Forward Declarations --- */
 static int cmpstringp(const void *p1, const void *p2);
-static int fil_count(char *direct, int *ndir, int *nfil, char *wild, int *mld,
+static int fil_count(const char *direct, int *ndir, int *nfil, const char *wild, int *mld,
                      int *mlf);
-static int IsDirectory(char *root, char *path);
-static void MakeFullPath(char *root, char *filename, char *pathname);
-static int wild_match(char *string, char *pattern);
+static int IsDirectory(const char *root, const char *path);
+static void MakeFullPath(const char *root, const char *filename, char *pathname);
+static int wild_match(const char *string, const char *pattern);
 
 /* --- Data --- */
 char cur_dir[MAXPATHLEN];
@@ -38,7 +38,7 @@ static int cmpstringp(const void *p1, const void *p2) {
   return strcmp(*(char *const *)p1, *(char *const *)p2);
 }
 
-int get_fileinfo_tab(char *wild, char *direct, FILEINFO *ff, char *wild2) {
+int get_fileinfo_tab(const char *wild, const char *direct, FILEINFO *ff, const char *wild2) {
   int i, ans;
   DIR *dirp;
   int mlf, mld;
@@ -92,7 +92,7 @@ int get_fileinfo_tab(char *wild, char *direct, FILEINFO *ff, char *wild2) {
   return 1;
 }
 
-int get_fileinfo(char *wild, char *direct, FILEINFO *ff) {
+int get_fileinfo(const char *wild, const char *direct, FILEINFO *ff) {
   int i, ans;
   DIR *dirp;
   int mlf, mld;
@@ -137,7 +137,7 @@ int get_fileinfo(char *wild, char *direct, FILEINFO *ff) {
   return 1;
 }
 
-static int fil_count(char *direct, int *ndir, int *nfil, char *wild, int *mld,
+static int fil_count(const char *direct, int *ndir, int *nfil, const char *wild, int *mld,
                      int *mlf) {
   DIR *dirp;
   int l;
@@ -172,7 +172,7 @@ static int fil_count(char *direct, int *ndir, int *nfil, char *wild, int *mld,
   return 1;
 }
 
-int change_directory(char *path) {
+int change_directory(const char *path) {
   if (path == NULL) {
     *cur_dir = '\0';
     return (0);
@@ -196,7 +196,7 @@ int get_directory(char *direct) {
   return 1;
 }
 
-int IsDirectory(char *root, char *path) {
+int IsDirectory(const char *root, const char *path) {
   char fullpath[MAXPATHLEN];
   struct stat statbuf;
 
@@ -218,7 +218,7 @@ int IsDirectory(char *root, char *path) {
  * Returns:	Nothing.
  * Notes:
  */
-void MakeFullPath(char *root, char *filename, char *pathname) {
+void MakeFullPath(const char *root, const char *filename, char *pathname) {
   strcpy(pathname, root);
   strcat(pathname, "/");
   strcat(pathname, filename);
@@ -266,7 +266,7 @@ static int star();
 
 /* Return nonzero if `string' matches Unix-style wildcard pattern
    `pattern'; zero if not. */
-static int wild_match(char *string, char *pattern) {
+static int wild_match(const char *string, const char *pattern) {
   int prev;    /* Previous character in character class. */
   int matched; /* If 1, character class has been matched. */
   int reverse; /* If 1, character class is inverted. */
@@ -306,7 +306,7 @@ static int wild_match(char *string, char *pattern) {
   return *string == '\0';
 }
 
-static int star(char *string, char *pattern) {
+static int star(const char *string, const char *pattern) {
   while (wild_match(string, pattern) == 0)
     if (*++string == '\0')
       return 0;

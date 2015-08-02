@@ -756,7 +756,7 @@ int file_selector(const char *title, char *file, const char *wild) {
   int i;
   if (!get_directory(cur_dir))
     return 0;
-  if (!get_fileinfo((char*)wild, cur_dir, &my_ff))
+  if (!get_fileinfo(wild, cur_dir, &my_ff))
     return 0;
 
   create_file_selector(&filesel, title, file, wild);

@@ -20,10 +20,10 @@ extern char cur_dir[MAXPATHLEN];
 extern FILEINFO my_ff;
 
 /* --- Functions --- */
-int change_directory(char *path);
+int change_directory(const char *path);
 void free_finfo(FILEINFO *ff);
 int get_directory(char *direct);
-int get_fileinfo(char *wild, char *direct, FILEINFO *ff);
-int get_fileinfo_tab(char *wild, char *direct, FILEINFO *ff, char *wild2);
+int get_fileinfo(const char *wild, const char *direct, FILEINFO *ff);
+int get_fileinfo_tab(const char *wild, const char *direct, FILEINFO *ff, const char *wild2);
 
 #endif /* XPPAUT_READ_DIR_H */

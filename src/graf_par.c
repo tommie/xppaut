@@ -9,6 +9,7 @@
 #include "axes2.h"
 #include "browse.h"
 #include "color.h"
+#include "diagram.h"
 #include "form_ode.h"
 #include "ggets.h"
 #include "graphics.h"

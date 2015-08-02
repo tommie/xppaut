@@ -3,6 +3,13 @@
 
 #include <stdio.h>
 
+/* --- Macros --- */
+/* get_bif_type return values */
+#define CSEQ 1
+#define CUEQ 2
+#define SPER 3
+#define UPER 4
+
 /* --- Types --- */
 typedef struct diagram {
   int package;
@@ -19,11 +26,12 @@ typedef struct diagram {
 extern DIAGRAM *bifd;
 
 /* --- Functions --- */
-void add_diagram(int ibr, int ntot, int itp, int lab, int nfpar, double a,
-                 double *uhi, double *ulo, double *u0, double *ubar,
-                 double *par, double per, int n, int icp1, int icp2, int flag2,
-                 double *evr, double *evi);
+DIAGRAM *add_diagram(int ibr, int ntot, int itp, int lab, int nfpar, double a,
+                     double *uhi, double *ulo, double *u0, double *ubar,
+                     double *par, double per, int n, int icp1, int icp2,
+                     int flag2, double *evr, double *evi);
 void bound_diagram(double *xlo, double *xhi, double *ylo, double *yhi);
+void draw_diagram(DIAGRAM *d);
 void kill_diagrams(void);
 void load_browser_with_branch(int ibr, int pts, int pte);
 int load_diagram(FILE *fp, int node);

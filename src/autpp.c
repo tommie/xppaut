@@ -1,5 +1,8 @@
 #include "autpp.h"
 
+#include <math.h>
+
+#include "auto_define.h"
 #include "auto_nox.h"
 #include "derived.h"
 #include "gear.h"
@@ -9,8 +12,15 @@
 #include "parserslow.h"
 #include "pp_shoot.h"
 
+/* --- Types --- */
+typedef struct {
+  int pt, br;
+  double evr[NAUTO], evi[NAUTO];
+} EIGVAL;
+
 /* --- Data --- */
 static AUTPP_CALLBACKS callbacks;
+static EIGVAL my_ev;
 
 void autpp_set_callbacks(const AUTPP_CALLBACKS *cbs) { callbacks = *cbs; }
 
@@ -110,11 +120,13 @@ void autpp_add_bif(integer *ibr, integer *ntot, integer *itp, integer *lab,
                    integer *npar, doublereal *a, doublereal *uhigh,
                    doublereal *ulow, doublereal *u0, doublereal *ubar,
                    integer *ndim) {
-  if (!callbacks.add_bif)
-    return;
+  int icp1 = blbcn_1.icp[0] - 1, icp2 = blbcn_1.icp[1] - 1;
+  double per = blbcn_1.par[10];
 
-  callbacks.add_bif(*ibr, *ntot, *itp, *lab, *npar, *a, uhigh, ulow, u0, ubar,
-                    *ndim);
+  if (callbacks.add_diagram)
+    callbacks.add_diagram(*ibr, *ntot, *itp, *lab, *npar, *a, uhigh, ulow, u0,
+                          ubar, blbcn_1.par, per, *ndim, icp1, icp2, my_ev.evr,
+                          my_ev.evi);
 }
 
 void autpp_check_stop(integer *iflag) {
@@ -126,16 +138,26 @@ void autpp_check_stop(integer *iflag) {
 
 void autpp_send_eigen(integer *ibr, integer *ntot, integer *n,
                       doublecomplex *ev) {
-  if (!callbacks.send_eigen)
-    return;
-
-  callbacks.send_eigen(*ibr, *ntot, *n, ev);
+  int i;
+  double er, cs, sn;
+  my_ev.pt = abs(*ntot);
+  my_ev.br = abs(*ibr);
+  for (i = 0; i < *n; i++) {
+    er = exp((ev + i)->r);
+    cs = cos((ev + i)->i);
+    sn = sin((ev + i)->i);
+    my_ev.evr[i] = er * cs;
+    my_ev.evi[i] = er * sn;
+  }
 }
 
 void autpp_send_mult(integer *ibr, integer *ntot, integer *n,
                      doublecomplex *ev) {
-  if (!callbacks.send_mult)
-    return;
-
-  callbacks.send_mult(*ibr, *ntot, *n, ev);
+  int i;
+  my_ev.pt = abs(*ntot);
+  my_ev.br = abs(*ibr);
+  for (i = 0; i < *n; i++) {
+    my_ev.evr[i] = (ev + i)->r;
+    my_ev.evi[i] = (ev + i)->i;
+  }
 }

@@ -28,6 +28,20 @@ static void edit_diagram(DIAGRAM *d, int ibr, int ntot, int itp, int lab,
 DIAGRAM *bifd = NULL;
 static int NBifs = 0;
 
+/* Only unit 8,3 or q.prb is important; all others are unnecesary */
+int get_bif_type(int ibr, int ntot, int lab) {
+  int type = CSEQ;
+  if (ibr < 0 && ntot < 0)
+    type = SPER;
+  if (ibr < 0 && ntot > 0)
+    type = UPER;
+  if (ibr > 0 && ntot > 0)
+    type = CUEQ;
+  if (ibr > 0 && ntot < 0)
+    type = CSEQ;
+  return (type);
+}
+
 static void edit_diagram(DIAGRAM *d, int ibr, int ntot, int itp, int lab,
                          int nfpar, double a, double *uhi, double *ulo,
                          double *u0, double *ubar, double *par, double per,
@@ -60,10 +74,10 @@ static void edit_diagram(DIAGRAM *d, int ibr, int ntot, int itp, int lab,
   d->torper = tp;
 }
 
-void add_diagram(int ibr, int ntot, int itp, int lab, int nfpar, double a,
-                 double *uhi, double *ulo, double *u0, double *ubar,
-                 double *par, double per, int n, int icp1, int icp2, int flag2,
-                 double *evr, double *evi) {
+DIAGRAM *add_diagram(int ibr, int ntot, int itp, int lab, int nfpar, double a,
+                     double *uhi, double *ulo, double *u0, double *ubar,
+                     double *par, double per, int n, int icp1, int icp2,
+                     int flag2, double *evr, double *evi) {
   DIAGRAM **d, *prev = NULL;
 
   d = &bifd;
@@ -84,6 +98,8 @@ void add_diagram(int ibr, int ntot, int itp, int lab, int nfpar, double a,
   NBifs++;
   edit_diagram(*d, ibr, ntot, itp, lab, nfpar, a, uhi, ulo, u0, ubar, par, per,
                n, icp1, icp2, flag2, evr, evi, blrtn.torper);
+
+  return (*d);
 }
 
 void kill_diagrams(void) {
@@ -108,19 +124,19 @@ void kill_diagrams(void) {
   NBifs = 0;
 }
 
+void draw_diagram(DIAGRAM *d) {
+  int type = get_bif_type(d->ibr, d->ntot, d->lab);
+
+  add_point(d->par, d->per, d->uhi, d->ulo, d->ubar, d->norm, type,
+            d->ntot != 1, d->lab, d->nfpar, d->icp1, d->icp2, d->flag2, d->evr,
+            d->evi);
+}
+
 void redraw_diagram(void) {
-  int type, flag = 0;
   draw_bif_axes();
 
   for (DIAGRAM *d = bifd; d != NULL; d = d->next) {
-    type = get_bif_type(d->ibr, d->ntot, d->lab);
-
-    if (d->ntot == 1)
-      flag = 0;
-    else
-      flag = 1;
-    add_point(d->par, d->per, d->uhi, d->ulo, d->ubar, d->norm, type, flag,
-              d->lab, d->nfpar, d->icp1, d->icp2, d->flag2, d->evr, d->evi);
+    draw_diagram(d);
   }
 }
 

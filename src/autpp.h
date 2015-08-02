@@ -5,12 +5,13 @@
 
 /* --- Types --- */
 typedef struct {
-  void (*add_bif)(int ibr, int ntot, int itp, int lab, int npar, double a,
-                  const double *uhigh, const double *ulow, const double *u0,
-                  const double *ubar, int ndim);
+  void (*add_diagram)(int ibr, int ntot, int itp, int lab, int npar, double a,
+                      const double *uhi, const double *ulo, const double *u0,
+                      const double *ubar, const double *par, const double per,
+                      int n, int icp1, int icp2, const double *evr,
+                      const double *evi);
+
   int (*check_stop)(void);
-  void (*send_eigen)(int ibr, int ntot, int n, const doublecomplex *ev);
-  void (*send_mult)(int ibr, int ntot, int n, const doublecomplex *ev);
 } AUTPP_CALLBACKS;
 
 /* --- Functions --- */

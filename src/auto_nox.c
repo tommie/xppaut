@@ -9,6 +9,7 @@
 #include "autevd.h"
 #include "autlib1.h"
 #include "auto_x11.h"
+#include "autpp.h"
 #include "axes2.h"
 #include "browse.h"
 #include "derived.h"
@@ -436,8 +437,25 @@ void do_auto(int iold, int isave, int itp) {
   redraw_params();
 }
 
+static void add_diagram_auto(int ibr, int ntot, int itp, int lab, int npar,
+                             double a, const double *uhi, const double *ulo,
+                             const double *u0, const double *ubar,
+                             const double *par, double per, int n, int icp1,
+                             int icp2, const double *evr, const double *evi) {
+  DIAGRAM *d =
+      add_diagram(ibr, ntot, itp, lab, npar, a, (double *)uhi, (double *)ulo,
+                  (double *)u0, (double *)ubar, (double *)par, per, n, icp1,
+                  icp2, AutoTwoParam, (double *)evr, (double *)evi);
+  draw_diagram(d);
+}
+
 void set_auto(void) {
+  static const AUTPP_CALLBACKS callbacks = {
+      .add_diagram = add_diagram_auto, .check_stop = check_stop_auto,
+  };
+
   NAutoUzr = Auto.nper;
+  autpp_set_callbacks(&callbacks);
   init_auto(NODE, Auto.nbc, Auto.ips, Auto.irs, Auto.ilp, Auto.ntst, Auto.isp,
             Auto.isw, Auto.nmx, Auto.npr, Auto.ds, Auto.dsmin, Auto.dsmax,
             Auto.rl0, Auto.rl1, Auto.a0, Auto.a1, Auto.icp1, Auto.icp2,

@@ -1,13 +1,11 @@
 #include "autevd.h"
 #undef abs
 
-#include <math.h>
 #include <stdlib.h>
 
 #include "auto_define.h"
 #include "auto_nox.h"
 #include "auto_x11.h"
-#include "autpp.h"
 #include "diagram.h"
 
 /* --- Macros --- */
@@ -38,46 +36,6 @@
 #define RL1 bllim_1.rl1
 #define AUTO_A0 bllim_1.a0
 #define AUTO_A1 bllim_1.a1
-
-#define SPECIAL 5
-#define SPER 3
-#define UPER 4
-#define SEQ 1
-#define UEQ 2
-
-/* --- Types --- */
-typedef struct {
-  int pt, br;
-  double evr[NAUTO], evi[NAUTO];
-} EIGVAL;
-
-/* --- Forward Declarations --- */
-static void add_bif(int ibr, int ntot, int itp, int lab, int npar, double a,
-                    const double *uhigh, const double *ulow, const double *u0,
-                    const double *ubar, int ndim);
-static void send_eigen(int ibr, int ntot, int n, const doublecomplex *ev);
-static void send_mult(int ibr, int ntot, int n, const doublecomplex *ev);
-
-/* --- Data --- */
-static const AUTPP_CALLBACKS autpp_callbacks = {
-  .add_bif = add_bif, .check_stop = check_stop_auto, .send_eigen = send_eigen, .send_mult = send_mult,
-};
-static EIGVAL my_ev;
-
-/* Only unit 8,3 or q.prb is important; all others are unnecesary */
-int get_bif_type(int ibr, int ntot, int lab) {
-  int type = SEQ;
-  if (ibr < 0 && ntot < 0)
-    type = SPER;
-  if (ibr < 0 && ntot > 0)
-    type = UPER;
-  if (ibr > 0 && ntot > 0)
-    type = UEQ;
-  if (ibr > 0 && ntot < 0)
-    type = SEQ;
-  /* if(lab>0)type=SPECIAL; */
-  return (type);
-}
 
 void init_auto(int ndim, int nbc, int ips, int irs, int ilp, int ntst, int isp,
                int isw, int nmx, int npr, double ds, double dsmin, double dsmax,
@@ -121,50 +79,4 @@ void init_auto(int ndim, int nbc, int ips, int irs, int ilp, int ntst, int isp,
     EPSL(i) = epsl;
   EPSU = epsu;
   EPSS = epss;
-
-  autpp_set_callbacks(&autpp_callbacks);
-}
-
-static void add_bif(int ibr, int ntot, int itp, int lab, int npar, double a,
-                    const double *uhigh, const double *ulow, const double *u0,
-                    const double *ubar, int ndim) {
-  int type;
-  int icp1 = blbcn_1.icp[0] - 1, icp2 = blbcn_1.icp[1] - 1;
-  double per = blbcn_1.par[10];
-  type = get_bif_type(ibr, ntot, lab);
-
-  if (ntot == 1) {
-    add_point(blbcn_1.par, per, (double*)uhigh, (double*)ulow, (double*)ubar, a, type, 0, lab, npar, icp1,
-              icp2, AutoTwoParam, my_ev.evr, my_ev.evi);
-  } else {
-    add_point(blbcn_1.par, per, (double*)uhigh, (double*)ulow, (double*)ubar, a, type, 1, lab, npar, icp1,
-              icp2, AutoTwoParam, my_ev.evr, my_ev.evi);
-  }
-
-  add_diagram(ibr, ntot, itp, lab, npar, a, (double*)uhigh, (double*)ulow, (double*)u0, (double*)ubar, blbcn_1.par,
-              per, ndim, icp1, icp2, AutoTwoParam, my_ev.evr, my_ev.evi);
-}
-
-static void send_eigen(int ibr, int ntot, int n, const doublecomplex *ev) {
-  int i;
-  double er, cs, sn;
-  my_ev.pt = abs(ntot);
-  my_ev.br = abs(ibr);
-  for (i = 0; i < n; i++) {
-    er = exp((ev + i)->r);
-    cs = cos((ev + i)->i);
-    sn = sin((ev + i)->i);
-    my_ev.evr[i] = er * cs;
-    my_ev.evi[i] = er * sn;
-  }
-}
-
-static void send_mult(int ibr, int ntot, int n, const doublecomplex *ev) {
-  int i;
-  my_ev.pt = abs(ntot);
-  my_ev.br = abs(ibr);
-  for (i = 0; i < n; i++) {
-    my_ev.evr[i] = (ev + i)->r;
-    my_ev.evi[i] = (ev + i)->i;
-  }
 }

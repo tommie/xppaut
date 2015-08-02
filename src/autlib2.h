@@ -3,9 +3,6 @@
 
 #include "f2c.h"
 
-/* --- Data --- */
-extern int FLOWK;
-
 /* --- Functions --- */
 int cnrlbv_(int (*funi)(void), int (*bcni)(void), int (*icni)(void), int (*stpnt)(void), int (*fnbpbv)(void), integer *ibr, integer *m1aa, integer *m2aa, doublereal *aa, integer *m1bb, integer *m2bb, doublereal *bb, integer *m1cc, doublereal *cc, integer *m1dd, doublereal *dd, doublereal *wbrbd, integer *m1u, doublereal *ups, doublereal *uoldps, doublereal *upoldp, doublereal *udotps, doublereal *rhsa, doublereal *rhsd, doublereal *tint, doublereal *uintt, doublereal *dups, doublereal *eqf, doublereal *uneq, doublereal *tm, doublereal *dtm, doublereal *tm2, doublereal *u, doublereal *f, integer *m1df, doublereal *dfdu, doublereal *dfdp, integer *itm, integer *ial, doublereal *ubc0, doublereal *ubc1, integer *m1bc, doublereal *dbc, doublereal *uicd, doublereal *ficd, integer *m1ic, doublereal *dicd, integer *ir, integer *ic, integer *iwbrbd, doublereal *p0, doublereal *p1, doublereal *poin, doublecomplex *ev, doublereal *wkev, integer *ndim2, doublereal *smat, doublereal *rnllv);
 int setrtn_(integer n, integer ntst, integer ndx, doublereal *ups);

@@ -8,7 +8,6 @@
 
 #include "autevd.h"
 #include "autlib1.h"
-#include "autlib2.h"
 #include "auto_x11.h"
 #include "axes2.h"
 #include "browse.h"
@@ -474,7 +473,6 @@ void do_auto(iold,isave,itp)
     cnstnt_();
     dfinit_();
     set_auto();
-    FLOWK=1;  /*  set to 0 for old */
     open_auto(iold);
     /* plintf("AUTO opened it==%d\n",itp); */
     run_aut(Auto.nfpar,itp);

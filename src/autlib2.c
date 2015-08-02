@@ -10,7 +10,6 @@
 #include "auto_nox.h"
 #include "autpp.h"
 
-int FLOWK;
 /* Common Block Declarations */
 
 struct {
@@ -3339,7 +3338,7 @@ OF MULTIPLIERS IN UNIT CIRCLE =\002,i3)";
     static doublereal ad;
     extern /* Subroutine */ int eig_();
     extern  int flowkm_() ;
-    static integer loc, ier;
+    static integer loc;
     static doublereal azm1;
     static integer isp1;
 
@@ -3445,32 +3444,17 @@ OF MULTIPLIERS IN UNIT CIRCLE =\002,i3)";
     ret_val = blrcn_1.zero;
     d = blrcn_1.zero;
     *chng = FALSE_;
-   if(FLOWK==0)  {
-/* Compute the linearization of the Poincare map. */
 
-    poinc_(&blbcn_1.ndim, &p0[p0_offset], &p1[p1_offset], &poin[poin_offset],
-	    &blmax_1.iid, &ir[1], &ic[1]);
+    i_1 = blbcn_1.ndim;
+    for (j = 1; j <= i_1; ++j) {
+	i_2 = blbcn_1.ndim;
+	for (i = 1; i <= i_2; ++i) {
+	    p1[i + j * p1_dim1] = -p1[i + j * p1_dim1];
+	}
+    }
 
-/* Compute the Floquet multipliers. */
-
-    eig_(&blbcn_1.ndim, &blbcn_1.ndim, &poin[poin_offset], &ev[1], &wkev[1], &
-	    ier);
-}   else   {
-
-
- 	i_1 = blbcn_1.ndim;
-	for (j = 1; j <= i_1; ++j) {
-	    i_2 = blbcn_1.ndim;
-	    for (i = 1; i <= i_2; ++i) {
-		p1[i + j * p1_dim1] = -p1[i + j * p1_dim1];
-
-		}
-		}
-
-	flowkm_(&blbcn_1.ndim, &p0[p0_offset], &p1[p1_offset], &blmax_1.iid, &
-		ir[1], &ic[1], &poin[poin_offset], &ev[1]);
-
-      }
+    flowkm_(&blbcn_1.ndim, &p0[p0_offset], &p1[p1_offset], &blmax_1.iid,
+	    &ir[1], &ic[1], &poin[poin_offset], &ev[1]);
 
 
 /* Order the Floquet multipliers by distance from z=1. */

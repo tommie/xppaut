@@ -99,7 +99,7 @@ int HIST, HVAR, hist_ind, FOREVER;
 
 int PAUSER, ENDSING, SHOOT, PAR_FOL;
 
-int xorfix, silent, got_file;
+int xorfix, silent;
 
 static char *interopt[MAXOPT];
 static int Nopts = 0;
@@ -269,7 +269,7 @@ void load_eqn(void) {
   if (strcmp(this_file, "/dev/stdin") == 0)
     std = 1;
   struct dirent *dp;
-  if (got_file == 1 && (std == 0) &&
+  if (this_file[0] && (std == 0) &&
       (dp = (struct dirent *)opendir(this_file)) != NULL) {
 
     no_eqn = 1;
@@ -279,7 +279,7 @@ void load_eqn(void) {
     return;
 
   } else {
-    if (got_file == 1 && (fptr = fopen(this_file, "r")) != NULL) {
+    if (this_file[0] && (fptr = fopen(this_file, "r")) != NULL) {
       if (std == 1)
         sprintf(this_file, "console");
       okay = get_eqn(fptr);

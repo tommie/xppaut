@@ -193,7 +193,6 @@ extern double EVEC_ERR;
 extern int EVEC_ITER;
 extern int FFT;
 extern int FOREVER;
-extern int got_file;
 extern int HIST;
 extern double HMAX;
 extern double HMIN;

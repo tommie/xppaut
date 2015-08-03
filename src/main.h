@@ -56,7 +56,6 @@ extern int tfBell;
 extern int TipsFlag;
 extern int TrueColorFlag;
 extern int use_ani_file;
-extern int use_intern_sets;
 extern char UserBGBitmap[XPP_MAX_NAME];
 extern char UserBlack[8];
 extern char UserDrawWinColor[8];

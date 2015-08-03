@@ -1104,8 +1104,7 @@ int do_new_parser(FILE *fp, char *first, int nnn) {
       /* plintf(" read line BVP_N=%d  \n",BVP_N); */
 
     } else {
-      if (loadincludefile) {
-        loadincludefile = 0; /*Only do this once*/
+      if (!IN_INCLUDED_FILE) {
         int j = 0;
         for (j = 0; j < NincludedFiles; j++) {
           printf("Trying to open %d %s\n", NincludedFiles, includefilename[j]);

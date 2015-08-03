@@ -99,7 +99,6 @@ static void xpp_events(XEvent report, int min_wid, int min_hgt);
 
 /* --- Data --- */
 int allwinvis = 0;
-int use_intern_sets = 1;
 int use_ani_file = 0;
 char anifile[XPP_MAX_NAME];
 

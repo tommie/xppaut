@@ -9,20 +9,20 @@
 
 /* --- Types --- */
 typedef struct {
-  Window base,upper;
-  Window find,up,down,pgup,pgdn,home,end,left,right;
-  Window first,last,restore,write,get,close;
-  Window load,repl,unrepl,table,addcol,delcol;
+  Window base, upper;
+  Window find, up, down, pgup, pgdn, home, end, left, right;
+  Window first, last, restore, write, get, close;
+  Window load, repl, unrepl, table, addcol, delcol;
   Window main;
   Window label[BMAXCOL];
   Window time;
   Window hint;
   char hinttxt[256];
-  int dataflag,xflag;
-  int col0,row0,ncol,nrow;
-  int maxrow,maxcol;
+  int dataflag, xflag;
+  int col0, row0, ncol, nrow;
+  int maxrow, maxcol;
   float **data;
-  int istart,iend;
+  int istart, iend;
 } BROWSER;
 
 /* --- Data --- */
@@ -36,7 +36,8 @@ void data_get_mybrowser(int row);
 void enter_my_browser(XEvent ev, int yn);
 void expose_my_browser(XEvent ev);
 void find_variable(char *s, int *col);
-void get_data_xyz(float *x, float *y, float *z, int i1, int i2, int i3, int off);
+void get_data_xyz(float *x, float *y, float *z, int i1, int i2, int i3,
+                  int off);
 int get_maxrow_browser(void);
 void init_browser(void);
 void make_new_browser(void);

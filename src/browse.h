@@ -38,7 +38,6 @@ void expose_my_browser(XEvent ev);
 void find_variable(char *s, int *col);
 void get_data_xyz(float *x, float *y, float *z, int i1, int i2, int i3, int off);
 int get_maxrow_browser(void);
-int gettimenow(void);
 void init_browser(void);
 void make_new_browser(void);
 void my_browse_button(XEvent ev);

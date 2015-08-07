@@ -5,18 +5,11 @@
 #include "dae_fun.h"
 #include "extra.h"
 #include "form_ode.h"
-#include "main.h"
 #include "parserslow.h"
 #include "simplenet.h"
 
 /* --- Forward Declarations --- */
 static void vec_rhs(double t, double *y, double *ydot, int neq);
-
-int main(int argc, char **argv) {
-  do_main(argc, argv);
-
-  exit(0);
-}
 
 void extra(double *y__y, double t, int nod, int neq) {
   int i;

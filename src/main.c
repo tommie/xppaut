@@ -172,12 +172,8 @@ static Window TopButton[6];
 static unsigned int Black, White;
 static int ALREADY_SWAPPED = 0;
 
-void do_main(int argc, char **argv) {
-  /* Moved to init_X() */
-  /*  char *icon_name="xpp"; */
-  /*char myfile[256];*/
+int main(int argc, char **argv) {
   char myfile[XPP_MAX_NAME];
-  /*  char *win_name; */
   char pptitle[80];
 
   /*Track which options have not been set already*/
@@ -335,10 +331,6 @@ void do_main(int argc, char **argv) {
 
   unsigned int min_wid = 450, min_hgt = 360;
 
-  /*  unsigned int x=0,y=0; */
-  /*
-  sprintf(myfile,"lecar.ode");
-  */
   get_directory(myfile);
 
   SCALEX = 640;
@@ -353,18 +345,6 @@ void do_main(int argc, char **argv) {
   */
   logfile = stdout;
   check_for_quiet(argc, argv);
-  /*do_vis_env();*/
-
-  /* Old code did it this way...
-  do_vis_env();
- do_comline(argc, argv);
-  if(!XPPBatch)
-  {
-       init_X();
-  }
-
- load_eqn();
- */
 
   do_comline(argc, argv);
   /*We need to init_X here if there is no file on command line
@@ -381,7 +361,6 @@ void do_main(int argc, char **argv) {
     do_vis_env();
     set_all_vals();
     init_X();
-    /*       XSynchronize(display,1); */
     /*
     Now swap back the options for proper precedence ordering of options.
     */
@@ -400,11 +379,6 @@ void do_main(int argc, char **argv) {
 
   set_all_vals();
 
-  /*if(!XPPBatch)
-  {
-       init_X();
-  }*/
-
   init_alloc_info();
   set_init_guess();
   update_all_ffts();
@@ -412,11 +386,6 @@ void do_main(int argc, char **argv) {
 #ifdef AUTO
   init_auto_win();
 #endif
-
-  /* if(make_kernels()==0){
-    plintf("Illegal kernel -- aborting \n");
-     exit(0);
-     } */
 
   if (disc(this_file))
     METHOD = 0;
@@ -426,7 +395,6 @@ void do_main(int argc, char **argv) {
     sprintf(pptitle, "XPP Ver %g.%g >> %s", xppvermaj, xppvermin, this_file);
   else
     sprintf(pptitle, "XPP Version %g.%g", xppvermaj, xppvermin);
-  /*  win_name=pptitle; */
   do_meth();
 
   set_delay();
@@ -448,7 +416,7 @@ void do_main(int argc, char **argv) {
     set_colorization_stuff();
 
     batch_integrate();
-    exit(0);
+    return 0;
   }
 
   gtitle_text(pptitle, main_win);
@@ -473,8 +441,6 @@ void do_main(int argc, char **argv) {
     create_eq_list();
   }
 
-  /* create_eq_list(); */
-  /* make_my_aplot("z"); */
   Xup = 1;
   ani_zero();
   set_extra_graphs();
@@ -502,6 +468,8 @@ void do_main(int argc, char **argv) {
   default_window();
 
   do_events(min_wid, min_hgt);
+
+  return 0;
 }
 
 static void check_for_quiet(int argc, char **argv) {

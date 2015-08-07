@@ -30,15 +30,9 @@ typedef struct {
 
 /* --- Data --- */
 extern BoxList ParamBox;
-extern char SLIDER1VAR[20];
-extern char SLIDER2VAR[20];
-extern char SLIDER3VAR[20];
-extern double SLIDER1LO;
-extern double SLIDER2LO;
-extern double SLIDER3LO;
-extern double SLIDER1HI;
-extern double SLIDER2HI;
-extern double SLIDER3HI;
+extern char SLIDERVAR[3][20];
+extern double SLIDERLO[3];
+extern double SLIDERHI[3];
 
 /* --- Functions --- */
 void box_buttons(Window w);

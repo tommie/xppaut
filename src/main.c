@@ -148,8 +148,6 @@ int tfBell;
  */
 int DoTutorial = 0;
 
-OptionsSet notAlreadySet;
-
 XFontStruct *big_font, *small_font;
 
 static Window TopButton[6];

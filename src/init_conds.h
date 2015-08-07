@@ -39,7 +39,7 @@ void box_buttons(Window w);
 void box_enter_events(Window w, int yn);
 void box_keypress(XEvent ev, int *used);
 void clone_ode(void);
-void create_par_sliders(Window base, int x0, int h0);
+void create_par_sliders(Window base, int x0, int h0, int var_ind[3]);
 void do_box_expose(Window w);
 void draw_one_box(BoxList b, int index);
 void enter_slides(Window w, int val);

@@ -106,6 +106,15 @@ static int to_float(char *s, double *z);
 
 /* --- Data --- */
 BoxList ParamBox;
+char SLIDER1VAR[20];
+char SLIDER2VAR[20];
+char SLIDER3VAR[20];
+double SLIDER1LO = 0.0;
+double SLIDER2LO = 0.0;
+double SLIDER3LO = 0.0;
+double SLIDER1HI = 1.0;
+double SLIDER2HI = 1.0;
+double SLIDER3HI = 1.0;
 static PAR_SLIDER my_par_slide[3];
 static BoxList *HotBox;
 static int HotBoxItem = -1;

@@ -895,7 +895,7 @@ int msc(char *s1, char *s2) {
 
 void set_internopts(OptionsSet *mask) {
   int i;
-  char *ptr, name[20], value[80], *junk, *mystring;
+  char *ptr, name[20], value[80], *mystring;
   char *toksave;
 
   if (Nopts == 0)
@@ -903,70 +903,10 @@ void set_internopts(OptionsSet *mask) {
   /*  parsem here   */
   for (i = 0; i < Nopts; i++) {
     ptr = interopt[i];
-    junk = strtok_r(ptr, " ,", &toksave);
-    if (junk == NULL) {
-      /*No more tokens.  Should this throw an error?*/
-    }
+    strtok_r(ptr, " ,", &toksave);
     while ((mystring = strtok_r(NULL, " ,\n\r", &toksave)) != NULL) {
       split_apart(mystring, name, value);
       if (strlen(name) > 0 && strlen(value) > 0) {
-        /*
-        if (strcmp("mwcolor",name)==0)
-        {
-                if (strlen(UserMainWinColor)!=0)
-                {
-                        continue;
-                }
-        }
-
-        if (strcmp("dwcolor",name)==0)
-        {
-                if (strlen(UserDrawWinColor)!=0)
-                {
-                        continue;
-                }
-        }
-
-        if (strcmp("forecolor",name)==0)
-        {
-                if (strlen(UserWhite)!=0)
-                {
-                        continue;
-                }
-        }
-
-        if (strcmp("backcolor",name)==0)
-        {
-                if (strlen(UserBlack)!=0)
-                {
-                        continue;
-                }
-        }
-
-        if (strcmp("backimage",name)==0)
-        {
-                if (strlen(UserBGBitmap)!=0)
-                {
-                        continue;
-                }
-        }
-
-        if (strcmp("smallfont",name)==0)
-        {
-                if (strlen(small_font_name)!=0)
-                {
-                        continue;
-                }
-        }
-
-        if (strcmp("bigfont",name)==0)
-        {
-                if (strlen(big_font_name)!=0)
-                {
-                        continue;
-                }
-        }
-        */
         set_option(name, value, 0, mask);
       }
     }
@@ -980,7 +920,7 @@ void set_internopts(OptionsSet *mask) {
 
 void set_internopts_xpprc_and_comline(void) {
   int i;
-  char *ptr, name[20], value[80], *junk, *mystring;
+  char *ptr, name[20], value[80], *mystring;
   if (Nopts == 0)
     return;
   /*  parsem here   */
@@ -990,25 +930,15 @@ void set_internopts_xpprc_and_comline(void) {
     char *toksave;
     strcpy(intrnoptcpy, interopt[i]);
     ptr = intrnoptcpy;
-    junk = strtok_r(ptr, " ,", &toksave);
-    if (junk == NULL) {
-      /*No more tokens.  Should this throw an error?*/
-    }
+    strtok_r(ptr, " ,", &toksave);
     while ((mystring = strtok_r(NULL, " ,\n\r", &toksave)) != NULL) {
       split_apart(mystring, name, value);
       strupr(name);
 
-      if (strlen(name) == 5) {
-        strupr(name);
-        if (strcmp(name, "QUIET") == 0) {
-          set_option(name, value, 0, NULL);
-        }
-      } else if (strlen(name) == 7) {
-        strupr(name);
-
-        if (strcmp(name, "LOGFILE") == 0) {
-          set_option(name, value, 0, NULL);
-        }
+      if (strcmp(name, "QUIET") == 0) {
+        set_option(name, value, 0, NULL);
+      } else if (strcmp(name, "LOGFILE") == 0) {
+        set_option(name, value, 0, NULL);
       }
     }
   }
@@ -1024,7 +954,7 @@ void set_internopts_xpprc_and_comline(void) {
     char *toksave;
 
     ptr = interopt[i];
-    junk = strtok_r(ptr, " ,", &toksave);
+    strtok_r(ptr, " ,", &toksave);
     while ((mystring = strtok_r(NULL, " ,\n\r", &toksave)) != NULL) {
       split_apart(mystring, name, value);
       if (strlen(name) > 0 && strlen(value) > 0) {

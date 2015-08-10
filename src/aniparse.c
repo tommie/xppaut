@@ -1203,7 +1203,7 @@ static int load_ani_file(FILE *fp) {
 static int parse_ani_string(char *s, FILE *fp) {
   char x1[300], x2[300], x3[300], x4[300], col[300], thick[300];
   char *ptr, *nxt;
-  char *command;
+  char *command, *toksave;
   int type = -1;
   int anss;
   x1[0] = 0;
@@ -1214,7 +1214,7 @@ static int parse_ani_string(char *s, FILE *fp) {
   thick[0] = 0;
   ptr = s;
   type = COMNT;
-  command = get_first(ptr, "; ");
+  command = strtok_r(ptr, "; ", &toksave);
   if (command == NULL) {
     return -1;
   }
@@ -1264,15 +1264,15 @@ static int parse_ani_string(char *s, FILE *fp) {
     type = AYNULL;
   switch (type) {
   case GRAB:
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x1, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x2, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x3, nxt);
@@ -1280,27 +1280,27 @@ static int parse_ani_string(char *s, FILE *fp) {
     return (anss);
   case AXNULL:
   case AYNULL:
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x1, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x2, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x3, nxt);
-    nxt = get_next(";\n");
+    nxt = strtok_r(NULL, ";\n", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x4, nxt);
-    nxt = get_next(";\n");
+    nxt = strtok_r(NULL, ";\n", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(col, nxt);
-    nxt = get_next("\n");
+    nxt = strtok_r(NULL, "\n", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(thick, nxt);
@@ -1310,138 +1310,138 @@ static int parse_ani_string(char *s, FILE *fp) {
   case ELLIP:
   case FELLIP:
   case FRECT:
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x1, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x2, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x3, nxt);
-    nxt = get_next(";\n");
+    nxt = strtok_r(NULL, ";\n", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x4, nxt);
-    nxt = get_next(";\n");
+    nxt = strtok_r(NULL, ";\n", &toksave);
     if ((nxt == NULL) || strlen(nxt) == 0)
       break;
     strcpy(col, nxt);
-    nxt = get_next("\n");
+    nxt = strtok_r(NULL, "\n", &toksave);
     if ((nxt == NULL) || strlen(nxt) == 0)
       break;
     strcpy(thick, nxt);
     break;
   case RLINE:
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x1, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x2, nxt);
-    nxt = get_next(";\n");
+    nxt = strtok_r(NULL, ";\n", &toksave);
     if ((nxt == NULL) || strlen(nxt) == 0)
       break;
     strcpy(col, nxt);
-    nxt = get_next("\n");
+    nxt = strtok_r(NULL, "\n", &toksave);
     if ((nxt == NULL) || strlen(nxt) == 0)
       break;
     strcpy(thick, nxt);
     break;
   case COMET:
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x1, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x2, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(thick, nxt);
-    nxt = get_next(";\n");
+    nxt = strtok_r(NULL, ";\n", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x3, nxt);
-    nxt = get_next(";\n");
+    nxt = strtok_r(NULL, ";\n", &toksave);
     if ((nxt == NULL) || strlen(nxt) == 0)
       break;
     strcpy(col, nxt);
     break;
   case CIRC:
   case FCIRC:
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x1, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x2, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x3, nxt);
-    nxt = get_next(";\n");
+    nxt = strtok_r(NULL, ";\n", &toksave);
     if ((nxt == NULL) || strlen(nxt) == 0)
       break;
     strcpy(col, nxt);
     break;
   case SETTEXT:
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x1, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x2, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(col, nxt);
     break;
   case TEXT:
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x1, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x2, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x4, nxt);
     break;
   case VTEXT:
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x1, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x2, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x4, nxt);
-    nxt = get_next(";\n");
+    nxt = strtok_r(NULL, ";\n", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x3, nxt);
     break;
   case SPEED:
-    nxt = get_next(" \n");
+    nxt = strtok_r(NULL, " \n", &toksave);
     if (nxt == NULL)
       return -1;
     ani_speed = atoi(nxt);
@@ -1451,19 +1451,19 @@ static int parse_ani_string(char *s, FILE *fp) {
       ani_speed = 1000;
     return 1;
   case DIMENSION:
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x1, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x2, nxt);
-    nxt = get_next(";");
+    nxt = strtok_r(NULL, ";", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x3, nxt);
-    nxt = get_next(";\n");
+    nxt = strtok_r(NULL, ";\n", &toksave);
     if (nxt == NULL)
       return -1;
     strcpy(x4, nxt);

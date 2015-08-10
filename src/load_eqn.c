@@ -675,15 +675,16 @@ void set_all_vals(void) {
 static void read_defaults(FILE *fp) {
   char bob[100];
   char *ptr;
+  char *toksave;
   fgets(bob, 80, fp);
-  ptr = get_first(bob, " ");
+  ptr = strtok_r(bob, " ", &toksave);
   if (notAlreadySet.BIG_FONT_NAME) {
     strcpy(big_font_name, ptr);
     notAlreadySet.BIG_FONT_NAME = 0;
   }
 
   fgets(bob, 80, fp);
-  ptr = get_first(bob, " ");
+  ptr = strtok_r(bob, " ", &toksave);
   if (notAlreadySet.SMALL_FONT_NAME) {
 
     strcpy(small_font_name, ptr);
@@ -841,15 +842,15 @@ void add_intern_set(char *name, char *does) {
 void extract_action(char *ptr) {
   char name[256], value[256];
   char tmp[512];
-  char *junk, *mystring;
+  char *junk, *mystring, *toksave;
   /* plintf("ptr=%s \n",ptr); */
   strcpy(tmp, ptr);
-  junk = get_first(tmp, " ");
+  junk = strtok_r(tmp, " ", &toksave);
   if (junk == NULL) {
     /*No more tokens--should this throw an error?*/
   }
 
-  while ((mystring = get_next(" ,;\n")) != NULL) {
+  while ((mystring = strtok_r(NULL, " ,;\n", &toksave)) != NULL) {
     split_apart(mystring, name, value);
     if (strlen(name) > 0 && strlen(value) > 0)
       do_intern_set(name, value);
@@ -895,16 +896,18 @@ int msc(char *s1, char *s2) {
 void set_internopts(OptionsSet *mask) {
   int i;
   char *ptr, name[20], value[80], *junk, *mystring;
+  char *toksave;
+
   if (Nopts == 0)
     return;
   /*  parsem here   */
   for (i = 0; i < Nopts; i++) {
     ptr = interopt[i];
-    junk = get_first(ptr, " ,");
+    junk = strtok_r(ptr, " ,", &toksave);
     if (junk == NULL) {
       /*No more tokens.  Should this throw an error?*/
     }
-    while ((mystring = get_next(" ,\n\r")) != NULL) {
+    while ((mystring = strtok_r(NULL, " ,\n\r", &toksave)) != NULL) {
       split_apart(mystring, name, value);
       if (strlen(name) > 0 && strlen(value) > 0) {
         /*
@@ -982,17 +985,16 @@ void set_internopts_xpprc_and_comline(void) {
     return;
   /*  parsem here   */
   /*Check for QUIET and LOGFILE options first...*/
-  char intrnoptcpy[255]; /*Must use copy to avoid side effects of strtok used in
-                            get_first
-                            below*/
+  char intrnoptcpy[255]; /*Must use copy to avoid side effects of strtok used below*/
   for (i = 0; i < Nopts; i++) {
+    char *toksave;
     strcpy(intrnoptcpy, interopt[i]);
     ptr = intrnoptcpy;
-    junk = get_first(ptr, " ,");
+    junk = strtok_r(ptr, " ,", &toksave);
     if (junk == NULL) {
       /*No more tokens.  Should this throw an error?*/
     }
-    while ((mystring = get_next(" ,\n\r")) != NULL) {
+    while ((mystring = strtok_r(NULL, " ,\n\r", &toksave)) != NULL) {
       split_apart(mystring, name, value);
       strupr(name);
 
@@ -1019,9 +1021,11 @@ void set_internopts_xpprc_and_comline(void) {
   *tempNAS = notAlreadySet;
 
   for (i = 0; i < Nopts; i++) {
+    char *toksave;
+
     ptr = interopt[i];
-    junk = get_first(ptr, " ,");
-    while ((mystring = get_next(" ,\n\r")) != NULL) {
+    junk = strtok_r(ptr, " ,", &toksave);
+    while ((mystring = strtok_r(NULL, " ,\n\r", &toksave)) != NULL) {
       split_apart(mystring, name, value);
       if (strlen(name) > 0 && strlen(value) > 0) {
         set_option(name, value, 0, tempNAS);

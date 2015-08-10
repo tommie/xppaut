@@ -723,16 +723,17 @@ static int get_fit_params(void) {
 /* gets a list of the data columns to use ... */
 static void parse_collist(char *collist, int *icols, int *n) {
   char *item;
+  char *toksave;
   int v, i = 0;
 
-  item = get_first(collist, " ,");
+  item = strtok_r(collist, " ,", &toksave);
 
   if (item[0] == 0)
     return;
   v = atoi(item);
   icols[i] = v;
   i++;
-  while ((item = get_next(" ,")) != NULL) {
+  while ((item = strtok_r(NULL, " ,", &toksave)) != NULL) {
 
     v = atoi(item);
     icols[i] = v;
@@ -743,9 +744,10 @@ static void parse_collist(char *collist, int *icols, int *n) {
 
 static void parse_varlist(char *varlist, int *ivars, int *n) {
   char *item;
+  char *toksave;
   int v, i = 0;
 
-  item = get_first(varlist, " ,");
+  item = strtok_r(varlist, " ,", &toksave);
   if (item[0] == 0)
     return;
   find_variable(item, &v);
@@ -753,7 +755,7 @@ static void parse_varlist(char *varlist, int *ivars, int *n) {
     return;
   ivars[i] = v - 1;
   i++;
-  while ((item = get_next(" ,")) != NULL) {
+  while ((item = strtok_r(NULL, " ,", &toksave)) != NULL) {
     find_variable(item, &v);
     if (v <= 0)
       return;
@@ -765,6 +767,7 @@ static void parse_varlist(char *varlist, int *ivars, int *n) {
 
 static void parse_parlist(char *parlist, int *ipars, int *n) {
   char *item;
+  char *toksave;
   int v, i = 0;
   int j;
   for (j = 0; j < strlen(parlist); j++) {
@@ -775,7 +778,7 @@ static void parse_parlist(char *parlist, int *ipars, int *n) {
     return;
   if (strlen(parlist) == 0)
     return;
-  item = get_first(parlist, " ,");
+  item = strtok_r(parlist, " ,", &toksave);
   if (item[0] == 0L)
     return;
 
@@ -790,7 +793,7 @@ static void parse_parlist(char *parlist, int *ipars, int *n) {
     ipars[i + *n] = -v;
     i++;
   }
-  while ((item = get_next(" ,")) != NULL) {
+  while ((item = strtok_r(NULL, " ,", &toksave)) != NULL) {
 
     find_variable(item, &v);
     if (v > 0) {

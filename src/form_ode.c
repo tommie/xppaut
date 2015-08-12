@@ -275,8 +275,6 @@ int get_eqn(FILE *fptr) {
   BVP_NR = 0;
   NUPAR = 0;
   NWiener = 0;
-  /*check_for_xpprc();  This is now done just once and in do_vis_env()
-  */
   strcpy(options, "default.opt");
   add_var("t", 0.0);
   /* plintf(" NEQ: "); */

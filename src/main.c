@@ -80,7 +80,6 @@
 /* --- Forward Declarations --- */
 static void check_for_quiet(int argc, char **argv);
 static void do_events(unsigned int min_wid, unsigned int min_hgt);
-static void do_vis_env(void);
 static void getGC(GC *gc);
 static int getxcolors(XWindowAttributes *win_info, XColor **colors);
 static void init_X(void);
@@ -340,7 +339,9 @@ int main(int argc, char **argv) {
     /*Initialize what's needed to open a browser based on
     the current options.
     */
-    do_vis_env();
+    set_X_vals();
+    check_for_xpprc();
+    set_internopts_xpprc_and_comline();
     set_all_vals();
     init_X();
     /*
@@ -357,7 +358,9 @@ int main(int argc, char **argv) {
   free(tempNS);
 
   init_alloc_info();
-  do_vis_env();
+  set_X_vals();
+  check_for_xpprc();
+  set_internopts_xpprc_and_comline();
 
   set_all_vals();
 
@@ -485,12 +488,6 @@ static void check_for_quiet(int argc, char **argv) {
   if (logfile_specified_once == 1) {
     OVERRIDE_LOGFILE = 1;
   }
-}
-
-static void do_vis_env(void) {
-  set_X_vals();
-  check_for_xpprc();
-  set_internopts_xpprc_and_comline();
 }
 
 static void init_X(void) {

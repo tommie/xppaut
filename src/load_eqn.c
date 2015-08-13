@@ -426,32 +426,34 @@ int msc(char *s1, char *s2) {
   return (1);
 }
 
-void set_internopts(OptionsSet *mask) {
-  int i;
-  char *ptr, name[20], value[80], *mystring;
+static void set_internopt_line(char *line, int force, OptionsSet *mask) {
+  char name[20], value[80], *mystring;
   char *toksave;
 
-  if (Nopts == 0)
-    return;
-  /*  parsem here   */
-  for (i = 0; i < Nopts; i++) {
-    ptr = interopt[i];
-    strtok_r(ptr, " ,", &toksave);
-    while ((mystring = strtok_r(NULL, " ,\n\r", &toksave)) != NULL) {
-      split_apart(mystring, name, value);
-      if (strlen(name) > 0 && strlen(value) > 0) {
-        set_option(name, value, 0, mask);
-      }
+  strtok_r(line, " ,", &toksave);
+  while ((mystring = strtok_r(NULL, " ,\n\r", &toksave)) != NULL) {
+    split_apart(mystring, name, value);
+    if (strlen(name) > 0 && strlen(value) > 0) {
+      set_option(name, value, force, mask);
     }
   }
+}
 
-  for (i = 0; i < Nopts; i++) {
+void set_internopts(OptionsSet *mask) {
+  if (Nopts == 0)
+    return;
+
+  for (int i = 0; i < Nopts; i++) {
+    set_internopt_line(interopt[i], 0, mask);
+  }
+
+  for (int i = 0; i < Nopts; i++) {
     free(interopt[i]);
   }
   Nopts = 0;
 }
 
-void set_internopts_xpprc_and_comline(void) {
+void set_internopts_comline(void) {
   int i;
   char *ptr, name[20], value[80], *mystring;
   if (Nopts == 0)
@@ -525,21 +527,33 @@ static void split_apart(char *bob, char *name, char *value) {
   }
 }
 
-void check_for_xpprc(void) {
-  FILE *fp;
+/**
+ * Load an ~/.xpprc if it exists.
+ *
+ * The RC file has the following syntax:
+ *
+ *   file   <- line*
+ *   line   <- '@' <SP> assign ((<SP>|',') assign)*
+ *   assign <- char+ '=' char+
+ *
+ * Lines not starting with '@' are ignored.
+ */
+void loadeqn_load_xpprc(void) {
   char rc[256];
-  char bob[256];
+
   sprintf(rc, "%s/.xpprc", getenv("HOME"));
-  fp = fopen(rc, "r");
+  FILE *fp = fopen(rc, "r");
   if (fp == NULL) {
-    /*   plintf("Didnt find rc \n"); */
     return;
   }
   while (!feof(fp)) {
+    char bob[256];
     bob[0] = '\0';
-    fgets(bob, 255, fp);
-    if (bob[0] == '@')
-      stor_internopts(bob);
+    fgets(bob, sizeof(bob) - 1, fp);
+    if (bob[0] != '@')
+      continue;
+
+    set_internopt_line(bob, 1, NULL);
   }
   fclose(fp);
 }

@@ -253,7 +253,7 @@ extern int xorfix;
 
 /* --- Functions --- */
 void add_intern_set(char *name, char *does);
-void check_for_xpprc(void);
+void loadeqn_load_xpprc(void);
 void dump_torus(FILE *fp, int f);
 void extract_action(char *ptr);
 void extract_internset(int j);
@@ -262,7 +262,7 @@ void loadeqn_init_options(void);
 void loadeqn_setup_all(void);
 int msc(char *s1, char *s2);
 void set_internopts(OptionsSet *mask);
-void set_internopts_xpprc_and_comline(void);
+void set_internopts_comline(void);
 void set_option(char *s1, char *s2, int force, OptionsSet *mask);
 void stor_internopts(char *s1);
 

@@ -310,6 +310,7 @@ int main(int argc, char **argv) {
   notAlreadySet.COLORHI = 1;
   notAlreadySet.COLORLO = 1;
   loadeqn_init_options();
+  loadeqn_load_xpprc();
 
   unsigned int min_wid = 450, min_hgt = 360;
 
@@ -340,8 +341,7 @@ int main(int argc, char **argv) {
     /*Initialize what's needed to open a browser based on
     the current options.
     */
-    check_for_xpprc();
-    set_internopts_xpprc_and_comline();
+    set_internopts_comline();
     init_X();
     /*
     Now swap back the options for proper precedence ordering of options.
@@ -357,8 +357,7 @@ int main(int argc, char **argv) {
   free(tempNS);
 
   init_alloc_info();
-  check_for_xpprc();
-  set_internopts_xpprc_and_comline();
+  set_internopts_comline();
 
   loadeqn_setup_all();
 

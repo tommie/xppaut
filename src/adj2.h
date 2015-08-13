@@ -7,7 +7,8 @@
 extern int AdjRange;
 
 /* --- Functions --- */
-void init_trans(void);
+void adj2_init_trans(void);
+void adj2_setup_trans(void);
 void dump_transpose_info(FILE *fp, int f);
 int do_transpose(void);
 void alloc_h_stuff(void);

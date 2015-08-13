@@ -275,7 +275,6 @@ int get_eqn(FILE *fptr) {
   BVP_NR = 0;
   NUPAR = 0;
   NWiener = 0;
-  strcpy(options, "default.opt");
   add_var("t", 0.0);
   /* plintf(" NEQ: "); */
   fgets(bob, MAXEXPLEN, fptr);
@@ -532,11 +531,7 @@ int compiler(char *bob, FILE *fptr) {
     plintf("\n");
     break;
   case 'c':
-    my_string = strtok_r(NULL, " \n", &toksave);
-    strcpy(options, my_string);
-    plintf(" Loading new options file:<%s>\n", my_string);
-    if (ConvertStyle)
-      fprintf(convertf, "option %s\n", options);
+    plintf(" options command is obsolete and ignored.\n");
     break;
   case 'f':
     iflg = 0;
@@ -941,7 +936,6 @@ markov name #states (replaces m r)
 .
 .
 { }  ..... { }
-options filename
 aux name = expression
 bndry ....
 global ...

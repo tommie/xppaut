@@ -309,6 +309,7 @@ int main(int argc, char **argv) {
   notAlreadySet.COLORIZE = 1;
   notAlreadySet.COLORHI = 1;
   notAlreadySet.COLORLO = 1;
+  loadeqn_init_options();
 
   unsigned int min_wid = 450, min_hgt = 360;
 
@@ -339,10 +340,8 @@ int main(int argc, char **argv) {
     /*Initialize what's needed to open a browser based on
     the current options.
     */
-    set_X_vals();
     check_for_xpprc();
     set_internopts_xpprc_and_comline();
-    set_all_vals();
     init_X();
     /*
     Now swap back the options for proper precedence ordering of options.
@@ -358,11 +357,10 @@ int main(int argc, char **argv) {
   free(tempNS);
 
   init_alloc_info();
-  set_X_vals();
   check_for_xpprc();
   set_internopts_xpprc_and_comline();
 
-  set_all_vals();
+  loadeqn_setup_all();
 
   init_alloc_info();
   set_init_guess();
@@ -1348,9 +1346,8 @@ static void make_pops(void) {
   unsigned int h, w, bw, d;
   Window wn;
   int var_ind[3] = {
-    notAlreadySet.SLIDER1 ? -1 : 0,
-    notAlreadySet.SLIDER2 ? -1 : 1,
-    notAlreadySet.SLIDER3 ? -1 : 2,
+      notAlreadySet.SLIDER1 ? -1 : 0, notAlreadySet.SLIDER2 ? -1 : 1,
+      notAlreadySet.SLIDER3 ? -1 : 2,
   };
 
   XGetGeometry(display, main_win, &wn, &x, &y, &w, &h, &bw, &d);

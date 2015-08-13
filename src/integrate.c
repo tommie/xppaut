@@ -187,48 +187,37 @@ void dump_range(FILE *fp, int f) {
     range.steps2 = range.steps;
 }
 
-void init_range(void) {
+void integrate_init_range(void) {
   eq_range.col = -1;
   eq_range.shoot = 0;
   eq_range.steps = 10;
   eq_range.plow = 0.0;
   eq_range.phigh = 1.0;
   eq_range.movie = 0;
-  sprintf(eq_range.item, "%s", upar_names[0]);
+  eq_range.item[0] = '\0';
+
   range.type = 0;
   range.rtype = 0;
   range.index = range.index2 = 0;
-  if (notAlreadySet.RANGESTEP) {
-    range.steps = 20;
-    notAlreadySet.RANGESTEP = 0;
-  }
+  range.steps = 20;
   range.steps2 = 20;
-  if (notAlreadySet.RANGELOW) {
-    range.plow = range.plow2 = 0.0;
-    notAlreadySet.RANGELOW = 0;
-  }
-
-  if (notAlreadySet.RANGEHIGH) {
-    range.phigh = range.phigh2 = 1.0;
-    notAlreadySet.RANGEHIGH = 0;
-  }
-  if (notAlreadySet.RANGERESET) {
-    range.reset = 1;
-    notAlreadySet.RANGERESET = 0;
-  }
-  if (notAlreadySet.RANGEOLDIC) {
-    range.oldic = 1;
-    notAlreadySet.RANGEOLDIC = 0;
-  }
+  range.plow = range.plow2 = 0.0;
+  range.phigh = range.phigh2 = 1.0;
+  range.reset = 1;
+  range.oldic = 1;
   range.cycle = 0;
   range.movie = 0;
-  if (notAlreadySet.RANGEOVER) {
-    sprintf(range.item, "%s", uvar_names[0]);
-    notAlreadySet.RANGEOVER = 0;
-  }
+  range.item[0] = '\0';
+  range.item2[0] = '\0';
+
+  init_monte_carlo();
+}
+
+void integrate_setup_range(void) {
+  sprintf(eq_range.item, "%s", upar_names[0]);
+  sprintf(range.item, "%s", uvar_names[0]);
   sprintf(range.item2, "%s", uvar_names[0]);
   init_shoot_range(upar_names[0]);
-  init_monte_carlo();
 }
 
 static int set_up_eq_range(void) {
@@ -471,7 +460,7 @@ static void init_monte_carlo(void) {
   int i;
   fixptguess.tol = .001;
   fixptguess.n = 100;
-  for (i = 0; i < NODE; i++) {
+  for (i = 0; i < MAXODE; i++) {
     fixptguess.xlo[i] = -10;
     fixptguess.xhi[i] = 10;
   }

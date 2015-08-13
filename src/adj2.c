@@ -60,9 +60,9 @@ static int ADJ_MAXIT = 20, ADJ_HERE = 0, H_HERE = 0, h_len, HODD_EV = 0;
 static int *coup_fun[MAXODE];
 static char *coup_string[MAXODE];
 
-void init_trans(void) {
+void adj2_init_trans(void) {
   my_trans.here = 0;
-  strcpy(my_trans.firstcol, uvar_names[0]);
+  my_trans.firstcol[0] = '\0';
   my_trans.ncol = 2;
   my_trans.nrow = 1;
   my_trans.rowskip = 1;
@@ -70,6 +70,8 @@ void init_trans(void) {
   my_trans.row0 = 1;
   my_trans.col0 = 2;
 }
+
+void adj2_setup_trans(void) { strcpy(my_trans.firstcol, uvar_names[0]); }
 
 void dump_transpose_info(FILE *fp, int f) {
   char bob[256];

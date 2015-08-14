@@ -92,45 +92,29 @@ void do_comline(int argc, char **argv) {
  */
 static int parse_one(int argc, char **argv) {
 #define CASE(s) else if (!strcmp(argv[0], s))
-#define STRACPY(dst, src) do { strncpy(dst, src, sizeof(dst)); (dst)[sizeof(dst)-1] = '\0'; } while (0)
+#define STRACPY(dst, src)                                                      \
+  do {                                                                         \
+    strncpy(dst, src, sizeof(dst));                                            \
+    (dst)[sizeof(dst) - 1] = '\0';                                             \
+  } while (0)
   if (argv[0][0] != '-') {
     STRACPY(this_file, argv[0]);
   }
   /* Options taking no parameter. */
-  CASE("-mkplot") {
-    MakePlotFlag = 1;
-  }
-  CASE("-silent") {
-    XPPBatch = 1;
-  }
-  CASE("-xorfix") {
-    xorfix = 0;
-  }
-  CASE("-convert") {
-    ConvertStyle = 1;
-  }
-  CASE("-iconify") {
-    noicon = 0;
-  }
-  CASE("-newseed") {
-    newseed = 1;
-  }
-  CASE("-allwin") {
-    allwinvis = 1;
-  }
-  CASE("-ee") {
-    MSStyle = 1;
-  }
-  CASE("-runnow") {
-    RunImmediately = 1;
-  }
+  CASE("-mkplot") { MakePlotFlag = 1; }
+  CASE("-silent") { XPPBatch = 1; }
+  CASE("-xorfix") { xorfix = 0; }
+  CASE("-convert") { ConvertStyle = 1; }
+  CASE("-iconify") { noicon = 0; }
+  CASE("-newseed") { newseed = 1; }
+  CASE("-allwin") { allwinvis = 1; }
+  CASE("-ee") { MSStyle = 1; }
+  CASE("-runnow") { RunImmediately = 1; }
   CASE("-version") {
     printf("XPPAUT Version %s\n", PACKAGE_VERSION);
     exit(0);
   }
-  CASE("-noout") {
-    SuppressOut = 1;
-  }
+  CASE("-noout") { SuppressOut = 1; }
   CASE("-qsets") {
     XPPBatch = 1;
     querysets = 1;
@@ -153,15 +137,9 @@ static int parse_one(int argc, char **argv) {
       exit(1);
     }
     /* Options that take one parameter. */
-    CASE("-setfile") {
-      STRACPY(setfilename, argv[1]);
-    }
-    CASE("-smallfont") {
-      set_option("SMALLFONT", argv[1], 1, NULL);
-    }
-    CASE("-bigfont") {
-      set_option("BIGFONT", argv[1], 1, NULL);
-    }
+    CASE("-setfile") { STRACPY(setfilename, argv[1]); }
+    CASE("-smallfont") { set_option("SMALLFONT", argv[1]); }
+    CASE("-bigfont") { set_option("BIGFONT", argv[1]); }
     CASE("-parfile") {
       snprintf(parfilename, sizeof(parfilename), "!load %s", argv[1]);
     }
@@ -169,67 +147,29 @@ static int parse_one(int argc, char **argv) {
       STRACPY(batchout, argv[1]);
       STRACPY(UserOUTFILE, argv[1]);
     }
-    CASE("-icfile") {
-      STRACPY(icfilename, argv[1]);
-    }
-    CASE("-forecolor") {
-      set_option("FORECOLOR", argv[1], 1, NULL);
-    }
-    CASE("-backcolor") {
-      set_option("BACKCOLOR", argv[1], 1, NULL);
-    }
-    CASE("-backimage") {
-      set_option("BACKIMAGE", argv[1], 1, NULL);
-    }
-    CASE("-grads") {
-      set_option("GRADS", argv[1], 1, NULL);
-    }
-    CASE("-width") {
-      set_option("WIDTH", argv[1], 1, NULL);
-    }
-    CASE("-height") {
-      set_option("HEIGHT", argv[1], 1, NULL);
-    }
-    CASE("-mwcolor") {
-      set_option("MWCOLOR", argv[1], 1, NULL);
-    }
-    CASE("-dwcolor") {
-      set_option("DWCOLOR", argv[1], 1, NULL);
-    }
-    CASE("-bell") {
-      set_option("BELL", argv[1], 1, NULL);
-    }
-    CASE("-internset") {
-      use_intern_sets = atoi(argv[1]);
-    }
-    CASE("-uset") {
-      sets2use = add_set(sets2use, argv[1]);
-    }
-    CASE("-rset") {
-      setsNOTuse = add_set(setsNOTuse, argv[1]);
-    }
+    CASE("-icfile") { STRACPY(icfilename, argv[1]); }
+    CASE("-forecolor") { set_option("FORECOLOR", argv[1]); }
+    CASE("-backcolor") { set_option("BACKCOLOR", argv[1]); }
+    CASE("-backimage") { set_option("BACKIMAGE", argv[1]); }
+    CASE("-grads") { set_option("GRADS", argv[1]); }
+    CASE("-width") { set_option("WIDTH", argv[1]); }
+    CASE("-height") { set_option("HEIGHT", argv[1]); }
+    CASE("-mwcolor") { set_option("MWCOLOR", argv[1]); }
+    CASE("-dwcolor") { set_option("DWCOLOR", argv[1]); }
+    CASE("-bell") { set_option("BELL", argv[1]); }
+    CASE("-internset") { use_intern_sets = atoi(argv[1]); }
+    CASE("-uset") { sets2use = add_set(sets2use, argv[1]); }
+    CASE("-rset") { setsNOTuse = add_set(setsNOTuse, argv[1]); }
     CASE("-include") {
       STRACPY(includefilename[NincludedFiles], argv[1]);
       NincludedFiles++;
     }
-    CASE("-quiet") {
-      set_option("QUIET", argv[1], 1, NULL);
-    }
-    CASE("-logfile") {
-      set_option("LOGFILE", argv[1], 1, NULL);
-    }
-    CASE("-anifile") {
-      strcpy(anifile, argv[1]);
-    }
-    CASE("-plotfmt") {
-      set_option("PLOTFMT", argv[1], 1, NULL);
-    }
-    CASE("-dfdraw") {
-      set_option("DFDRAW", argv[1], 1, NULL);
-    }
-    CASE("-ncdraw") {
-      set_option("NCDRAW", argv[1], 1, NULL);
-    }
+    CASE("-quiet") { set_option("QUIET", argv[1]); }
+    CASE("-logfile") { set_option("LOGFILE", argv[1]); }
+    CASE("-anifile") { strcpy(anifile, argv[1]); }
+    CASE("-plotfmt") { set_option("PLOTFMT", argv[1]); }
+    CASE("-dfdraw") { set_option("DFDRAW", argv[1]); }
+    CASE("-ncdraw") { set_option("NCDRAW", argv[1]); }
     else {
       plintf("Problem reading option %s\n", argv[0]);
       show_help();
@@ -260,8 +200,7 @@ static void show_help(void) {
   plintf("  -allwin                Brings XPP up with all the windows "
          "visible\n");
   plintf("  -white                 Uses white screen instead of black\n");
-  plintf(
-         "  -setfile <filename>    Loads the set file before starting up\n");
+  plintf("  -setfile <filename>    Loads the set file before starting up\n");
   plintf("  -runnow                Runs ode file immediately upon startup "
          "(implied by -silent)\n");
   plintf("  -bigfont <font>        Use the big font whose filename is "
@@ -284,12 +223,9 @@ static void show_help(void) {
   plintf("  -dwcolor <######>      Hexadecimal color (e.g. FFFFFF) for "
          "drawing window\n");
   plintf("  -grads < 1 | 0 >       Color gradients will | won't be used\n");
-  plintf(
-         "  -width N               Minimum width in pixels of main window\n");
-  plintf(
-         "  -height N              Minimum height in pixels of main window\n");
-  plintf(
-         "  -bell < 1 | 0 >        Events will | won't trigger system bell\n");
+  plintf("  -width N               Minimum width in pixels of main window\n");
+  plintf("  -height N              Minimum height in pixels of main window\n");
+  plintf("  -bell < 1 | 0 >        Events will | won't trigger system bell\n");
   plintf("  -internset < 1 | 0 >   Internal sets will | won't be run "
          "during batch run\n");
   plintf("  -uset <setname>        Named internal set will be run during "
@@ -304,8 +240,7 @@ static void show_help(void) {
          "OUTFILE)\n");
   plintf("  -qics                  Query initial conditions (output saved "
          "to OUTFILE)\n");
-  plintf(
-         "  -quiet <1 |0>          Do not print *anything* out to console\n");
+  plintf("  -quiet <1 |0>          Do not print *anything* out to console\n");
   plintf("  -logfile <filename>    Print console output to specified "
          "logfile \n");
   plintf("  -anifile <filename>    Load an animation code file (.ani) \n");

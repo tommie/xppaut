@@ -419,7 +419,7 @@ int compiler(char *bob, FILE *fptr) {
   ptr = bob;
   done = 1;
   if (bob[0] == '@') {
-    stor_internopts(bob);
+    loadeqn_set_internopt(bob);
     if (ConvertStyle)
       fprintf(convertf, "%s\n", bob);
     return (done);
@@ -1885,7 +1885,7 @@ static int parse_a_string(char *s1, VAR_INFO *v) {
     return 0;
   }
   if (s1[0] == '@') {
-    stor_internopts(s1);
+    loadeqn_set_internopt(s1);
     return 0;
   }
   remove_blanks(s1);

@@ -37,8 +37,6 @@ extern unsigned int MyBackColor;
 extern unsigned int MyForeColor;
 extern unsigned int MyDrawWinColor;
 extern unsigned int MyMainWinColor;
-extern int OVERRIDE_LOGFILE;
-extern int OVERRIDE_QUIET;
 extern int PaperWhite;
 extern char PlotFormat[100];
 extern int SCALEX;

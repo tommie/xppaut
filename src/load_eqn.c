@@ -411,17 +411,6 @@ static void do_intern_set(char *name1, char *value) {
 
 /* ODE options stuff here !! */
 
-int msc(char *s1, char *s2) {
-
-  int n = strlen(s1), i;
-  if (strlen(s2) < n)
-    return (0);
-  for (i = 0; i < n; i++)
-    if (s1[i] != s2[i])
-      return (0);
-  return (1);
-}
-
 static void split_apart(char *bob, char *name, char *value) {
   int k, i, l;
 
@@ -490,59 +479,59 @@ void set_option(char *s1, char *s2) {
   static char mkey[] = "demragvbqsc582y";
   static char Mkey[] = "DEMRAGVBQSC582Y";
   strupr(s1);
-  if (msc("QUIET", s1)) {
-    if (!(msc(s2, "0") || msc(s2, "1"))) {
+  if (strprefix("QUIET", s1)) {
+    if (!(strprefix(s2, "0") || strprefix(s2, "1"))) {
       plintf("QUIET option must be 0 or 1.\n");
       exit(-1);
     }
     XPPVERBOSE = (atoi(s2) == 0);
     return;
   }
-  if (msc("LOGFILE", s1)) {
+  if (strprefix("LOGFILE", s1)) {
     if (logfile != NULL) {
       fclose(logfile);
     }
     logfile = fopen(s2, "w");
     return;
   }
-  if (msc("BELL", s1)) {
-    if (!(msc(s2, "0") || msc(s2, "1"))) {
+  if (strprefix("BELL", s1)) {
+    if (!(strprefix(s2, "0") || strprefix(s2, "1"))) {
       plintf("BELL option must be 0 or 1.\n");
       exit(-1);
     }
     tfBell = atoi(s2);
     return;
   }
-  if (msc("BUT", s1)) {
+  if (strprefix("BUT", s1)) {
     add_user_button(s2);
     return;
   }
-  if ((msc("BIGFONT", s1)) || (msc("BIG", s1))) {
+  if ((strprefix("BIGFONT", s1)) || (strprefix("BIG", s1))) {
     strcpy(big_font_name, s2);
     return;
   }
-  if ((msc("SMALLFONT", s1)) || (msc("SMALL", s1))) {
+  if ((strprefix("SMALLFONT", s1)) || (strprefix("SMALL", s1))) {
     strcpy(small_font_name, s2);
     return;
   }
-  if (msc("FORECOLOR", s1)) {
+  if (strprefix("FORECOLOR", s1)) {
     sprintf(UserBlack, "#%s", s2);
     return;
   }
-  if (msc("BACKCOLOR", s1)) {
+  if (strprefix("BACKCOLOR", s1)) {
     sprintf(UserWhite, "#%s", s2);
     return;
   }
-  if (msc("MWCOLOR", s1)) {
+  if (strprefix("MWCOLOR", s1)) {
     sprintf(UserMainWinColor, "#%s", s2);
     return;
   }
-  if (msc("DWCOLOR", s1)) {
+  if (strprefix("DWCOLOR", s1)) {
     sprintf(UserDrawWinColor, "#%s", s2);
     return;
   }
-  if (msc("GRADS", s1)) {
-    if (!(msc(s2, "0") || msc(s2, "1"))) {
+  if (strprefix("GRADS", s1)) {
+    if (!(strprefix(s2, "0") || strprefix(s2, "1"))) {
       plintf("GRADS option must be 0 or 1.\n");
       exit(-1);
     }
@@ -550,31 +539,31 @@ void set_option(char *s1, char *s2) {
     return;
   }
 
-  if (msc("PLOTFMT", s1)) {
+  if (strprefix("PLOTFMT", s1)) {
     strcpy(PlotFormat, s2);
     return;
   }
 
-  if (msc("BACKIMAGE", s1)) {
+  if (strprefix("BACKIMAGE", s1)) {
     strcpy(UserBGBitmap, s2);
     return;
   }
-  if (msc("WIDTH", s1)) {
+  if (strprefix("WIDTH", s1)) {
     UserMinWidth = atoi(s2);
     return;
   }
-  if (msc("HEIGHT", s1)) {
+  if (strprefix("HEIGHT", s1)) {
     UserMinHeight = atoi(s2);
     return;
   }
-  if (msc("YNC", s1)) {
+  if (strprefix("YNC", s1)) {
     i = atoi(s2);
     if (i > -1 && i < 11) {
       YNullColor = i;
     }
     return;
   }
-  if (msc("XNC", s1)) {
+  if (strprefix("XNC", s1)) {
     i = atoi(s2);
     if (i > -1 && i < 11) {
       XNullColor = i;
@@ -582,14 +571,14 @@ void set_option(char *s1, char *s2) {
     return;
   }
 
-  if (msc("SMC", s1)) {
+  if (strprefix("SMC", s1)) {
     i = atoi(s2);
     if (i > -1 && i < 11) {
       StableManifoldColor = i;
     }
     return;
   }
-  if (msc("UMC", s1)) {
+  if (strprefix("UMC", s1)) {
     i = atoi(s2);
     if (i > -1 && i < 11) {
       UnstableManifoldColor = i;
@@ -597,7 +586,7 @@ void set_option(char *s1, char *s2) {
     return;
   }
 
-  if (msc("LT", s1)) {
+  if (strprefix("LT", s1)) {
     i = atoi(s2);
     if (i < 2 && i > -6) {
       START_LINE_TYPE = i;
@@ -605,7 +594,7 @@ void set_option(char *s1, char *s2) {
     }
     return;
   }
-  if (msc("SEED", s1)) {
+  if (strprefix("SEED", s1)) {
     i = atoi(s2);
     if (i >= 0) {
       RandSeed = i;
@@ -613,7 +602,7 @@ void set_option(char *s1, char *s2) {
     }
     return;
   }
-  if (msc("BACK", s1)) {
+  if (strprefix("BACK", s1)) {
     if (s2[0] == 'w' || s2[0] == 'W') {
       PaperWhite = 1;
     } else {
@@ -621,33 +610,33 @@ void set_option(char *s1, char *s2) {
     }
     return;
   }
-  if (msc("COLORMAP", s1)) {
+  if (strprefix("COLORMAP", s1)) {
     i = atoi(s2);
     if (i < 6)
       custom_color = i;
     return;
   }
-  if (msc("NPLOT", s1)) {
+  if (strprefix("NPLOT", s1)) {
     NPltV = atoi(s2);
     return;
   }
 
-  if (msc("DLL_LIB", s1)) {
+  if (strprefix("DLL_LIB", s1)) {
     sprintf(dll_lib, "%s", s2);
     dll_flag += 1;
     return;
   }
-  if (msc("DLL_FUN", s1)) {
+  if (strprefix("DLL_FUN", s1)) {
     sprintf(dll_fun, "%s", s2);
     dll_flag += 2;
     return;
   }
   /* can now initialize several plots */
-  if (msc("SIMPLOT", s1)) {
+  if (strprefix("SIMPLOT", s1)) {
     SimulPlotFlag = 1;
     return;
   }
-  if (msc("MULTIWIN", s1)) {
+  if (strprefix("MULTIWIN", s1)) {
     MultiWin = 1;
     return;
   }
@@ -659,60 +648,60 @@ void set_option(char *s1, char *s2) {
     sprintf(xxl, "XLO%d", j);
     sprintf(yyh, "YHI%d", j);
     sprintf(yyl, "YLO%d", j);
-    if (msc(xx, s1)) {
+    if (strprefix(xx, s1)) {
       find_variable(s2, &i);
       if (i > -1)
         IX_PLT[j] = i;
       return;
     }
-    if (msc(yy, s1)) {
+    if (strprefix(yy, s1)) {
       find_variable(s2, &i);
       if (i > -1)
         IY_PLT[j] = i;
       return;
     }
-    if (msc(zz, s1)) {
+    if (strprefix(zz, s1)) {
       find_variable(s2, &i);
       if (i > -1)
         IZ_PLT[j] = i;
       return;
     }
-    if (msc(xxh, s1)) {
+    if (strprefix(xxh, s1)) {
       X_HI[j] = atof(s2);
       return;
     }
-    if (msc(xxl, s1)) {
+    if (strprefix(xxl, s1)) {
       X_LO[j] = atof(s2);
       return;
     }
-    if (msc(yyh, s1)) {
+    if (strprefix(yyh, s1)) {
       Y_HI[j] = atof(s2);
       return;
     }
-    if (msc(yyl, s1)) {
+    if (strprefix(yyl, s1)) {
       Y_LO[j] = atof(s2);
       return;
     }
   }
-  if (msc("XP", s1)) {
+  if (strprefix("XP", s1)) {
     find_variable(s2, &i);
     if (i > -1)
       IXPLT = i;
     return;
   }
-  if (msc("YP", s1)) {
+  if (strprefix("YP", s1)) {
     find_variable(s2, &i);
     if (i > -1)
       IYPLT = i;
     return;
   }
-  if (msc("ZP", s1)) {
+  if (strprefix("ZP", s1)) {
     find_variable(s2, &i);
     if (i > -1)
       IZPLT = i;
     return;
   }
-  if (msc("AXES", s1)) {
+  if (strprefix("AXES", s1)) {
     if (s2[0] == '3') {
       AXES = 5;
     } else {
@@ -721,50 +710,50 @@ void set_option(char *s1, char *s2) {
     return;
   }
 
-  if (msc("NJMP", s1)) {
+  if (strprefix("NJMP", s1)) {
     NJMP = atoi(s2);
     return;
   }
-  if (msc("NOUT", s1)) {
+  if (strprefix("NOUT", s1)) {
     NJMP = atoi(s2);
     return;
   }
-  if (msc("NMESH", s1)) {
+  if (strprefix("NMESH", s1)) {
     NMESH = atoi(s2);
     return;
   }
-  if (msc("METH", s1)) {
+  if (strprefix("METH", s1)) {
     for (i = 0; i < 15; i++)
       if (s2[0] == mkey[i] || s2[0] == Mkey[i])
         METHOD = i;
     return;
   }
-  if (msc("VMAXPTS", s1)) {
+  if (strprefix("VMAXPTS", s1)) {
     MaxPoints = atoi(s2);
     return;
   }
-  if (msc("MAXSTOR", s1)) {
+  if (strprefix("MAXSTOR", s1)) {
     MAXSTOR = atoi(s2);
     return;
   }
-  if (msc("TOR_PER", s1)) {
+  if (strprefix("TOR_PER", s1)) {
     TOR_PERIOD = atof(s2);
     TORUS = 1;
     return;
   }
-  if (msc("JAC_EPS", s1)) {
+  if (strprefix("JAC_EPS", s1)) {
     NEWT_ERR = atof(s2);
     return;
   }
-  if (msc("NEWT_TOL", s1)) {
+  if (strprefix("NEWT_TOL", s1)) {
     EVEC_ERR = atof(s2);
     return;
   }
-  if (msc("NEWT_ITER", s1)) {
+  if (strprefix("NEWT_ITER", s1)) {
     EVEC_ITER = atoi(s2);
     return;
   }
-  if (msc("FOLD", s1)) {
+  if (strprefix("FOLD", s1)) {
     find_variable(s2, &i);
     if (i > 0) {
       itor[i - 1] = 1;
@@ -772,111 +761,111 @@ void set_option(char *s1, char *s2) {
     }
     return;
   }
-  if (msc("TOTAL", s1)) {
+  if (strprefix("TOTAL", s1)) {
     TEND = atof(s2);
     return;
   }
-  if (msc("DTMIN", s1)) {
+  if (strprefix("DTMIN", s1)) {
     HMIN = atof(s2);
     return;
   }
-  if (msc("DTMAX", s1)) {
+  if (strprefix("DTMAX", s1)) {
     HMAX = atof(s2);
     return;
   }
-  if (msc("DT", s1)) {
+  if (strprefix("DT", s1)) {
     DELTA_T = atof(s2);
     return;
   }
-  if (msc("T0", s1)) {
+  if (strprefix("T0", s1)) {
     T0 = atof(s2);
     return;
   }
-  if (msc("TRANS", s1)) {
+  if (strprefix("TRANS", s1)) {
     TRANS = atof(s2);
     return;
   }
-  if (msc("BOUND", s1)) {
+  if (strprefix("BOUND", s1)) {
     BOUND = atof(s2);
     return;
   }
-  if (msc("ATOL", s1)) {
+  if (strprefix("ATOL", s1)) {
     ATOLER = atof(s2);
     return;
   }
-  if (msc("TOL", s1)) {
+  if (strprefix("TOL", s1)) {
     TOLER = atof(s2);
     return;
   }
 
-  if (msc("DELAY", s1)) {
+  if (strprefix("DELAY", s1)) {
     DELAY = atof(s2);
     return;
   }
-  if (msc("BANDUP", s1)) {
+  if (strprefix("BANDUP", s1)) {
     cv_bandflag = 1;
     cv_bandupper = atoi(s2);
     return;
   }
-  if (msc("BANDLO", s1)) {
+  if (strprefix("BANDLO", s1)) {
     cv_bandflag = 1;
     cv_bandlower = atoi(s2);
     return;
   }
 
-  if (msc("PHI", s1)) {
+  if (strprefix("PHI", s1)) {
     PHI0 = atof(s2);
     return;
   }
-  if (msc("THETA", s1)) {
+  if (strprefix("THETA", s1)) {
     THETA0 = atof(s2);
     return;
   }
-  if (msc("XLO", s1)) {
+  if (strprefix("XLO", s1)) {
     MY_XLO = atof(s2);
     return;
   }
-  if (msc("YLO", s1)) {
+  if (strprefix("YLO", s1)) {
     MY_YLO = atof(s2);
     return;
   }
 
-  if (msc("XHI", s1)) {
+  if (strprefix("XHI", s1)) {
     MY_XHI = atof(s2);
     return;
   }
-  if (msc("YHI", s1)) {
+  if (strprefix("YHI", s1)) {
     MY_YHI = atof(s2);
     return;
   }
-  if (msc("XMAX", s1)) {
+  if (strprefix("XMAX", s1)) {
     x_3d[1] = atof(s2);
     return;
   }
-  if (msc("YMAX", s1)) {
+  if (strprefix("YMAX", s1)) {
     y_3d[1] = atof(s2);
     return;
   }
-  if (msc("ZMAX", s1)) {
+  if (strprefix("ZMAX", s1)) {
     z_3d[1] = atof(s2);
     return;
   }
-  if (msc("XMIN", s1)) {
+  if (strprefix("XMIN", s1)) {
     x_3d[0] = atof(s2);
     MY_XLO = atof(s2);
     return;
   }
-  if (msc("YMIN", s1)) {
+  if (strprefix("YMIN", s1)) {
     y_3d[0] = atof(s2);
     MY_YLO = atof(s2);
     return;
   }
-  if (msc("ZMIN", s1)) {
+  if (strprefix("ZMIN", s1)) {
     z_3d[0] = atof(s2);
     return;
   }
 
-  if (msc("POIMAP", s1)) {
+  if (strprefix("POIMAP", s1)) {
     if (s2[0] == 'm' || s2[0] == 'M')
       POIMAP = 2;
     if (s2[0] == 's' || s2[0] == 'S')
@@ -886,55 +875,55 @@ void set_option(char *s1, char *s2) {
     return;
   }
 
-  if (msc("POIVAR", s1)) {
+  if (strprefix("POIVAR", s1)) {
     find_variable(s2, &i);
     if (i > -1)
       POIVAR = i;
     return;
   }
-  if (msc("OUTPUT", s1)) {
+  if (strprefix("OUTPUT", s1)) {
     strcpy(batchout, s2);
     return;
   }
 
-  if (msc("POISGN", s1)) {
+  if (strprefix("POISGN", s1)) {
     POISGN = atoi(s2);
     return;
   }
 
-  if (msc("POISTOP", s1)) {
+  if (strprefix("POISTOP", s1)) {
     SOS = atoi(s2);
     return;
   }
-  if (msc("STOCH", s1)) {
+  if (strprefix("STOCH", s1)) {
     STOCH_FLAG = atoi(s2);
     return;
   }
-  if (msc("POIPLN", s1)) {
+  if (strprefix("POIPLN", s1)) {
     POIPLN = atof(s2);
     return;
   }
 
-  if (msc("RANGEOVER", s1)) {
+  if (strprefix("RANGEOVER", s1)) {
     strcpy(range.item, s2);
     return;
   }
-  if (msc("RANGESTEP", s1)) {
+  if (strprefix("RANGESTEP", s1)) {
     range.steps = atoi(s2);
     return;
   }
 
-  if (msc("RANGELOW", s1)) {
+  if (strprefix("RANGELOW", s1)) {
     range.plow = atof(s2);
     return;
   }
 
-  if (msc("RANGEHIGH", s1)) {
+  if (strprefix("RANGEHIGH", s1)) {
     range.phigh = atof(s2);
     return;
   }
 
-  if (msc("RANGERESET", s1)) {
+  if (strprefix("RANGERESET", s1)) {
     if (s2[0] == 'y' || s2[0] == 'Y') {
       range.reset = 1;
     } else {
@@ -943,7 +932,7 @@ void set_option(char *s1, char *s2) {
     return;
   }
 
-  if (msc("RANGEOLDIC", s1)) {
+  if (strprefix("RANGEOLDIC", s1)) {
     if (s2[0] == 'y' || s2[0] == 'Y') {
       range.oldic = 1;
     } else {
@@ -952,112 +941,112 @@ void set_option(char *s1, char *s2) {
     return;
   }
 
-  if (msc("RANGE", s1)) {
+  if (strprefix("RANGE", s1)) {
     batch_range = atoi(s2);
     return;
   }
 
-  if (msc("NTST", s1)) {
+  if (strprefix("NTST", s1)) {
     auto_ntst = atoi(s2);
     return;
   }
-  if (msc("NMAX", s1)) {
+  if (strprefix("NMAX", s1)) {
     auto_nmx = atoi(s2);
     return;
   }
-  if (msc("NPR", s1)) {
+  if (strprefix("NPR", s1)) {
     auto_npr = atoi(s2);
     return;
   }
-  if (msc("NCOL", s1)) {
+  if (strprefix("NCOL", s1)) {
     auto_ncol = atoi(s2);
     return;
   }
 
-  if (msc("DSMIN", s1)) {
+  if (strprefix("DSMIN", s1)) {
     auto_dsmin = atof(s2);
     return;
   }
-  if (msc("DSMAX", s1)) {
+  if (strprefix("DSMAX", s1)) {
     auto_dsmax = atof(s2);
     return;
   }
-  if (msc("DS", s1)) {
+  if (strprefix("DS", s1)) {
     auto_ds = atof(s2);
     return;
   }
-  if (msc("PARMIN", s1)) {
+  if (strprefix("PARMIN", s1)) {
     auto_rl0 = atof(s2);
     return;
   }
-  if (msc("PARMAX", s1)) {
+  if (strprefix("PARMAX", s1)) {
     auto_rl1 = atof(s2);
     return;
   }
-  if (msc("NORMMIN", s1)) {
+  if (strprefix("NORMMIN", s1)) {
     auto_a0 = atof(s2);
     return;
   }
-  if (msc("NORMMAX", s1)) {
+  if (strprefix("NORMMAX", s1)) {
     auto_a1 = atof(s2);
     return;
   }
-  if (msc("EPSL", s1)) {
+  if (strprefix("EPSL", s1)) {
     auto_epsl = atof(s2);
     return;
   }
 
-  if (msc("EPSU", s1)) {
+  if (strprefix("EPSU", s1)) {
     auto_epsu = atof(s2);
     return;
   }
-  if (msc("EPSS", s1)) {
+  if (strprefix("EPSS", s1)) {
     auto_epss = atof(s2);
     return;
   }
-  if (msc("RUNNOW", s1)) {
+  if (strprefix("RUNNOW", s1)) {
     RunImmediately = atoi(s2);
     return;
   }
 
-  if (msc("SEC", s1)) {
+  if (strprefix("SEC", s1)) {
     SEc = atoi(s2);
     return;
   }
-  if (msc("UEC", s1)) {
+  if (strprefix("UEC", s1)) {
     UEc = atoi(s2);
     return;
   }
-  if (msc("SPC", s1)) {
+  if (strprefix("SPC", s1)) {
     SPc = atoi(s2);
     return;
   }
-  if (msc("UPC", s1)) {
+  if (strprefix("UPC", s1)) {
     UPc = atoi(s2);
     return;
   }
 
-  if (msc("AUTOEVAL", s1)) {
+  if (strprefix("AUTOEVAL", s1)) {
     set_auto_eval_flags(atoi(s2));
     return;
   }
-  if (msc("AUTOXMAX", s1)) {
+  if (strprefix("AUTOXMAX", s1)) {
     auto_xmax = atof(s2);
     return;
   }
-  if (msc("AUTOYMAX", s1)) {
+  if (strprefix("AUTOYMAX", s1)) {
     auto_ymax = atof(s2);
     return;
   }
-  if (msc("AUTOXMIN", s1)) {
+  if (strprefix("AUTOXMIN", s1)) {
     auto_xmin = atof(s2);
     return;
   }
-  if (msc("AUTOYMIN", s1)) {
+  if (strprefix("AUTOYMIN", s1)) {
     auto_ymin = atof(s2);
     return;
   }
-  if (msc("AUTOVAR", s1)) {
+  if (strprefix("AUTOVAR", s1)) {
     find_variable(s2, &i);
     if (i > 0)
       auto_var = i - 1;
@@ -1066,72 +1055,72 @@ void set_option(char *s1, char *s2) {
 
   /* postscript options */
 
-  if (msc("PS_FONT", s1)) {
+  if (strprefix("PS_FONT", s1)) {
     strcpy(PS_FONT, s2);
     return;
   }
 
-  if (msc("PS_LW", s1)) {
+  if (strprefix("PS_LW", s1)) {
     PS_LW = atof(s2);
     return;
   }
 
-  if (msc("PS_FSIZE", s1)) {
+  if (strprefix("PS_FSIZE", s1)) {
     PS_FONTSIZE = atoi(s2);
     return;
   }
 
-  if (msc("PS_COLOR", s1)) {
+  if (strprefix("PS_COLOR", s1)) {
     PSColorFlag = atoi(s2);
     PS_Color = PSColorFlag;
     return;
   }
-  if (msc("TUTORIAL", s1)) {
-    if (!(msc(s2, "0") || msc(s2, "1"))) {
+  if (strprefix("TUTORIAL", s1)) {
+    if (!(strprefix(s2, "0") || strprefix(s2, "1"))) {
       plintf("TUTORIAL option must be 0 or 1.\n");
       exit(-1);
     }
     DoTutorial = atoi(s2);
     return;
   }
-  if (msc("S1", s1)) {
+  if (strprefix("S1", s1)) {
     strncpy(SLIDERVAR[0], s2, 20);
     SLIDERVAR[0][sizeof(SLIDERVAR[0]) - 1] = '\0';
     return;
   }
 
-  if (msc("S2", s1)) {
+  if (strprefix("S2", s1)) {
     strncpy(SLIDERVAR[1], s2, 20);
     SLIDERVAR[1][sizeof(SLIDERVAR[1]) - 1] = '\0';
     return;
   }
-  if (msc("S3", s1)) {
+  if (strprefix("S3", s1)) {
     strncpy(SLIDERVAR[2], s2, 20);
     SLIDERVAR[2][sizeof(SLIDERVAR[2]) - 1] = '\0';
     return;
   }
-  if (msc("SLO1", s1)) {
+  if (strprefix("SLO1", s1)) {
     SLIDERLO[0] = atof(s2);
     return;
   }
 
-  if (msc("SLO2", s1)) {
+  if (strprefix("SLO2", s1)) {
     SLIDERLO[1] = atof(s2);
     return;
   }
-  if (msc("SLO3", s1)) {
+  if (strprefix("SLO3", s1)) {
     SLIDERLO[2] = atof(s2);
     return;
   }
-  if (msc("SHI1", s1)) {
+  if (strprefix("SHI1", s1)) {
     SLIDERHI[0] = atof(s2);
     return;
   }
-  if (msc("SHI2", s1)) {
+  if (strprefix("SHI2", s1)) {
     SLIDERHI[1] = atof(s2);
     return;
   }
-  if (msc("SHI3", s1)) {
+  if (strprefix("SHI3", s1)) {
     SLIDERHI[2] = atof(s2);
     return;
   }
@@ -1141,84 +1130,84 @@ void set_option(char *s1, char *s2) {
      writes files then
   */
 
-  if (msc("POSTPROCESS", s1)) {
+  if (strprefix("POSTPROCESS", s1)) {
     post_process = atoi(s2);
     return;
   }
 
-  if (msc("HISTLO", s1)) {
+  if (strprefix("HISTLO", s1)) {
     hist_inf.xlo = atof(s2);
     return;
   }
 
-  if (msc("HISTHI", s1)) {
+  if (strprefix("HISTHI", s1)) {
     hist_inf.xhi = atof(s2);
     return;
   }
 
-  if (msc("HISTBINS", s1)) {
+  if (strprefix("HISTBINS", s1)) {
     hist_inf.nbins = atoi(s2);
     return;
   }
 
-  if (msc("HISTCOL", s1)) {
+  if (strprefix("HISTCOL", s1)) {
     find_variable(s2, &i);
     if (i > (-1))
       hist_inf.col = i;
     return;
   }
 
-  if (msc("SPECCOL", s1)) {
+  if (strprefix("SPECCOL", s1)) {
     find_variable(s2, &i);
     if (i > (-1))
       spec_col = i;
     return;
   }
 
-  if (msc("SPECCOL2", s1)) {
+  if (strprefix("SPECCOL2", s1)) {
     find_variable(s2, &i);
     if (i > (-1))
       spec_col2 = i;
     return;
   }
 
-  if (msc("SPECWIDTH", s1)) {
+  if (strprefix("SPECWIDTH", s1)) {
     spec_wid = atoi(s2);
     return;
   }
 
-  if (msc("SPECWIN", s1)) {
+  if (strprefix("SPECWIN", s1)) {
     spec_win = atoi(s2);
     return;
   }
 
-  if (msc("DFGRID", s1)) {
+  if (strprefix("DFGRID", s1)) {
     DF_GRID = atoi(s2);
     return;
   }
-  if (msc("DFDRAW", s1)) {
+  if (strprefix("DFDRAW", s1)) {
     DFBatch = atoi(s2);
     return;
   }
-  if (msc("NCDRAW", s1)) {
+  if (strprefix("NCDRAW", s1)) {
     NCBatch = atoi(s2);
     return;
   }
 
   /* colorize customizing !! */
-  if (msc("COLORVIA", s1)) {
+  if (strprefix("COLORVIA", s1)) {
     strcpy(ColorVia, s2);
     return;
   }
-  if (msc("COLORIZE", s1)) {
+  if (strprefix("COLORIZE", s1)) {
     ColorizeFlag = atoi(s2);
     return;
   }
-  if (msc("COLORLO", s1)) {
+  if (strprefix("COLORLO", s1)) {
     ColorViaLo = atof(s2);
     return;
   }
-  if (msc("COLORHI", s1)) {
+  if (strprefix("COLORHI", s1)) {
     ColorViaHi = atof(s2);
     return;
   }

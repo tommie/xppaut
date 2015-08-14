@@ -98,7 +98,6 @@ void load_eqn(void);
 void loadeqn_init_options(void);
 void loadeqn_set_internopt(char *line);
 void loadeqn_setup_all(void);
-int msc(char *s1, char *s2);
 void set_option(char *s1, char *s2);
 
 #endif /* XPPAUT_LOAD_EQN_H */

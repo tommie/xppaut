@@ -29,6 +29,24 @@ void memmov(char *s1, const char *s2, int len) {
     s1[i] = s2[i];
 }
 
+/**
+ * Returns whether pre is a prefix of s.
+ *
+ * @param pre the prefix to search for.
+ * @param s the string to search in.
+ * @return non-zero if pre is a prefix of s.
+ */
+int strprefix(const char *pre, const char *s) {
+  int n = strlen(pre);
+
+  if (strlen(s) < n)
+    return 0;
+  for (int i = 0; i < n; i++)
+    if (pre[i] != s[i])
+      return 0;
+  return 1;
+}
+
 void stringintersect(char *target, const char *sother) {
   int m = strlen(target);
   int n = strlen(sother);

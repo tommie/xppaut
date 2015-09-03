@@ -456,7 +456,8 @@ void do_sing_info(double *x, double eps, double err, double big, int maxit,
   return;
 }
 
-void pr_evec(double *x, double *ev, int n, int pr, double eval, int type) {
+static void pr_evec(double *x, double *ev, int n, int pr, double eval,
+                    int type) {
   int i;
   double d = fabs(DELTA_T) * .1;
   ShootICFlag = 1;
@@ -481,8 +482,9 @@ void pr_evec(double *x, double *ev, int n, int pr, double eval, int type) {
   */
 }
 
-void get_evec(double *a, double *anew, double *b, double *bp, int n, int maxit,
-              double err, int *ipivot, double eval, int *ierr) {
+static void get_evec(double *a, double *anew, double *b, double *bp, int n,
+                     int maxit, double err, int *ipivot, double eval,
+                     int *ierr) {
   int j, iter, jmax;
   double temp;
   double zz = fabs(eval);
@@ -558,7 +560,7 @@ void eigen(int n, double *a, double *ev, double *work, int *ierr) {
   hqr(n, 1, n, a, ev, ierr);
 }
 
-void hqr(int n, int low, int igh, double *h, double *ev, int *ierr) {
+static void hqr(int n, int low, int igh, double *h, double *ev, int *ierr) {
   int i, j, k, l = 0, m = 0, en, ll, mm, na, its, mp2, enm2;
   double p = 0.0, q = 0.0, r = 0.0, s, t, w, x, y, zz, norm, machep = 1.e-10;
   int notlas;
@@ -723,7 +725,7 @@ l1000:
   *ierr = en;
 }
 
-void orthes(int n, int low, int igh, double *a, double *ort) {
+static void orthes(int n, int low, int igh, double *a, double *ort) {
   int i, j, m, ii, jj, la, mp, kp1;
   double f, g, h, scale;
   la = igh - 1;
@@ -777,13 +779,13 @@ void orthes(int n, int low, int igh, double *a, double *ort) {
   }
 }
 
-double sign(double x, double y) {
+static double sign(double x, double y) {
   if (y >= 0.0)
     return (fabs(x));
   return (-fabs(x));
 }
 
-int imin(int x, int y) {
+static int imin(int x, int y) {
   if (x < y)
     return (x);
   return (y);
@@ -795,8 +797,8 @@ double amax(double u, double v) {
   return (v);
 }
 
-void getjac(double *x, double *y, double *yp, double *xp, double eps,
-            double *dermat, int n) {
+static void getjac(double *x, double *y, double *yp, double *xp, double eps,
+                   double *dermat, int n) {
   int i, j, k;
   double r;
   rhs(0.0, x, y, n);
@@ -891,7 +893,7 @@ void rooter(double *x, double err, double eps, double big, double *work,
   }
 }
 
-double sqr2(double z) { return (z * z); }
+static double sqr2(double z) { return (z * z); }
 
 int gear(int n, double *t, double tout, double *y, double hmin, double hmax,
          double eps, int mf, double *error, int *kflag, int *jstart,
@@ -1398,20 +1400,20 @@ L860:
   return (1);
 }
 
-double sgnum(double x, double y) {
+static double sgnum(double x, double y) {
   if (y < 0.0)
     return (-fabs(x));
   else
     return (fabs(x));
 }
 
-double Max(double x, double y) {
+static double Max(double x, double y) {
   if (x > y)
     return (x);
   return (y);
 }
 
-double Min(double x, double y) {
+static double Min(double x, double y) {
   if (x < y)
     return (x);
   return (y);
@@ -1498,7 +1500,8 @@ void sgesl(double *a, int lda, int n, int *ipvt, double *b, int job) {
   }
 }
 
-void saxpy(int n, double sa, double *sx, int incx, double *sy, int incy) {
+static void saxpy(int n, double sa, double *sx, int incx, double *sy,
+                  int incy) {
   int i, ix, iy;
   if (n <= 0)
     return;
@@ -1514,7 +1517,7 @@ void saxpy(int n, double sa, double *sx, int incx, double *sy, int incy) {
     sy[iy] = sy[iy] + sa * sx[ix];
 }
 
-int isamax(int n, double *sx, int incx) {
+static int isamax(int n, double *sx, int incx) {
   int i, ix, imax;
   double smax;
   if (n < 1)
@@ -1545,7 +1548,7 @@ int isamax(int n, double *sx, int incx) {
   return (imax);
 }
 
-double sdot(int n, double *sx, int incx, double *sy, int incy) {
+static double sdot(int n, double *sx, int incx, double *sy, int incy) {
   int i, ix, iy;
   double stemp = 0.0;
   if (n <= 0)
@@ -1561,7 +1564,7 @@ double sdot(int n, double *sx, int incx, double *sy, int incy) {
   return (stemp);
 }
 
-void sscal(int n, double sa, double *sx, int incx) {
+static void sscal(int n, double sa, double *sx, int incx) {
   int i, nincx;
   if (n <= 0)
     return;

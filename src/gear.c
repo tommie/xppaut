@@ -25,7 +25,6 @@ static const double PERTST[7][2][3] = {
     {{13.7, 15.98, .04133}, {53.33, 70.08, .3157}},
     {{17.15, 1, .008267}, {70.08, 87.97, .07407}},
     {{1, 1, 1}, {87.97, 1, .0139}}};
-static int gear_pivot[MAXODE];
 
 int gear(int n, double *t, double tout, double *y, double hmin, double hmax,
          double eps, int mf, double *error, int *kflag, int *jstart,
@@ -40,7 +39,7 @@ int gear(int n, double *t, double tout, double *y, double hmin, double hmax,
 int ggear(int n, double *t, double tout, double *y, double hmin, double hmax,
           double eps, int mf, double *error, int *kflag, int *jstart,
           double *work, int *iwork) {
-  /* int ipivot[MAXODE]; */
+  int ipivot[MAXODE];
   double deltat = 0.0, hnew = 0.0, hold = 0.0, h = 0.0, racum = 0.0, told = 0.0,
          r = 0.0, d = 0.0;
   double *a, pr1, pr2, pr3, r1;
@@ -249,8 +248,6 @@ L330:
   for (l = 0; l < 3; l++) {
     rhs(*t, ytable[0], save11, n);
     if (iweval < 1) {
-      /*  plintf("iweval=%d \n",iweval);
-        for(i=0;i<n;i++)printf("up piv = %d \n",gear_pivot[i]);*/
       goto L460;
     }
     /*       JACOBIAN COMPUTED   */
@@ -268,10 +265,7 @@ L330:
     for (i = 0; i < n; i++)
       dermat[n * i + i] += 1.0;
     iweval = -1;
-    /*      plintf(" Jac = %f %f %f %f \n",dermat[0],dermat[1],dermat[2],dermat[3]);
-*/ sgefa(
-        dermat, n, n, gear_pivot, &info);
-    /* for(i=0;i<n;i++)printf("gear_pivot[%d]=%d \n",i,gear_pivot[i]);*/
+    sgefa(dermat, n, n, ipivot, &info);
     if (info == -1)
       j1 = 1;
     else
@@ -286,7 +280,7 @@ L330:
     for (i = 0; i < n; i++)
       save9[i] = save12[i];
     job = 0;
-    sgesl(dermat, n, n, gear_pivot, save9, job);
+    sgesl(dermat, n, n, ipivot, save9, job);
     nt = n;
     for (i = 0; i < n; i++) {
       ytable[0][i] = ytable[0][i] + a[0] * save9[i];

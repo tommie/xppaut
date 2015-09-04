@@ -35,6 +35,7 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "delay_handle.h"
 #include "derived.h"
 #include "dormpri.h"
+#include "findsing.h"
 #include "flags.h"
 #include "form_ode.h"
 #include "gear.h"

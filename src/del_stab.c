@@ -6,7 +6,7 @@
 
 #include "delay_handle.h"
 #include "eig_list.h"
-#include "gear.h"
+#include "findsing.h"
 #include "ggets.h"
 #include "odesol2.h"
 

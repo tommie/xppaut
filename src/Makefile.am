@@ -48,6 +48,7 @@ noinst_HEADERS = \
 	eigen.h \
 	extra.h \
 	fftn.h \
+	findsing.h \
 	flags.h \
 	form_ode.h \
 	gear.h \
@@ -162,6 +163,7 @@ xppaut_SOURCES = \
 	eigen.c \
 	extra.c \
 	fftn.c \
+	findsing.c \
 	flags.c \
 	form_ode.c \
 	gear.c \
@@ -232,6 +234,7 @@ libxpp_a_SOURCES = \
 	eigen.c \
 	extra.c \
 	fftn.c \
+	findsing.c \
 	flags.c \
 	form_ode.c \
 	gear.c \

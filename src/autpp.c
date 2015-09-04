@@ -5,6 +5,7 @@
 #include "auto_define.h"
 #include "auto_nox.h"
 #include "derived.h"
+#include "eigen.h"
 #include "gear.h"
 #include "load_eqn.h"
 #include "numerics.h"

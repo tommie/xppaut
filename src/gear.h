@@ -16,7 +16,6 @@ void do_sing(double *x, double eps, double err, double big, int maxit, int n,
              int *ierr, float *stabinfo);
 void do_sing_info(double *x, double eps, double err, double big, int maxit,
                   int n, double *er, double *em, int *ierr);
-void eigen(int n, double *a, double *ev, double *work, int *ierr);
 int gear(int n, double *t, double tout, double *y, double hmin, double hmax,
          double eps, int mf, double *error, int *kflag, int *jstart,
          double *work, int *iwork);

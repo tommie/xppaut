@@ -45,6 +45,7 @@ noinst_HEADERS = \
 	dormpri.h \
 	edit_rhs.h \
 	eig_list.h \
+	eigen.h \
 	extra.h \
 	fftn.h \
 	flags.h \
@@ -158,6 +159,7 @@ xppaut_SOURCES = \
 	dormpri.c \
 	edit_rhs.c \
 	eig_list.c \
+	eigen.c \
 	extra.c \
 	fftn.c \
 	flags.c \
@@ -227,6 +229,7 @@ libxpp_a_SOURCES = \
 	dormpri.c \
 	edit_rhs.c \
 	eig_list.c \
+	eigen.c \
 	extra.c \
 	fftn.c \
 	flags.c \

@@ -31,6 +31,7 @@
 #include "volterra2.h"
 #include "solver/backeuler.h"
 #include "solver/discrete.h"
+#include "solver/euler.h"
 #include "solver/symplect.h"
 
 static void check_pos(int *j);

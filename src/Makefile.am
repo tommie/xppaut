@@ -136,6 +136,7 @@ bitmap_headers = \
 solver_headers = \
 	solver/backeuler.h \
 	solver/discrete.h \
+	solver/euler.h \
 	solver/symplect.h
 
 ui_x11_headers = \
@@ -312,6 +313,7 @@ cvode_sources = \
 solver_sources = \
 	solver/backeuler.c \
 	solver/discrete.c \
+	solver/euler.c \
 	solver/symplect.c
 
 ui_x11_sources = \

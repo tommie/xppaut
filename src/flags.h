@@ -14,8 +14,6 @@ int one_flag_step(double *yold, double *ynew, int *istart, double told,
 int one_flag_step_gear(int neq, double *t, double tout, double *y, double hmin,
                        double hmax, double eps, int mf, double *error,
                        int *kflag, int *jstart, double *work, int *iwork);
-int one_flag_step_rosen(double *y, double *tstart, double tfinal, int *istart,
-                        int n, double *work, int *ierr);
 int one_flag_step_dp(int *istart, double *y, double *t, int n, double tout,
                      double *tol, double *atol, int flag, int *kflag);
 int one_flag_step_adap(double *y, int neq, double *t, double tout, double eps,

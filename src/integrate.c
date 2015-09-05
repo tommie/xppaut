@@ -65,6 +65,7 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "strutil.h"
 #include "tabular.h"
 #include "volterra2.h"
+#include "solver/rb23.h"
 #include "ui-x11/file-selector.h"
 
 /* --- Macros --- */

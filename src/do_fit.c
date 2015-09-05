@@ -21,6 +21,7 @@
 #include "pop_list.h"
 #include "stiff.h"
 #include "storage.h"
+#include "solver/rb23.h"
 
 /* --- Macros --- */
 #define MAX(a, b) ((a) > (b) ? (a) : (b))

@@ -139,6 +139,7 @@ solver_headers = \
 	solver/discrete.h \
 	solver/euler.h \
 	solver/modeuler.h \
+	solver/rb23.h \
 	solver/rk4.h \
 	solver/symplect.h
 
@@ -319,6 +320,7 @@ solver_sources = \
 	solver/discrete.c \
 	solver/euler.c \
 	solver/modeuler.c \
+	solver/rb23.c \
 	solver/rk4.c \
 	solver/symplect.c
 

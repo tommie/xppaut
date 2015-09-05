@@ -29,6 +29,7 @@
 #include "pp_shoot.h"
 #include "storage.h"
 #include "volterra2.h"
+#include "solver/symplect.h"
 
 static void check_pos(int *j);
 static void get_method(void);

@@ -22,14 +22,11 @@ void one_step_discrete(double *y, double dt, double *yp, int neq, double *t);
 void one_step_euler(double *y, double dt, double *yp, int neq, double *t);
 void one_step_heun(double *y, double dt, double *yval[2], int neq, double *tim);
 void one_step_rk4(double *y, double dt, double *yval[3], int neq, double *tim);
-void one_step_symp(double *y, double h, double *f, int n, double *t);
 int rb23(double *y, double *tstart, double tfinal, int *istart, int n,
          double *work, int *ierr);
 int rosen(double *y, double *tstart, double tfinal, int *istart, int n,
           double *work, int *ierr);
 int rung_kut(double *y, double *tim, double dt, int nt, int neq, int *istart,
              double *work);
-int symplect3(double *y, double *tim, double dt, int nt, int neq, int *istart,
-              double *work);
 
 #endif /* XPPAUT_ODESOL2_H */

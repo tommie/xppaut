@@ -101,6 +101,7 @@ noinst_HEADERS = \
 	xpplim.h \
 	$(base_headers) \
 	$(bitmap_headers) \
+	$(solver_headers) \
 	$(ui_x11_headers)
 
 base_headers = \
@@ -130,6 +131,9 @@ bitmap_headers = \
 	bitmap/pp.bitmap \
 	bitmap/start.bitmap \
 	bitmap/txtview.bitmap
+
+solver_headers = \
+	solver/symplect.h
 
 ui_x11_headers = \
 	ui-x11/editutil.h \
@@ -207,6 +211,7 @@ xppaut_SOURCES = \
 	$(auto_sources) \
 	$(base_sources) \
 	$(cvode_sources) \
+	$(solver_sources) \
 	$(strutil_sources) \
 	$(ui_x11_sources)
 
@@ -277,6 +282,7 @@ libxpp_a_SOURCES = \
 	$(auto_sources) \
 	$(base_sources) \
 	$(cvode_sources) \
+	$(solver_sources) \
 	$(strutil_sources) \
 	$(ui_x11_sources)
 
@@ -297,6 +303,9 @@ base_sources = \
 
 cvode_sources = \
 	cv2.c
+
+solver_sources = \
+	solver/symplect.c
 
 ui_x11_sources = \
 	ui-x11/editutil.c \

@@ -2,10 +2,11 @@
 
 #include <math.h>
 
-#include "flags.h"
-#include "matrixalg.h"
-#include "odesol2.h"
-#include "xpplim.h"
+#include "../flags.h"
+#include "../ggets.h"
+#include "../matrixalg.h"
+#include "../odesol2.h"
+#include "../xpplim.h"
 
 /* --- Forward Declarations --- */
 static double Max(double x, double y);
@@ -23,19 +24,9 @@ static const double PERTST[7][2][3] = {
     {{17.15, 1, .008267}, {70.08, 87.97, .07407}},
     {{1, 1, 1}, {87.97, 1, .0139}}};
 
-int gear(int n, double *t, double tout, double *y, double hmin, double hmax,
-         double eps, int mf, double *error, int *kflag, int *jstart,
-         double *work, int *iwork) {
-  if (NFlags == 0)
-    return (ggear(n, t, tout, y, hmin, hmax, eps, mf, error, kflag, jstart,
-                  work, iwork));
-  return (one_flag_step_gear(n, t, tout, y, hmin, hmax, eps, mf, error, kflag,
-                             jstart, work, iwork));
-}
-
-int ggear(int n, double *t, double tout, double *y, double hmin, double hmax,
-          double eps, int mf, double *error, int *kflag, int *jstart,
-          double *work, int *iwork) {
+static int ggear(int n, double *t, double tout, double *y, double hmin,
+                 double hmax, double eps, int mf, double *error, int *kflag,
+                 int *jstart, double *work, int *iwork) {
   int ipivot[MAXODE];
   double deltat = 0.0, hnew = 0.0, hold = 0.0, h = 0.0, racum = 0.0, told = 0.0,
          r = 0.0, d = 0.0;
@@ -523,15 +514,6 @@ L860:
   return (1);
 }
 
-static double sqr2(double z) { return (z * z); }
-
-static double sgnum(double x, double y) {
-  if (y < 0.0)
-    return (-fabs(x));
-  else
-    return (fabs(x));
-}
-
 static double Max(double x, double y) {
   if (x > y)
     return (x);
@@ -542,4 +524,55 @@ static double Min(double x, double y) {
   if (x < y)
     return (x);
   return (y);
+}
+
+static double sgnum(double x, double y) {
+  if (y < 0.0)
+    return (-fabs(x));
+  else
+    return (fabs(x));
+}
+
+static double sqr2(double z) { return (z * z); }
+
+static int one_flag_step_gear(int neq, double *t, double tout, double *y,
+                              double hmin, double hmax, double eps, int mf,
+                              double *error, int *kflag, int *jstart,
+                              double *work, int *iwork) {
+  double yold[MAXODE], told;
+  int i, hit;
+  double s;
+  int nstep = 0;
+  while (1) {
+    for (i = 0; i < neq; i++)
+      yold[i] = y[i];
+    told = *t;
+    ggear(neq, t, tout, y, hmin, hmax, eps, mf, error, kflag, jstart, work,
+          iwork);
+    if (*kflag < 0)
+      break;
+    if ((hit = one_flag_step(yold, y, jstart, told, t, neq, &s)) == 0)
+      break;
+    /* Its a hit !! */
+    nstep++;
+    *jstart = 0; /* for gear always reset  */
+    if (*t == tout)
+      break;
+    if (nstep > (NFlags + 2)) {
+      plintf(" Working too hard? ");
+      plintf("smin=%g\n", s);
+      break;
+    }
+  }
+  return 0;
+}
+
+int gear(int n, double *t, double tout, double *y, double hmin, double hmax,
+         double eps, int mf, double *error, int *kflag, int *jstart,
+         double *work, int *iwork) {
+  if (NFlags == 0)
+    return (ggear(n, t, tout, y, hmin, hmax, eps, mf, error, kflag, jstart,
+                  work, iwork));
+  return (one_flag_step_gear(n, t, tout, y, hmin, hmax, eps, mf, error, kflag,
+                             jstart, work, iwork));
 }

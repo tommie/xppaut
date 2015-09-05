@@ -51,7 +51,6 @@ noinst_HEADERS = \
 	findsing.h \
 	flags.h \
 	form_ode.h \
-	gear.h \
 	ggets.h \
 	graf_par.h \
 	graphics.h \
@@ -138,6 +137,7 @@ solver_headers = \
 	solver/backeuler.h \
 	solver/discrete.h \
 	solver/euler.h \
+	solver/gear.h \
 	solver/modeuler.h \
 	solver/rb23.h \
 	solver/rk4.h \
@@ -178,7 +178,6 @@ xppaut_SOURCES = \
 	findsing.c \
 	flags.c \
 	form_ode.c \
-	gear.c \
 	ggets.c \
 	graf_par.c \
 	graphics.c \
@@ -251,7 +250,6 @@ libxpp_a_SOURCES = \
 	findsing.c \
 	flags.c \
 	form_ode.c \
-	gear.c \
 	ggets.c \
 	graf_par.c \
 	graphics.c \
@@ -319,6 +317,7 @@ solver_sources = \
 	solver/backeuler.c \
 	solver/discrete.c \
 	solver/euler.c \
+	solver/gear.c \
 	solver/modeuler.c \
 	solver/rb23.c \
 	solver/rk4.c \

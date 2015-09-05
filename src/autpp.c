@@ -6,7 +6,6 @@
 #include "auto_nox.h"
 #include "derived.h"
 #include "eigen.h"
-#include "gear.h"
 #include "load_eqn.h"
 #include "numerics.h"
 #include "odesol2.h"

@@ -38,7 +38,6 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "findsing.h"
 #include "flags.h"
 #include "form_ode.h"
-#include "gear.h"
 #include "ggets.h"
 #include "graf_par.h"
 #include "graphics.h"
@@ -65,6 +64,7 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "strutil.h"
 #include "tabular.h"
 #include "volterra2.h"
+#include "solver/gear.h"
 #include "solver/rb23.h"
 #include "ui-x11/file-selector.h"
 

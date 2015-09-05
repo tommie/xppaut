@@ -11,7 +11,6 @@
 #include "derived.h"
 #include "dormpri.h"
 #include "form_ode.h"
-#include "gear.h"
 #include "ggets.h"
 #include "integrate.h"
 #include "load_eqn.h"
@@ -22,6 +21,7 @@
 #include "pop_list.h"
 #include "stiff.h"
 #include "storage.h"
+#include "solver/gear.h"
 #include "solver/rb23.h"
 
 /* --- Macros --- */

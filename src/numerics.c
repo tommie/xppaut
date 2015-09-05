@@ -32,6 +32,7 @@
 #include "solver/backeuler.h"
 #include "solver/discrete.h"
 #include "solver/euler.h"
+#include "solver/modeuler.h"
 #include "solver/rk4.h"
 #include "solver/symplect.h"
 

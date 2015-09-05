@@ -201,24 +201,17 @@ int compile_flags(void) {
           if (strcasecmp(flag[j].lhsname[i], "out_put") == 0) {
             flag[j].type[i] = 2;
             flag[j].lhs[i] = 0;
+          } else if (strcasecmp(flag[j].lhsname[i], "arret") == 0) {
+            flag[j].type[i] = 3;
+            flag[j].lhs[i] = 0;
+          } else if (strcasecmp(flag[j].lhsname[i], "no_interp") == 0) {
+            flag[j].nointerp = 1;
+            flag[j].type[i] = 0;
+            flag[j].lhs[i] = 0;
           } else {
-            if (strcasecmp(flag[j].lhsname[i], "arret") == 0) {
-              flag[j].type[i] = 3;
-              flag[j].lhs[i] = 0;
-
-            } else {
-              if (strcasecmp(flag[j].lhsname[i], "no_interp") == 0) {
-                flag[j].nointerp = 1;
-                flag[j].type[i] = 0;
-                flag[j].lhs[i] = 0;
-              }
-
-              else {
-                plintf(" <%s> is not a valid variable/parameter name \n",
-                       flag[j].lhsname[i]);
-                return (1);
-              }
-            }
+            plintf(" <%s> is not a valid variable/parameter name \n",
+                   flag[j].lhsname[i]);
+            return (1);
           }
         } else {
           flag[j].lhs[i] = index;
@@ -349,23 +342,15 @@ int one_flag_step(double *yold, double *ynew, int *istart, double told,
       nevents = flag[i].nevents;
       if (flag[i].hit == ncycle && flag[i].tstar <= smin) {
         for (j = 0; j < nevents; j++) {
-
           in = flag[i].lhs[j];
           if (flag[i].type[j] == 0)
             ynew[in] = flag[i].vrhs[j];
-          else {
-            if (flag[i].type[j] == 1)
-              set_val(upar_names[in], flag[i].vrhs[j]);
-            else {
-
-              if ((flag[i].type[j] == 2) && (flag[i].vrhs[j] > 0))
-                send_output(ynew, *tnew);
-              if ((flag[i].type[j] == 3) && (flag[i].vrhs[j] > 0))
-                send_halt(ynew, *tnew);
-            }
-          }
-
-          /* plintf(" increment it ... \n");  */
+          else if (flag[i].type[j] == 1)
+            set_val(upar_names[in], flag[i].vrhs[j]);
+          else if ((flag[i].type[j] == 2) && (flag[i].vrhs[j] > 0))
+            send_output(ynew, *tnew);
+          else if ((flag[i].type[j] == 3) && (flag[i].vrhs[j] > 0))
+            send_halt(ynew, *tnew);
         }
         if (flag[i].anypars) {
           evaluate_derived();

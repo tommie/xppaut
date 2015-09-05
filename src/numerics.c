@@ -29,6 +29,7 @@
 #include "pp_shoot.h"
 #include "storage.h"
 #include "volterra2.h"
+#include "solver/backeuler.h"
 #include "solver/discrete.h"
 #include "solver/symplect.h"
 
@@ -561,7 +562,7 @@ void do_meth(void) {
     solver = symplect3;
     break;
   case BACKEUL:
-    solver = bak_euler;
+    solver = back_euler;
     break;
   case RKQS:
   case STIFF:

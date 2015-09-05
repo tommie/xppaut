@@ -67,6 +67,7 @@ noinst_HEADERS = \
 	main.h \
 	many_pops.h \
 	markov.h \
+	matrixalg.h \
 	menu.h \
 	menudrive.h \
 	menus.h \
@@ -133,6 +134,7 @@ bitmap_headers = \
 	bitmap/txtview.bitmap
 
 solver_headers = \
+	solver/backeuler.h \
 	solver/discrete.h \
 	solver/symplect.h
 
@@ -185,6 +187,7 @@ xppaut_SOURCES = \
 	main.c \
 	many_pops.c \
 	markov.c \
+	matrixalg.c \
 	menu.c \
 	menudrive.c \
 	menus.c \
@@ -257,6 +260,7 @@ libxpp_a_SOURCES = \
 	main.c \
 	many_pops.c \
 	markov.c \
+	matrixalg.c \
 	menu.c \
 	menudrive.c \
 	menus.c \
@@ -306,6 +310,7 @@ cvode_sources = \
 	cv2.c
 
 solver_sources = \
+	solver/backeuler.c \
 	solver/discrete.c \
 	solver/symplect.c
 

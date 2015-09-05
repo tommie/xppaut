@@ -27,9 +27,6 @@ int one_flag_step_dp(int *istart, double *y, double *t, int n, double tout,
 int one_flag_step_adap(double *y, int neq, double *t, double tout, double eps,
                        double *hguess, double hmin, double *work, int *ier,
                        double epjac, int iflag, int *jstart);
-int one_flag_step_backeul(double *y, double *t, double dt, int neq, double *yg,
-                          double *yp, double *yp2, double *ytemp,
-                          double *errvec, double *jac, int *istart);
 int one_flag_step_cvode(int *command, double *y, double *t, int n, double tout,
                         int *kflag, double *atol, double *rtol);
 

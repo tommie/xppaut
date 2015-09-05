@@ -134,6 +134,7 @@ bitmap_headers = \
 	bitmap/txtview.bitmap
 
 solver_headers = \
+	solver/adams.h \
 	solver/backeuler.h \
 	solver/discrete.h \
 	solver/euler.h \
@@ -313,6 +314,7 @@ cvode_sources = \
 	cv2.c
 
 solver_sources = \
+	solver/adams.c \
 	solver/backeuler.c \
 	solver/discrete.c \
 	solver/euler.c \

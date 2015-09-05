@@ -32,6 +32,7 @@
 #include "solver/backeuler.h"
 #include "solver/discrete.h"
 #include "solver/euler.h"
+#include "solver/rk4.h"
 #include "solver/symplect.h"
 
 static void check_pos(int *j);

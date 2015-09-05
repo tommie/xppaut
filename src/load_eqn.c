@@ -40,6 +40,7 @@
 #include "txtread.h"
 #include "userbut.h"
 #include "volterra2.h"
+#include "solver/rk4.h"
 
 /* --- Macros --- */
 #define DFNORMAL 1

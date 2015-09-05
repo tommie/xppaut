@@ -133,6 +133,7 @@ bitmap_headers = \
 	bitmap/txtview.bitmap
 
 solver_headers = \
+	solver/discrete.h \
 	solver/symplect.h
 
 ui_x11_headers = \
@@ -305,6 +306,7 @@ cvode_sources = \
 	cv2.c
 
 solver_sources = \
+	solver/discrete.c \
 	solver/symplect.c
 
 ui_x11_sources = \

@@ -3,8 +3,8 @@
 #include <math.h>
 
 #include "flags.h"
-#include "gear.h"
 #include "markov.h"
+#include "matrixalg.h"
 #include "numerics.h"
 #include "odesol2.h"
 

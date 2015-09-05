@@ -15,6 +15,7 @@
 #include "ggets.h"
 #include "integrate.h"
 #include "load_eqn.h"
+#include "matrixalg.h"
 #include "numerics.h"
 #include "odesol2.h"
 #include "parserslow.h"

@@ -19,10 +19,10 @@
 
 #include "delay_handle.h"
 #include "form_ode.h"
-#include "gear.h"
 #include "ggets.h"
 #include "load_eqn.h"
 #include "markov.h"
+#include "matrixalg.h"
 #include "parserslow.h"
 
 /* --- Macros --- */

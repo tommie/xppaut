@@ -5,7 +5,6 @@
 
 #include "../delay_handle.h"
 #include "../flags.h"
-#include "../gear.h"
 #include "../ggets.h"
 #include "../load_eqn.h"
 #include "../markov.h"

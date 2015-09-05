@@ -5,10 +5,10 @@
 #include <string.h>
 
 #include "form_ode.h"
-#include "gear.h"
 #include "ggets.h"
 #include "integrate.h"
 #include "load_eqn.h"
+#include "matrixalg.h"
 #include "parserslow.h"
 
 /* --- Macros --- */

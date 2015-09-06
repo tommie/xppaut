@@ -1819,7 +1819,8 @@ int integrate(double *t, double *x, double tend, double dt, int count, int nout,
         return (1);
       }
       MSWTCH(xpv.x, x);
-      dp(start, xpv.x, t, nodes, tout, &TOLER, &ATOLER, METHOD - METHOD_DP5, &kflag);
+      dp(start, xpv.x, t, nodes, tout, &TOLER, &ATOLER, METHOD - METHOD_DP5,
+         &kflag);
       MSWTCH(x, xpv.x);
       stor_delay(x);
       if (DelayErr) {

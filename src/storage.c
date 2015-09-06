@@ -11,7 +11,6 @@
 float **storage;
 double *WORK;
 int MAXSTOR, storind;
-int IWORK[10000];
 
 void init_alloc_info(void) {
   int i;

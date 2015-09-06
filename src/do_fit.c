@@ -9,7 +9,6 @@
 #include "cv2.h"
 #include "delay_handle.h"
 #include "derived.h"
-#include "dormpri.h"
 #include "form_ode.h"
 #include "ggets.h"
 #include "integrate.h"
@@ -21,6 +20,7 @@
 #include "pop_list.h"
 #include "stiff.h"
 #include "storage.h"
+#include "solver/dormpri.h"
 #include "solver/gear.h"
 #include "solver/rb23.h"
 

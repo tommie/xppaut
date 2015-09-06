@@ -1,5 +1,5 @@
 /*      DOP853
-	------
+        ------
 
 
 This code computes the numerical solution of a system of first order ordinary
@@ -7,9 +7,9 @@ differential equations y'=f(x,y). It uses an explicit Runge-Kutta method of
 order 8(5,3) due to Dormand & Prince with step size control and dense output.
 
 Authors : E. Hairer & G. Wanner
-	  Universite de Geneve, dept. de Mathematiques
-	  CH-1211 GENEVE 4, SWITZERLAND
-	  E-mail : HAIRER@DIVSUN.UNIGE.CH, WANNER@DIVSUN.UNIGE.CH
+          Universite de Geneve, dept. de Mathematiques
+          CH-1211 GENEVE 4, SWITZERLAND
+          E-mail : HAIRER@DIVSUN.UNIGE.CH, WANNER@DIVSUN.UNIGE.CH
 
 The code is described in : E. Hairer, S.P. Norsett and G. Wanner, Solving
 ordinary differential equations I, nonstiff problems, 2nd edition,
@@ -33,11 +33,11 @@ INPUT PARAMETERS
 n        Dimension of the system (n < UINT_MAX).
 
 fcn      A pointer the the function definig the differential equation, this
-	 function must have the following prototype
+         function must have the following prototype
 
-	   void fcn (unsigned n, double x, double *y, double *f)
+           void fcn (unsigned n, double x, double *y, double *f)
 
-	 where the array f will be filled with the function result.
+         where the array f will be filled with the function result.
 
 x        Initial x value.
 
@@ -47,46 +47,47 @@ xend     Final x value (xend-x may be positive or negative).
 
 *rtoler  Relative and absolute error tolerances. They can be both scalars or
 *atoler  vectors of length n (in the scalar case pass the addresses of
-	 variables where you have placed the tolerance values).
+         variables where you have placed the tolerance values).
 
 itoler   Switch for atoler and rtoler :
-	   itoler=0 : both atoler and rtoler are scalars, the code keeps
-		      roughly the local error of y[i] below
-		      rtoler*abs(y[i])+atoler.
-	   itoler=1 : both rtoler and atoler are vectors, the code keeps
-		      the local error of y[i] below
-		      rtoler[i]*abs(y[i])+atoler[i].
+           itoler=0 : both atoler and rtoler are scalars, the code keeps
+                      roughly the local error of y[i] below
+                      rtoler*abs(y[i])+atoler.
+           itoler=1 : both rtoler and atoler are vectors, the code keeps
+                      the local error of y[i] below
+                      rtoler[i]*abs(y[i])+atoler[i].
 
 solout   A pointer to the output function called during integration.
-	 If iout >= 1, it is called after every successful step. If iout = 0,
-	 pass a pointer equal to NULL. solout must must have the following
-	 prototype
+         If iout >= 1, it is called after every successful step. If iout = 0,
+         pass a pointer equal to NULL. solout must must have the following
+         prototype
 
-	   solout (long nr, double xold, double x, double* y, unsigned n, int* irtrn)
+           solout (long nr, double xold, double x, double* y, unsigned n, int*
+irtrn)
 
-	 where y is the solution the at nr-th grid point x, xold is the
-	 previous grid point and irtrn serves to interrupt the integration
-	 (if set to a negative value).
+         where y is the solution the at nr-th grid point x, xold is the
+         previous grid point and irtrn serves to interrupt the integration
+         (if set to a negative value).
 
-	 Continuous output : during the calls to solout, a continuous solution
-	 for the interval (xold,x) is available through the function
+         Continuous output : during the calls to solout, a continuous solution
+         for the interval (xold,x) is available through the function
 
-	   contd8(i,s)
+           contd8(i,s)
 
-	 which provides an approximation to the i-th component of the solution
-	 at the point s (s must lie in the interval (xold,x)).
+         which provides an approximation to the i-th component of the solution
+         at the point s (s must lie in the interval (xold,x)).
 
 iout     Switch for calling solout :
-	   iout=0 : no call,
-	   iout=1 : solout only used for output,
-	   iout=2 : dense output is performed in solout (in this case nrdens
-		    must be greater than 0).
+           iout=0 : no call,
+           iout=1 : solout only used for output,
+           iout=2 : dense output is performed in solout (in this case nrdens
+                    must be greater than 0).
 
 fileout  A pointer to the stream used for messages, if you do not want any
-	 message, just pass NULL.
+         message, just pass NULL.
 
 icont    An array containing the indexes of components for which dense
-	 output is required. If no dense output is required, pass NULL.
+         output is required. If no dense output is required, pass NULL.
 
 licont   The number of cells in icont.
 
@@ -94,23 +95,23 @@ licont   The number of cells in icont.
 Sophisticated setting of parameters
 -----------------------------------
 
-	 Several parameters have a default value (if set to 0) but, to better
-	 adapt the code to your problem, you can specify particular initial
-	 values.
+         Several parameters have a default value (if set to 0) but, to better
+         adapt the code to your problem, you can specify particular initial
+         values.
 
 uround   The rounding unit, default 2.3E-16 (this default value can be
-	 replaced in the code by DBL_EPSILON providing float.h defines it
-	 in your system).
+         replaced in the code by DBL_EPSILON providing float.h defines it
+         in your system).
 
 safe     Safety factor in the step size prediction, default 0.9.
 
 fac1     Parameters for step size selection; the new step size is chosen
 fac2     subject to the restriction  fac1 <= hnew/hold <= fac2.
-	 Default values are fac1=0.333 and fac2=6.0.
+         Default values are fac1=0.333 and fac2=6.0.
 
 beta     The "beta" for stabilized step size control (see section IV.2 of our
-	 book). Larger values for beta ( <= 0.1 ) make the step size control
-	 more stable. Negative initial value provoke beta=0; default beta=0.
+         book). Larger values for beta ( <= 0.1 ) make the step size control
+         more stable. Negative initial value provoke beta=0; default beta=0.
 
 hmax     Maximal step size, default xend-x.
 
@@ -119,24 +120,24 @@ h        Initial step size, default is a guess computed by the function hinit.
 nmax     Maximal number of allowed steps, default 100000.
 
 meth     Switch for the choice of the method coefficients; at the moment the
-	 only possibility and default value are 1.
+         only possibility and default value are 1.
 
 nstiff   Test for stiffness is activated when the current step number is a
-	 multiple of nstiff. A negative value means no test and the default
-	 is 1000.
+         multiple of nstiff. A negative value means no test and the default
+         is 1000.
 
 nrdens   Number of components for which dense outpout is required, default 0.
-	 For 0 < nrdens < n, the components have to be specified in icont[0],
-	 icont[1], ... icont[nrdens-1]. Note that if nrdens=0 or nrdens=n, no
-	 icont is needed, pass NULL.
+         For 0 < nrdens < n, the components have to be specified in icont[0],
+         icont[1], ... icont[nrdens-1]. Note that if nrdens=0 or nrdens=n, no
+         icont is needed, pass NULL.
 
 
 Memory requirements
 -------------------
 
-	 The function dop853 allocates dynamically 11*n doubles for the method
-	 stages, 8*nrdens doubles for the interpolation if dense output is
-	 performed and n unsigned if 0 < nrdens < n.
+         The function dop853 allocates dynamically 11*n doubles for the method
+         stages, 8*nrdens doubles for the interpolation if dense output is
+         performed and n unsigned if 0 < nrdens < n.
 
 
 OUTPUT PARAMETERS
@@ -146,21 +147,21 @@ y       numerical solution at x=xRead() (see below).
 
 dopri5 returns the following values
 
-	 1 : computation successful,
-	 2 : computation successful interrupted by solout,
-	-1 : input is not consistent,
-	-2 : larger nmax is needed,
-	-3 : step size becomes too small,
-	-4 : the problem is probably stff (interrupted).
+         1 : computation successful,
+         2 : computation successful interrupted by solout,
+        -1 : input is not consistent,
+        -2 : larger nmax is needed,
+        -3 : step size becomes too small,
+        -4 : the problem is probably stff (interrupted).
 
 
 Several functions provide access to different values :
 
 xRead   x value for which the solution has been computed (x=xend after
-	successful return).
+        successful return).
 
 hRead   Predicted step size of the last accepted step (useful for a subsequent
-	call to dop853).
+        call to dop853).
 
 nstepRead   Number of used steps.
 naccptRead  Number of accepted steps.
@@ -171,7 +172,7 @@ nfcnRead    Number of function calls.
 */
 
 /*      DOPRI5
-	------
+        ------
 
 
 This code computes the numerical solution of a system of first order ordinary
@@ -179,9 +180,9 @@ differential equations y'=f(x,y). It uses an explicit Runge-Kutta method of
 order (4)5 due to Dormand & Prince with step size control and dense output.
 
 Authors : E. Hairer & G. Wanner
-	  Universite de Geneve, dept. de Mathematiques
-	  CH-1211 GENEVE 4, SWITZERLAND
-	  E-mail : HAIRER@DIVSUN.UNIGE.CH, WANNER@DIVSUN.UNIGE.CH
+          Universite de Geneve, dept. de Mathematiques
+          CH-1211 GENEVE 4, SWITZERLAND
+          E-mail : HAIRER@DIVSUN.UNIGE.CH, WANNER@DIVSUN.UNIGE.CH
 
 The code is described in : E. Hairer, S.P. Norsett and G. Wanner, Solving
 ordinary differential equations I, nonstiff problems, 2nd edition,
@@ -205,11 +206,11 @@ INPUT PARAMETERS
 n        Dimension of the system (n < UINT_MAX).
 
 fcn      A pointer the the function definig the differential equation, this
-	 function must have the following prototype
+         function must have the following prototype
 
-	   void fcn (unsigned n, double x, double *y, double *f)
+           void fcn (unsigned n, double x, double *y, double *f)
 
-	 where the array f will be filled with the function result.
+         where the array f will be filled with the function result.
 
 x        Initial x value.
 
@@ -219,46 +220,47 @@ xend     Final x value (xend-x may be positive or negative).
 
 *rtoler  Relative and absolute error tolerances. They can be both scalars or
 *atoler  vectors of length n (in the scalar case pass the addresses of
-	 variables where you have placed the tolerance values).
+         variables where you have placed the tolerance values).
 
 itoler   Switch for atoler and rtoler :
-	   itoler=0 : both atoler and rtoler are scalars, the code keeps
-		      roughly the local error of y[i] below
-		      rtoler*abs(y[i])+atoler.
-	   itoler=1 : both rtoler and atoler are vectors, the code keeps
-		      the local error of y[i] below
-		      rtoler[i]*abs(y[i])+atoler[i].
+           itoler=0 : both atoler and rtoler are scalars, the code keeps
+                      roughly the local error of y[i] below
+                      rtoler*abs(y[i])+atoler.
+           itoler=1 : both rtoler and atoler are vectors, the code keeps
+                      the local error of y[i] below
+                      rtoler[i]*abs(y[i])+atoler[i].
 
 solout   A pointer to the output function called during integration.
-	 If iout >= 1, it is called after every successful step. If iout = 0,
-	 pass a pointer equal to NULL. solout must must have the following
-	 prototype
+         If iout >= 1, it is called after every successful step. If iout = 0,
+         pass a pointer equal to NULL. solout must must have the following
+         prototype
 
-	   solout (long nr, double xold, double x, double* y, unsigned n, int* irtrn)
+           solout (long nr, double xold, double x, double* y, unsigned n, int*
+irtrn)
 
-	 where y is the solution the at nr-th grid point x, xold is the
-	 previous grid point and irtrn serves to interrupt the integration
-	 (if set to a negative value).
+         where y is the solution the at nr-th grid point x, xold is the
+         previous grid point and irtrn serves to interrupt the integration
+         (if set to a negative value).
 
-	 Continuous output : during the calls to solout, a continuous solution
-	 for the interval (xold,x) is available through the function
+         Continuous output : during the calls to solout, a continuous solution
+         for the interval (xold,x) is available through the function
 
-	   contd5(i,s)
+           contd5(i,s)
 
-	 which provides an approximation to the i-th component of the solution
-	 at the point s (s must lie in the interval (xold,x)).
+         which provides an approximation to the i-th component of the solution
+         at the point s (s must lie in the interval (xold,x)).
 
 iout     Switch for calling solout :
-	   iout=0 : no call,
-	   iout=1 : solout only used for output,
-	   iout=2 : dense output is performed in solout (in this case nrdens
-		    must be greater than 0).
+           iout=0 : no call,
+           iout=1 : solout only used for output,
+           iout=2 : dense output is performed in solout (in this case nrdens
+                    must be greater than 0).
 
 fileout  A pointer to the stream used for messages, if you do not want any
-	 message, just pass NULL.
+         message, just pass NULL.
 
 icont    An array containing the indexes of components for which dense
-	 output is required. If no dense output is required, pass NULL.
+         output is required. If no dense output is required, pass NULL.
 
 licont   The number of cells in icont.
 
@@ -266,24 +268,24 @@ licont   The number of cells in icont.
 Sophisticated setting of parameters
 -----------------------------------
 
-	 Several parameters have a default value (if set to 0) but, to better
-	 adapt the code to your problem, you can specify particular initial
-	 values.
+         Several parameters have a default value (if set to 0) but, to better
+         adapt the code to your problem, you can specify particular initial
+         values.
 
 uround   The rounding unit, default 2.3E-16 (this default value can be
-	 replaced in the code by DBL_EPSILON providing float.h defines it
-	 in your system).
+         replaced in the code by DBL_EPSILON providing float.h defines it
+         in your system).
 
 safe     Safety factor in the step size prediction, default 0.9.
 
 fac1     Parameters for step size selection; the new step size is chosen
 fac2     subject to the restriction  fac1 <= hnew/hold <= fac2.
-	 Default values are fac1=0.2 and fac2=10.0.
+         Default values are fac1=0.2 and fac2=10.0.
 
 beta     The "beta" for stabilized step size control (see section IV.2 of our
-	 book). Larger values for beta ( <= 0.1 ) make the step size control
-	 more stable. dopri5 needs a larger beta than Higham & Hall. Negative
-	 initial value provoke beta=0; default beta=0.04.
+         book). Larger values for beta ( <= 0.1 ) make the step size control
+         more stable. dopri5 needs a larger beta than Higham & Hall. Negative
+         initial value provoke beta=0; default beta=0.04.
 
 hmax     Maximal step size, default xend-x.
 
@@ -292,24 +294,24 @@ h        Initial step size, default is a guess computed by the function hinit.
 nmax     Maximal number of allowed steps, default 100000.
 
 meth     Switch for the choice of the method coefficients; at the moment the
-	 only possibility and default value are 1.
+         only possibility and default value are 1.
 
 nstiff   Test for stiffness is activated when the current step number is a
-	 multiple of nstiff. A negative value means no test and the default
-	 is 1000.
+         multiple of nstiff. A negative value means no test and the default
+         is 1000.
 
 nrdens   Number of components for which dense outpout is required, default 0.
-	 For 0 < nrdens < n, the components have to be specified in icont[0],
-	 icont[1], ... icont[nrdens-1]. Note that if nrdens=0 or nrdens=n, no
-	 icont is needed, pass NULL.
+         For 0 < nrdens < n, the components have to be specified in icont[0],
+         icont[1], ... icont[nrdens-1]. Note that if nrdens=0 or nrdens=n, no
+         icont is needed, pass NULL.
 
 
 Memory requirements
 -------------------
 
-	 The function dopri5 allocates dynamically 8*n doubles for the method
-	 stages, 5*nrdens doubles for the interpolation if dense output is
-	 performed and n unsigned if 0 < nrdens < n.
+         The function dopri5 allocates dynamically 8*n doubles for the method
+         stages, 5*nrdens doubles for the interpolation if dense output is
+         performed and n unsigned if 0 < nrdens < n.
 
 
 
@@ -320,21 +322,21 @@ y       numerical solution at x=xRead() (see below).
 
 dopri5 returns the following values
 
-	 1 : computation successful,
-	 2 : computation successful interrupted by solout,
-	-1 : input is not consistent,
-	-2 : larger nmax is needed,
-	-3 : step size becomes too small,
-	-4 : the problem is probably stff (interrupted).
+         1 : computation successful,
+         2 : computation successful interrupted by solout,
+        -1 : input is not consistent,
+        -2 : larger nmax is needed,
+        -3 : step size becomes too small,
+        -4 : the problem is probably stff (interrupted).
 
 
 Several functions provide access to different values :
 
 xRead   x value for which the solution has been computed (x=xend after
-	successful return).
+        successful return).
 
 hRead   Predicted step size of the last accepted step (useful for a
-	subsequent call to dopri5).
+        subsequent call to dopri5).
 
 nstepRead   Number of used steps.
 naccptRead  Number of accepted steps.
@@ -343,14 +345,12 @@ nfcnRead    Number of function calls.
 
 
 */
-#ifndef XPPAUT_DORMPRI_H
-#define XPPAUT_DORMPRI_H
-
-#include <stdio.h>
+#ifndef XPPAUT_SOLVER_DORMPRI_H
+#define XPPAUT_SOLVER_DORMPRI_H
 
 /* --- Functions --- */
 void dp_err(int k);
-int dp(int *istart, double *y, double *t, int n, double tout, double *tol, double *atol, int flag, int *kflag);
-int dormprin(int *istart, double *y, double *t, int n, double tout, double *tol, double *atol, int flag, int *kflag);
+int dp(int *istart, double *y, double *t, int n, double tout, double *tol,
+       double *atol, int flag, int *kflag);
 
-#endif /* XPPAUT_DORMPRI_H */
+#endif /* XPPAUT_SOLVER_DORMPRI_H */

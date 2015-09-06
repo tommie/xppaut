@@ -42,7 +42,6 @@ noinst_HEADERS = \
 	diagram.h \
 	dialog_box.h \
 	do_fit.h \
-	dormpri.h \
 	edit_rhs.h \
 	eig_list.h \
 	eigen.h \
@@ -136,6 +135,7 @@ solver_headers = \
 	solver/adams.h \
 	solver/backeuler.h \
 	solver/discrete.h \
+	solver/dormpri.h \
 	solver/euler.h \
 	solver/gear.h \
 	solver/modeuler.h \
@@ -169,7 +169,6 @@ xppaut_SOURCES = \
 	derived.c \
 	dialog_box.c \
 	do_fit.c \
-	dormpri.c \
 	edit_rhs.c \
 	eig_list.c \
 	eigen.c \
@@ -241,7 +240,6 @@ libxpp_a_SOURCES = \
 	derived.c \
 	dialog_box.c \
 	do_fit.c \
-	dormpri.c \
 	edit_rhs.c \
 	eig_list.c \
 	eigen.c \
@@ -316,6 +314,7 @@ solver_sources = \
 	solver/adams.c \
 	solver/backeuler.c \
 	solver/discrete.c \
+	solver/dormpri.c \
 	solver/euler.c \
 	solver/gear.c \
 	solver/modeuler.c \

@@ -4,10 +4,12 @@
 #include <math.h>
 #include <memory.h>
 #include <stdlib.h>
-#include "flags.h"
-#include "ggets.h"
-#include "my_rhs.h"
-#include "storage.h"
+
+#include "../flags.h"
+#include "../ggets.h"
+#include "../odesol2.h"
+#include "../storage.h"
+#include "../xpplim.h"
 
 /* --- Types --- */
 typedef void (*FcnEqDiff)(unsigned n, double x, double *y, double *f);
@@ -80,8 +82,7 @@ static double    *rcont5, *rcont6, *rcont7, *rcont8;
 
 void dprhs(unsigned n, double t, double *y, double *f)
 {
- my_rhs(t,y,f,n);
-
+ rhs(t,y,f,n);
 }
 
 void dp_err(int k)
@@ -99,26 +100,13 @@ void dp_err(int k)
   }
 }
 
-int dp(istart,y,t,n,tout,tol,atol,flag,kflag)
-    double *y,*t,tout,*tol,*atol;
-     int flag,*istart,*kflag,n;
-{
- int err=0;
- if(NFlags==0)
-   return(dormprin(istart,y,t,n,tout,tol,atol,flag,kflag));
- err=one_flag_step_dp(istart,y,t,n,tout,tol,atol,flag,kflag);
- if(err==1)*kflag=-9;
- return 1;
-}
-/* this is the basic routine  */
-
 /* flag=0 for dopri5
    flag=1 for dopri83
    kflag = 1  for good integration
   istart=1 for first time
   istart=0 for continuation
 */
-int dormprin(istart,y,t,n,tout,tol,atol,flag,kflag)
+static int dormprin(istart,y,t,n,tout,tol,atol,flag,kflag)
      double *y,*t,tout,*tol,*atol;
      int flag,*istart,*kflag,n;
 {
@@ -140,6 +128,48 @@ int dormprin(istart,y,t,n,tout,tol,atol,flag,kflag)
   return(-1);
 }
 
+static int one_flag_step_dp(int *istart, double *y, double *t, int n,
+                            double tout, double *tol, double *atol,
+                            int flag, int *kflag) {
+  double yold[MAXODE], told;
+  int i, hit;
+  double s;
+  int nstep = 0;
+  while (1) {
+    for (i = 0; i < n; i++)
+      yold[i] = y[i];
+    told = *t;
+    dormprin(istart, y, t, n, tout, tol, atol, flag, kflag);
+    if (*kflag != 1)
+      break;
+    if ((hit = one_flag_step(yold, y, istart, told, t, n, &s)) == 0)
+      break;
+    /* Its a hit !! */
+    nstep++;
+
+    if (*t == tout)
+      break;
+    if (nstep > (NFlags + 2)) {
+      plintf(" Working too hard? ");
+      plintf("smin=%g\n", s);
+      return 1;
+      break;
+    }
+  }
+  return 0;
+}
+
+int dp(istart,y,t,n,tout,tol,atol,flag,kflag)
+    double *y,*t,tout,*tol,*atol;
+     int flag,*istart,*kflag,n;
+{
+ int err=0;
+ if(NFlags==0)
+   return(dormprin(istart,y,t,n,tout,tol,atol,flag,kflag));
+ err=one_flag_step_dp(istart,y,t,n,tout,tol,atol,flag,kflag);
+ if(err==1)*kflag=-9;
+ return 1;
+}
 
 static double sign (double a, double b)
 {

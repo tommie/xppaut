@@ -34,7 +34,6 @@ noinst_HEADERS = \
 	choice_box.h \
 	color.h \
 	comline.h \
-	cv2.h \
 	dae_fun.h \
 	del_stab.h \
 	delay_handle.h \
@@ -134,6 +133,7 @@ bitmap_headers = \
 solver_headers = \
 	solver/adams.h \
 	solver/backeuler.h \
+	solver/cv2.h \
 	solver/discrete.h \
 	solver/dormpri.h \
 	solver/euler.h \
@@ -217,7 +217,6 @@ xppaut_SOURCES = \
 	volterra2.c \
 	$(auto_sources) \
 	$(base_sources) \
-	$(cvode_sources) \
 	$(solver_sources) \
 	$(strutil_sources) \
 	$(ui_x11_sources)
@@ -287,7 +286,6 @@ libxpp_a_SOURCES = \
 	volterra2.c \
 	$(auto_sources) \
 	$(base_sources) \
-	$(cvode_sources) \
 	$(solver_sources) \
 	$(strutil_sources) \
 	$(ui_x11_sources)
@@ -307,9 +305,6 @@ auto_sources = \
 base_sources = \
 	base/timeutil.c
 
-cvode_sources = \
-	cv2.c
-
 solver_sources = \
 	solver/adams.c \
 	solver/backeuler.c \
@@ -320,7 +315,11 @@ solver_sources = \
 	solver/modeuler.c \
 	solver/rb23.c \
 	solver/rk4.c \
-	solver/symplect.c
+	solver/symplect.c \
+	$(cvode_sources)
+
+cvode_sources = \
+	solver/cv2.c
 
 ui_x11_sources = \
 	ui-x11/editutil.c \

@@ -57,7 +57,6 @@ global -1 u-.2 {m=.5*m}
 #include <string.h>
 #include <strings.h>
 
-#include "cv2.h"
 #include "derived.h"
 #include "form_ode.h"
 #include "ggets.h"
@@ -402,39 +401,6 @@ int one_flag_step(double *yold, double *ynew, int *istart, double told,
 }
 
 /*  Here are the ODE drivers */
-
-#ifdef CVODE_YES
-/* command =0 continue, 1 is start 2 finish */
-int one_flag_step_cvode(int *command, double *y, double *t, int n, double tout,
-                        int *kflag, double *atol, double *rtol) {
-  double yold[MAXODE], told;
-  int i, hit, neq = n;
-  double s;
-  int nstep = 0;
-  while (1) {
-    for (i = 0; i < neq; i++)
-      yold[i] = y[i];
-    told = *t;
-    ccvode(command, y, t, n, tout, kflag, atol, rtol);
-    if (*kflag < 0)
-      break;
-    if ((hit = one_flag_step(yold, y, command, told, t, neq, &s)) == 0)
-      break;
-    /* Its a hit !! */
-    nstep++;
-    end_cv();
-    *command = 1; /* for cvode always reset  */
-    if (*t == tout)
-      break;
-    if (nstep > (NFlags + 2)) {
-      plintf(" Working too hard? ");
-      plintf("smin=%g\n", s);
-      return 1;
-    }
-  }
-  return 0;
-}
-#endif
 
 int one_flag_step_adap(double *y, int neq, double *t, double tout, double eps,
                        double *hguess, double hmin, double *work, int *ier,

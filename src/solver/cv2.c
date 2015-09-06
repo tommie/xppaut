@@ -1,6 +1,5 @@
 #include "cv2.h"
 
-#include <stdio.h>
 #include <string.h>
 
 #define HMAX CV_HMAX
@@ -19,23 +18,24 @@
 #undef HMIN
 #undef HMAX
 
-#include "flags.h"
-#include "ggets.h"
-#include "load_eqn.h"
-#include "my_rhs.h"
-#include "numerics.h"
-
-/* --- Forward Declarations --- */
-static void cvf(int n, double t, N_Vector y, N_Vector ydot, void *fdata);
+#include "../flags.h"
+#include "../ggets.h"
+#include "../load_eqn.h"
+#include "../numerics.h"
+#include "../odesol2.h"
 
 /* --- Data --- */
-double cv_ropt[OPT_SIZE];
-int cv_iopt[OPT_SIZE];
-void *cvode_mem;
-N_Vector ycv;
+static double cv_ropt[OPT_SIZE];
+static int cv_iopt[OPT_SIZE];
+static void *cvode_mem;
+static N_Vector ycv;
 
-void start_cv(double *y, double t, int n, double tout, double *atol,
-              double *rtol) {
+static void cvf(int n, double t, N_Vector y, N_Vector ydot, void *fdata) {
+  rhs(t, y->data, ydot->data, n);
+}
+
+static void start_cv(double *y, double t, int n, double tout, double *atol,
+                     double *rtol) {
   int i;
 
   ycv = N_VNew(n, NULL);
@@ -52,10 +52,6 @@ void start_cv(double *y, double t, int n, double tout, double *atol,
 void end_cv(void) {
   N_VFree(ycv);
   CVodeFree(cvode_mem);
-}
-
-static void cvf(int n, double t, N_Vector y, N_Vector ydot, void *fdata) {
-  my_rhs(t, y->data, ydot->data, n);
 }
 
 void cvode_err_msg(int kflag) {
@@ -98,22 +94,10 @@ void cvode_err_msg(int kflag) {
     err_msg(s);
 }
 
-/* command =0 continue, 1 is start 2 finish */
-int cvode(int *command, double *y, double *t, int n, double tout, int *kflag,
-          double *atol, double *rtol) {
-  int err = 0;
-  if (NFlags == 0)
-    return (ccvode(command, y, t, n, tout, kflag, atol, rtol));
-  err = one_flag_step_cvode(command, y, t, n, tout, kflag, atol, rtol);
-  if (err == 1)
-    *kflag = -9;
-  return 1;
-}
-
 /* rtol is like our TOLER and atol is something else ?? */
 /* command =0 continue, 1 is start 2 finish */
-int ccvode(int *command, double *y, double *t, int n, double tout, int *kflag,
-           double *atol, double *rtol) {
+static int ccvode(int *command, double *y, double *t, int n, double tout,
+                  int *kflag, double *atol, double *rtol) {
   int i, flag;
   *kflag = 0;
   if (*command == 2) {
@@ -146,4 +130,48 @@ int ccvode(int *command, double *y, double *t, int n, double tout, int *kflag,
   for (i = 0; i < n; i++)
     y[i] = ycv->data[i];
   return (0);
+}
+
+/* command =0 continue, 1 is start 2 finish */
+static int one_flag_step_cvode(int *command, double *y, double *t, int n,
+                               double tout, int *kflag, double *atol,
+                               double *rtol) {
+  double yold[MAXODE], told;
+  int i, hit, neq = n;
+  double s;
+  int nstep = 0;
+  while (1) {
+    for (i = 0; i < neq; i++)
+      yold[i] = y[i];
+    told = *t;
+    ccvode(command, y, t, n, tout, kflag, atol, rtol);
+    if (*kflag < 0)
+      break;
+    if ((hit = one_flag_step(yold, y, command, told, t, neq, &s)) == 0)
+      break;
+    /* Its a hit !! */
+    nstep++;
+    end_cv();
+    *command = 1; /* for cvode always reset  */
+    if (*t == tout)
+      break;
+    if (nstep > (NFlags + 2)) {
+      plintf(" Working too hard? ");
+      plintf("smin=%g\n", s);
+      return 1;
+    }
+  }
+  return 0;
+}
+
+/* command =0 continue, 1 is start 2 finish */
+int cvode(int *command, double *y, double *t, int n, double tout, int *kflag,
+          double *atol, double *rtol) {
+  int err = 0;
+  if (NFlags == 0)
+    return (ccvode(command, y, t, n, tout, kflag, atol, rtol));
+  err = one_flag_step_cvode(command, y, t, n, tout, kflag, atol, rtol);
+  if (err == 1)
+    *kflag = -9;
+  return 1;
 }

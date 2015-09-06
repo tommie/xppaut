@@ -190,7 +190,7 @@ int main(int argc, char **argv) {
 #endif
 
   if (disc(this_file))
-    METHOD = 0;
+    METHOD = METHOD_DISCRETE;
   xppvermaj = (float)cstringmaj;
   xppvermin = (float)cstringmin;
   if (strlen(this_file) < 60)

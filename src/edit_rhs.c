@@ -310,9 +310,9 @@ void edit_rhs(void) {
     values[i] = (char *)malloc(MAX_LEN_EBOX * sizeof(char));
     names[i] = (char *)malloc(MAX_LEN_EBOX * sizeof(char));
     command[i] = (int *)malloc(200 * sizeof(int));
-    if (i < NODE && METHOD > 0)
+    if (i < NODE && METHOD != METHOD_DISCRETE)
       strcpy(fstr, "d%s/dT");
-    if (i < NODE && METHOD == 0)
+    if (i < NODE && METHOD == METHOD_DISCRETE)
       strcpy(fstr, "%s(n+1)");
     if (i < NODE && EqType[i] == 1)
       strcpy(fstr, "%s(T)");

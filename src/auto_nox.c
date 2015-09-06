@@ -62,8 +62,6 @@
 #define FR_P 10 /* freq vs par   */
 #define AV_P 11 /* ubar vs par */
 
-#define DISCRETE 0
-
 /* --- Types --- */
 typedef struct {
   int plot, var, icp1, icp2, icp3, icp4, icp5;
@@ -1366,7 +1364,7 @@ void auto_next(void) {
 
 void auto_start_diff_ss(void) {
   Auto.ips = 1;
-  if (METHOD == DISCRETE)
+  if (METHOD == METHOD_DISCRETE)
     Auto.ips = -1;
   Auto.irs = 0;
   Auto.itp = 0;
@@ -1503,7 +1501,7 @@ void auto_extend_ss(void) {
   Auto.ilp = 1;
   Auto.isw = 1;
   Auto.ips = 1;
-  if (METHOD == DISCRETE)
+  if (METHOD == METHOD_DISCRETE)
     Auto.ips = -1;
   Auto.isp = 1;
   AutoTwoParam = 0;
@@ -1514,7 +1512,7 @@ void auto_start_choice(void) {
   static char *m[] = {"Steady state", "Periodic", "Bdry Value", "Homoclinic"};
   static char key[] = "spbh";
   char ch;
-  if (METHOD == DISCRETE) {
+  if (METHOD == METHOD_DISCRETE) {
     auto_new_discrete();
     return;
   }
@@ -1617,7 +1615,7 @@ void hopf_choice(void) {
   static char *m[] = {"Periodic", "Extend", "New Point", "Two Param"};
   static char key[] = "pent";
   char ch;
-  if (METHOD == DISCRETE) {
+  if (METHOD == METHOD_DISCRETE) {
     auto_2p_hopf();
     return;
   }
@@ -1720,7 +1718,7 @@ void auto_switch_ss(void) {
   Auto.isw = -1;
   Auto.isp = 1;
   Auto.ips = 1;
-  if (METHOD == DISCRETE)
+  if (METHOD == METHOD_DISCRETE)
     Auto.ips = -1;
   AutoTwoParam = 0;
   do_auto(OPEN_3, APPEND, Auto.itp);
@@ -1775,7 +1773,7 @@ void auto_2p_branch(int ips) {
   Auto.isw = 2;
   Auto.isp = 2;
   Auto.ips = ips;
-  if (METHOD == DISCRETE)
+  if (METHOD == METHOD_DISCRETE)
     Auto.ips = -1;
   AutoTwoParam = BR2;
   do_auto(OPEN_3, APPEND, Auto.itp);
@@ -1848,7 +1846,7 @@ void auto_2p_hopf(void) {
   Auto.isw = 2;
   Auto.isp = 2;
   Auto.ips = 1;
-  if (METHOD == DISCRETE)
+  if (METHOD == METHOD_DISCRETE)
     Auto.ips = -1;
   AutoTwoParam = HB2;
   do_auto(OPEN_3, APPEND, Auto.itp);

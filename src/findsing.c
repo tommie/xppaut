@@ -109,7 +109,7 @@ void do_sing(double *x, double eps, double err, double big, int maxit, int n,
     if (pr == 1) {
       plintf(" %f  +  i  %f \n", real, imag);
     }
-    if (METHOD == 0)
+    if (METHOD == METHOD_DISCRETE)
       real = real * real + imag * imag - 1.00;
     if (fabs(imag) < .00000001)
       imag = 0.0;
@@ -355,7 +355,7 @@ void do_sing_info(double *x, double eps, double err, double big, int maxit,
     er[i] = real;
     em[i] = imag;
 
-    if (METHOD == 0)
+    if (METHOD == METHOD_DISCRETE)
       real = real * real + imag * imag - 1.00;
     if (fabs(imag) < .00000001)
       imag = 0.0;
@@ -546,7 +546,7 @@ static void getjac(double *x, double *y, double *yp, double *xp, double eps,
   int i, j, k;
   double r;
   my_rhs(0.0, x, y, n);
-  if (METHOD == 0)
+  if (METHOD == METHOD_DISCRETE)
     for (i = 0; i < n; i++)
       y[i] = y[i] - x[i];
 
@@ -561,7 +561,7 @@ static void getjac(double *x, double *y, double *yp, double *xp, double eps,
        for(j=0;j<n;j++)
        plintf(" r=%g yp=%g xp=%g\n",r,yp[j],xp[j]);
     */
-    if (METHOD == 0) {
+    if (METHOD == METHOD_DISCRETE) {
       for (j = 0; j < n; j++)
         yp[j] = yp[j] - xp[j];
     }
@@ -619,7 +619,7 @@ void rooter(double *x, double err, double eps, double big, double *work,
     }
     if (r < err) {
       getjac(x, y, yp, xp, eps, dermat, n);
-      if (METHOD == 0)
+      if (METHOD == METHOD_DISCRETE)
         for (i = 0; i < n; i++)
           dermat[i * (n + 1)] += 1.0;
       /* for(i=0;i<n*n;i++)printf("dm=%g \n",dermat[i]); */

@@ -76,6 +76,7 @@ void ps_write_pars(FILE *fp) {
 
 static void do_info(FILE *fp) {
   int i;
+  /* Must match enum Method. */
   static char *method[] = {
       "Discrete", "Euler",    "Mod. Euler", "Runge-Kutta", "Adams",
       "Gear",     "Volterra", "BackEul",    "QualRK",      "Stiff",
@@ -87,9 +88,9 @@ static void do_info(FILE *fp) {
   char fstr[15];
   fprintf(fp, "File: %s \n\n Equations... \n", this_file);
   for (i = 0; i < NEQ; i++) {
-    if (i < NODE && METHOD > 0)
+    if (i < NODE && METHOD != METHOD_DISCRETE)
       strcpy(fstr, "d%s/dT=%s\n");
-    if (i < NODE && METHOD == 0)
+    if (i < NODE && METHOD == METHOD_DISCRETE)
       strcpy(fstr, "%s(n+1)=%s\n");
     if (i >= NODE)
       strcpy(fstr, "%s=%s\n");
@@ -172,7 +173,7 @@ int read_lunch(FILE *fp) {
     return 0;
   }
   io_numerics(f, fp);
-  if (METHOD == VOLTERRA) {
+  if (METHOD == METHOD_VOLTERRA) {
     io_int(&temp, fp, f, " ");
     allocate_volterra(temp, 1);
     MyStart = 1;
@@ -226,7 +227,7 @@ void do_lunch(int f) {
       return;
     }
     io_numerics(f, fp);
-    if (METHOD == VOLTERRA) {
+    if (METHOD == METHOD_VOLTERRA) {
       io_int(&temp, fp, f, " ");
       allocate_volterra(temp, 1);
       MyStart = 1;
@@ -255,7 +256,7 @@ void do_lunch(int f) {
   io_int(&NEQ, fp, f, "Number of equations and auxiliaries");
   io_int(&NUPAR, fp, f, "Number of parameters");
   io_numerics(f, fp);
-  if (METHOD == VOLTERRA) {
+  if (METHOD == METHOD_VOLTERRA) {
     io_int(&MaxPoints, fp, f, "Max points for volterra");
   }
   io_exprs(f, fp);
@@ -275,9 +276,9 @@ static void dump_eqn(FILE *fp) {
   char fstr[15];
   fprintf(fp, "RHS etc ...\n");
   for (i = 0; i < NEQ; i++) {
-    if (i < NODE && METHOD > 0)
+    if (i < NODE && METHOD != METHOD_DISCRETE)
       strcpy(fstr, "d%s/dT=%s\n");
-    if (i < NODE && METHOD == 0)
+    if (i < NODE && METHOD == METHOD_DISCRETE)
       strcpy(fstr, "%s(n+1)=%s\n");
     if (i >= NODE)
       strcpy(fstr, "%s=%s\n");
@@ -296,6 +297,7 @@ static void dump_eqn(FILE *fp) {
 }
 
 static void io_numerics(int f, FILE *fp) {
+  /* Must match enum Method. */
   char *method[] = {"Discrete",  "Euler", "Mod. Euler", "Runge-Kutta",
                     "Adams",     "Gear",  "Volterra",   "BackEul",
                     "Qual RK",   "Stiff", "CVode",      "DorPrin5",
@@ -310,7 +312,8 @@ static void io_numerics(int f, FILE *fp) {
     fprintf(fp, "# Numerical stuff\n");
   io_int(&NJMP, fp, f, " nout");
   io_int(&NMESH, fp, f, " nullcline mesh");
-  io_int(&METHOD, fp, f, method[METHOD]);
+  int im = METHOD;
+  io_int(&im, fp, f, method[METHOD]);
   if (f == READEM) {
     do_meth();
     alloc_meth();

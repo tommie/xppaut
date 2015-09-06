@@ -185,6 +185,23 @@ int adaptive(double *ystart, int nvar, double *xs, double x2, double eps,
                              epjac, iflag, jstart));
 }
 
+const char *adaptive_errmsg(int kflag) {
+  switch (kflag) {
+  case -1:
+    return "singular jacobian encountered";
+  case 1:
+    return "stepsize is close to 0";
+  case 2:
+    return "Step size too small";
+  case 3:
+    return "Too many steps";
+  case 4:
+    return "exceeded MAXTRY in stiff";
+  default:
+    return "unknown Stiff error";
+  }
+}
+
 /*  Need work size of 2n^2+12n  */
 /*  This will integrate a maximum of htry and actually do hmin  */
 static int stiff(double y[], double dydx[], int n, double *x, double htry,

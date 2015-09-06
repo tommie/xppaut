@@ -234,23 +234,7 @@ int one_step_int(double *y, double t0, double t1, int *istart) {
              istart);
     if (kflag) {
       ping();
-      switch (kflag) {
-      case 2:
-        err_msg("Step size too small");
-        break;
-      case 3:
-        err_msg("Too many steps");
-        break;
-      case -1:
-        err_msg("singular jacobian encountered");
-        break;
-      case 1:
-        err_msg("stepsize is close to 0");
-        break;
-      case 4:
-        err_msg("exceeded MAXTRY in stiff");
-        break;
-      }
+      err_msg(adaptive_errmsg(kflag));
       return (0);
     }
     stor_delay(y);

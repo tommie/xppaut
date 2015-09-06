@@ -1661,23 +1661,7 @@ int ode_int(double *y, double *t, int *istart) {
         ping();
         if (RANGE_FLAG)
           return (0);
-        switch (kflag) {
-        case 2:
-          err_msg("Step size too small");
-          break;
-        case 3:
-          err_msg("Too many steps");
-          break;
-        case -1:
-          err_msg("singular jacobian encountered");
-          break;
-        case 1:
-          err_msg("stepsize is close to 0");
-          break;
-        case 4:
-          err_msg("exceeded MAXTRY in stiff");
-          break;
-        }
+        err_msg(adaptive_errmsg(kflag));
         return (0);
       }
       break;
@@ -1906,23 +1890,7 @@ int integrate(double *t, double *x, double tend, double dt, int count, int nout,
           LastTime = *t;
           return (1);
         }
-        switch (kflag) {
-        case 2:
-          err_msg("Step size too small");
-          break;
-        case 3:
-          err_msg("Too many steps");
-          break;
-        case -1:
-          err_msg("singular jacobian encountered");
-          break;
-        case 1:
-          err_msg("stepsize is close to 0");
-          break;
-        case 4:
-          err_msg("exceeded MAXTRY in stiff");
-          break;
-        }
+        err_msg(adaptive_errmsg(kflag));
         LastTime = *t;
         return (1);
       }

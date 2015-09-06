@@ -14,7 +14,6 @@
 #include "load_eqn.h"
 #include "matrixalg.h"
 #include "numerics.h"
-#include "odesol2.h"
 #include "parserslow.h"
 #include "pop_list.h"
 #include "storage.h"

@@ -53,7 +53,6 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "my_svg.h"
 #include "mykeydef.h"
 #include "numerics.h"
-#include "odesol2.h"
 #include "parserslow.h"
 #include "pop_list.h"
 #include "pp_shoot.h"
@@ -2137,8 +2136,8 @@ int integrate(double *t, double *x, double tend, double dt, int count, int nout,
         if (POISGN * POIEXT >= 0) {
           /*  We will interpolate to get a good local extremum   */
 
-          rhs(*t, x, xprime, NEQ);
-          rhs(oldt, oldx, oldxprime, NEQ);
+          my_rhs(*t, x, xprime, NEQ);
+          my_rhs(oldt, oldx, oldxprime, NEQ);
           dxp = xprime[POIVAR - 1] - oldxprime[POIVAR - 1];
           if (dxp == 0.0) {
             err_msg("Cannot zero RHS for max/min - use a variable");

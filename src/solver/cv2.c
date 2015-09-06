@@ -21,8 +21,8 @@
 #include "../flags.h"
 #include "../ggets.h"
 #include "../load_eqn.h"
+#include "../my_rhs.h"
 #include "../numerics.h"
-#include "../odesol2.h"
 
 /* --- Data --- */
 static double cv_ropt[OPT_SIZE];
@@ -31,7 +31,7 @@ static void *cvode_mem;
 static N_Vector ycv;
 
 static void cvf(int n, double t, N_Vector y, N_Vector ydot, void *fdata) {
-  rhs(t, y->data, ydot->data, n);
+  my_rhs(t, y->data, ydot->data, n);
 }
 
 static void start_cv(double *y, double t, int n, double tout, double *atol,

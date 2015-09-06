@@ -23,7 +23,6 @@
 #include "menu.h"
 #include "menudrive.h"
 #include "menus.h"
-#include "odesol2.h"
 #include "parserslow.h"
 #include "pop_list.h"
 #include "pp_shoot.h"

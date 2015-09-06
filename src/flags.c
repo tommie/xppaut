@@ -62,7 +62,6 @@ global -1 u-.2 {m=.5*m}
 #include "ggets.h"
 #include "init_conds.h"
 #include "integrate.h"
-#include "odesol2.h"
 #include "parserslow.h"
 
 /* --- Macros --- */

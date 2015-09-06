@@ -4,7 +4,7 @@
 #include "f2c.h"
 #include "form_ode.h"
 #include "load_eqn.h"
-#include "odesol2.h"
+#include "my_rhs.h"
 
 /* --- Macros --- */
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -57,7 +57,7 @@ void do_projection(double *x0, double t0, double *x1, double t1) {
   for (i = n; i < NODE; i++)
     y[i] = x0[i];
   /* Jacobian around the left equilibrium */
-  rhs(t0, y, f, NODE);
+  my_rhs(t0, y, f, NODE);
   for (i = 0; i < n; i++) {
 
     del = eps * MAX(eps, fabs(y[i]));
@@ -65,7 +65,7 @@ void do_projection(double *x0, double t0, double *x1, double t1) {
     yold = y[i];
     y[i] = y[i] + del;
 
-    rhs(t0, y, fnew, NODE);
+    my_rhs(t0, y, fnew, NODE);
     for (j = 0; j < n; j++) {
       my_hom.a[j * n + i] = dsy * (fnew[j] - f[j]);
       /* plintf("%d %d a=%g \n",i,j,my_hom.a[j*n+i]); */
@@ -89,13 +89,13 @@ void do_projection(double *x0, double t0, double *x1, double t1) {
   for (i = n; i < NODE; i++)
     y[i] = x0[i];
   /* Jacobian around the right equilibrium */
-  rhs(t0, y, f, NODE);
+  my_rhs(t0, y, f, NODE);
   for (i = 0; i < n; i++) {
     del = eps * MAX(eps, fabs(y[i]));
     dsy = 1 / del;
     yold = y[i];
     y[i] = y[i] + del;
-    rhs(t0, y, fnew, NODE);
+    my_rhs(t0, y, fnew, NODE);
     for (j = 0; j < n; j++)
       my_hom.a[j * n + i] = dsy * (fnew[j] - f[j]);
     y[i] = yold;

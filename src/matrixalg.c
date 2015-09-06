@@ -3,8 +3,8 @@
 
 #include <math.h>
 
+#include "my_rhs.h"
 #include "numerics.h"
-#include "odesol2.h"
 
 /* --- Macros --- */
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -31,7 +31,7 @@ void get_the_jac(double t, double *y, double *yp, double *ypnew,
       dsy = scal / del;
       yold = y[i];
       y[i] = y[i] + del;
-      rhs(t, y, ypnew, neq);
+      my_rhs(t, y, ypnew, neq);
       for (j = 0; j < neq; j++)
         dfdy[j * neq + i] = dsy * (ypnew[j] - yp[j]);
       y[i] = yold;
@@ -54,7 +54,7 @@ static void get_band_jac(double *a, double *y, double t, double *ypnew,
     dy = eps * (eps + fabs(yhat));
     dsy = scal / dy;
     y[i] += dy;
-    rhs(t, y, ypnew, n);
+    my_rhs(t, y, ypnew, n);
     for (j = -ml; j <= mr; j++) {
       k = i - j;
       if (k < 0 || k > n1)

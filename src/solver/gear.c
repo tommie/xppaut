@@ -5,7 +5,7 @@
 #include "../flags.h"
 #include "../ggets.h"
 #include "../matrixalg.h"
-#include "../odesol2.h"
+#include "../my_rhs.h"
 #include "../xpplim.h"
 
 /* --- Forward Declarations --- */
@@ -131,7 +131,7 @@ L120:
 
   nq = 1;
 
-  rhs(*t, ytable[0], save11, n);
+  my_rhs(*t, ytable[0], save11, n);
 
   for (i = 0; i < n; i++) {
     ytable[1][i] = save11[i] * h;
@@ -234,7 +234,7 @@ L330:
   for (i = 0; i < n; i++)
     error[i] = 0.0;
   for (l = 0; l < 3; l++) {
-    rhs(*t, ytable[0], save11, n);
+    my_rhs(*t, ytable[0], save11, n);
     if (iweval < 1) {
       goto L460;
     }
@@ -245,7 +245,7 @@ L330:
       r = eps * Max(eps, fabs(save9[j]));
       ytable[0][j] = ytable[0][j] + r;
       d = a[0] * h / r;
-      rhs(*t, ytable[0], save12, n);
+      my_rhs(*t, ytable[0], save12, n);
       for (i = 0; i < n; i++)
         dermat[n * i + j] = (save12[i] - save11[i]) * d;
       ytable[0][j] = save9[j];
@@ -441,7 +441,7 @@ L790:
 
   if (nq == 1)
     goto L850;
-  rhs(*t, ytable[0], save11, n);
+  my_rhs(*t, ytable[0], save11, n);
   r = h / hold;
   for (i = 0; i < n; i++) {
     ytable[0][i] = save[0][i];

@@ -3,7 +3,7 @@
 #include "../delay_handle.h"
 #include "../flags.h"
 #include "../ggets.h"
-#include "../odesol2.h"
+#include "../my_rhs.h"
 
 /* --- Data --- */
 static const double symp_b[] = {7 / 24., .75, -1. / 24};
@@ -14,7 +14,7 @@ static void one_step_symp(double *y, double h, double *f, int n, double *t) {
   for (s = 0; s < 3; s++) {
     for (j = 0; j < n; j += 2)
       y[j] += (h * symp_b[s] * y[j + 1]);
-    rhs(*t, y, f, n);
+    my_rhs(*t, y, f, n);
     for (j = 0; j < n; j += 2)
       y[j + 1] += (h * symp_B[s] * f[j + 1]);
   }

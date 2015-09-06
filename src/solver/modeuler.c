@@ -5,18 +5,18 @@
 #include "../flags.h"
 #include "../ggets.h"
 #include "../markov.h"
-#include "../odesol2.h"
+#include "../my_rhs.h"
 
 static void one_step_heun(double *y, double dt, double *yval[2], int neq,
                           double *tim) {
   int i;
   double t = *tim, t1;
   set_wieners(dt, y, *tim);
-  rhs(t, y, yval[0], neq);
+  my_rhs(t, y, yval[0], neq);
   for (i = 0; i < neq; i++)
     yval[0][i] = dt * yval[0][i] + y[i];
   t1 = t + dt;
-  rhs(t1, yval[0], yval[1], neq);
+  my_rhs(t1, yval[0], yval[1], neq);
   for (i = 0; i < neq; i++)
     y[i] = .5 * (y[i] + yval[0][i] + dt * yval[1][i]);
   *tim = t1;

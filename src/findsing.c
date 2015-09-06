@@ -14,8 +14,8 @@
 #include "markov.h"
 #include "matrixalg.h"
 #include "menudrive.h"
+#include "my_rhs.h"
 #include "numerics.h"
-#include "odesol2.h"
 
 /* --- Forward Declarations --- */
 static void get_evec(double *a, double *anew, double *b, double *bp, int n,
@@ -545,7 +545,7 @@ static void getjac(double *x, double *y, double *yp, double *xp, double eps,
                    double *dermat, int n) {
   int i, j, k;
   double r;
-  rhs(0.0, x, y, n);
+  my_rhs(0.0, x, y, n);
   if (METHOD == 0)
     for (i = 0; i < n; i++)
       y[i] = y[i] - x[i];
@@ -556,7 +556,7 @@ static void getjac(double *x, double *y, double *yp, double *xp, double eps,
       xp[k] = x[k];
     r = eps * amax(eps, fabs(x[i]));
     xp[i] = xp[i] + r;
-    rhs(0.0, xp, yp, n);
+    my_rhs(0.0, xp, yp, n);
     /*
        for(j=0;j<n;j++)
        plintf(" r=%g yp=%g xp=%g\n",r,yp[j],xp[j]);

@@ -22,7 +22,6 @@
 #include "markov.h"
 #include "matrixalg.h"
 #include "my_rhs.h"
-#include "odesol2.h"
 #include "parserslow.h"
 #include "pop_list.h"
 #include "storage.h"
@@ -428,7 +427,7 @@ static int adjoint(float **orbit, float **adjnt, int nt, double dt, double eps,
     l = nt - 1 - k; /* reverse the limit cycle  */
     for (i = 0; i < node; i++)
       yold[i] = (double)orbit[i + 1][l];
-    rhs(0.0, yold, fold, node);
+    my_rhs(0.0, yold, fold, node);
     for (j = 0; j < node; j++) {
       ytemp = yold[j];
       del = eps * fabs(ytemp);
@@ -436,7 +435,7 @@ static int adjoint(float **orbit, float **adjnt, int nt, double dt, double eps,
         del = eps;
 
       yold[j] += del;
-      rhs(0.0, yold, fdev, node);
+      my_rhs(0.0, yold, fdev, node);
       yold[j] = ytemp;
       for (i = 0; i < node; i++)
         jac[i + node * j][k] = (fdev[i] - fold[i]) / del;
@@ -499,7 +498,7 @@ static int adjoint(float **orbit, float **adjnt, int nt, double dt, double eps,
     t += dt;
     for (i = 0; i < node; i++)
       fdev[i] = (double)orbit[i + 1][l];
-    rhs(0.0, fdev, yprime, node);
+    my_rhs(0.0, fdev, yprime, node);
     for (j = 0; j < node; j++) {
       adjnt[j + 1][l] = (float)yold[j];
       prod += yold[j] * yprime[j] * dt;

@@ -7,8 +7,8 @@
 #include "derived.h"
 #include "eigen.h"
 #include "load_eqn.h"
+#include "my_rhs.h"
 #include "numerics.h"
-#include "odesol2.h"
 #include "parserslow.h"
 #include "pp_shoot.h"
 
@@ -48,13 +48,13 @@ int func_(integer *ndim, doublereal *u, integer *icp, doublereal *par,
     constants[Auto_index_to_array[i]] = par[i];
   }
   evaluate_derived();
-  rhs(0.0, u, f, *ndim);
+  my_rhs(0.0, u, f, *ndim);
   if (METHOD > 0 || NJMP == 1)
     return 0;
   for (i = 1; i < NJMP; i++) {
     for (j = 0; j < *ndim; j++)
       zz[j] = f[j];
-    rhs(0.0, zz, f, *ndim);
+    my_rhs(0.0, zz, f, *ndim);
   }
   return 0;
 }

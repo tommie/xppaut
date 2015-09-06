@@ -57,7 +57,6 @@
 #include "myfonts.h"
 #include "nullcline.h"
 #include "numerics.h"
-#include "odesol2.h"
 #include "pop_list.h"
 #include "read_dir.h"
 #include "simplenet.h"
@@ -201,7 +200,6 @@ int main(int argc, char **argv) {
   do_meth();
 
   set_delay();
-  rhs = my_rhs;
   init_fit_info();
   strip_saveqn();
   create_plot_list();

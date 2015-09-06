@@ -7,7 +7,7 @@
 
 #include "../flags.h"
 #include "../ggets.h"
-#include "../odesol2.h"
+#include "../my_rhs.h"
 #include "../storage.h"
 #include "../xpplim.h"
 
@@ -82,7 +82,7 @@ static double    *rcont5, *rcont6, *rcont7, *rcont8;
 
 void dprhs(unsigned n, double t, double *y, double *f)
 {
- rhs(t,y,f,n);
+  my_rhs(t,y,f,n);
 }
 
 void dp_err(int k)

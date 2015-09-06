@@ -4,13 +4,13 @@
 #include "../flags.h"
 #include "../ggets.h"
 #include "../markov.h"
-#include "../odesol2.h"
+#include "../my_rhs.h"
 
 static void one_step_discrete(double *y, double dt, double *yp, int neq,
                               double *t) {
   int j;
   set_wieners(dt, y, *t);
-  rhs(*t, y, yp, neq);
+  my_rhs(*t, y, yp, neq);
   *t = *t + dt;
   for (j = 0; j < neq; j++) {
     y[j] = yp[j];

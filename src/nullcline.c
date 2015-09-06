@@ -17,7 +17,6 @@
 #include "my_ps.h"
 #include "my_svg.h"
 #include "numerics.h"
-#include "odesol2.h"
 #include "parserslow.h"
 #include "pop_list.h"
 #include "base/timeutil.h"
@@ -378,7 +377,7 @@ static void get_max_dfield(double *y, double *ydot, double u0, double v0,
     y[inx] = u0 + du * i;
     for (j = 0; j <= n; j++) {
       y[iny] = v0 + dv * j;
-      rhs(0.0, y, ydot, NODE);
+      my_rhs(0.0, y, ydot, NODE);
       extra(y, 0.0, NODE, NEQ);
       scale_dxdy(ydot[inx], ydot[iny], &dxp, &dyp);
       amp = hypot(dxp, dyp);
@@ -467,7 +466,7 @@ void redraw_dfield(void) {
     y[inx] = u0 + du * i;
     for (j = 0; j <= grid; j++) {
       y[iny] = v0 + dv * j;
-      rhs(0.0, y, ydot, NODE);
+      my_rhs(0.0, y, ydot, NODE);
       extra(y, 0.0, NODE, NEQ);
       if (MyGraph->ColorFlag || DF_FLAG == 2) {
         v1[0] = 0.0;
@@ -568,7 +567,7 @@ void direct_field_com(int c) {
       y[inx] = u0 + du * i;
       for (j = 0; j <= grid; j++) {
         y[iny] = v0 + dv * j;
-        rhs(0.0, y, ydot, NODE);
+        my_rhs(0.0, y, ydot, NODE);
         extra(y, 0.0, NODE, NEQ);
         if (MyGraph->ColorFlag || DF_FLAG == 2) {
           v1[0] = 0.0;
@@ -839,7 +838,7 @@ static float fnull(double x, double y) {
 
   y1[null_ix - 1] = (double)x;
   y1[null_iy - 1] = (double)y;
-  rhs(0.0, y1, ydot, NODE);
+  my_rhs(0.0, y1, ydot, NODE);
   /*  plintf(" %f  %f %f \n ", x,y,ydot[WHICH_CRV-1]); */
   return ((float)ydot[WHICH_CRV - 1]);
 }

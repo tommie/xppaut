@@ -9,8 +9,8 @@
 #include "../load_eqn.h"
 #include "../markov.h"
 #include "../matrixalg.h"
+#include "../my_rhs.h"
 #include "../numerics.h"
-#include "../odesol2.h"
 
 /* --- Macros --- */
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -49,7 +49,7 @@ static int rosen(double *y, double *tstart, double tfinal, int *istart, int n,
   hmax = fabs(tfinal - t);
   if (*istart == 1)
     htry = hmax;
-  rhs(t0, y, f0, n);
+  my_rhs(t0, y, f0, n);
   hmin = 16 * eps * fabs(t);
   absh = MIN(hmax, MAX(hmin, htry));
   while (!done) {
@@ -64,7 +64,7 @@ static int rosen(double *y, double *tstart, double tfinal, int *istart, int n,
     }
     get_the_jac(t, y, f0, ypnew, dfdy, n, epsjac, 1.0);
     tdel = (t + tdir * MIN(sqrteps * MAX(fabs(t), fabs(t + h)), absh)) - t;
-    rhs(t + tdel, y, f1, n);
+    my_rhs(t + tdel, y, f1, n);
     for (i = 0; i < n; i++)
       dfdt[i] = (f1[i] - f0[i]) / tdel;
     while (1) { /* advance a step  */
@@ -87,7 +87,7 @@ static int rosen(double *y, double *tstart, double tfinal, int *istart, int n,
       }
       for (i = 0; i < n; i++)
         ynew[i] = y[i] + .5 * h * k1[i];
-      rhs(t + .5 * h, ynew, f1, n);
+      my_rhs(t + .5 * h, ynew, f1, n);
       for (i = 0; i < n; i++)
         k2[i] = f1[i] - k1[i];
       if (cv_bandflag)
@@ -99,7 +99,7 @@ static int rosen(double *y, double *tstart, double tfinal, int *istart, int n,
         ynew[i] = y[i] + h * k2[i];
       }
       tnew = t + h;
-      rhs(tnew, ynew, f2, n);
+      my_rhs(tnew, ynew, f2, n);
       for (i = 0; i < n; i++)
         k3[i] = f2[i] - e32 * (k2[i] - f1[i]) - 2 * (k1[i] - f0[i]) +
                 (h * d) * dfdt[i];

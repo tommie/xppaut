@@ -77,7 +77,6 @@ noinst_HEADERS = \
 	newpars.h \
 	nullcline.h \
 	numerics.h \
-	odesol2.h \
 	parserslow.h \
 	pop_list.h \
 	pp_shoot.h \
@@ -200,7 +199,6 @@ xppaut_SOURCES = \
 	nagroutines.c \
 	nullcline.c \
 	numerics.c \
-	odesol2.c \
 	parserslow.c \
 	pop_list.c \
 	pp_shoot.c \
@@ -268,7 +266,6 @@ libxpp_a_SOURCES = \
 	nagroutines.c \
 	nullcline.c \
 	numerics.c \
-	odesol2.c \
 	parserslow.c \
 	pop_list.c \
 	pp_shoot.c \

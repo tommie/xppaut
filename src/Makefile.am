@@ -93,7 +93,6 @@ noinst_HEADERS = \
 	tutor.h \
 	txtread.h \
 	userbut.h \
-	volterra2.h \
 	xpplim.h \
 	$(base_headers) \
 	$(bitmap_headers) \
@@ -140,7 +139,8 @@ solver_headers = \
 	solver/rb23.h \
 	solver/rk4.h \
 	solver/stiff.h \
-	solver/symplect.h
+	solver/symplect.h \
+	solver/volterra2.h
 
 ui_x11_headers = \
 	ui-x11/editutil.h \
@@ -211,7 +211,6 @@ xppaut_SOURCES = \
 	torus.c \
 	txtread.c \
 	userbut.c \
-	volterra2.c \
 	$(auto_sources) \
 	$(base_sources) \
 	$(solver_sources) \
@@ -278,7 +277,6 @@ libxpp_a_SOURCES = \
 	torus.c \
 	txtread.c \
 	userbut.c \
-	volterra2.c \
 	$(auto_sources) \
 	$(base_sources) \
 	$(solver_sources) \
@@ -312,6 +310,7 @@ solver_sources = \
 	solver/rk4.c \
 	solver/stiff.c \
 	solver/symplect.c \
+	solver/volterra2.c \
 	$(cvode_sources)
 
 cvode_sources = \

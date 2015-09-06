@@ -20,7 +20,7 @@
 #include "numerics.h"
 #include "parserslow.h"
 #include "storage.h"
-#include "volterra2.h"
+#include "solver/volterra2.h"
 #include "ui-x11/file-selector.h"
 
 /* --- Forward Declarations --- */

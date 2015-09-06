@@ -1,5 +1,5 @@
-#ifndef XPPAUT_VOLTERRA2_H
-#define XPPAUT_VOLTERRA2_H
+#ifndef XPPAUT_SOLVER_VOLTERRA2_H
+#define XPPAUT_SOLVER_VOLTERRA2_H
 
 /* --- Data --- */
 extern int AutoEvaluate;
@@ -13,4 +13,4 @@ void re_evaluate_kernels(void);
 int volterra(double *y, double *t, double dt, int nt, int neq, int *istart,
              double *work);
 
-#endif /* XPPAUT_VOLTERRA2_H */
+#endif /* XPPAUT_SOLVER_VOLTERRA2_H */

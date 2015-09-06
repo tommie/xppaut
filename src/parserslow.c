@@ -15,7 +15,7 @@
 #include "simplenet.h"
 #include "strutil.h"
 #include "tabular.h"
-#include "volterra2.h"
+#include "solver/volterra2.h"
 
 /* --- Macros --- */
 #define FUN1TYPE 9

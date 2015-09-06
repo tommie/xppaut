@@ -36,7 +36,6 @@
 #include "read_dir.h"
 #include "strutil.h"
 #include "tabular.h"
-#include "volterra2.h"
 #include "base/timeutil.h"
 #include "bitmap/bc.bitmap"
 #include "bitmap/delay.bitmap"
@@ -46,6 +45,7 @@
 #include "bitmap/pagedn.bitmap"
 #include "bitmap/pageup.bitmap"
 #include "bitmap/param.bitmap"
+#include "solver/volterra2.h"
 #include "ui-x11/editutil.h"
 #include "ui-x11/file-selector.h"
 

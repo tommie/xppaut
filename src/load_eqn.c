@@ -38,8 +38,8 @@
 #include "tabular.h"
 #include "txtread.h"
 #include "userbut.h"
-#include "volterra2.h"
 #include "solver/rk4.h"
+#include "solver/volterra2.h"
 
 /* --- Macros --- */
 #define DFNORMAL 1

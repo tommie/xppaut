@@ -27,7 +27,6 @@
 #include "pop_list.h"
 #include "pp_shoot.h"
 #include "storage.h"
-#include "volterra2.h"
 #include "solver/adams.h"
 #include "solver/backeuler.h"
 #include "solver/discrete.h"
@@ -35,6 +34,7 @@
 #include "solver/modeuler.h"
 #include "solver/rk4.h"
 #include "solver/symplect.h"
+#include "solver/volterra2.h"
 
 static void check_pos(int *j);
 static void get_method(void);

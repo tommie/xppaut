@@ -263,20 +263,7 @@ int one_step_int(double *y, double t0, double t1, int *istart) {
          IWORK);
     if (kflag < 0) {
       ping();
-      switch (kflag) {
-      case -1:
-        err_msg("kflag=-1: minimum step too big");
-        break;
-      case -2:
-        err_msg("kflag=-2: required order too big");
-        break;
-      case -3:
-        err_msg("kflag=-3: minimum step too big");
-        break;
-      case -4:
-        err_msg("kflag=-4: tolerance too small");
-        break;
-      }
+      err_msg(gear_errmsg(kflag));
 
       return (0);
     }

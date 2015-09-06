@@ -576,3 +576,18 @@ int gear(int n, double *t, double tout, double *y, double hmin, double hmax,
   return (one_flag_step_gear(n, t, tout, y, hmin, hmax, eps, mf, error, kflag,
                              jstart, work, iwork));
 }
+
+const char* gear_errmsg(int kflag) {
+  switch (kflag) {
+  case -1:
+    return "kflag=-1: minimum step too big";
+  case -2:
+    return "kflag=-2: required order too big";
+  case -3:
+    return "kflag=-3: minimum step too big";
+  case -4:
+    return "kflag=-4: tolerance too small";
+  default:
+    return "unknown gear error";
+  }
+}

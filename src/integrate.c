@@ -1614,21 +1614,7 @@ int ode_int(double *y, double *t, int *istart) {
         ping();
         if (RANGE_FLAG)
           return (0);
-        switch (kflag) {
-        case -1:
-          err_msg("kflag=-1: minimum step too big");
-          break;
-        case -2:
-          err_msg("kflag=-2: required order too big");
-          break;
-        case -3:
-          err_msg("kflag=-3: minimum step too big");
-          break;
-        case -4:
-          err_msg("kflag=-4: tolerance too small");
-          break;
-        }
-
+        err_msg(gear_errmsg(kflag));
         return (0);
       }
       break;
@@ -1773,8 +1759,7 @@ int integrate(double *t, double *x, double tend, double dt, int count, int nout,
   while (1) {
 
     switch (METHOD) {
-    case GEAR: {
-
+    case GEAR:
       tout = tzero + dt * (icount + 1);
       if (fabs(dt) < fabs(HMIN)) {
         LastTime = *t;
@@ -1800,28 +1785,13 @@ int integrate(double *t, double *x, double tend, double dt, int count, int nout,
           LastTime = *t;
           return (1);
         }
-        switch (kflag) {
-        case -1:
-          err_msg("kflag=-1: minimum step too big");
-          break;
-        case -2:
-          err_msg("kflag=-2: required order too big");
-          break;
-        case -3:
-          err_msg("kflag=-3: minimum step too big");
-          break;
-        case -4:
-          err_msg("kflag=-4: tolerance too small");
-          break;
-        }
-
+        err_msg(gear_errmsg(kflag));
         LastTime = *t;
         return (1);
       }
-    } break;
+      break;
 #ifdef CVODE_YES
     case CVODE:
-
       tout = tzero + dt * (icount + 1);
       if (fabs(dt) < fabs(HMIN)) {
         LastTime = *t;

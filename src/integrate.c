@@ -57,7 +57,6 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "parserslow.h"
 #include "pop_list.h"
 #include "pp_shoot.h"
-#include "stiff.h"
 #include "storage.h"
 #include "strutil.h"
 #include "tabular.h"
@@ -66,6 +65,7 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "solver/dormpri.h"
 #include "solver/gear.h"
 #include "solver/rb23.h"
+#include "solver/stiff.h"
 #include "ui-x11/file-selector.h"
 
 /* --- Macros --- */

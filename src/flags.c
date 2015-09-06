@@ -64,7 +64,6 @@ global -1 u-.2 {m=.5*m}
 #include "integrate.h"
 #include "odesol2.h"
 #include "parserslow.h"
-#include "stiff.h"
 
 /* --- Macros --- */
 #define MY_DBL_EPS 5e-16
@@ -398,37 +397,4 @@ int one_flag_step(double *yold, double *ynew, int *istart, double told,
   *s = smin;
 
   return (1);
-}
-
-/*  Here are the ODE drivers */
-
-int one_flag_step_adap(double *y, int neq, double *t, double tout, double eps,
-                       double *hguess, double hmin, double *work, int *ier,
-                       double epjac, int iflag, int *jstart) {
-  double yold[MAXODE], told;
-  int i, hit;
-  double s;
-  int nstep = 0;
-  while (1) {
-    for (i = 0; i < neq; i++)
-      yold[i] = y[i];
-    told = *t;
-    gadaptive(y, neq, t, tout, eps, hguess, hmin, work, ier, epjac, iflag,
-              jstart);
-    if (*ier)
-      break;
-    if ((hit = one_flag_step(yold, y, jstart, told, t, neq, &s)) == 0)
-      break;
-    /* Its a hit !! */
-    nstep++;
-
-    if (*t == tout)
-      break;
-    if (nstep > (NFlags + 2)) {
-      plintf(" Working too hard? ");
-      plintf("smin=%g\n", s);
-      break;
-    }
-  }
-  return 0;
 }

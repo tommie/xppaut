@@ -86,7 +86,6 @@ noinst_HEADERS = \
 	run_auto.h \
 	scrngif.h \
 	simplenet.h \
-	stiff.h \
 	storage.h \
 	strutil.h \
 	tabular.h \
@@ -141,6 +140,7 @@ solver_headers = \
 	solver/modeuler.h \
 	solver/rb23.h \
 	solver/rk4.h \
+	solver/stiff.h \
 	solver/symplect.h
 
 ui_x11_headers = \
@@ -208,7 +208,6 @@ xppaut_SOURCES = \
 	rubber.c \
 	scrngif.c \
 	simplenet.c \
-	stiff.c \
 	storage.c \
 	tabular.c \
 	torus.c \
@@ -277,7 +276,6 @@ libxpp_a_SOURCES = \
 	rubber.c \
 	scrngif.c \
 	simplenet.c \
-	stiff.c \
 	storage.c \
 	tabular.c \
 	torus.c \
@@ -315,6 +313,7 @@ solver_sources = \
 	solver/modeuler.c \
 	solver/rb23.c \
 	solver/rk4.c \
+	solver/stiff.c \
 	solver/symplect.c \
 	$(cvode_sources)
 

@@ -2,11 +2,13 @@
 
 #include <math.h>
 
-#include "flags.h"
-#include "markov.h"
-#include "matrixalg.h"
-#include "numerics.h"
-#include "odesol2.h"
+#include "../flags.h"
+#include "../ggets.h"
+#include "../markov.h"
+#include "../matrixalg.h"
+#include "../numerics.h"
+#include "../odesol2.h"
+#include "../xpplim.h"
 
 /* --- Macros --- */
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -89,19 +91,9 @@ static void jacobn(double x, double *y, double *dfdx, double *dermat,
   }
 }
 
-int adaptive(double *ystart, int nvar, double *xs, double x2, double eps,
-             double *hguess, double hmin, double *work, int *ier, double epjac,
-             int iflag, int *jstart) {
-  if (NFlags == 0)
-    return (gadaptive(ystart, nvar, xs, x2, eps, hguess, hmin, work, ier, epjac,
-                      iflag, jstart));
-  return (one_flag_step_adap(ystart, nvar, xs, x2, eps, hguess, hmin, work, ier,
-                             epjac, iflag, jstart));
-}
-
-int gadaptive(double *ystart, int nvar, double *xs, double x2, double eps,
-              double *hguess, double hmin, double *work, int *ier, double epjac,
-              int iflag, int *jstart) {
+static int gadaptive(double *ystart, int nvar, double *xs, double x2,
+                     double eps, double *hguess, double hmin, double *work,
+                     int *ier, double epjac, int iflag, int *jstart) {
   double h1 = *hguess;
   int nstp, i;
   double x1 = *xs;
@@ -149,6 +141,48 @@ int gadaptive(double *ystart, int nvar, double *xs, double x2, double eps,
 
   *ier = 3;
   return -1;
+}
+
+static int one_flag_step_adap(double *y, int neq, double *t, double tout,
+                              double eps, double *hguess, double hmin,
+                              double *work, int *ier, double epjac, int iflag,
+                              int *jstart) {
+  double yold[MAXODE], told;
+  int i, hit;
+  double s;
+  int nstep = 0;
+  while (1) {
+    for (i = 0; i < neq; i++)
+      yold[i] = y[i];
+    told = *t;
+    gadaptive(y, neq, t, tout, eps, hguess, hmin, work, ier, epjac, iflag,
+              jstart);
+    if (*ier)
+      break;
+    if ((hit = one_flag_step(yold, y, jstart, told, t, neq, &s)) == 0)
+      break;
+    /* Its a hit !! */
+    nstep++;
+
+    if (*t == tout)
+      break;
+    if (nstep > (NFlags + 2)) {
+      plintf(" Working too hard? ");
+      plintf("smin=%g\n", s);
+      break;
+    }
+  }
+  return 0;
+}
+
+int adaptive(double *ystart, int nvar, double *xs, double x2, double eps,
+             double *hguess, double hmin, double *work, int *ier, double epjac,
+             int iflag, int *jstart) {
+  if (NFlags == 0)
+    return (gadaptive(ystart, nvar, xs, x2, eps, hguess, hmin, work, ier, epjac,
+                      iflag, jstart));
+  return (one_flag_step_adap(ystart, nvar, xs, x2, eps, hguess, hmin, work, ier,
+                             epjac, iflag, jstart));
 }
 
 /*  Need work size of 2n^2+12n  */

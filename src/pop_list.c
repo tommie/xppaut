@@ -92,8 +92,8 @@ static void destroy_scroll_box(SCROLLBOX *sb);
 static void draw_pop_up(POP_UP p, Window w);
 static void expose_choice(char *choice1, char *choice2, char *msg, Window c1,
                           Window c2, Window wm, Window w);
-static void expose_resp_box(char *button, char *message, Window wb, Window wm,
-                            Window w);
+static void expose_resp_box(const char *button, const char *message, Window wb,
+                            Window wm, Window w);
 static void expose_sbox(STRING_BOX sb, Window w, int pos, int col);
 static void expose_scroll_box(Window w, SCROLLBOX sb);
 static int get_x_coord_win(Window win);
@@ -984,15 +984,15 @@ Window make_plain_window(Window root, int x, int y, int width, int height,
   return (win);
 }
 
-static void expose_resp_box(char *button, char *message, Window wb, Window wm,
-                            Window w) {
+static void expose_resp_box(const char *button, const char *message, Window wb,
+                            Window wm, Window w) {
   if (w == wb)
     Ftext(0, 0, button, wb);
   if (w == wm)
     Ftext(0, 0, message, wm);
 }
 
-void respond_box(char *button, char *message) {
+void respond_box(const char *button, const char *message) {
   int l1 = strlen(message);
   int l2 = strlen(button);
   int width;

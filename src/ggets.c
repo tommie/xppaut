@@ -79,7 +79,7 @@ void bottom_msg(int line, char *msg) {
   XDrawString(display, info_pop, gc, 5, CURY_OFF, msg, strlen(msg));
 }
 
-void err_msg(char *string) {
+void err_msg(const char *string) {
   if (Xup)
     respond_box("OK", string);
   else {
@@ -234,7 +234,7 @@ int get_mouse_xy(int *x, int *y, Window w) {
   return (0);
 }
 
-void Ftext(int x, int y, char *string, Window o) {
+void Ftext(int x, int y, const char *string, Window o) {
   chk_xor();
   XDrawString(display, o, gc, x, y + CURY_OFF, string, strlen(string));
 }

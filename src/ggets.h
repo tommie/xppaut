@@ -12,7 +12,7 @@ extern int MSStyle;
 extern int xor_flag;
 
 /* --- Functions --- */
-void Ftext(int x, int y, char *string, Window o);
+void Ftext(int x, int y, const char *string, Window o);
 void bar(int x, int y, int x2, int y2, Window w);
 void blank_screen(Window w);
 void bottom_msg(int line, char *msg);
@@ -23,7 +23,7 @@ void display_command(char *name, char *value, int pos, int col);
 void edit_command_string(XEvent ev, char *name, char *value, int *done,
                          int *pos, int *col);
 void edit_window(Window w, int *pos, char *value, int *col, int *done, int ch);
-void err_msg(char *string);
+void err_msg(const char *string);
 int get_key_press(XEvent *ev);
 int get_mouse_xy(int *x, int *y, Window w);
 int new_float(char *name, double *value);

@@ -1581,8 +1581,77 @@ int ode_int(double *y, double *t, int *istart) {
     nit = (tend + .1 * fabs(dt)) / fabs(dt);
   MSWTCH(xpv.x, y);
   evaluate_derived();
-  if (METHOD < METHOD_GEAR || METHOD == METHOD_BACKEUL) {
+  tout = *t + tend * dt / fabs(dt);
 
+  switch (METHOD) {
+  case METHOD_GEAR:
+    if (*istart == 1)
+      *istart = 0;
+    gear(nodes, t, tout, xpv.x, HMIN, HMAX, TOLER, 2, error, &kflag, istart,
+         WORK, IWORK);
+    MSWTCH(y, xpv.x);
+    if (kflag < 0) {
+      ping();
+      if (RANGE_FLAG)
+        return (0);
+      err_msg(gear_errmsg(kflag));
+      return (0);
+    }
+    break;
+#ifdef CVODE_YES
+  case METHOD_CVODE:
+    cvode(istart, xpv.x, t, nodes, tout, &kflag, &TOLER, &ATOLER);
+    MSWTCH(y, xpv.x);
+    if (kflag < 0) {
+      cvode_err_msg(kflag);
+      return (0);
+    }
+    end_cv();
+    break;
+#endif
+  case METHOD_DP5:
+  case METHOD_DP83:
+    dp(istart, xpv.x, t, nodes, tout, &TOLER, &ATOLER, METHOD - METHOD_DP5,
+       &kflag);
+    MSWTCH(y, xpv.x);
+    if (kflag < 0) {
+      if (RANGE_FLAG)
+        return (0);
+      dp_err(kflag);
+      return 0;
+    }
+
+    break;
+  case METHOD_RB23:
+    rb23(xpv.x, t, tout, istart, nodes, WORK, &kflag);
+    MSWTCH(y, xpv.x);
+    if (kflag < 0) {
+      ping();
+      if (RANGE_FLAG)
+        return (0);
+      err_msg("Step size too small");
+      return 0;
+    }
+    break;
+  case METHOD_RKQS:
+  case METHOD_STIFF:
+    adaptive(xpv.x, nodes, t, tout, TOLER, &dt, HMIN, WORK, &kflag, NEWT_ERR,
+             METHOD, istart);
+    MSWTCH(y, xpv.x);
+    if (kflag) {
+      ping();
+      if (RANGE_FLAG)
+        return (0);
+      err_msg(adaptive_errmsg(kflag));
+      return (0);
+    }
+    break;
+  case METHOD_SYMPLECT:
+  case METHOD_VOLTERRA:
+    err_msg("unknown method");
+    return 0;
+
+  default:
     kflag = solver(xpv.x, t, dt, nit, nodes, istart, WORK);
     MSWTCH(y, xpv.x);
 
@@ -1600,74 +1669,6 @@ int ode_int(double *y, double *t, int *istart) {
       }
 
       return (0);
-    }
-  } else {
-    tout = *t + tend * dt / fabs(dt);
-    switch (METHOD) {
-    case METHOD_GEAR:
-      if (*istart == 1)
-        *istart = 0;
-      gear(nodes, t, tout, xpv.x, HMIN, HMAX, TOLER, 2, error, &kflag, istart,
-           WORK, IWORK);
-      MSWTCH(y, xpv.x);
-      if (kflag < 0) {
-        ping();
-        if (RANGE_FLAG)
-          return (0);
-        err_msg(gear_errmsg(kflag));
-        return (0);
-      }
-      break;
-#ifdef CVODE_YES
-    case METHOD_CVODE:
-      cvode(istart, xpv.x, t, nodes, tout, &kflag, &TOLER, &ATOLER);
-      MSWTCH(y, xpv.x);
-      if (kflag < 0) {
-        cvode_err_msg(kflag);
-        return (0);
-      }
-      end_cv();
-      break;
-#endif
-    case METHOD_DP5:
-    case METHOD_DP83:
-      dp(istart, xpv.x, t, nodes, tout, &TOLER, &ATOLER, METHOD - METHOD_DP5, &kflag);
-      MSWTCH(y, xpv.x);
-      if (kflag < 0) {
-        if (RANGE_FLAG)
-          return (0);
-        dp_err(kflag);
-        return 0;
-      }
-
-      break;
-    case METHOD_RB23:
-      rb23(xpv.x, t, tout, istart, nodes, WORK, &kflag);
-      MSWTCH(y, xpv.x);
-      if (kflag < 0) {
-        ping();
-        if (RANGE_FLAG)
-          return (0);
-        err_msg("Step size too small");
-        return 0;
-      }
-      break;
-    case METHOD_RKQS:
-    case METHOD_STIFF:
-      adaptive(xpv.x, nodes, t, tout, TOLER, &dt, HMIN, WORK, &kflag, NEWT_ERR,
-               METHOD, istart);
-      MSWTCH(y, xpv.x);
-      if (kflag) {
-        ping();
-        if (RANGE_FLAG)
-          return (0);
-        err_msg(adaptive_errmsg(kflag));
-        return (0);
-      }
-      break;
-    default:
-      err_msg("unknown method");
-      return 0;
     }
   }
 

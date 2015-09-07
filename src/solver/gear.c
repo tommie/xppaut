@@ -2,6 +2,7 @@
 
 #include <math.h>
 
+#include "../delay_handle.h"
 #include "../flags.h"
 #include "../ggets.h"
 #include "../matrixalg.h"
@@ -574,11 +575,16 @@ static int one_flag_step_gear(int neq, double *t, double tout, double *y,
 int gear(int n, double *t, double tout, double *y, double hmin, double hmax,
          double eps, int mf, double *error, int *kflag, int *jstart,
          double *work) {
+  int err;
   if (NFlags == 0)
-    return (ggear(n, t, tout, y, hmin, hmax, eps, mf, error, kflag, jstart,
-                  work));
-  return (one_flag_step_gear(n, t, tout, y, hmin, hmax, eps, mf, error, kflag,
-                             jstart, work));
+    err = ggear(n, t, tout, y, hmin, hmax, eps, mf, error, kflag, jstart,
+                work);
+  else
+    err = one_flag_step_gear(n, t, tout, y, hmin, hmax, eps, mf, error, kflag,
+                             jstart, work);
+  if (!*kflag)
+    stor_delay(y);
+  return err;
 }
 
 const char* gear_errmsg(int kflag) {

@@ -1622,7 +1622,6 @@ int one_step_int(double *y, double t0, double t1, int *istart) {
 
       return (0);
     }
-    stor_delay(y);
     break;
 
   case METHOD_DISCRETE:
@@ -1863,7 +1862,6 @@ int integrate(double *t, double *x, double tend, double dt, int count, int nout,
            WORK);
 
       MSWTCH(x, xpv.x);
-      stor_delay(x);
       if (DelayErr) {
         DelayErr = 0;
         LastTime = *t;

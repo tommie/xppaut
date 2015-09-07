@@ -1569,7 +1569,6 @@ int one_step_int(double *y, double t0, double t1, int *istart) {
   int nit;
   int kflag;
   double dt = DELTA_T;
-  double z;
   double error[MAXODE];
   double t = t0;
 
@@ -1637,8 +1636,7 @@ int one_step_int(double *y, double t0, double t1, int *istart) {
     break;
 
   default:
-    z = (t1 - t0) / dt;
-    nit = (int)z;
+    nit = (int) ((t1 - t0) / dt);
     kflag = solver(y, &t, dt, nit, NODE, istart, WORK);
 
     if (kflag < 0)
@@ -1664,11 +1662,6 @@ int ode_int(double *y, double *t, int *istart) {
   double tend = TEND;
   double dt = DELTA_T, tout;
 
-  if (METHOD == METHOD_DISCRETE) {
-    nit = tend;
-    dt = dt / fabs(dt);
-  } else
-    nit = (tend + .1 * fabs(dt)) / fabs(dt);
   MSWTCH(xpv.x, y);
   evaluate_derived();
   tout = *t + tend * dt / fabs(dt);
@@ -1741,7 +1734,31 @@ int ode_int(double *y, double *t, int *istart) {
     err_msg("unknown method");
     return 0;
 
+  case METHOD_DISCRETE:
+    nit = tend;
+    dt = dt / fabs(dt);
+    kflag = solver(xpv.x, t, dt, nit, nodes, istart, WORK);
+    MSWTCH(y, xpv.x);
+
+    if (kflag < 0) {
+      ping();
+      if (RANGE_FLAG)
+        return (0);
+      switch (kflag) {
+      case -1:
+        err_msg(" Singular Jacobian ");
+        break;
+      case -2:
+        err_msg("Too many iterates");
+        break;
+      }
+
+      return (0);
+    }
+    break;
+
   default:
+    nit = (tend + .1 * fabs(dt)) / fabs(dt);
     kflag = solver(xpv.x, t, dt, nit, nodes, istart, WORK);
     MSWTCH(y, xpv.x);
 

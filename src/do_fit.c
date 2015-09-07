@@ -26,6 +26,16 @@
 /* --- Macros --- */
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
+/* --- Types --- */
+typedef struct {
+  char file[25];
+  char varlist[25], collist[25];
+  char parlist1[25], parlist2[25];
+  int dim, npars, nvars, npts, maxiter;
+  int icols[50], ipar[50], ivar[50];
+  double tol, eps;
+} FITINFO;
+
 /* --- Forward Declarations --- */
 static void get_fit_info(double *y, double *a, double *t0, int *flag,
                          double eps, double *yfit, double **yderv, int npts,

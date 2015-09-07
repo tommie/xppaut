@@ -1601,7 +1601,6 @@ int one_step_int(double *y, double t0, double t1, int *istart) {
       err_msg("Step size too small");
       return (0);
     }
-    stor_delay(y);
     break;
 
   case METHOD_RKQS:
@@ -1954,7 +1953,6 @@ int integrate(double *t, double *x, double tend, double dt, int count, int nout,
       MSWTCH(xpv.x, x);
       rb23(xpv.x, t, tout, start, nodes, WORK, &kflag);
       MSWTCH(x, xpv.x);
-      stor_delay(x);
       if (DelayErr) {
         DelayErr = 0;
         err_dae();

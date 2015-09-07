@@ -189,11 +189,13 @@ static int one_flag_step_rosen(double *y, double *tstart, double tfinal,
 
 int rb23(double *y, double *tstart, double tfinal, int *istart, int n,
          double *work, int *ierr) {
-  int out = -1;
+  int out;
   if (NFlags == 0) {
     out = rosen(y, tstart, tfinal, istart, n, work, ierr);
   } else {
     out = one_flag_step_rosen(y, tstart, tfinal, istart, n, work, ierr);
   }
-  return (out);
+  if (!*ierr)
+    stor_delay(y);
+  return out;
 }

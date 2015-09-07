@@ -5,6 +5,7 @@
 #include <memory.h>
 #include <stdlib.h>
 
+#include "../delay_handle.h"
 #include "../flags.h"
 #include "../ggets.h"
 #include "../my_rhs.h"
@@ -159,16 +160,19 @@ static int one_flag_step_dp(int *istart, double *y, double *t, int n,
   return 0;
 }
 
-int dp(istart,y,t,n,tout,tol,atol,flag,kflag)
-    double *y,*t,tout,*tol,*atol;
-     int flag,*istart,*kflag,n;
+int dp(int *istart, double *y, double *t, int n, double tout, double *tol,
+       double *atol, int flag, int *kflag)
 {
- int err=0;
- if(NFlags==0)
-   return(dormprin(istart,y,t,n,tout,tol,atol,flag,kflag));
- err=one_flag_step_dp(istart,y,t,n,tout,tol,atol,flag,kflag);
- if(err==1)*kflag=-9;
- return 1;
+ int err = 0;
+ if (NFlags == 0)
+   err = dormprin(istart, y, t, n, tout, tol, atol, flag, kflag);
+ else
+   err = one_flag_step_dp(istart, y, t, n, tout, tol, atol, flag, kflag);
+ if (err == 1)
+   *kflag = -9;
+ if (!*kflag)
+   stor_delay(y);
+ return err;
 }
 
 static double sign (double a, double b)

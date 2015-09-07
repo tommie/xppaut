@@ -1593,7 +1593,6 @@ int one_step_int(double *y, double t0, double t1, int *istart) {
       dp_err(kflag);
       return (0);
     }
-    stor_delay(y);
     break;
 
   case METHOD_RB23:
@@ -1927,7 +1926,6 @@ int integrate(double *t, double *x, double tend, double dt, int count, int nout,
       dp(start, xpv.x, t, nodes, tout, &TOLER, &ATOLER, METHOD - METHOD_DP5,
          &kflag);
       MSWTCH(x, xpv.x);
-      stor_delay(x);
       if (DelayErr) {
         DelayErr = 0;
         err_dae();

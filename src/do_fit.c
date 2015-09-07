@@ -18,10 +18,6 @@
 #include "pop_list.h"
 #include "storage.h"
 #include "solver/cv2.h"
-#include "solver/dormpri.h"
-#include "solver/gear.h"
-#include "solver/rb23.h"
-#include "solver/stiff.h"
 
 /* --- Macros --- */
 #define MAX(a, b) ((a) > (b) ? (a) : (b))

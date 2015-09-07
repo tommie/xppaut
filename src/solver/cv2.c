@@ -18,6 +18,7 @@
 #undef HMIN
 #undef HMAX
 
+#include "../delay_handle.h"
 #include "../flags.h"
 #include "../ggets.h"
 #include "../load_eqn.h"
@@ -169,9 +170,12 @@ int cvode(int *command, double *y, double *t, int n, double tout, int *kflag,
           double *atol, double *rtol) {
   int err = 0;
   if (NFlags == 0)
-    return (ccvode(command, y, t, n, tout, kflag, atol, rtol));
-  err = one_flag_step_cvode(command, y, t, n, tout, kflag, atol, rtol);
+    err = ccvode(command, y, t, n, tout, kflag, atol, rtol);
+  else
+    err = one_flag_step_cvode(command, y, t, n, tout, kflag, atol, rtol);
   if (err == 1)
     *kflag = -9;
-  return 1;
+  if (!*kflag)
+    stor_delay(y);
+  return err;
 }

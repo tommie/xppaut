@@ -1583,7 +1583,6 @@ int one_step_int(double *y, double t0, double t1, int *istart) {
       cvode_err_msg(kflag);
       return (0);
     }
-    stor_delay(y);
 #endif
     break;
 
@@ -1896,7 +1895,6 @@ int integrate(double *t, double *x, double tend, double dt, int count, int nout,
       MSWTCH(xpv.x, x);
       cvode(start, xpv.x, t, nodes, tout, &kflag, &TOLER, &ATOLER);
       MSWTCH(x, xpv.x);
-      stor_delay(x);
       if (DelayErr) {
         DelayErr = 0;
         err_dae();

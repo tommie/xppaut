@@ -88,7 +88,6 @@ void dprhs(unsigned n, double t, double *y, double *f)
 
 void dp_err(int k)
 {
-  ping();
   switch(k){
   case -1: err_msg("Input is not consistent");
     break;

@@ -56,6 +56,7 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "parserslow.h"
 #include "pop_list.h"
 #include "pp_shoot.h"
+#include "solver.h"
 #include "storage.h"
 #include "strutil.h"
 #include "tabular.h"
@@ -1566,215 +1567,36 @@ void get_ic(int it, double *x) {
 }
 
 int one_step_int(double *y, double t0, double t1, int *istart) {
-  int nit;
-  int kflag;
-  double dt = DELTA_T;
-  double error[MAXODE];
-  double t = t0;
+  int kflag = solver_integrate(y, &t0, NODE, t1, istart);
 
-  switch (METHOD) {
-  case METHOD_CVODE:
-#ifdef CVODE_YES
-    /* cvode(command,y,t,n,tout,kflag,atol,rtol)
-     * command =0 continue, 1 is start 2 finish
-     */
-    cvode(istart, y, &t, NODE, t1, &kflag, &TOLER, &ATOLER);
-    if (kflag < 0) {
-      cvode_err_msg(kflag);
-      return (0);
-    }
-#endif
-    break;
-
-  case METHOD_DP5:
-  case METHOD_DP83:
-    dp(istart, y, &t, NODE, t1, &TOLER, &ATOLER, METHOD - METHOD_DP5, &kflag);
-    if (kflag != 1) {
-      dp_err(kflag);
-      return (0);
-    }
-    break;
-
-  case METHOD_RB23:
-    rb23(y, &t, t1, istart, NODE, WORK, &kflag);
-    if (kflag < 0) {
-      err_msg("Step size too small");
-      return (0);
-    }
-    break;
-
-  case METHOD_RKQS:
-  case METHOD_STIFF:
-    adaptive(y, NODE, &t, t1, TOLER, &dt, HMIN, WORK, &kflag, NEWT_ERR, METHOD,
-             istart);
-    if (kflag) {
-      ping();
-      err_msg(adaptive_errmsg(kflag));
-      return (0);
-    }
-    break;
-
-  case METHOD_GEAR:
-    gear(NODE, &t, t1, y, HMIN, HMAX, TOLER, 2, error, &kflag, istart, WORK);
-    if (kflag < 0) {
-      ping();
-      err_msg(gear_errmsg(kflag));
-
-      return (0);
-    }
-    break;
-
-  case METHOD_DISCRETE:
-    nit = fabs(t0 - t1);
-    dt = dt / fabs(dt);
-    kflag = solver(y, &t, dt, nit, NODE, istart, WORK);
-    break;
-
-  default:
-    nit = (int) ((t1 - t0) / dt);
-    kflag = solver(y, &t, dt, nit, NODE, istart, WORK);
-
-    if (kflag < 0)
-      return (0);
-
-    if ((dt < 0 && t > t1) || (dt > 0 && t < t1)) {
-      dt = t1 - t;
-      kflag = solver(y, &t, dt, 1, NODE, istart, WORK);
-      if (kflag < 0)
-        return (0);
-    }
+  if (kflag) {
+    solver_errmsg(kflag);
+    ping();
+    return 0;
   }
 
-  return (1);
+  return 1;
 }
 
 int ode_int(double *y, double *t, int *istart) {
-  double error[MAXODE];
-
-  int kflag;
-  int nodes = xpv.node + xpv.nvec;
-  int nit;
-  double tend = TEND;
-  double dt = DELTA_T, tout;
-
   MSWTCH(xpv.x, y);
   evaluate_derived();
-  tout = *t + tend * dt / fabs(dt);
+  int kflag = solver_integrate(xpv.x, t, xpv.node + xpv.nvec,
+                               *t + TEND * DELTA_T / fabs(DELTA_T), istart);
+  MSWTCH(y, xpv.x);
 
-  switch (METHOD) {
-  case METHOD_GEAR:
-    if (*istart == 1)
-      *istart = 0;
-    gear(nodes, t, tout, xpv.x, HMIN, HMAX, TOLER, 2, error, &kflag, istart,
-         WORK);
-    MSWTCH(y, xpv.x);
-    if (kflag < 0) {
+  if (kflag) {
+    if (!RANGE_FLAG) {
+      solver_errmsg(kflag);
       ping();
-      if (RANGE_FLAG)
-        return (0);
-      err_msg(gear_errmsg(kflag));
-      return (0);
-    }
-    break;
-#ifdef CVODE_YES
-  case METHOD_CVODE:
-    cvode(istart, xpv.x, t, nodes, tout, &kflag, &TOLER, &ATOLER);
-    MSWTCH(y, xpv.x);
-    if (kflag < 0) {
-      cvode_err_msg(kflag);
-      return (0);
-    }
-    end_cv();
-    break;
-#endif
-  case METHOD_DP5:
-  case METHOD_DP83:
-    dp(istart, xpv.x, t, nodes, tout, &TOLER, &ATOLER, METHOD - METHOD_DP5,
-       &kflag);
-    MSWTCH(y, xpv.x);
-    if (kflag < 0) {
-      if (RANGE_FLAG)
-        return (0);
-      dp_err(kflag);
-      return 0;
     }
 
-    break;
-  case METHOD_RB23:
-    rb23(xpv.x, t, tout, istart, nodes, WORK, &kflag);
-    MSWTCH(y, xpv.x);
-    if (kflag < 0) {
-      ping();
-      if (RANGE_FLAG)
-        return (0);
-      err_msg("Step size too small");
-      return 0;
-    }
-    break;
-  case METHOD_RKQS:
-  case METHOD_STIFF:
-    adaptive(xpv.x, nodes, t, tout, TOLER, &dt, HMIN, WORK, &kflag, NEWT_ERR,
-             METHOD, istart);
-    MSWTCH(y, xpv.x);
-    if (kflag) {
-      ping();
-      if (RANGE_FLAG)
-        return (0);
-      err_msg(adaptive_errmsg(kflag));
-      return (0);
-    }
-    break;
-  case METHOD_SYMPLECT:
-  case METHOD_VOLTERRA:
-    err_msg("unknown method");
     return 0;
-
-  case METHOD_DISCRETE:
-    nit = tend;
-    dt = dt / fabs(dt);
-    kflag = solver(xpv.x, t, dt, nit, nodes, istart, WORK);
-    MSWTCH(y, xpv.x);
-
-    if (kflag < 0) {
-      ping();
-      if (RANGE_FLAG)
-        return (0);
-      switch (kflag) {
-      case -1:
-        err_msg(" Singular Jacobian ");
-        break;
-      case -2:
-        err_msg("Too many iterates");
-        break;
-      }
-
-      return (0);
-    }
-    break;
-
-  default:
-    nit = (tend + .1 * fabs(dt)) / fabs(dt);
-    kflag = solver(xpv.x, t, dt, nit, nodes, istart, WORK);
-    MSWTCH(y, xpv.x);
-
-    if (kflag < 0) {
-      ping();
-      if (RANGE_FLAG)
-        return (0);
-      switch (kflag) {
-      case -1:
-        err_msg(" Singular Jacobian ");
-        break;
-      case -2:
-        err_msg("Too many iterates");
-        break;
-      }
-
-      return (0);
-    }
   }
 
-  return (1);
+  solver_end();
+
+  return 1;
 }
 
 int integrate(double *t, double *x, double tend, double dt, int count, int nout,
@@ -1929,7 +1751,7 @@ int integrate(double *t, double *x, double tend, double dt, int count, int nout,
         return (1);
       }
       if (kflag < 0) {
-
+        ping();
         if (RANGE_FLAG || SuppressBounds) {
           LastTime = *t;
           return (1);

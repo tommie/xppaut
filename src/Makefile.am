@@ -85,6 +85,7 @@ noinst_HEADERS = \
 	run_auto.h \
 	scrngif.h \
 	simplenet.h \
+	solver.h \
 	storage.h \
 	strutil.h \
 	tabular.h \
@@ -206,6 +207,7 @@ xppaut_SOURCES = \
 	rubber.c \
 	scrngif.c \
 	simplenet.c \
+	solver.c \
 	storage.c \
 	tabular.c \
 	torus.c \
@@ -272,6 +274,7 @@ libxpp_a_SOURCES = \
 	rubber.c \
 	scrngif.c \
 	simplenet.c \
+	solver.c \
 	storage.c \
 	tabular.c \
 	torus.c \

@@ -1612,7 +1612,6 @@ int one_step_int(double *y, double t0, double t1, int *istart) {
       err_msg(adaptive_errmsg(kflag));
       return (0);
     }
-    stor_delay(y);
     break;
 
   case METHOD_GEAR:
@@ -1983,7 +1982,6 @@ int integrate(double *t, double *x, double tend, double dt, int count, int nout,
       adaptive(xpv.x, nodes, t, tout, TOLER, &hguess, HMIN, WORK, &kflag,
                NEWT_ERR, METHOD, start);
       MSWTCH(x, xpv.x);
-      stor_delay(x);
       if (DelayErr) {
         DelayErr = 0;
         err_dae();

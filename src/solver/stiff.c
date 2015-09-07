@@ -2,6 +2,7 @@
 
 #include <math.h>
 
+#include "../delay_handle.h"
 #include "../flags.h"
 #include "../ggets.h"
 #include "../markov.h"
@@ -178,11 +179,16 @@ static int one_flag_step_adap(double *y, int neq, double *t, double tout,
 int adaptive(double *ystart, int nvar, double *xs, double x2, double eps,
              double *hguess, double hmin, double *work, int *ier, double epjac,
              int iflag, int *jstart) {
+  int err;
   if (NFlags == 0)
-    return (gadaptive(ystart, nvar, xs, x2, eps, hguess, hmin, work, ier, epjac,
-                      iflag, jstart));
-  return (one_flag_step_adap(ystart, nvar, xs, x2, eps, hguess, hmin, work, ier,
-                             epjac, iflag, jstart));
+    err = gadaptive(ystart, nvar, xs, x2, eps, hguess, hmin, work, ier, epjac,
+                    iflag, jstart);
+  else
+    err = one_flag_step_adap(ystart, nvar, xs, x2, eps, hguess, hmin, work, ier,
+                             epjac, iflag, jstart);
+  if (!*ier)
+    stor_delay(ystart);
+  return err;
 }
 
 const char *adaptive_errmsg(int kflag) {

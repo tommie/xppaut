@@ -1565,6 +1565,96 @@ void get_ic(int it, double *x) {
   }
 }
 
+int one_step_int(double *y, double t0, double t1, int *istart) {
+  int nit;
+  int kflag;
+  double dt = DELTA_T;
+  double z;
+  double error[MAXODE];
+  double t = t0;
+
+  switch (METHOD) {
+  case METHOD_CVODE:
+#ifdef CVODE_YES
+    /* cvode(command,y,t,n,tout,kflag,atol,rtol)
+     * command =0 continue, 1 is start 2 finish
+     */
+    cvode(istart, y, &t, NODE, t1, &kflag, &TOLER, &ATOLER);
+    if (kflag < 0) {
+      cvode_err_msg(kflag);
+      return (0);
+    }
+    stor_delay(y);
+#endif
+    break;
+
+  case METHOD_DP5:
+  case METHOD_DP83:
+    dp(istart, y, &t, NODE, t1, &TOLER, &ATOLER, METHOD - METHOD_DP5, &kflag);
+    if (kflag != 1) {
+      dp_err(kflag);
+      return (0);
+    }
+    stor_delay(y);
+    break;
+
+  case METHOD_RB23:
+    rb23(y, &t, t1, istart, NODE, WORK, &kflag);
+    if (kflag < 0) {
+      err_msg("Step size too small");
+      return (0);
+    }
+    stor_delay(y);
+    break;
+
+  case METHOD_RKQS:
+  case METHOD_STIFF:
+    adaptive(y, NODE, &t, t1, TOLER, &dt, HMIN, WORK, &kflag, NEWT_ERR, METHOD,
+             istart);
+    if (kflag) {
+      ping();
+      err_msg(adaptive_errmsg(kflag));
+      return (0);
+    }
+    stor_delay(y);
+    break;
+
+  case METHOD_GEAR:
+    gear(NODE, &t, t1, y, HMIN, HMAX, TOLER, 2, error, &kflag, istart, WORK);
+    if (kflag < 0) {
+      ping();
+      err_msg(gear_errmsg(kflag));
+
+      return (0);
+    }
+    stor_delay(y);
+    break;
+
+  case METHOD_DISCRETE:
+    nit = fabs(t0 - t1);
+    dt = dt / fabs(dt);
+    kflag = solver(y, &t, dt, nit, NODE, istart, WORK);
+    break;
+
+  default:
+    z = (t1 - t0) / dt;
+    nit = (int)z;
+    kflag = solver(y, &t, dt, nit, NODE, istart, WORK);
+
+    if (kflag < 0)
+      return (0);
+
+    if ((dt < 0 && t > t1) || (dt > 0 && t < t1)) {
+      dt = t1 - t;
+      kflag = solver(y, &t, dt, 1, NODE, istart, WORK);
+      if (kflag < 0)
+        return (0);
+    }
+  }
+
+  return (1);
+}
+
 int ode_int(double *y, double *t, int *istart) {
   double error[MAXODE];
 

@@ -60,11 +60,6 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "storage.h"
 #include "strutil.h"
 #include "tabular.h"
-#include "solver/cv2.h"
-#include "solver/dormpri.h"
-#include "solver/gear.h"
-#include "solver/rb23.h"
-#include "solver/stiff.h"
 #include "solver/volterra2.h"
 #include "ui-x11/file-selector.h"
 
@@ -1603,15 +1598,13 @@ int integrate(double *t, double *x, double tend, double dt, int count, int nout,
               int *start) {
   float xv[MAXODE + 1], xvold[MAXODE + 1];
   float oldperiod = 0.0;
-  double error[MAXODE];
-  double xprime[MAXODE], oldxprime[MAXODE], hguess = dt;
-  int kflag;
+  double xprime[MAXODE], oldxprime[MAXODE];
 
   int torcross[MAXODE];
   int nodes = xpv.node + xpv.nvec - NMarkov;
 
   int rval = 0;
-  double oldx[MAXODE], oldt = 0, dint, dxp, sect, sect1, tout, tzero = *t;
+  double oldx[MAXODE], oldt = 0, dint, dxp, sect, sect1, tzero = *t;
   double sss, tnew = *t;
   int iflagstart = 1;
   float tscal = tend, tv;
@@ -1667,186 +1660,34 @@ int integrate(double *t, double *x, double tend, double dt, int count, int nout,
   stor_delay(x);
 
   while (1) {
-
-    switch (METHOD) {
-    case METHOD_GEAR:
-      tout = tzero + dt * (icount + 1);
-      if (fabs(dt) < fabs(HMIN)) {
-        LastTime = *t;
-        return (1);
-      }
-      if (*start == 1)
-        *start = 0;
-
-      MSWTCH(xpv.x, x);
-
-      gear(nodes, t, tout, xpv.x, HMIN, HMAX, TOLER, 2, error, &kflag, start,
-           WORK);
-
-      MSWTCH(x, xpv.x);
-      if (DelayErr) {
-        DelayErr = 0;
-        LastTime = *t;
-        err_dae();
-        return (1);
-      }
-      if (kflag < 0) {
-        ping();
-        if (RANGE_FLAG || SuppressBounds) {
-          LastTime = *t;
-          return (1);
-        }
-        err_msg(gear_errmsg(kflag));
-        LastTime = *t;
-        return (1);
-      }
-      break;
-#ifdef CVODE_YES
-    case METHOD_CVODE:
-      tout = tzero + dt * (icount + 1);
-      if (fabs(dt) < fabs(HMIN)) {
-        LastTime = *t;
-        end_cv();
-        return (1);
-      }
-      MSWTCH(xpv.x, x);
-      cvode(start, xpv.x, t, nodes, tout, &kflag, &TOLER, &ATOLER);
-      MSWTCH(x, xpv.x);
-      if (DelayErr) {
-        DelayErr = 0;
-        err_dae();
-        LastTime = *t;
-        return (1);
-      }
-      if (kflag < 0) {
-        ping();
-        if (RANGE_FLAG || SuppressBounds) {
-          LastTime = *t;
-          return (1);
-        }
-        cvode_err_msg(kflag);
-        LastTime = *t;
-        return (1);
-      }
-
-      break;
-#endif
-
-    case METHOD_DP5:
-    case METHOD_DP83:
-      tout = tzero + dt * (icount + 1);
-      if (fabs(dt) < fabs(HMIN)) {
-        LastTime = *t;
-
-        return (1);
-      }
-      MSWTCH(xpv.x, x);
-      dp(start, xpv.x, t, nodes, tout, &TOLER, &ATOLER, METHOD - METHOD_DP5,
-         &kflag);
-      MSWTCH(x, xpv.x);
-      if (DelayErr) {
-        DelayErr = 0;
-        err_dae();
-        LastTime = *t;
-        return (1);
-      }
-      if (kflag < 0) {
-        ping();
-        if (RANGE_FLAG || SuppressBounds) {
-          LastTime = *t;
-          return (1);
-        }
-        dp_err(kflag);
-        LastTime = *t;
-        return (1);
-      }
-
-      break;
-    case METHOD_RB23:
-      tout = tzero + dt * (icount + 1);
-      if (fabs(dt) < fabs(HMIN)) {
-        LastTime = *t;
-
-        return (1);
-      }
-      MSWTCH(xpv.x, x);
-      rb23(xpv.x, t, tout, start, nodes, WORK, &kflag);
-      MSWTCH(x, xpv.x);
-      if (DelayErr) {
-        DelayErr = 0;
-        err_dae();
-        LastTime = *t;
-        return (1);
-      }
-      if (kflag < 0) {
-
-        if (RANGE_FLAG || SuppressBounds) {
-          LastTime = *t;
-          return (1);
-        }
-        err_msg("Step size too small");
-        LastTime = *t;
-        return (1);
-      }
-
-      break;
-
-    case METHOD_RKQS:
-    case METHOD_STIFF:
-      tout = tzero + dt * (icount + 1);
-      if (fabs(dt) < fabs(HMIN)) {
-        LastTime = *t;
-        return (1);
-      }
-      MSWTCH(xpv.x, x);
-      adaptive(xpv.x, nodes, t, tout, TOLER, &hguess, HMIN, WORK, &kflag,
-               NEWT_ERR, METHOD, start);
-      MSWTCH(x, xpv.x);
-      if (DelayErr) {
-        DelayErr = 0;
-        err_dae();
-        LastTime = *t;
-        return (1);
-      }
-      if (kflag) {
-        ping();
-        if (RANGE_FLAG || SuppressBounds) {
-          LastTime = *t;
-          return (1);
-        }
-        err_msg(adaptive_errmsg(kflag));
-        LastTime = *t;
-        return (1);
-      }
-
-      break;
-    default: {
-
-      MSWTCH(xpv.x, x);
-
-      kflag = solver(xpv.x, t, dt, nout, nodes, start, WORK);
-
-      MSWTCH(x, xpv.x);
-
-      if (kflag < 0) {
-        ping();
-        if (RANGE_FLAG || SuppressBounds)
-          break;
-        switch (kflag) {
-        case -1:
-          err_msg("Singular Jacobian ");
-          break;
-        case -2:
-          err_msg("Too many iterates ");
-          break;
-        }
-
-        LastTime = *t;
-        return (1);
-      }
+    if (fabs(dt) < fabs(HMIN)) {
+      LastTime = *t;
+      solver_end();
+      return 1;
     }
+
+    MSWTCH(xpv.x, x);
+    int kflag = solver_integrate(xpv.x, t, xpv.node + xpv.nvec - NMarkov,
+                                 tzero + dt * (icount + 1), start);
+    MSWTCH(x, xpv.x);
+    if (DelayErr) {
+      DelayErr = 0;
+      LastTime = *t;
+      err_dae();
+      return 1;
     }
-    /*   START POST INTEGRATE STUFF */
+
+    if (kflag) {
+      if (!RANGE_FLAG && !SuppressBounds) {
+        solver_errmsg(kflag);
+        ping();
+      }
+
+      LastTime = *t;
+      return 1;
+    }
+
+    /* START POST INTEGRATE STUFF */
 
     extra(x, *t, NODE, NEQ);
 
@@ -2115,10 +1956,7 @@ int integrate(double *t, double *x, double tend, double dt, int count, int nout,
   }
 
   LastTime = *t;
-#ifdef CVODE_YES
-  if (METHOD == METHOD_CVODE)
-    end_cv();
-#endif
+  solver_end();
   return (rval);
 }
 

@@ -8,9 +8,9 @@
 #include "eigen.h"
 #include "load_eqn.h"
 #include "my_rhs.h"
-#include "numerics.h"
 #include "parserslow.h"
 #include "pp_shoot.h"
+#include "solver.h"
 
 /* --- Types --- */
 typedef struct {

@@ -27,12 +27,12 @@
 #include "menus.h"
 #include "my_ps.h"
 #include "my_rhs.h"
-#include "numerics.h"
 #include "parserslow.h"
 #include "pop_list.h"
 #include "pp_shoot.h"
 #include "rubber.h"
 #include "run_auto.h"
+#include "solver.h"
 #include "storage.h"
 #include "ui-x11/file-selector.h"
 

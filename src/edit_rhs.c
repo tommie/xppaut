@@ -13,9 +13,9 @@
 #include "main.h"
 #include "many_pops.h"
 #include "menus.h"
-#include "numerics.h"
 #include "parserslow.h"
 #include "pop_list.h"
+#include "solver.h"
 #include "base/timeutil.h"
 #include "ui-x11/file-selector.h"
 

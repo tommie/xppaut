@@ -60,6 +60,7 @@
 #include "pop_list.h"
 #include "read_dir.h"
 #include "simplenet.h"
+#include "solver.h"
 #include "storage.h"
 #include "txtread.h"
 #include "userbut.h"
@@ -190,14 +191,13 @@ int main(int argc, char **argv) {
 #endif
 
   if (disc(this_file))
-    METHOD = METHOD_DISCRETE;
+    solver_set_method(METHOD_DISCRETE);
   xppvermaj = (float)cstringmaj;
   xppvermin = (float)cstringmin;
   if (strlen(this_file) < 60)
     sprintf(pptitle, "XPP Ver %g.%g >> %s", xppvermaj, xppvermin, this_file);
   else
     sprintf(pptitle, "XPP Version %g.%g", xppvermaj, xppvermin);
-  do_meth();
 
   set_delay();
   init_fit_info();

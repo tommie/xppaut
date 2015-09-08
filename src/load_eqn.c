@@ -33,6 +33,7 @@
 #include "numerics.h"
 #include "parserslow.h"
 #include "read_dir.h"
+#include "solver.h"
 #include "storage.h"
 #include "strutil.h"
 #include "tabular.h"
@@ -225,9 +226,8 @@ void loadeqn_init_options(void) {
   INFLAG = 0;
   oldhp_x = -100000.0;
   oldhp_y = -100000.0;
-  solver = rung_kut;
   PLOT_3D = 0;
-  METHOD = METHOD_RK4;
+  solver_set_method(METHOD_RK4);
   MY_XLO = 0.0;
   x_3d[0] = MY_XLO;
   MY_XHI = 20.0;
@@ -314,8 +314,6 @@ void loadeqn_setup_all(void) {
   }
   if (AXES >= 5)
     PLOT_3D = 1;
-
-  chk_volterra();
 
   integrate_setup_range();
   adj2_setup_trans();
@@ -406,7 +404,6 @@ static void do_intern_set(char *name1, char *value) {
     }
   }
   alloc_meth();
-  do_meth();
 }
 
 /* ODE options stuff here !! */
@@ -726,7 +723,7 @@ void set_option(char *s1, char *s2) {
   if (strprefix("METH", s1)) {
     for (i = 0; i < 15; i++)
       if (s2[0] == mkey[i] || s2[0] == Mkey[i])
-        METHOD = i;
+        solver_set_method((Method) i);
     return;
   }
   if (strprefix("VMAXPTS", s1)) {

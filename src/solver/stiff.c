@@ -8,7 +8,7 @@
 #include "../markov.h"
 #include "../matrixalg.h"
 #include "../my_rhs.h"
-#include "../numerics.h"
+#include "../solver.h"
 #include "../xpplim.h"
 
 /* --- Macros --- */

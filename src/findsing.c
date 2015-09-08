@@ -15,7 +15,7 @@
 #include "matrixalg.h"
 #include "menudrive.h"
 #include "my_rhs.h"
-#include "numerics.h"
+#include "solver.h"
 
 /* --- Forward Declarations --- */
 static void get_evec(double *a, double *anew, double *b, double *bp, int n,

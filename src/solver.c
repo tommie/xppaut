@@ -2,17 +2,31 @@
 
 #include <math.h>
 
+#include "form_ode.h"
 #include "ggets.h"
 #include "integrate.h"
 #include "load_eqn.h"
 #include "numerics.h"
+#include "parserslow.h"
 #include "storage.h"
+#include "solver/adams.h"
+#include "solver/backeuler.h"
 #include "solver/cv2.h"
+#include "solver/discrete.h"
 #include "solver/dormpri.h"
+#include "solver/euler.h"
 #include "solver/gear.h"
+#include "solver/modeuler.h"
 #include "solver/rb23.h"
+#include "solver/rk4.h"
 #include "solver/stiff.h"
+#include "solver/symplect.h"
 #include "solver/volterra2.h"
+
+/* --- Data --- */
+Method METHOD;
+static int (*solver)(double *y, double *tim, double dt, int nstep, int neq,
+                     int *ist, double *work);
 
 void solver_end(void) {
   switch (METHOD) {
@@ -135,4 +149,62 @@ int solver_integrate(double *y, double *t, int node, double tend, int *istart) {
   }
 
   return 0;
+}
+
+void solver_set_method(Method m) {
+  if (m == METHOD_VOLTERRA && NKernel == 0) {
+    err_msg("Volterra only for integral eqns");
+    m = METHOD_ADAMS;
+  }
+  if (NKernel > 0)
+    m = METHOD_VOLTERRA;
+  if (m == METHOD_SYMPLECT) {
+    if ((NODE % 2) != 0) {
+      err_msg("Symplectic is only for even dimensions");
+      m = METHOD_ADAMS;
+    }
+  }
+
+  switch (m) {
+  case METHOD_DISCRETE:
+    solver = discrete;
+    DELTA_T = 1;
+    break;
+  case METHOD_EULER:
+    solver = euler;
+    break;
+  case METHOD_MODEULER:
+    solver = mod_euler;
+    break;
+  case METHOD_RK4:
+    solver = rung_kut;
+    break;
+  case METHOD_ADAMS:
+    solver = adams;
+    break;
+  case METHOD_GEAR:
+    NJMP = 1;
+    break;
+  case METHOD_VOLTERRA:
+    solver = volterra;
+    break;
+  case METHOD_SYMPLECT:
+    solver = symplect3;
+    break;
+  case METHOD_BACKEUL:
+    solver = back_euler;
+    break;
+  case METHOD_RKQS:
+  case METHOD_STIFF:
+  case METHOD_CVODE:
+  case METHOD_DP5:
+  case METHOD_DP83:
+  case METHOD_RB23:
+    NJMP = 1;
+    break;
+  default:
+    solver = rung_kut;
+  }
+
+  METHOD = m;
 }

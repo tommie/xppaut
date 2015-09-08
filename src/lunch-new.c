@@ -19,6 +19,7 @@
 #include "many_pops.h"
 #include "numerics.h"
 #include "parserslow.h"
+#include "solver.h"
 #include "storage.h"
 #include "solver/volterra2.h"
 #include "ui-x11/file-selector.h"
@@ -315,7 +316,7 @@ static void io_numerics(int f, FILE *fp) {
   int im = METHOD;
   io_int(&im, fp, f, method[METHOD]);
   if (f == READEM) {
-    do_meth();
+    solver_set_method((Method) im);
     alloc_meth();
   }
   io_double(&TEND, fp, f, "total");

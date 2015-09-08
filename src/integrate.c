@@ -132,8 +132,6 @@ int MyStart;
 int RANGE_FLAG;
 double LastTime;
 RANGE range;
-int (*solver)(double *y, double *tim, double dt, int nstep, int neq, int *ist,
-              double *work);
 
 static int ar_ic_defined = 0;
 static ARRAY_IC ar_ic[NAR_IC];

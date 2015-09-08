@@ -5,7 +5,7 @@
 #include "form_ode.h"
 #include "ggets.h"
 #include "integrate.h"
-#include "numerics.h"
+#include "solver.h"
 
 /* --- Data --- */
 float **storage;

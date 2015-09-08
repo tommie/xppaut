@@ -26,14 +26,8 @@
 #include "parserslow.h"
 #include "pop_list.h"
 #include "pp_shoot.h"
+#include "solver.h"
 #include "storage.h"
-#include "solver/adams.h"
-#include "solver/backeuler.h"
-#include "solver/discrete.h"
-#include "solver/euler.h"
-#include "solver/modeuler.h"
-#include "solver/rk4.h"
-#include "solver/symplect.h"
 #include "solver/volterra2.h"
 
 /* --- Forward Declarations --- */
@@ -42,14 +36,7 @@ static Method get_method(void);
 static void ruelle(void);
 
 /* --- Data --- */
-Method METHOD;
-
 int cv_bandflag = 0, cv_bandupper = 1, cv_bandlower = 1;
-
-void chk_volterra(void) {
-  if (NKernel > 0)
-    METHOD = METHOD_VOLTERRA;
-}
 
 void check_pos(int *j) {
   if (*j <= 0)
@@ -179,15 +166,10 @@ void get_num_par(int ch) {
     {
       Method m = get_method();
 
-      if (m == METHOD_VOLTERRA && NKernel == 0) {
-        err_msg("Volterra only for integral eqns");
-        m = METHOD_ADAMS;
-      }
-      if (NKernel > 0)
-        m = METHOD_VOLTERRA;
+      if (m == METHOD_UNKNOWN)
+        break;
 
-      if (m != METHOD_UNKNOWN)
-        METHOD = m;
+      solver_set_method(m);
     }
     if (METHOD == METHOD_GEAR || METHOD == METHOD_RKQS ||
         METHOD == METHOD_STIFF) {
@@ -217,12 +199,6 @@ void get_num_par(int ch) {
       if (cv_bandflag == 1) {
         new_int("Lower band:", &cv_bandlower);
         new_int("Upper band:", &cv_bandupper);
-      }
-    }
-    if (METHOD == METHOD_SYMPLECT) {
-      if ((NODE % 2) != 0) {
-        err_msg("Symplectic is only for even dimensions");
-        METHOD = METHOD_ADAMS;
       }
     }
     flash(8);
@@ -283,7 +259,6 @@ void get_num_par(int ch) {
     flash(14);
     break;
   case 27:
-    do_meth();
     TEND = fabs(TEND);
     alloc_meth();
     help();
@@ -536,50 +511,5 @@ void set_col_par_com(int i) {
     MyGraph->color_scale = (temp[1] - temp[0]);
     if (MyGraph->color_scale == 0.0)
       MyGraph->color_scale = 1.0;
-  }
-}
-
-void do_meth(void) {
-  chk_volterra();
-
-  switch (METHOD) {
-  case METHOD_DISCRETE:
-    solver = discrete;
-    DELTA_T = 1;
-    break;
-  case METHOD_EULER:
-    solver = euler;
-    break;
-  case METHOD_MODEULER:
-    solver = mod_euler;
-    break;
-  case METHOD_RK4:
-    solver = rung_kut;
-    break;
-  case METHOD_ADAMS:
-    solver = adams;
-    break;
-  case METHOD_GEAR:
-    NJMP = 1;
-    break;
-  case METHOD_VOLTERRA:
-    solver = volterra;
-    break;
-  case METHOD_SYMPLECT:
-    solver = symplect3;
-    break;
-  case METHOD_BACKEUL:
-    solver = back_euler;
-    break;
-  case METHOD_RKQS:
-  case METHOD_STIFF:
-  case METHOD_CVODE:
-  case METHOD_DP5:
-  case METHOD_DP83:
-  case METHOD_RB23:
-    NJMP = 1;
-    break;
-  default:
-    solver = rung_kut;
   }
 }

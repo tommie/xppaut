@@ -16,8 +16,8 @@
 #include "numerics.h"
 #include "parserslow.h"
 #include "pop_list.h"
+#include "solver.h"
 #include "storage.h"
-#include "solver/cv2.h"
 
 /* --- Macros --- */
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -138,10 +138,7 @@ static void get_fit_info(double *y, double *a, double *t0, int *flag,
       yfit[i + k0] = y[iv];
     }
   }
-#ifdef CVODE_YES
-  if (METHOD == METHOD_CVODE)
-    end_cv();
-#endif
+  solver_end();
   /*  Now we take the derivatives !!   */
   for (l = 0; l < npars; l++) {
     istart = 1;
@@ -189,10 +186,7 @@ static void get_fit_info(double *y, double *a, double *t0, int *flag,
     if (ip < 0)
       constants[-ip] = par;
     evaluate_derived();
-#ifdef CVODE_YES
-    if (METHOD == METHOD_CVODE)
-      end_cv();
-#endif
+    solver_end();
   }
   *flag = 1;
   for (i = 0; i < NODE; i++)

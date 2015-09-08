@@ -3,6 +3,7 @@
 
 /* --- Types --- */
 typedef enum {
+  METHOD_UNKNOWN = -1,
   METHOD_DISCRETE,
   METHOD_EULER,
   METHOD_MODEULER,

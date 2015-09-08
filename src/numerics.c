@@ -38,7 +38,7 @@
 
 /* --- Forward Declarations --- */
 static void check_pos(int *j);
-static void get_method(void);
+static Method get_method(void);
 static void ruelle(void);
 
 /* --- Data --- */
@@ -176,13 +176,19 @@ void get_num_par(int ch) {
   case 'm':
     flash(8);
     /* method */
-    get_method();
-    if (METHOD == METHOD_VOLTERRA && NKernel == 0) {
-      err_msg("Volterra only for integral eqns");
-      METHOD = METHOD_ADAMS;
+    {
+      Method m = get_method();
+
+      if (m == METHOD_VOLTERRA && NKernel == 0) {
+        err_msg("Volterra only for integral eqns");
+        m = METHOD_ADAMS;
+      }
+      if (NKernel > 0)
+        m = METHOD_VOLTERRA;
+
+      if (m != METHOD_UNKNOWN)
+        METHOD = m;
     }
-    if (NKernel > 0)
-      METHOD = METHOD_VOLTERRA;
     if (METHOD == METHOD_GEAR || METHOD == METHOD_RKQS ||
         METHOD == METHOD_STIFF) {
       new_float("Tolerance :", &TOLER);
@@ -415,7 +421,7 @@ void get_pmap_pars_com(int l) {
   }
 }
 
-void get_method(void) {
+static Method get_method(void) {
   char ch;
   int i;
   int nmeth;
@@ -434,10 +440,9 @@ void get_method(void) {
                          DCURY + 8, meth_hint, info_pop, info_message);
   for (i = 0; i < nmeth; i++)
     if (ch == key[i])
-      METHOD = i;
-  if (i > (nmeth - 1))
-    i = nmeth - 1;
-  /* XDestroyWindow(display,temp); */
+      return (Method) i;
+
+  return METHOD_UNKNOWN;
 }
 
 void user_set_color_par(int flag, char *via, double lo, double hi) {

@@ -26,7 +26,7 @@
 
 /* --- Data --- */
 Method METHOD = METHOD_UNKNOWN;
-double *WORK = NULL;
+static double *WORK;
 static int (*solver)(double *y, double *tim, double dt, int nstep, int neq,
                      int *ist, double *work);
 
@@ -136,7 +136,8 @@ int solver_integrate(double *y, double *t, int node, double tend, int *istart) {
 
   case METHOD_DP5:
   case METHOD_DP83:
-    dp(istart, y, t, node, tend, &TOLER, &ATOLER, METHOD - METHOD_DP5, &kflag);
+    dp(istart, y, t, node, tend, &TOLER, &ATOLER, METHOD - METHOD_DP5, &kflag,
+       WORK);
     return kflag - 1; /* Adjust so 0 means success. */
 
   case METHOD_RB23:

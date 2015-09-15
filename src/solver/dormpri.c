@@ -9,7 +9,6 @@
 #include "../flags.h"
 #include "../ggets.h"
 #include "../my_rhs.h"
-#include "../solver.h"
 #include "../xpplim.h"
 
 /* --- Types --- */
@@ -106,8 +105,8 @@ void dp_err(int k)
   istart=1 for first time
   istart=0 for continuation
 */
-static int dormprin(istart,y,t,n,tout,tol,atol,flag,kflag)
-     double *y,*t,tout,*tol,*atol;
+static int dormprin(istart,y,t,n,tout,tol,atol,flag,kflag,work)
+     double *y,*t,tout,*tol,*atol,*work;
      int flag,*istart,*kflag,n;
 {
   double hg=0.0;
@@ -116,12 +115,12 @@ static int dormprin(istart,y,t,n,tout,tol,atol,flag,kflag)
   switch(flag){
   case 0:
     *kflag=dopri5(n,dprhs,*t,y,tout,tol,atol,0,(SolTrait)NULL,0,stdout,0.0,
-           0.0,0.0,0.0,0.0,0.0,hg,0,0,1,0,NULL,0,WORK);
+           0.0,0.0,0.0,0.0,0.0,hg,0,0,1,0,NULL,0,work);
            *t=tout;
     return 1;
   case 1:
      *kflag=dop853(n,dprhs,*t,y,tout,tol,atol,0,(SolTrait)NULL,0,stdout,0.0,
-           0.0,0.0,0.0,0.0,0.0,hg,0,0,1,0,NULL,0,WORK);
+           0.0,0.0,0.0,0.0,0.0,hg,0,0,1,0,NULL,0,work);
            *t=tout;
      return 1;
   }
@@ -130,7 +129,7 @@ static int dormprin(istart,y,t,n,tout,tol,atol,flag,kflag)
 
 static int one_flag_step_dp(int *istart, double *y, double *t, int n,
                             double tout, double *tol, double *atol,
-                            int flag, int *kflag) {
+                            int flag, int *kflag, double *work) {
   double yold[MAXODE], told;
   int i, hit;
   double s;
@@ -139,7 +138,7 @@ static int one_flag_step_dp(int *istart, double *y, double *t, int n,
     for (i = 0; i < n; i++)
       yold[i] = y[i];
     told = *t;
-    dormprin(istart, y, t, n, tout, tol, atol, flag, kflag);
+    dormprin(istart, y, t, n, tout, tol, atol, flag, kflag, work);
     if (*kflag != 1)
       break;
     if ((hit = one_flag_step(yold, y, istart, told, t, n, &s)) == 0)
@@ -160,13 +159,13 @@ static int one_flag_step_dp(int *istart, double *y, double *t, int n,
 }
 
 int dp(int *istart, double *y, double *t, int n, double tout, double *tol,
-       double *atol, int flag, int *kflag)
+       double *atol, int flag, int *kflag, double *work)
 {
  int err = 0;
  if (NFlags == 0)
-   err = dormprin(istart, y, t, n, tout, tol, atol, flag, kflag);
+   err = dormprin(istart, y, t, n, tout, tol, atol, flag, kflag, work);
  else
-   err = one_flag_step_dp(istart, y, t, n, tout, tol, atol, flag, kflag);
+   err = one_flag_step_dp(istart, y, t, n, tout, tol, atol, flag, kflag, work);
  if (err == 1)
    *kflag = -9;
  if (!*kflag)

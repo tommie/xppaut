@@ -25,7 +25,6 @@ typedef enum {
 
 /* --- Data --- */
 extern Method METHOD;
-extern double *WORK;
 
 /* --- Functions --- */
 void solver_alloc(int nn);

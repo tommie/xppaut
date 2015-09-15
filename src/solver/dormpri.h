@@ -351,6 +351,6 @@ nfcnRead    Number of function calls.
 /* --- Functions --- */
 void dp_err(int k);
 int dp(int *istart, double *y, double *t, int n, double tout, double *tol,
-       double *atol, int flag, int *kflag);
+       double *atol, int flag, int *kflag, double *work);
 
 #endif /* XPPAUT_SOLVER_DORMPRI_H */

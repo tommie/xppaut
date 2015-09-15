@@ -2,7 +2,6 @@
 #define XPPAUT_STORAGE_H
 
 /* --- Data --- */
-extern int IWORK[10000];
 extern int MAXSTOR;
 extern float **storage;
 extern int storind;

@@ -25,8 +25,10 @@ typedef enum {
 
 /* --- Data --- */
 extern Method METHOD;
+extern double *WORK;
 
 /* --- Functions --- */
+void solver_alloc(int nn);
 void solver_end(void);
 void solver_errmsg(int kflag);
 int solver_integrate(double *y, double *t, int node, double tend, int *istart);

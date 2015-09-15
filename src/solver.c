@@ -1,6 +1,7 @@
 #include "solver.h"
 
 #include <math.h>
+#include <stdlib.h>
 
 #include "form_ode.h"
 #include "ggets.h"
@@ -24,9 +25,35 @@
 #include "solver/volterra2.h"
 
 /* --- Data --- */
-Method METHOD;
+Method METHOD = METHOD_UNKNOWN;
+double *WORK = NULL;
 static int (*solver)(double *y, double *tim, double dt, int nstep, int neq,
                      int *ist, double *work);
+
+void solver_alloc(int nn) {
+  int sz;
+
+  switch (METHOD) {
+  case METHOD_STIFF:
+    sz = 2 * nn * nn + 13 * nn + 100;
+    break;
+  case METHOD_GEAR:
+    sz = 30 * nn + nn * nn + 100;
+    break;
+  case METHOD_BACKEUL:
+  case METHOD_VOLTERRA:
+    sz = 10 * nn + nn * nn + 100;
+    break;
+  case METHOD_RB23:
+    sz = 12 * nn + 100 + nn * nn;
+    break;
+  default:
+    sz = 30 * nn;
+    break;
+  }
+
+  WORK = realloc(WORK, sz * sizeof(*WORK));
+}
 
 void solver_end(void) {
   switch (METHOD) {

@@ -9,7 +9,6 @@
 
 /* --- Data --- */
 float **storage;
-double *WORK;
 int MAXSTOR, storind;
 
 void init_alloc_info(void) {
@@ -23,30 +22,7 @@ void init_alloc_info(void) {
 }
 
 void alloc_meth(void) {
-  int nn = xpv.node + xpv.nvec;
-  int sz = 30 * nn;
-  switch (METHOD) {
-  case METHOD_STIFF:
-    sz = 2 * nn * nn + 13 * nn + 100;
-
-    break;
-  case METHOD_GEAR:
-    sz = 30 * nn + nn * nn + 100;
-    break;
-  case METHOD_BACKEUL:
-  case METHOD_VOLTERRA:
-    sz = 10 * nn + nn * nn + 100;
-    break;
-  case METHOD_RB23:
-    sz = 12 * nn + 100 + nn * nn;
-    break;
-  default:
-    break;
-  }
-  if (WORK)
-    free(WORK);
-  WORK = (double *)malloc(sz * sizeof(double));
-  /* plintf(" I have allocated %d doubles \n",sz); */
+  solver_alloc(xpv.node + xpv.nvec);
 }
 
 int reallocstor(int ncol, int nrow) {
@@ -63,9 +39,6 @@ int reallocstor(int ncol, int nrow) {
 
 void init_stor(int nrow, int ncol) {
   int i;
-  /* WORK=(double *)malloc(WORKSIZE*sizeof(double));
-     if(WORK!=NULL){ */
-  WORK = NULL;
   storage = (float **)malloc((MAXODE + 1) * sizeof(float *));
   MAXSTOR = nrow;
   storind = 0;

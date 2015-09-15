@@ -9,7 +9,7 @@
 #include "../flags.h"
 #include "../ggets.h"
 #include "../my_rhs.h"
-#include "../storage.h"
+#include "../solver.h"
 #include "../xpplim.h"
 
 /* --- Types --- */

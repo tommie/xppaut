@@ -5,7 +5,6 @@
 extern int MAXSTOR;
 extern float **storage;
 extern int storind;
-extern double *WORK;
 
 /* --- Functions --- */
 void alloc_meth(void);

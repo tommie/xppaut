@@ -158,7 +158,7 @@ static void do_info(FILE *fp) {
 }
 
 int read_lunch(FILE *fp) {
-  int f = READEM, ne, np, temp;
+  int f = READEM, ne, np;
   char bob[256];
 
   fgets(bob, 255, fp);
@@ -176,11 +176,6 @@ int read_lunch(FILE *fp) {
     return 0;
   }
   io_numerics(f, fp);
-  if (METHOD == METHOD_VOLTERRA) {
-    io_int(&temp, fp, f, " ");
-    allocate_volterra(temp, 1);
-    MyStart = 1;
-  }
   chk_delay();
   io_exprs(f, fp);
   io_graph(f, fp);
@@ -228,9 +223,6 @@ void do_lunch(int f) {
   io_int(&NEQ, fp, f, "Number of equations and auxiliaries");
   io_int(&NUPAR, fp, f, "Number of parameters");
   io_numerics(f, fp);
-  if (METHOD == METHOD_VOLTERRA) {
-    io_int(&MaxPoints, fp, f, "Max points for volterra");
-  }
   io_exprs(f, fp);
   io_graph(f, fp);
   dump_transpose_info(fp, f);
@@ -327,6 +319,17 @@ static void io_numerics(int f, FILE *fp) {
   io_double(&LastTime, fp, f, "Last Time");
   io_int(&MyStart, fp, f, "MyStart");
   io_int(&INFLAG, fp, f, "INFLAG");
+  if (METHOD == METHOD_VOLTERRA) {
+    /* We cannot read into MaxPoints since allocate_volterra depends
+     * on being able to reset back to the old value on failure.
+     */
+    int max_points = MaxPoints;
+    io_int(&max_points, fp, f, "Max points for volterra");
+    if (f == READEM) {
+      allocate_volterra(max_points, 1 /* free first */);
+      MyStart = 1;
+    }
+  }
 }
 
 void io_parameter_file(char *fn, int flag) {

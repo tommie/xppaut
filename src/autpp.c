@@ -49,7 +49,7 @@ int func_(integer *ndim, doublereal *u, integer *icp, doublereal *par,
   }
   evaluate_derived();
   my_rhs(0.0, u, f, *ndim);
-  if (METHOD != METHOD_DISCRETE || NJMP == 1)
+  if (METHOD != METHOD_DISCRETE)
     return 0;
   for (i = 1; i < NJMP; i++) {
     for (j = 0; j < *ndim; j++)

@@ -11,9 +11,9 @@
 /* --- Functions --- */
 void do_lunch(int f);
 void file_inf(void);
-void io_double(double *z, FILE *fp, int f, char *ss);
+void io_double(double *z, FILE *fp, int f, const char *ss);
 void io_ic_file(char *fn, int flag);
-void io_int(int *i, FILE *fp, int f, char *ss);
+void io_int(int *i, FILE *fp, int f, const char *ss);
 void io_parameter_file(char *fn, int flag);
 void io_string(char *s, int len, FILE *fp, int f);
 void ps_write_pars(FILE *fp);

@@ -564,7 +564,7 @@ static void io_graph(int f, FILE *fp) {
     redraw_the_graph();
 }
 
-void io_int(int *i, FILE *fp, int f, char *ss) {
+void io_int(int *i, FILE *fp, int f, const char *ss) {
   char bob[256];
   if (f == READEM) {
     fgets(bob, 255, fp);
@@ -573,7 +573,7 @@ void io_int(int *i, FILE *fp, int f, char *ss) {
     fprintf(fp, "%d   %s\n", *i, ss);
 }
 
-void io_double(double *z, FILE *fp, int f, char *ss) {
+void io_double(double *z, FILE *fp, int f, const char *ss) {
   char bob[256];
   if (f == READEM) {
     fgets(bob, 255, fp);

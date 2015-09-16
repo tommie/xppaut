@@ -89,12 +89,14 @@ static void do_info(FILE *fp) {
   char fstr[15];
   fprintf(fp, "File: %s \n\n Equations... \n", this_file);
   for (i = 0; i < NEQ; i++) {
-    if (i < NODE && METHOD != METHOD_DISCRETE)
-      strcpy(fstr, "d%s/dT=%s\n");
-    if (i < NODE && METHOD == METHOD_DISCRETE)
-      strcpy(fstr, "%s(n+1)=%s\n");
-    if (i >= NODE)
+    if (i < NODE) {
+      if (METHOD == METHOD_DISCRETE)
+        strcpy(fstr, "%s(n+1)=%s\n");
+      else
+        strcpy(fstr, "d%s/dT=%s\n");
+    } else {
       strcpy(fstr, "%s=%s\n");
+    }
     fprintf(fp, fstr, uvar_names[i], ode_names[i]);
   }
 
@@ -246,12 +248,14 @@ static void dump_eqn(FILE *fp) {
   char fstr[15];
   fprintf(fp, "RHS etc ...\n");
   for (i = 0; i < NEQ; i++) {
-    if (i < NODE && METHOD != METHOD_DISCRETE)
-      strcpy(fstr, "d%s/dT=%s\n");
-    if (i < NODE && METHOD == METHOD_DISCRETE)
-      strcpy(fstr, "%s(n+1)=%s\n");
-    if (i >= NODE)
+    if (i < NODE) {
+      if (METHOD == METHOD_DISCRETE)
+        strcpy(fstr, "%s(n+1)=%s\n");
+      else
+        strcpy(fstr, "d%s/dT=%s\n");
+    } else {
       strcpy(fstr, "%s=%s\n");
+    }
     fprintf(fp, fstr, uvar_names[i], ode_names[i]);
   }
 

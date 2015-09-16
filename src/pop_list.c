@@ -12,6 +12,7 @@
 #include "main.h"
 #include "many_pops.h"
 #include "menudrive.h"
+#include "solver.h"
 #include "base/timeutil.h"
 #include "bitmap/alert.bitmap"
 #include "bitmap/info.bitmap"
@@ -132,10 +133,6 @@ void set_window_title(Window win, char *string) {
 /* these are the standard lists that are possible */
 void make_scrbox_lists(void) {
   int i, n;
-  static char *method[] = {
-      "Discrete", "Euler",    "Mod. Euler", "Runge-Kutta", "Adams",
-      "Gear",     "Volterra", "BackEul",    "QualRK",      "Stiff",
-      "CVode",    "DoPri5",   "DoPri8(3)",  "Rosenbrock",  "Symplectic"};
   /* plottable list */
   scrbox_list[0].n = NEQ + 1;
   scrbox_list[0].list = (char **)malloc((NEQ + 1) * sizeof(char *));
@@ -193,10 +190,10 @@ void make_scrbox_lists(void) {
   strcpy(scrbox_list[5].list[5], "7 Circle");
   /* method list */
   scrbox_list[6].list = (char **)malloc(15 * sizeof(char *));
-  scrbox_list[6].n = 15;
-  for (i = 0; i < 15; i++) {
+  scrbox_list[6].n = NUM_METHODS;
+  for (i = 0; i < NUM_METHODS; i++) {
     scrbox_list[6].list[i] = (char *)malloc(22 * sizeof(char));
-    sprintf(scrbox_list[6].list[i], "%d %s", i, method[i]);
+    sprintf(scrbox_list[6].list[i], "%d %s", i, solver_display_name(i));
   }
 }
 

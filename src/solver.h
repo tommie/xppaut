@@ -2,6 +2,7 @@
 #define XPPAUT_SOLVER_H
 
 /* --- Types --- */
+/* Keep METHOD_DISPLAY_NAMES in sync with this. */
 typedef enum {
   METHOD_UNKNOWN = -1,
   METHOD_DISCRETE,
@@ -28,6 +29,7 @@ extern Method METHOD;
 
 /* --- Functions --- */
 void solver_alloc(int nn);
+const char *solver_display_name(Method m);
 void solver_end(void);
 void solver_errmsg(int kflag);
 int solver_integrate(double *y, double *t, int node, double tend, int *istart);

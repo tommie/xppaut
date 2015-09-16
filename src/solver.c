@@ -26,6 +26,11 @@
 
 /* --- Data --- */
 Method METHOD = METHOD_UNKNOWN;
+static const char *METHOD_DISPLAY_NAMES[] = {
+  "Discrete", "Euler",    "Mod. Euler", "Runge-Kutta", "Adams",
+  "Gear",     "Volterra", "BackEul",    "QualRK",      "Stiff",
+  "CVode",    "DoPri5",   "DoPri8(3)",  "Rosenbrock",  "Symplectic"
+};
 static double *WORK;
 static int (*solver)(double *y, double *tim, double dt, int nstep, int neq,
                      int *ist, double *work);
@@ -53,6 +58,13 @@ void solver_alloc(int nn) {
   }
 
   WORK = realloc(WORK, sz * sizeof(*WORK));
+}
+
+const char *solver_display_name(Method m) {
+  if (m < 0 || m >= NUM_METHODS)
+    return "Unknown";
+
+  return METHOD_DISPLAY_NAMES[m];
 }
 
 void solver_end(void) {

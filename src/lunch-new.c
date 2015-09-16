@@ -77,11 +77,6 @@ void ps_write_pars(FILE *fp) {
 
 static void do_info(FILE *fp) {
   int i;
-  /* Must match enum Method. */
-  static char *method[] = {
-      "Discrete", "Euler",    "Mod. Euler", "Runge-Kutta", "Adams",
-      "Gear",     "Volterra", "BackEul",    "QualRK",      "Stiff",
-      "CVode",    "DoPri5",   "DoPri8(3)",  "Rosenbrock",  "Symplectic"};
   int div, rem;
   int j;
   double z;
@@ -113,7 +108,7 @@ static void do_info(FILE *fp) {
   fprintf(fp, "\n\n Numerical parameters ...\n");
 
   fprintf(fp, "NJMP=%d  NMESH=%d METHOD=%s EVEC_ITER=%d \n", NJMP, NMESH,
-          method[METHOD], EVEC_ITER);
+          solver_display_name(METHOD), EVEC_ITER);
   fprintf(fp, "BVP_EPS=%g,BVP_TOL=%g,BVP_MAXIT=%d \n", BVP_EPS, BVP_TOL,
           BVP_MAXIT);
   fprintf(fp, "DT=%g T0=%g TRANS=%g TEND=%g BOUND=%g DELAY=%g MaxPts=%d\n",
@@ -263,11 +258,6 @@ static void dump_eqn(FILE *fp) {
 }
 
 static void io_numerics(int f, FILE *fp) {
-  /* Must match enum Method. */
-  char *method[] = {"Discrete",  "Euler", "Mod. Euler", "Runge-Kutta",
-                    "Adams",     "Gear",  "Volterra",   "BackEul",
-                    "Qual RK",   "Stiff", "CVode",      "DorPrin5",
-                    "DorPri8(3)"};
   char *pmap[] = {"Poincare None", "Poincare Section", "Poincare Max",
                   "Period"};
   char temp[256];
@@ -279,9 +269,9 @@ static void io_numerics(int f, FILE *fp) {
   io_int(&NJMP, fp, f, " nout");
   io_int(&NMESH, fp, f, " nullcline mesh");
   int im = METHOD;
-  io_int(&im, fp, f, method[METHOD]);
+  io_int(&im, fp, f, solver_display_name(METHOD));
   if (f == READEM) {
-    solver_set_method((Method) im);
+    solver_set_method((Method)im);
     alloc_meth();
   }
   io_double(&TEND, fp, f, "total");

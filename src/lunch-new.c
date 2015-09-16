@@ -194,8 +194,7 @@ int read_lunch(FILE *fp) {
 }
 
 void do_lunch(int f) {
-  int ne, np, ok, temp;
-  char bob[256];
+  int ok;
   FILE *fp;
   time_t ttt;
   /*char filename[256];*/
@@ -212,37 +211,7 @@ void do_lunch(int f) {
       err_msg("Cannot open file");
       return;
     }
-    fgets(bob, 255, fp);
-    if (bob[0] == '#') {
-      set_type = 1;
-      io_int(&ne, fp, f, " ");
-    } else {
-      ne = atoi(bob);
-      set_type = 0;
-    }
-    /* io_int(&ne,fp,f); */
-    io_int(&np, fp, f, " ");
-    if (ne != NEQ || np != NUPAR) {
-      err_msg("Incompatible parameters");
-      fclose(fp);
-      return;
-    }
-    io_numerics(f, fp);
-    if (METHOD == METHOD_VOLTERRA) {
-      io_int(&temp, fp, f, " ");
-      allocate_volterra(temp, 1);
-      MyStart = 1;
-    }
-    chk_delay();
-    io_exprs(f, fp);
-    io_graph(f, fp);
-    if (set_type == 1) {
-      dump_transpose_info(fp, f);
-      dump_h_stuff(fp, f);
-      dump_aplot(fp, f);
-      dump_torus(fp, f);
-      dump_range(fp, f);
-    }
+    read_lunch(fp);
     fclose(fp);
     return;
   }

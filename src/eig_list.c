@@ -66,14 +66,16 @@ void draw_eq_list(Window w) {
     for (i = eq_list.istart; i < eq_list.istart + eq_list.nlines; i++) {
       if (i >= NEQ)
         break;
-      if (i < NODE && METHOD != METHOD_DISCRETE)
-        strcpy(fstr, "d%s/dT=%s");
-      if (i < NODE && METHOD == METHOD_DISCRETE)
-        strcpy(fstr, "%s(n+1)=%s");
-      if (i < NODE && EqType[i] == 1)
-        strcpy(fstr, "%s(t)=%s");
-      if (i >= NODE)
+      if (i < NODE) {
+        if (EqType[i] == 1)
+          strcpy(fstr, "%s(t)=%s");
+        else if (METHOD == METHOD_DISCRETE)
+          strcpy(fstr, "%s(n+1)=%s");
+        else
+          strcpy(fstr, "d%s/dT=%s");
+      } else {
         strcpy(fstr, "%s=%s");
+      }
       sprintf(bob, fstr, uvar_names[i], ode_names[i]);
 
       bob[299] = 0;

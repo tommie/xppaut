@@ -300,7 +300,7 @@ void edit_rhs(void) {
   int **command;
   int i, status, err, len, i0, j;
   int n = NEQ;
-  char fstr[20], msg[200];
+  char msg[200];
   if (NEQ > NEQMAXFOREDIT)
     return;
   names = (char **)malloc(n * sizeof(char *));
@@ -310,17 +310,7 @@ void edit_rhs(void) {
     values[i] = (char *)malloc(MAX_LEN_EBOX * sizeof(char));
     names[i] = (char *)malloc(MAX_LEN_EBOX * sizeof(char));
     command[i] = (int *)malloc(200 * sizeof(int));
-    if (i < NODE) {
-      if (EqType[i] == 1)
-        strcpy(fstr, "%s(T)");
-      else if (METHOD == METHOD_DISCRETE)
-        strcpy(fstr, "%s(n+1)");
-      else
-        strcpy(fstr, "d%s/dT");
-    } else {
-      strcpy(fstr, "%s");
-    }
-    sprintf(names[i], fstr, uvar_names[i]);
+    form_ode_format_lhs(names[i], MAX_LEN_EBOX, i);
     strcpy(values[i], ode_names[i]);
   }
   status = do_edit_box(n, "Right Hand Sides", names, values);

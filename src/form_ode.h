@@ -55,6 +55,8 @@ extern char uvar_names[MAXODE][12];
 void create_plot_list(void);
 int disc(char *string);
 int find_char(char *s1, char *s2, int i0, int *i1);
+int form_ode_format_eqn(char *buf, int size, int eq);
+int form_ode_format_lhs(char *buf, int size, int eq);
 int get_eqn(FILE *fptr);
 int make_eqn(void);
 int search_array(char *old, char *new, int *i1, int *i2, int *flag);

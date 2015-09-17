@@ -52,7 +52,6 @@ static void eq_list_up(void);
 void draw_eq_list(Window w) {
   int i;
   char bob[300];
-  char fstr[15];
   if (eq_list.flag == 0)
     return;
   if (w == eq_list.up)
@@ -66,19 +65,7 @@ void draw_eq_list(Window w) {
     for (i = eq_list.istart; i < eq_list.istart + eq_list.nlines; i++) {
       if (i >= NEQ)
         break;
-      if (i < NODE) {
-        if (EqType[i] == 1)
-          strcpy(fstr, "%s(t)=%s");
-        else if (METHOD == METHOD_DISCRETE)
-          strcpy(fstr, "%s(n+1)=%s");
-        else
-          strcpy(fstr, "d%s/dT=%s");
-      } else {
-        strcpy(fstr, "%s=%s");
-      }
-      sprintf(bob, fstr, uvar_names[i], ode_names[i]);
-
-      bob[299] = 0;
+      form_ode_format_eqn(bob, sizeof(bob), i);
       XDrawString(display, w, small_gc, 0,
                   CURY_OFFs + (i - eq_list.istart) * (DCURYs + 2), bob,
                   strlen(bob));

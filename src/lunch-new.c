@@ -81,18 +81,10 @@ static void do_info(FILE *fp) {
   int j;
   double z;
   char bob[200];
-  char fstr[15];
   fprintf(fp, "File: %s \n\n Equations... \n", this_file);
   for (i = 0; i < NEQ; i++) {
-    if (i < NODE) {
-      if (METHOD == METHOD_DISCRETE)
-        strcpy(fstr, "%s(n+1)=%s\n");
-      else
-        strcpy(fstr, "d%s/dT=%s\n");
-    } else {
-      strcpy(fstr, "%s=%s\n");
-    }
-    fprintf(fp, fstr, uvar_names[i], ode_names[i]);
+    form_ode_format_eqn(bob, sizeof(bob), i);
+    fprintf(fp, "%s\n", bob);
   }
 
   if (FIX_VAR > 0) {
@@ -232,18 +224,11 @@ void do_lunch(int f) {
 static void dump_eqn(FILE *fp) {
   int i;
 
-  char fstr[15];
   fprintf(fp, "RHS etc ...\n");
   for (i = 0; i < NEQ; i++) {
-    if (i < NODE) {
-      if (METHOD == METHOD_DISCRETE)
-        strcpy(fstr, "%s(n+1)=%s\n");
-      else
-        strcpy(fstr, "d%s/dT=%s\n");
-    } else {
-      strcpy(fstr, "%s=%s\n");
-    }
-    fprintf(fp, fstr, uvar_names[i], ode_names[i]);
+    char buf[200];
+    form_ode_format_eqn(buf, sizeof(buf), i);
+    fprintf(fp, "%s\n", buf);
   }
 
   if (FIX_VAR > 0) {

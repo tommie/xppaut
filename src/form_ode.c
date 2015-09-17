@@ -19,6 +19,7 @@
 #include "parserslow.h"
 #include "read_dir.h"
 #include "simplenet.h"
+#include "solver.h"
 #include "strutil.h"
 #include "ui-x11/file-selector.h"
 
@@ -2736,4 +2737,25 @@ void strncpy_trim(char *dest, char *source, int n) {
     i = n - 1;
   strncpy(dest, source, i + 1);
   dest[i + 1] = '\0';
+}
+
+int form_ode_format_eqn(char *buf, int size, int eq) {
+  int n = form_ode_format_lhs(buf, size, eq);
+
+  if (n < 0 || n >= size)
+    return n;
+
+  return n + snprintf(buf + n, size - n, "=%s", ode_names[eq]);
+}
+
+int form_ode_format_lhs(char *buf, int size, int eq) {
+  if (eq >= NODE)
+    return snprintf(buf, size, "%s", uvar_names[eq]);
+
+  if (EqType[eq] == 1)
+    return snprintf(buf, size, "%s(t)", uvar_names[eq]);
+  else if (METHOD == METHOD_DISCRETE)
+    return snprintf(buf, size, "%s(n+1)", uvar_names[eq]);
+
+  return snprintf(buf, size, "d%s/dT", uvar_names[eq]);
 }

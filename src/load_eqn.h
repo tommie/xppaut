@@ -94,7 +94,6 @@ void loadeqn_load_xpprc(void);
 void dump_torus(FILE *fp, int f);
 void extract_action(char *ptr);
 void extract_internset(int j);
-void load_eqn(void);
 void loadeqn_init_options(void);
 void loadeqn_set_internopt(char *line);
 void loadeqn_setup_all(void);

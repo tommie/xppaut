@@ -4,7 +4,6 @@
  */
 #include "load_eqn.h"
 
-#include <dirent.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -16,7 +15,6 @@
 #include "delay_handle.h"
 #include "extra.h"
 #include "findsing.h"
-#include "form_ode.h"
 #include "ggets.h"
 #include "graf_par.h"
 #include "graphics.h"
@@ -24,7 +22,6 @@
 #include "init_conds.h"
 #include "integrate.h"
 #include "kinescope.h"
-#include "lunch-new.h"
 #include "main.h"
 #include "many_pops.h"
 #include "markov.h"
@@ -32,14 +29,12 @@
 #include "nullcline.h"
 #include "numerics.h"
 #include "parserslow.h"
-#include "read_dir.h"
 #include "solver.h"
 #include "storage.h"
 #include "strutil.h"
 #include "tabular.h"
 #include "txtread.h"
 #include "userbut.h"
-#include "solver/rk4.h"
 #include "solver/volterra2.h"
 
 /* --- Macros --- */
@@ -99,76 +94,6 @@ int PAUSER, ENDSING, SHOOT, PAR_FOL;
 int xorfix, silent;
 
 static float oldhp_x, oldhp_y, my_pl_wid, my_pl_ht;
-
-void dump_torus(FILE *fp, int f) {
-  int i;
-  char bob[256];
-  if (f == READEM)
-    fgets(bob, 255, fp);
-  else
-    fprintf(fp, "# Torus information \n");
-  io_int(&TORUS, fp, f, " Torus flag 1=ON");
-  io_double(&TOR_PERIOD, fp, f, "Torus period");
-  if (TORUS) {
-    for (i = 0; i < NEQ; i++)
-      io_int(&itor[i], fp, f, uvar_names[i]);
-  }
-}
-
-void load_eqn(void) {
-  int no_eqn = 1, okay = 0;
-  int i;
-  int std = 0;
-  FILE *fptr;
-  init_ar_ic();
-  for (i = 0; i < MAXODE; i++) {
-    itor[i] = 0;
-    /*  last_ic[i]=0.0; */
-    strcpy(delay_string[i], "0.0");
-  }
-  /* Moved to main
-   do_comline(argc,argv); */
-  if (strcmp(this_file, "/dev/stdin") == 0)
-    std = 1;
-  struct dirent *dp;
-  if (this_file[0] && (std == 0) &&
-      (dp = (struct dirent *)opendir(this_file)) != NULL) {
-
-    no_eqn = 1;
-    okay = 0;
-    change_directory(this_file);
-    okay = make_eqn();
-    return;
-
-  } else {
-    if (this_file[0] && (fptr = fopen(this_file, "r")) != NULL) {
-      if (std == 1)
-        sprintf(this_file, "console");
-      okay = get_eqn(fptr);
-      if (std == 0)
-        fclose(fptr);
-
-      if (okay == 1)
-        no_eqn = 0;
-    }
-  }
-  if (no_eqn) {
-    while (okay == 0) {
-      struct dirent *dp;
-      char odeclassrm[256];
-      if (getenv("XPPSTART") != NULL) {
-
-        sprintf(odeclassrm, "%s", getenv("XPPSTART"));
-
-        if ((dp = (struct dirent *)opendir(odeclassrm)) != NULL) {
-          change_directory(odeclassrm);
-        }
-      }
-
-      okay = make_eqn();
-    }
-  }
-}
 
 static void init_X_vals(void) {
   tfBell = 1;

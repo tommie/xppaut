@@ -1,6 +1,7 @@
 #include "form_ode.h"
 
 #include <ctype.h>
+#include <dirent.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,6 +14,7 @@
 #include "ggets.h"
 #include "integrate.h"
 #include "load_eqn.h"
+#include "lunch-new.h"
 #include "main.h"
 #include "markov.h"
 #include "newpars.h"
@@ -49,6 +51,7 @@ static void format_list(char **s, int n);
 static int formula_or_number(char *expr, double *z);
 static void free_varinfo(void);
 static int get_a_filename(char *filename, char *wild);
+static int get_eqn(FILE *fptr);
 static char *get_next2(char **tokens_ptr);
 static int if_end_include(char *old);
 static int if_include_file(char *old, char *nf);
@@ -110,15 +113,74 @@ static char aux_names[MAXODE][12];
 static int NUMODES = 0, NUMFIX = 0, NUMPARAM = 0, NUMMARK = 0, NUMAUX = 0,
            NUMVOLT = 0, NUMSOL = 0;
 
-int make_eqn(void) {
-  int okay;
-  NEQ = 2;
-  FIX_VAR = 0;
-  NMarkov = 0;
+void form_ode_load(void) {
+  int no_eqn = 1, okay = 0;
+  int i;
+  int std = 0;
+  FILE *fptr;
+  init_ar_ic();
+  for (i = 0; i < MAXODE; i++) {
+    itor[i] = 0;
+    /*  last_ic[i]=0.0; */
+    strcpy(delay_string[i], "0.0");
+  }
+  /* Moved to main
+   do_comline(argc,argv); */
+  if (strcmp(this_file, "/dev/stdin") == 0)
+    std = 1;
+  struct dirent *dp;
+  if (this_file[0] && (std == 0) &&
+      (dp = (struct dirent *)opendir(this_file)) != NULL) {
 
-  okay = read_eqn();
+    no_eqn = 1;
+    okay = 0;
+    change_directory(this_file);
+    okay = read_eqn();
+    return;
 
-  return (okay);
+  } else {
+    if (this_file[0] && (fptr = fopen(this_file, "r")) != NULL) {
+      if (std == 1)
+        sprintf(this_file, "console");
+      okay = get_eqn(fptr);
+      if (std == 0)
+        fclose(fptr);
+
+      if (okay == 1)
+        no_eqn = 0;
+    }
+  }
+  if (no_eqn) {
+    while (okay == 0) {
+      struct dirent *dp;
+      char odeclassrm[256];
+      if (getenv("XPPSTART") != NULL) {
+
+        sprintf(odeclassrm, "%s", getenv("XPPSTART"));
+
+        if ((dp = (struct dirent *)opendir(odeclassrm)) != NULL) {
+          change_directory(odeclassrm);
+        }
+      }
+
+      okay = read_eqn();
+    }
+  }
+}
+
+void dump_torus(FILE *fp, int f) {
+  int i;
+  char bob[256];
+  if (f == READEM)
+    fgets(bob, 255, fp);
+  else
+    fprintf(fp, "# Torus information \n");
+  io_int(&TORUS, fp, f, " Torus flag 1=ON");
+  io_double(&TOR_PERIOD, fp, f, "Torus period");
+  if (TORUS) {
+    for (i = 0; i < NEQ; i++)
+      io_int(&itor[i], fp, f, uvar_names[i]);
+  }
 }
 
 void strip_saveqn(void) {
@@ -155,7 +217,7 @@ int disc(char *string) {
   return (0);
 }
 
-void format_list(char **s, int n) {
+static void format_list(char **s, int n) {
   int i, ip;
   int ncol;
   int k, j;
@@ -184,7 +246,7 @@ void format_list(char **s, int n) {
   plintf("\n");
 }
 
-int get_a_filename(char *filename, char *wild) {
+static int get_a_filename(char *filename, char *wild) {
   if (XPPBatch) {
     char string[MAXEXPLEN];
     list_em(wild);
@@ -229,7 +291,7 @@ int get_a_filename(char *filename, char *wild) {
   return (0);
 }
 
-void list_em(char *wild) {
+static void list_em(char *wild) {
   get_directory(cur_dir);
   plintf("%s: \n", cur_dir);
   get_fileinfo(wild, cur_dir, &my_ff);
@@ -240,7 +302,8 @@ void list_em(char *wild) {
 
   free_finfo(&my_ff);
 }
-int read_eqn(void) {
+
+static int read_eqn(void) {
   char wild[256], string[256];
   FILE *fptr;
   int okay;
@@ -260,7 +323,7 @@ int read_eqn(void) {
   return (okay);
 }
 
-int get_eqn(FILE *fptr) {
+static int get_eqn(FILE *fptr) {
   char bob[MAXEXPLEN];
   /*char filename[256];*/
   char filename[XPP_MAX_NAME];
@@ -270,12 +333,15 @@ int get_eqn(FILE *fptr) {
   init_rpn();
   NLINES = 0;
   IN_VARS = 0;
+  FIX_VAR = 0;
   NODE = 0;
+  NEQ = 2;
   BVP_N = 0;
   BVP_NL = 0;
   BVP_NR = 0;
   NUPAR = 0;
   NWiener = 0;
+  NMarkov = 0;
   add_var("t", 0.0);
   /* plintf(" NEQ: "); */
   fgets(bob, MAXEXPLEN, fptr);

@@ -175,7 +175,7 @@ int main(int argc, char **argv) {
   }
 
   // Load the ODE file (possibly by showing a file selector).
-  load_eqn();
+  form_ode_load();
 
   // Let command line options override ODE file options.
   do_comline(argc, argv);

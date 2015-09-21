@@ -187,6 +187,8 @@ void gtitle_text(char *string, Window win) {
     XStringListToTextProperty(&string, 1, &wname);
     XStringListToTextProperty(&string, 1, &iname);
     XSetWMProperties(display, win, &wname, &iname, NULL, 0, NULL, NULL, NULL);
+    XFree(iname.value);
+    XFree(wname.value);
   } else {
     int len = strlen(string);
     int x, y;

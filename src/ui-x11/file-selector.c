@@ -150,6 +150,7 @@ void display_file_sel(FILESEL *f, Window w) {
     char *nameit[] = {t};
     XStringListToTextProperty(nameit, 1, &windowName);
     XSetWMName(display, f->base, &windowName);
+    XFree(windowName.value);
   }
   for (i = 0; i < f->nwin; i++) {
     if (w == f->w[i]) {
@@ -425,6 +426,8 @@ void create_file_selector(FILESEL *filesel, const char *title, const char *file,
 
   XSetWMProperties(display, base, &winname, NULL, NULL, 0, &size_hints, NULL,
                    &class_hints);
+
+  XFree(winname.value);
 
   filesel->up = make_icon_window(base, DCURXs, 2 + 3 * hgt + 72 + 15, 32, 24, 1,
                                 0, 0, lineup_bits);

@@ -974,6 +974,9 @@ static Window init_win(unsigned int bw, char *icon_name, char *win_name, int x,
     XSetWMProperties(display, wine, &winname, &iconname, argv, argc,
                      &size_hints, &wm_hints, &class_hints);
     XSetWMProtocols(display, wine, &deleteWindowAtom, 1);
+
+    XFree(winname.value);
+    XFree(iconname.value);
   }
 #endif
   return (wine);

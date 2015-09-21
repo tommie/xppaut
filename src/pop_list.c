@@ -128,6 +128,9 @@ void set_window_title(Window win, char *string) {
 
   XSetWMProperties(display, win, &wname, &iname, NULL, 0, NULL, NULL,
                    &class_hints);
+
+  XFree(iname.value);
+  XFree(wname.value);
 }
 
 /* these are the standard lists that are possible */

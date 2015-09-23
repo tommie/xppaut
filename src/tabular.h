@@ -15,7 +15,7 @@ typedef struct {
      table   and finally, xyvals=1 if both x and y vals are needed (xyvals=0
      is faster lookup)
    */
-  char filename[128], name[12];
+  char filename[XPP_MAX_NAME], name[12];
 } TABULAR;
 
 /* --- Data --- */

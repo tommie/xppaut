@@ -54,6 +54,7 @@ to be added later
 **************************************************************/
 #include "tabular.h"
 
+#include <errno.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -61,7 +62,6 @@ to be added later
 #include "ggets.h"
 #include "many_pops.h"
 #include "parserslow.h"
-#include "read_dir.h"
 #include "simplenet.h"
 #include "storage.h"
 #include "ui-x11/file-selector.h"
@@ -306,26 +306,9 @@ int load_table(char *filename, int index) {
   int i;
   char bobtab[100];
   char *bob;
-  char error[512];
   int length;
   double xlo, xhi;
   FILE *fp;
-  char filename2[512], ch;
-  int n = strlen(filename);
-  int j = 0, flag = 0;
-  for (i = 0; i < n; i++) {
-    ch = filename[i];
-    if ((ch == '"') && flag == 1) {
-      break;
-    }
-    if ((ch == '"') && (flag == 0))
-      flag = 1;
-    if (ch != '"') {
-      filename2[j] = ch;
-      j++;
-    }
-  }
-  filename2[j] = 0;
 
   bob = bobtab;
 
@@ -333,10 +316,11 @@ int load_table(char *filename, int index) {
     err_msg("Not a file table...");
     return (0);
   }
-  fp = fopen(filename2, "r");
+  fp = fopen(filename, "r");
   if (fp == NULL) {
-    get_directory(cur_dir);
-    sprintf(error, "File<%s> not found in %s", filename2, cur_dir);
+    char error[512];
+    snprintf(error, sizeof(error), "Failed to open '%s': %s", filename,
+             strerror(errno));
     err_msg(error);
     return (0);
   }
@@ -383,7 +367,7 @@ int load_table(char *filename, int index) {
     my_table[index].n = length;
     my_table[index].dx = (xhi - xlo) / (length - 1);
     my_table[index].flag = 1;
-    strcpy(my_table[index].filename, filename2);
+    strcpy(my_table[index].filename, filename);
     fclose(fp);
     return (1);
   }

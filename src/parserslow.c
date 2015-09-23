@@ -534,19 +534,31 @@ int add_2d_table(char *name, char *file) {
   return (1);
 }
 
-int add_file_table(int index, char *file) {
-  char file2[1000];
-  int i2 = 0, i1 = 0, n;
-  char ch;
-  n = strlen(file);
-  for (i1 = 0; i1 < n; i1++) {
-    ch = file[i1];
-    if (((int)ch > 31) && ((int)ch < 127)) {
-      file2[i2] = ch;
-      i2++;
+/**
+ * Remove non-printable ASCII-characters and quotes.
+ * Remove anything after the first quoted string.
+ */
+static void clean_path(char *buf, int size, const char *path) {
+  int inquotes = 0;
+
+  for (; *path && size > 1; ++path) {
+    if (*path == '"') {
+      if (inquotes)
+        break;
+      else
+        inquotes = 1;
+    } else if (*path > 31 && *path < 127) {
+      *buf = *path;
+      ++buf;
+      --size;
     }
   }
-  file2[i2] = 0;
+  *buf = '\0';
+}
+
+int add_file_table(int index, char *file) {
+  char file2[XPP_MAX_NAME];
+  clean_path(file2, sizeof(file2), file);
   if (load_table(file2, index) == 0) {
     if (ERROUT)
       printf("Problem with creating table !!\n");

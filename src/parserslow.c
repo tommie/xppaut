@@ -135,9 +135,9 @@ static int stack_pointer, uptr;
 static double stack[200], ustack[200];
 
 static SYMBOL my_symb[MAX_SYMBS] = {
-    {"(", 1, 999, 0, 1}, /*  0   */
-    {")", 1, 999, 0, 2},
-    {",", 1, 999, 0, 3},
+    {"(", 1, ENDEXP, 0, 1}, /*  0   */
+    {")", 1, ENDEXP, 0, 2},
+    {",", 1, ENDEXP, 0, 3},
     {"+", 1, COM(FUN2TYPE, 0), 0, 4},
     {"-", 1, COM(FUN2TYPE, 1), 0, 4},
     {"*", 1, COM(FUN2TYPE, 2), 0, 6},
@@ -146,7 +146,7 @@ static SYMBOL my_symb[MAX_SYMBS] = {
     {"**", 2, COM(FUN2TYPE, 5), 0, 7},
     {"~", 1, COM(FUN1TYPE, 14), 0, 6},
     {"START", 5, -1, 0, 0}, /* 10  */
-    {"END", 3, 999, 0, -1},
+    {"END", 3, ENDEXP, 0, -1},
     {"ATAN2", 5, COM(FUN2TYPE, 4), 2, 10},
     {"MAX", 3, COM(FUN2TYPE, 6), 2, 10},
     {"MIN", 3, COM(FUN2TYPE, 7), 2, 10},
@@ -187,9 +187,9 @@ static SYMBOL my_symb[MAX_SYMBS] = {
     {"==", 2, COM(FUN2TYPE, 13), 0, 7},
     {">=", 2, COM(FUN2TYPE, 14), 0, 7},
     {"<=", 2, COM(FUN2TYPE, 15), 0, 7}, /*50 */
-    {"IF", 2, 995, 1, 10},
-    {"THEN", 4, 994, 1, 10},
-    {"ELSE", 4, 993, 1, 10},
+    {"IF", 2, MYIF, 1, 10},
+    {"THEN", 4, MYTHEN, 1, 10},
+    {"ELSE", 4, MYELSE, 1, 10},
     {"!=", 2, COM(FUN2TYPE, 16), 0, 7},
     {"NOT", 3, COM(FUN1TYPE, 20), 0, 6},
     {"NORMAL", 6, COM(FUN2TYPE, 17), 2, 10},  /* returns normally dist number */
@@ -1407,12 +1407,8 @@ double evaluate(int *equat) {
 }
 
 static double eval_rpn(int *equat) {
-  int i, it, in, j, *tmpeq;
-  int is;
-
-  int low, high, ijmp;
+  int i;
   double temx, temy, temz;
-  double sum;
   union /*  WARNING  -- ASSUMES 32 bit int  and 64 bit double  */
   {
     struct {
@@ -1425,7 +1421,6 @@ static double eval_rpn(int *equat) {
   } encoder;
 
   while ((i = *equat++) != ENDEXP) {
-
     switch (i) {
     case NUMSYM:
       encoder.pieces.int2 = *equat++;
@@ -1434,24 +1429,25 @@ static double eval_rpn(int *equat) {
       break;
     case ENDFUN:
       i = *equat++;
-
       uptr -= i;
-
       break;
+    case MYIF: {
+      int ijmp;
 
-    case MYIF:
       temx = POP;
       ijmp = *equat++;
       if (temx == 0.0)
         equat += ijmp;
       break;
-    case MYTHEN:
-      ijmp = *equat++;
+    }
+    case MYTHEN: {
+      int ijmp = *equat++;
+
       equat += ijmp;
       break;
+    }
     case MYELSE:
       break;
-
     case ENDDELSHFT:
       temx = POP;
       temy = POP;
@@ -1461,10 +1457,8 @@ static double eval_rpn(int *equat) {
     case ENDDELAY:
       temx = POP;
       temy = POP;
-
       PUSH(do_delay(temx, temy));
       break;
-
     case ENDSHIFT:
       temx = POP;
       temy = POP;
@@ -1475,7 +1469,12 @@ static double eval_rpn(int *equat) {
       temy = POP;
       PUSH(do_ishift(temx, temy));
       break;
-    case SUMSYM:
+    case SUMSYM: {
+      int high;
+      int low;
+      int ijmp;
+      double sum;
+
       temx = POP;
       high = (int)temx;
       temx = POP;
@@ -1483,61 +1482,58 @@ static double eval_rpn(int *equat) {
       ijmp = *equat++;
       sum = 0.0;
       if (low <= high) {
-        for (is = low; is <= high; is++) {
-          tmpeq = equat;
+        for (int is = low; is <= high; is++) {
           constants[SumIndex] = (double)is;
-          sum += eval_rpn(tmpeq);
+          sum += eval_rpn(equat);
         }
       }
       equat += ijmp;
       PUSH(sum);
       break;
-
+    }
     case ENDSUM:
       return (POP);
     case INDXCOM:
       PUSH(CurrentIndex);
       break;
     default: {
-      it = i / MAXTYPE;
-      in = i % MAXTYPE;
+      int it = i / MAXTYPE;
+      int in = i % MAXTYPE;
       switch (it) {
       case FUN1TYPE:
         PUSH(expr_fun1[in](POP));
         break;
-      case FUN2TYPE: {
-
-        if (in == 0) {
+      case FUN2TYPE:
+        switch (in) {
+        case 0:
           temx = POP;
           temy = POP;
           PUSH(temx + temy);
-          goto bye;
-        }
-        if (in == 2) {
-          temx = POP;
-          temy = POP;
-          PUSH(temx * temy);
-          goto bye;
-        }
-        if (in == 1) {
+          break;
+        case 1:
           temx = POP;
           temy = POP;
           PUSH(temy - temx);
-          goto bye;
-        }
-        if (in == 3) {
+          break;
+        case 2:
+          temx = POP;
+          temy = POP;
+          PUSH(temx * temy);
+          break;
+        case 3:
           temx = POP;
           if (temx == 0.0)
             temx = DOUB_EPS;
           temy = POP;
           PUSH(temy / temx);
-          goto bye;
+          break;
+        default:
+          temx = POP;
+          temy = POP;
+          PUSH(expr_fun2[in](temy, temx));
+          break;
         }
-        temx = POP;
-        temy = POP;
-        PUSH(expr_fun2[in](temy, temx));
         break;
-      }
       case CONTYPE:
         PUSH(constants[in]);
         break;
@@ -1547,7 +1543,6 @@ static double eval_rpn(int *equat) {
       case TABTYPE:
         PUSH(lookup(POP, in));
         break;
-
       case USTACKTYPE:
         /* ram: so this means ustacks really do need to be of USTACKTYPE */
         PUSH(ustack[uptr - 1 - in]);
@@ -1558,30 +1553,23 @@ static double eval_rpn(int *equat) {
       case VARTYPE:
         PUSH(variables[in]);
         break;
-
       /* indexes for shift and delay operators... */
       case SCONTYPE:
-
         PUSH((double)(COM(CONTYPE, in)));
         break;
       case SVARTYPE:
-
         PUSH((double)(COM(VARTYPE, in)));
         break;
-
       case UFUNTYPE:
         i = *equat++;
-
-        for (j = 0; j < i; j++) {
+        for (int j = 0; j < i; j++) {
           ustack[uptr] = POP;
-
           uptr++;
         }
         PUSH(eval_rpn(ufun[in]));
         break;
       }
-    bye:
-      j = 0;
+      break;
     }
     }
   }

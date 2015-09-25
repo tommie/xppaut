@@ -100,9 +100,9 @@ static void find_name(char *string, int *index);
 static int alg_to_rpn(int *toklist, int *command);
 static int unary_sym(int token);
 static int binary_sym(int token);
-static int make_toks(char *dest, int *my_token);
+static int make_toks(const char *source, int *my_token);
 static void tokeninfo(int tok);
-static void find_tok(char *source, int *index, int *tok);
+static int find_tok(const SYMBOL *syms, int nsym, const char *source);
 static void two_args(void);
 static double bessel_j(double x, double y);
 static double bessel_y(double x, double y);
@@ -1055,7 +1055,7 @@ static int alg_to_rpn(int *toklist, int *command) {
   return (0);
 }
 
-void show_where(char *string, int index) {
+static void show_where(const char *string, int index) {
   char junk[MAXEXPLEN];
   int i;
   /* exit(-1); */
@@ -1191,36 +1191,41 @@ int check_syntax(int oldtoken, int newtoken) {
 *    PARSER                   *
 ******************************/
 
-static int make_toks(char *dest, int *my_token) {
-  char num[40];
-  double value;
+static int make_toks(const char *source, int *my_token) {
   int old_tok = STARTTOK, tok_in = 0;
-  int index = 0, token, nparen = 0, lastindex = 0;
-  union /*  WARNING  -- ASSUMES 32 bit int  and 64 bit double  */
-  {
-    struct {
-      int int1;
-      int int2;
-    } pieces;
-    struct {
-      double z;
-    } num;
-  } encoder;
+  int index = 0, nparen = 0, lastindex = 0;
 
-  while (dest[index] != '\0') {
+  while (source[index] != '\0') {
+    int token = find_tok(my_symb, NSYM, source + index);
+
     lastindex = index;
-    find_tok(dest, &index, &token);
+    if (token != NSYM)
+      index += my_symb[token].len;
+
     if ((token == MINUS) &&
         ((old_tok == STARTTOK) || (old_tok == COMMA) || (old_tok == LPAREN)))
       token = NEGATE;
-    if (token == LPAREN)
+    else if (token == LPAREN)
       ++nparen;
-    if (token == RPAREN)
+    else if (token == RPAREN)
       --nparen;
 
     if (token == NSYM) {
-      if (do_num(dest, num, &value, &index)) {
-        show_where(dest, index);
+      char num[40];
+      double value;
+      /*  WARNING  -- ASSUMES 32 bit int  and 64 bit double  */
+      union {
+        struct {
+          int int1;
+          int int2;
+        } pieces;
+        struct {
+          double z;
+        } num;
+      } encoder;
+
+      if (do_num(source, num, &value, &index)) {
+        show_where(source, index);
         return (1);
       }
       /*    new code        3/95      */
@@ -1230,18 +1235,15 @@ static int make_toks(char *dest, int *my_token) {
       my_token[tok_in++] = encoder.pieces.int2;
       if (check_syntax(old_tok, NUMTOK) == 1) {
         plintf("Illegal syntax \n");
-        show_where(dest, lastindex);
+        show_where(source, lastindex);
         return (1);
       }
       old_tok = NUMTOK;
-
-    }
-
-    else {
+    } else {
       my_token[tok_in++] = token;
       if (check_syntax(old_tok, token) == 1) {
         plintf("Illegal syntax (Ref:%d %d) \n", old_tok, token);
-        show_where(dest, lastindex);
+        show_where(source, lastindex);
         tokeninfo(old_tok);
         tokeninfo(token);
         return (1);
@@ -1254,7 +1256,7 @@ static int make_toks(char *dest, int *my_token) {
   my_token[tok_in++] = ENDTOK;
   if (check_syntax(old_tok, ENDTOK) == 1) {
     plintf("Premature end of expression \n");
-    show_where(dest, lastindex);
+    show_where(source, lastindex);
     return (1);
   }
   if (nparen != 0) {
@@ -1270,7 +1272,7 @@ static void tokeninfo(int tok) {
          my_symb[tok].com, my_symb[tok].arg, my_symb[tok].pri);
 }
 
-int do_num(char *source, char *num, double *value, int *ind) {
+int do_num(const char *source, char *num, double *value, int *ind) {
   int j = 0, i = *ind, error = 0;
   int ndec = 0, nexp = 0, ndig = 0;
   char ch, oldch;
@@ -1335,29 +1337,31 @@ void convert(char *source, char *dest) {
   strupr(dest);
 }
 
-static void find_tok(char *source, int *index, int *tok) {
-  int i = *index, maxlen = 0, symlen;
-  int k, j, my_tok, match;
-  my_tok = NSYM;
-  for (k = 0; k < NSYM; k++) {
-    symlen = my_symb[k].len;
+/**
+ * Find the longest match for beginning of source in syms.
+ *
+ * @param syms symbols to look up in.
+ * @param nsym number of symbols in syms.
+ * @param source the string to parse.
+ * @return an index into my_symb.
+ */
+static int find_tok(const SYMBOL *syms, int nsym, const char *source) {
+  int maxlen = 0;
+  int tok = nsym;
+
+  for (int k = 0; k < nsym; k++) {
+    int symlen = syms[k].len;
     if (symlen <= maxlen)
       continue;
 
-    match = 1;
-    for (j = 0; j < symlen; j++) {
-      if (source[i + j] != my_symb[k].name[j]) {
-        match = 0;
-        break;
-      }
-    }
-    if (match != 0) {
-      my_tok = k;
-      maxlen = symlen;
-    }
+    if (strncmp(source, syms[k].name, symlen))
+      continue;
+
+    tok = k;
+    maxlen = symlen;
   }
-  *index = *index + maxlen;
-  *tok = my_tok;
+
+  return tok;
 }
 
 double pmod(double x, double y) {

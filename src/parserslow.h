@@ -62,7 +62,7 @@ int add_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]);
 int add_var(char *junk, double value);
 int add_vect_name(int index, char *name);
 void convert(char *source, char *dest);
-int do_num(char *source, char *num, double *value, int *ind);
+int do_num(const char *source, char *num, double *value, int *ind);
 double evaluate(int *equat);
 int find_lookup(char *name);
 void fixup_endfun(int *u, int l, int narg);

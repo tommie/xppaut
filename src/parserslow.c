@@ -1060,20 +1060,7 @@ static int alg_to_rpn(int *toklist, int *command) {
   }
   command[comptr] = my_symb[ENDTOK].com;
 
-  /* pr_command(command);  */
   return (0);
-}
-
-void pr_command(int *command) {
-  int i = 0;
-  int token;
-  while (1) {
-    token = command[i];
-    plintf("%d %d \n", i, token);
-    if (token == ENDEXP)
-      return;
-    i++;
-  }
 }
 
 void show_where(char *string, int index) {

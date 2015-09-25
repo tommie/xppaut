@@ -17,18 +17,7 @@
 #include "my_rhs.h"
 #include "parserslow.h"
 #include "storage.h"
-
-/* --- Macros --- */
-#define IA 16807
-#define IM 2147483647
-#define AM (1.0 / IM)
-#define IQ 127773
-#define IR 2836
-#define NTAB 32
-#define NDIV (1 + (IM - 1) / NTAB)
-#define EPS 1.2e-12
-#define RNMX (1.0 - EPS)
-#define PI 3.1415926
+#include "base/ndrand.h"
 
 /* --- Types --- */
 typedef struct {
@@ -48,10 +37,8 @@ static void compute_em(void);
 static void create_markov(int nstates, double *st, int type, char *name);
 static void extract_expr(char *source, char *dest, int *i0);
 static void free_stoch(void);
-static double gammln(double xx);
 static void init_stoch(int len);
 static double new_state(double old, int index, double dt);
-static double ran1(long *idum);
 static void update_markov(double *x, double t, double dt);
 
 /* --- Data --- */
@@ -59,7 +46,6 @@ int STOCH_FLAG;
 int Wiener[MAXPAR];
 int NWiener;
 
-static long int myrandomseed = -1;
 static MARKOV markov[MAXMARK];
 static float *my_mean[MAXODE], *my_variance[MAXODE];
 static int stoch_len;
@@ -74,7 +60,7 @@ void set_wieners(double dt, double *x, double t) {
   int i;
   update_markov(x, t, fabs(dt));
   for (i = 0; i < NWiener; i++)
-    constants[Wiener[i]] = normal(0.00, 1.00) / sqrt(fabs(dt));
+    constants[Wiener[i]] = ndrand48_normal(0.00, 1.00) / sqrt(fabs(dt));
 }
 
 void add_markov(int nstate, char *name) {
@@ -542,94 +528,4 @@ void do_stats(int ierr) {
       }
     }
   }
-}
-
-static double gammln(double xx) {
-  double x, y, tmp, ser;
-  static double cof[6] = {76.18009172947146,     -86.50532032941677,
-                          24.01409824083091,     -1.231739572450155,
-                          0.1208650973866179e-2, -0.5395239384953e-5};
-  int j;
-
-  y = x = xx;
-  tmp = x + 5.5;
-  tmp -= (x + 0.5) * log(tmp);
-  ser = 1.000000000190015;
-  for (j = 0; j <= 5; j++)
-    ser += cof[j] / ++y;
-  return -tmp + log(2.5066282746310005 * ser / x);
-}
-
-double poidev(double xm) {
-  static double sq, alxm, g, oldm = (-1.0);
-
-  double em, t, y;
-
-  if (xm < 12.0) {
-    if (xm != oldm) {
-      oldm = xm;
-      g = exp(-xm);
-    }
-    em = -1;
-    t = 1.0;
-    do {
-      ++em;
-      t *= ndrand48();
-    } while (t > g);
-  } else {
-    if (xm != oldm) {
-      oldm = xm;
-      sq = sqrt(2.0 * xm);
-      alxm = log(xm);
-      g = xm * alxm - gammln(xm + 1.0);
-    }
-    do {
-      do {
-        y = tan(PI * ndrand48());
-        em = sq * y + xm;
-      } while (em < 0.0);
-      em = floor(em);
-      t = 0.9 * (1.0 + y * y) * exp(em * alxm - gammln(em + 1.0) - g);
-    } while (ndrand48() > t);
-  }
-  return em;
-}
-
-double ndrand48() { return ran1(&myrandomseed); }
-
-void nsrand48(int seed) { myrandomseed = -seed; }
-
-static double ran1(long *idum) {
-  int j;
-  long k;
-  static long iy = 0;
-  static long iv[NTAB];
-  double temp;
-
-  if (*idum <= 0 || !iy) {
-    if (-(*idum) < 1)
-      *idum = 1;
-    else
-      *idum = -(*idum);
-    for (j = NTAB + 7; j >= 0; j--) {
-      k = (*idum) / IQ;
-      *idum = IA *(*idum - k * IQ) - IR * k;
-      if (*idum < 0)
-        *idum += IM;
-      if (j < NTAB)
-        iv[j] = *idum;
-    }
-    iy = iv[0];
-  }
-  k = (*idum) / IQ;
-  *idum = IA *(*idum - k * IQ) - IR * k;
-  if (*idum < 0)
-    *idum += IM;
-  j = iy / NDIV;
-  iy = iv[j];
-  iv[j] = *idum;
-  if ((temp = AM * iy) > RNMX)
-    return RNMX;
-  else
-    return temp;
 }

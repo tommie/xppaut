@@ -71,7 +71,6 @@ int get_param_index(char *name);
 int get_val(char *name, double *value);
 int get_var_index(char *name);
 void init_rpn(void);
-double normal(double mean, double std);
 void set_ivar(int i, double value);
 void set_new_arg_names(int narg, char args[10][11]);
 void set_old_arg_names(int narg);

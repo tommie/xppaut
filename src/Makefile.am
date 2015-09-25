@@ -44,6 +44,7 @@ noinst_HEADERS = \
 	edit_rhs.h \
 	eig_list.h \
 	eigen.h \
+	expr_builtins.h \
 	extra.h \
 	fftn.h \
 	findsing.h \
@@ -101,6 +102,7 @@ noinst_HEADERS = \
 	$(ui_x11_headers)
 
 base_headers = \
+	base/ndrand.h \
 	base/timeutil.h
 
 bitmap_headers = \
@@ -172,6 +174,7 @@ xppaut_SOURCES = \
 	edit_rhs.c \
 	eig_list.c \
 	eigen.c \
+	expr_builtins.c \
 	extra.c \
 	fftn.c \
 	findsing.c \
@@ -240,6 +243,7 @@ libxpp_a_SOURCES = \
 	edit_rhs.c \
 	eig_list.c \
 	eigen.c \
+	expr_builtins.c \
 	extra.c \
 	fftn.c \
 	findsing.c \
@@ -299,6 +303,7 @@ auto_sources = \
 	run_auto.c
 
 base_sources = \
+	base/ndrand.c \
 	base/timeutil.c
 
 solver_sources = \

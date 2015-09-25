@@ -35,6 +35,7 @@
 #include "tabular.h"
 #include "txtread.h"
 #include "userbut.h"
+#include "base/ndrand.h"
 #include "solver/volterra2.h"
 
 /* --- Macros --- */

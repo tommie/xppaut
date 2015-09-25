@@ -60,6 +60,7 @@ NOTE: except for the structure MyGraph, it is "x-free" so it
 #include "storage.h"
 #include "strutil.h"
 #include "tabular.h"
+#include "base/ndrand.h"
 #include "solver/volterra2.h"
 #include "ui-x11/file-selector.h"
 

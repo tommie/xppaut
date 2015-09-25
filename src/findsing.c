@@ -11,11 +11,11 @@
 #include "graphics.h"
 #include "integrate.h"
 #include "load_eqn.h"
-#include "markov.h"
 #include "matrixalg.h"
 #include "menudrive.h"
 #include "my_rhs.h"
 #include "solver.h"
+#include "base/ndrand.h"
 
 /* --- Forward Declarations --- */
 static void get_evec(double *a, double *anew, double *b, double *bp, int n,

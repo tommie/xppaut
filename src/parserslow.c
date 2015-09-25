@@ -9,12 +9,14 @@
 
 #include "comline.h"
 #include "delay_handle.h"
+#include "expr_builtins.h"
 #include "ggets.h"
 #include "homsup.h"
 #include "markov.h"
 #include "simplenet.h"
 #include "strutil.h"
 #include "tabular.h"
+#include "base/ndrand.h"
 #include "solver/volterra2.h"
 
 /* --- Macros --- */
@@ -90,10 +92,6 @@ typedef struct {
 } SYMBOL;
 
 /* --- Forward Declarations --- */
-#ifndef HAVE_LGAMMA
-static double lgamma(double xx);
-#endif
-
 static int is_uvar(int x);
 
 static void find_name(char *string, int *index);
@@ -103,31 +101,6 @@ static int binary_sym(int token);
 static int make_toks(const char *source, int *my_token);
 static void tokeninfo(int tok);
 static int find_tok(const SYMBOL *syms, int nsym, const char *source);
-static void two_args(void);
-static double bessel_j(double x, double y);
-static double bessel_y(double x, double y);
-static double bessi(double nn, double x);
-static double bessi0(double x);
-static double bessi1(double x);
-static void one_arg(void);
-static double max(double x, double y);
-static double min(double x, double y);
-
-static double neg(double z);
-static double recip(double z);
-static double heaviside(double z);
-static double rndom(double z);
-static double signum(double z);
-
-static double dnot(double x);
-static double dand(double x, double y);
-static double dor(double x, double y);
-static double dge(double x, double y);
-static double dle(double x, double y);
-static double deq(double x, double y);
-static double dne(double x, double y);
-static double dgt(double x, double y);
-static double dlt(double x, double y);
 
 static double eval_rpn(int *equat);
 
@@ -154,8 +127,6 @@ int NCON = 0, NVAR = 0, NFUN = 0;
 int NSYM = STDSYM;
 
 static double zippy;
-static double BoxMuller;
-static int BoxMullerFlag = 0;
 static double CurrentIndex = 0;
 static int SumIndex = 1;
 
@@ -262,9 +233,6 @@ static SYMBOL my_symb[MAX_SYMBS] = {
     {"LGAMMA", 6, COM(FUN1TYPE, 25), 1, 10}   /* Log Gamma  #94 */
 };
 
-static double (*fun1[50])(/* double */);
-static double (*fun2[50])(/* double,double */);
-
 /*************************
   RPN COMPILER           *
 **************************/
@@ -302,8 +270,6 @@ void init_rpn(void) {
 
   MaxPoints = 4000;
   NSYM = STDSYM;
-  two_args();
-  one_arg();
   add_con("PI", M_PI);
 
   add_con("I'", 0.0);
@@ -1364,165 +1330,13 @@ static int find_tok(const SYMBOL *syms, int nsym, const char *source) {
   return tok;
 }
 
-double pmod(double x, double y) {
-  double z = fmod(x, y);
-  if (z < 0)
-    z += y;
-  return (z);
-}
-
-static void two_args(void) {
-  fun2[4] = atan2;
-  fun2[5] = pow;
-  fun2[6] = max;
-  fun2[7] = min;
-  /*  fun2[8]=fmod;  */
-  fun2[8] = pmod; /* This always gives an answer in [0,y) for mod(x,y) */
-  fun2[9] = dand;
-  fun2[10] = dor;
-  fun2[11] = dgt;
-  fun2[12] = dlt;
-  fun2[13] = deq;
-  fun2[14] = dge;
-  fun2[15] = dle;
-  fun2[16] = dne;
-  fun2[17] = normal;
-  fun2[18] = bessel_j;
-  fun2[19] = bessel_y;
-  fun2[20] = bessi;
-}
-
-/*   These are the Bessel Functions; if you dont have them then
-     return some sort of dummy value or else write a program
-     to compute them
-*/
-
-static double bessel_j(double x, double y) {
-  int n = (int)x;
-  return (jn(n, y));
-}
-
-static double bessel_y(double x, double y) {
-  int n = (int)x;
-  return (yn(n, y));
-}
-
-#define ACC 40.0
-#define BIGNO 1.0e10
-#define BIGNI 1.0e-10
-
-static double bessi(double nn, double x) {
-  int j, n;
-  double bi, bim, bip, tox, ans;
-  n = (int)nn;
-  if (n == 0)
-    return bessi0(x);
-  if (n == 1)
-    return bessi1(x);
-  if (x == 0.0)
-    return 0.0;
-  else {
-    tox = 2.0 / fabs(x);
-    bip = ans = 0.0;
-    bi = 1.0;
-    for (j = 2 * (n + (int)sqrt(ACC * n)); j > 0; j--) {
-      bim = bip + j * tox * bi;
-      bip = bi;
-      bi = bim;
-      if (fabs(bi) > BIGNO) {
-        ans *= BIGNI;
-        bi *= BIGNI;
-        bip *= BIGNI;
-      }
-      if (j == n)
-        ans = bip;
-    }
-    ans *= bessi0(x) / bi;
-    return x < 0.0 && (n & 1) ? -ans : ans;
-  }
-}
-
-static double bessi0(double x) {
-  double ax, ans;
-  double y;
-
-  if ((ax = fabs(x)) < 3.75) {
-    y = x / 3.75;
-    y *= y;
-    ans =
-        1.0 +
-        y * (3.5156229 +
-             y * (3.0899424 +
-                  y * (1.2067492 +
-                       y * (0.2659732 + y * (0.360768e-1 + y * 0.45813e-2)))));
-  } else {
-    y = 3.75 / ax;
-    ans = (exp(ax) / sqrt(ax)) *
-          (0.39894228 +
-           y * (0.1328592e-1 +
-                y * (0.225319e-2 +
-                     y * (-0.157565e-2 +
-                          y * (0.916281e-2 +
-                               y * (-0.2057706e-1 +
-                                    y * (0.2635537e-1 +
-                                         y * (-0.1647633e-1 +
-                                              y * 0.392377e-2))))))));
-  }
-  return ans;
-}
-
-static double bessi1(double x) {
-  double ax, ans;
-  double y;
-
-  if ((ax = fabs(x)) < 3.75) {
-    y = x / 3.75;
-    y *= y;
-    ans = ax * (0.5 +
-                y * (0.87890594 +
-                     y * (0.51498869 +
-                          y * (0.15084934 +
-                               y * (0.2658733e-1 +
-                                    y * (0.301532e-2 + y * 0.32411e-3))))));
-  } else {
-    y = 3.75 / ax;
-    ans = 0.2282967e-1 +
-          y * (-0.2895312e-1 + y * (0.1787654e-1 - y * 0.420059e-2));
-    ans = 0.39894228 +
-          y * (-0.3988024e-1 +
-               y * (-0.362018e-2 +
-                    y * (0.163801e-2 + y * (-0.1031555e-1 + y * ans))));
-    ans *= (exp(ax) / sqrt(ax));
-  }
-  return x < 0.0 ? -ans : ans;
-}
-
-#undef ACC
-#undef BIGNO
-#undef BIGNI
-
 /*********************************************
           FANCY DELAY HERE                   *-------------------------<<<
 *********************************************/
 
-char *com_name(int com) {
-  int i;
-  for (i = 0; i < NSYM; i++)
-    if (my_symb[i].com == com)
-      break;
-  if (i < NSYM)
-    return my_symb[i].name;
-  else
-    return "";
-}
-
-double do_shift(double shift, double variable) {
+static double do_shift(double shift, double variable) {
   int it, in;
   int i = (int)(variable), ish = (int)shift;
-
-  /* plintf( "shifting %d (%s) by %d to %d (%s)\n",
-   *	(int)variable, com_name((int)variable), (int)shift, i, com_name(i) );
-   */
 
   if (i < 0)
     return (0.0);
@@ -1546,14 +1360,11 @@ double do_shift(double shift, double variable) {
   }
 }
 
-double do_ishift(double shift, double variable) {
-  /* plintf( "shifting %d (%s) by %d to %d (%s)\n",
-   *	(int)variable, com_name((int)variable), (int)shift, i, com_name(i) );
-   */
+static double do_ishift(double shift, double variable) {
   return variable + shift;
 }
 
-double do_delay_shift(double delay, double shift, double variable) {
+static double do_delay_shift(double delay, double shift, double variable) {
   int in;
   int i = (int)(variable), ish = (int)shift;
   if (i < 0)
@@ -1572,7 +1383,7 @@ double do_delay_shift(double delay, double shift, double variable) {
   return (delay_stab_eval(delay, in));
 }
 
-double do_delay(double delay, double i) {
+static double do_delay(double delay, double i) {
   int variable;
   /* ram - this was a little weird, since i is a double... except I think it's
    * secretely an integer */
@@ -1588,89 +1399,6 @@ double do_delay(double delay, double i) {
 
   return (delay_stab_eval(delay, (int)variable));
 }
-
-static void one_arg() {
-  fun1[0] = sin;
-  fun1[1] = cos;
-  fun1[2] = tan;
-  fun1[3] = asin;
-  fun1[4] = acos;
-  fun1[5] = atan;
-  fun1[6] = sinh;
-  fun1[7] = tanh;
-  fun1[8] = cosh;
-  fun1[9] = fabs;
-  fun1[10] = exp;
-  fun1[11] = log;
-  fun1[12] = log10;
-  fun1[13] = sqrt;
-  fun1[14] = neg;
-  fun1[15] = recip;
-  fun1[16] = heaviside;
-  fun1[17] = signum;
-  fun1[18] = floor;
-  fun1[19] = rndom;
-  fun1[20] = dnot;
-  fun1[21] = erf;
-  fun1[22] = erfc;
-  fun1[23] = hom_bcs;
-  fun1[24] = poidev;
-  fun1[25] = lgamma;
-}
-
-double normal(double mean, double std) {
-  double fac, r, v1, v2;
-  if (BoxMullerFlag == 0) {
-    do {
-      v1 = 2.0 * ndrand48() - 1.0;
-      v2 = 2.0 * ndrand48() - 1.0;
-      r = v1 * v1 + v2 * v2;
-    } while (r >= 1.0);
-    fac = sqrt(-2.0 * log(r) / r);
-    BoxMuller = v1 * fac;
-    BoxMullerFlag = 1;
-    return (v2 * fac * std + mean);
-  } else {
-    BoxMullerFlag = 0;
-    return (BoxMuller * std + mean);
-  }
-}
-
-static double max(double x, double y) { return (((x > y) ? x : y)); }
-static double min(double x, double y) { return (((x < y) ? x : y)); }
-static double neg(double z) { return (-z); }
-static double recip(double z) { return (1.00 / z); }
-
-static double heaviside(double z) {
-  float w = 1.0;
-  if (z < 0)
-    w = 0.0;
-  return (w);
-}
-
-static double rndom(double z) { return (z * ndrand48()); }
-
-static double signum(double z) {
-  if (z < 0.0)
-    return (-1.0);
-  if (z > 0.0)
-    return (1.0);
-  return (0.0);
-}
-
-/* logical stuff */
-
-static double dnot(double x) { return ((double)(x == 0.0)); }
-static double dand(double x, double y) { return ((double)(x && y)); }
-static double dor(double x, double y) { return ((double)(x || y)); }
-static double dge(double x, double y) { return ((double)(x >= y)); }
-static double dle(double x, double y) { return ((double)(x <= y)); }
-static double deq(double x, double y) { return ((double)(x == y)); }
-static double dne(double x, double y) { return ((double)(x != y)); }
-static double dgt(double x, double y) { return ((double)(x > y)); }
-static double dlt(double x, double y) { return ((double)(x < y)); }
-
-/* end of logical stuff */
 
 double evaluate(int *equat) {
   uptr = 0;
@@ -1775,7 +1503,7 @@ static double eval_rpn(int *equat) {
       in = i % MAXTYPE;
       switch (it) {
       case FUN1TYPE:
-        PUSH(fun1[in](POP));
+        PUSH(expr_fun1[in](POP));
         break;
       case FUN2TYPE: {
 
@@ -1807,7 +1535,7 @@ static double eval_rpn(int *equat) {
         }
         temx = POP;
         temy = POP;
-        PUSH(fun2[in](temy, temx));
+        PUSH(expr_fun2[in](temy, temx));
         break;
       }
       case CONTYPE:
@@ -1859,22 +1587,3 @@ static double eval_rpn(int *equat) {
   }
   return (POP);
 }
-
-#ifndef HAVE_LGAMMA
-/* code for log-gamma if you dont have it */
-static double lgamma(double xx) {
-  double x, y, tmp, ser;
-  static double cof[6] = {76.18009172947146,     -86.50532032941677,
-                          24.01409824083091,     -1.231739572450155,
-                          0.1208650973866179e-2, -0.5395239384953e-5};
-  int j;
-
-  y = x = xx;
-  tmp = x + 5.5;
-  tmp -= (x + 0.5) * log(tmp);
-  ser = 1.000000000190015;
-  for (j = 0; j <= 5; j++)
-    ser += cof[j] / ++y;
-  return -tmp + log(2.5066282746310005 * ser / x);
-}
-#endif /* !HAVE_LGAMMA */

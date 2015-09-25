@@ -18,12 +18,12 @@
 #include "integrate.h"
 #include "load_eqn.h"
 #include "lunch-new.h"
-#include "markov.h"
 #include "matrixalg.h"
 #include "my_rhs.h"
 #include "parserslow.h"
 #include "pop_list.h"
 #include "storage.h"
+#include "base/ndrand.h"
 
 /* --- Forward Declarations --- */
 static int create_transpose(void);

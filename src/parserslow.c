@@ -755,45 +755,20 @@ int check_num(int *tok, double value) {
   return (0);
 }
 
-int is_ufun(int x) {
-  if ((x / MAXTYPE) == UFUNTYPE)
-    return (1);
-  else
-    return (0);
+static int is_ufun(int x) {
+  return x / MAXTYPE == UFUNTYPE;
 }
-
-int is_ucon(int x) {
-  if (x / MAXTYPE == CONTYPE)
-    return (1);
-  else
-    return (0);
+static int is_ucon(int x) {
+  return x / MAXTYPE == CONTYPE;
 }
-
 static int is_uvar(int x) {
-  if (x / MAXTYPE == VARTYPE)
-    return (1);
-  else
-    return (0);
+  return x / MAXTYPE == VARTYPE;
 }
-
-int isvar(int y) { return (y == VARTYPE); }
-
-int iscnst(int y) { return (y == CONTYPE); }
-
-int isker(int y) { return (y == KERTYPE); }
-
-int is_kernel(int x) {
-  if ((x / MAXTYPE) == KERTYPE)
-    return (1);
-  else
-    return (0);
-}
-
-int is_lookup(int x) {
-  if ((x / MAXTYPE) == TABTYPE)
-    return (1);
-  else
-    return (0);
+static int isvar(int y) { return y == VARTYPE; }
+static int iscnst(int y) { return y == CONTYPE; }
+static int isker(int y) { return y == KERTYPE; }
+static int is_lookup(int x) {
+  return x / MAXTYPE == TABTYPE;
 }
 
 int find_lookup(char *name) {

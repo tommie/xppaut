@@ -24,6 +24,7 @@
 #include "solver.h"
 #include "strutil.h"
 #include "tabular.h"
+#include "solver/volterra2.h"
 #include "ui-x11/file-selector.h"
 
 /* --- Macros --- */

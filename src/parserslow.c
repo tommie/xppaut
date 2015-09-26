@@ -114,11 +114,6 @@ int *ufun[MAXUFUN];
 char *ufun_def[MAXUFUN];
 char ufun_names[MAXUFUN][12];
 int narg_fun[MAXUFUN];
-
-KERNEL kernel[MAXKER];
-int NKernel;
-int MaxPoints;
-
 UFUN_ARG ufun_arg[MAXUFUN];
 
 int NCON = 0, NVAR = 0, NFUN = 0;
@@ -364,60 +359,28 @@ int add_con(char *name, double value) {
 }
 
 int add_kernel(char *name, double mu, char *expr) {
-  char string[100];
+  char cname[100];
+  int len, ki;
 
-  int len, i, in = -1;
   if (duplicate_name(name) == 1)
-    return (1);
-  if (NKernel == MAXKER) {
-    plintf("Too many kernels..\n");
-    return (1);
-  }
-  if (mu < 0 || mu >= 1.0) {
-    plintf(" mu must lie in [0,1.0) \n");
-    return (1);
-  }
-  convert(name, string);
-  len = strlen(string);
+    return 1;
+  ki = volterra2_add_kernel(expr, mu);
+  if (ki < 0)
+    return 1;
+
+  convert(name, cname);
+  len = strlen(cname);
   if (len > MXLEN)
     len = MXLEN;
-  strncpy(my_symb[NSYM].name, string, len);
+  strncpy(my_symb[NSYM].name, cname, len);
   my_symb[NSYM].name[len] = '\0';
   my_symb[NSYM].len = len;
   my_symb[NSYM].pri = 10;
   my_symb[NSYM].arg = 0;
-  my_symb[NSYM].com = COM(KERTYPE, NKernel);
-  kernel[NKernel].k_n1 = 0.0;
-  kernel[NKernel].mu = mu;
-  kernel[NKernel].k_n = 0.0;
-  kernel[NKernel].k_n1 = 0.0;
-  kernel[NKernel].flag = 0;
-  for (i = 0; i < strlen(expr); i++)
-    if (expr[i] == '#')
-      in = i;
-  if (in == 0 || in == (strlen(expr) - 1)) {
-    plintf("Illegal use of convolution...\n");
-    return (1);
-  }
-  if (in > 0) {
-    kernel[NKernel].flag = CONV;
-    kernel[NKernel].expr = (char *)malloc(strlen(expr) + 2 - in);
-    kernel[NKernel].kerexpr = (char *)malloc(in + 1);
-    for (i = 0; i < in; i++)
-      kernel[NKernel].kerexpr[i] = expr[i];
-    kernel[NKernel].kerexpr[in] = 0;
-    for (i = in + 1; i < strlen(expr); i++)
-      kernel[NKernel].expr[i - in - 1] = expr[i];
-    kernel[NKernel].expr[strlen(expr) - in - 1] = 0;
-    plintf("Convolving %s with %s\n", kernel[NKernel].kerexpr,
-           kernel[NKernel].expr);
-  } else {
-    kernel[NKernel].expr = (char *)malloc(strlen(expr) + 2);
-    strcpy(kernel[NKernel].expr, expr);
-  }
+  my_symb[NSYM].com = COM(KERTYPE, ki);
   NSYM++;
-  NKernel++;
-  return (0);
+
+  return 0;
 }
 
 int add_var(char *junk, double value) {

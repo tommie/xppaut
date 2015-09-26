@@ -16,6 +16,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "delay_handle.h"
 #include "form_ode.h"
@@ -42,6 +43,9 @@ static int volt_step(double *y, double t, double dt, int neq, double *yg,
 
 /* --- Data --- */
 int AutoEvaluate = 0;
+KERNEL kernel[MAXKER];
+int NKernel;
+int MaxPoints;
 
 static int CurrentPoint;
 static int KnFlag;
@@ -116,6 +120,58 @@ void allocate_volterra(int npts, int flag) {
   CurrentPoint = 0;
   KnFlag = 1;
   alloc_kernels(flag);
+}
+
+/**
+ * Add a kernel function.
+ *
+ * @param expr the function expression.
+ * @param mu time exponent.
+ * @return the index of the new kernel, or negative for error.
+ */
+int volterra2_add_kernel(const char *expr, double mu) {
+  int i, in = -1;
+  KERNEL *k = &kernel[NKernel];
+
+  if (NKernel == MAXKER) {
+    plintf("Too many kernels..\n");
+    return -1;
+  }
+  if (mu < 0 || mu >= 1.0) {
+    plintf("mu must lie in [0,1.0) \n");
+    return -1;
+  }
+
+  k->k_n1 = 0.0;
+  k->mu = mu;
+  k->k_n = 0.0;
+  k->k_n1 = 0.0;
+  k->flag = 0;
+  for (i = 0; i < strlen(expr); i++)
+    if (expr[i] == '#')
+      in = i;
+  if (in == 0 || in == strlen(expr) - 1) {
+    plintf("Illegal use of convolution...\n");
+    return -1;
+  }
+  if (in > 0) {
+    k->flag = CONV;
+    k->expr = (char *)malloc(strlen(expr) + 2 - in);
+    k->kerexpr = (char *)malloc(in + 1);
+    for (i = 0; i < in; i++)
+      k->kerexpr[i] = expr[i];
+    k->kerexpr[in] = 0;
+    for (i = in + 1; i < strlen(expr); i++)
+      k->expr[i - in - 1] = expr[i];
+    k->expr[strlen(expr) - in - 1] = 0;
+    plintf("Convolving %s with %s\n", k->kerexpr,
+           k->expr);
+  } else {
+    k->expr = (char *)malloc(strlen(expr) + 2);
+    strcpy(k->expr, expr);
+  }
+
+  return NKernel++;
 }
 
 void re_evaluate_kernels(void) {

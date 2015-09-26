@@ -11,16 +11,8 @@
       variables[i] = (x);                                                      \
   } while (0)
 #define GETVAR(i) ((i) < NVAR ? variables[i] : 0.0)
-/* KERNEL.flag values */
-#define CONV 2
 
 /* --- Types --- */
-typedef struct {
-  double k_n1, k_n, sum, betnn, mu, *al, *cnv;
-  int *formula, flag, *kerform;
-  char name[20], *expr, *kerexpr;
-} KERNEL;
-
 typedef struct {
   int narg;
   char args[MAXARG][11];
@@ -29,13 +21,10 @@ typedef struct {
 /* --- Data --- */
 extern double constants[MAXPAR];
 extern int ERROUT;
-extern KERNEL kernel[MAXKER];
-extern int MaxPoints;
 extern int narg_fun[MAXUFUN];
 extern int NCON;
 extern int NDELAYS;
 extern int NFUN;
-extern int NKernel;
 extern int NSYM;
 extern int NVAR;
 extern int RandSeed;

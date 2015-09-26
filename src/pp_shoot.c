@@ -24,6 +24,7 @@
 #include "parserslow.h"
 #include "pop_list.h"
 #include "storage.h"
+#include "solver/volterra2.h"
 
 /* --- Macros --- */
 #define NOCHANGE 2

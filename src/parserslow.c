@@ -552,9 +552,7 @@ int add_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
     strcpy(ufun_arg[index].args[i], args[i]);
   set_new_arg_names(narg, args);
   if (add_expr(rhs, ufun[index], &end) == 0) {
-    ufun[index][end - 1] = ENDFUN;
-    ufun[index][end] = narg;
-    ufun[index][end + 1] = ENDEXP;
+    fixup_endfun(ufun[index], end, narg);
     strcpy(ufun_def[index], rhs);
     l = strlen(ufun_def[index]);
     ufun_def[index][l] = 0;
@@ -598,9 +596,7 @@ int add_ufun(const char *name, const char *expr, int narg) {
     return 1;
   }
 
-  ufun[NFUN][end - 1] = ENDFUN;
-  ufun[NFUN][end] = narg;
-  ufun[NFUN][end + 1] = ENDEXP;
+  fixup_endfun(ufun[NFUN], end, narg);
   strcpy(ufun_def[NFUN], expr);
   l = strlen(ufun_def[NFUN]);
   ufun_def[NFUN][l - 1] = 0;

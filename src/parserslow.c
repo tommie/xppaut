@@ -116,7 +116,6 @@ UserFunction ufuns[MAXUFUN];
 int NCON = 0, NVAR = 0, NFUN = 0;
 int NSYM = NUM_STDSYM;
 
-static double CurrentIndex = 0;
 static int SumIndex = 1;
 
 /* FIXXX */
@@ -1402,7 +1401,7 @@ static double eval_rpn(int *equat) {
     case ENDSUM:
       return (POP);
     case INDXCOM:
-      PUSH(CurrentIndex);
+      PUSH(0.0);
       break;
     default: {
       int it = i / MAXTYPE;

@@ -532,35 +532,36 @@ int add_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
   int end;
   if (narg > MAXARG) {
     plintf("Maximal arguments exceeded \n");
-    return (1);
+    return 1;
   }
   if ((ufuns[index].rpn = malloc(1024)) == NULL) {
     if (ERROUT)
-      printf("not enough memory!!\n");
-    return (1);
+      plintf("not enough memory!!\n");
+    return 1;
   }
   if ((ufuns[index].def = malloc(MAXEXPLEN)) == NULL) {
     if (ERROUT)
-      printf("not enough memory!!\n");
-    return (1);
+      plintf("not enough memory!!\n");
+    return 1;
   }
   ufuns[index].narg = narg;
   for (i = 0; i < narg; i++)
     strcpy(ufuns[index].args[i], args[i]);
   set_new_arg_names(narg, args);
-  if (add_expr(rhs, ufuns[index].rpn, &end) == 0) {
-    fixup_endfun(ufuns[index].rpn, end, narg);
-    strcpy(ufuns[index].def, rhs);
-    l = strlen(ufuns[index].def);
-    ufuns[index].def[l] = 0;
+  if (add_expr(rhs, ufuns[index].rpn, &end)) {
     set_old_arg_names(narg);
-    return (0);
+    if (ERROUT)
+      plintf("ERROR IN FUNCTION DEFINITION\n");
+    return 1;
   }
 
+  fixup_endfun(ufuns[index].rpn, end, narg);
+  strcpy(ufuns[index].def, rhs);
+  l = strlen(ufuns[index].def);
+  ufuns[index].def[l] = '\0';
   set_old_arg_names(narg);
-  if (ERROUT)
-    printf(" ERROR IN FUNCTION DEFINITION\n");
-  return (1);
+
+  return 0;
 }
 
 int add_ufun(const char *name, const char *expr, int narg) {
@@ -595,7 +596,7 @@ int add_ufun(const char *name, const char *expr, int narg) {
   fixup_endfun(ufuns[NFUN].rpn, end, narg);
   strcpy(ufuns[NFUN].def, expr);
   l = strlen(ufuns[NFUN].def);
-  ufuns[NFUN].def[l - 1] = 0;
+  ufuns[NFUN].def[l - 1] = '\0';
   strcpy(ufuns[NFUN].name, name);
   ufuns[NFUN].narg = narg;
   for (i = 0; i < narg; i++) {

@@ -110,11 +110,7 @@ int NDELAYS = 0;
 int RandSeed = 12345678;
 double constants[MAXPAR];
 double variables[MAXODE1];
-int *ufun[MAXUFUN];
-char *ufun_def[MAXUFUN];
-char ufun_names[MAXUFUN][12];
-int narg_fun[MAXUFUN];
-UFUN_ARG ufun_arg[MAXUFUN];
+UserFunction ufuns[MAXUFUN];
 
 int NCON = 0, NVAR = 0, NFUN = 0;
 int NSYM = NUM_STDSYM;
@@ -288,8 +284,8 @@ void init_rpn(void) {
 void free_ufuns(void) {
   int i;
   for (i = 0; i < NFUN; i++) {
-    free(ufun[i]);
-    free(ufun_def[i]);
+    free(ufuns[i].rpn);
+    free(ufuns[i].def);
   }
 }
 
@@ -516,7 +512,8 @@ int add_ufun_name(char *name, int index, int narg) {
     return 1;
   }
 
-  strcpy(ufun_names[index], name);
+  strncpy(ufuns[index].name, name, sizeof(ufuns[index].name));
+  ufuns[index].name[sizeof(ufuns[index].name) - 1] = '\0';
 
   if (add_symbol(name, 10, narg, COM(UFUNTYPE, index)) < 0)
     return 1;
@@ -537,26 +534,25 @@ int add_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
     plintf("Maximal arguments exceeded \n");
     return (1);
   }
-  if ((ufun[index] = (int *)malloc(1024)) == NULL) {
+  if ((ufuns[index].rpn = malloc(1024)) == NULL) {
     if (ERROUT)
       printf("not enough memory!!\n");
     return (1);
   }
-  if ((ufun_def[index] = (char *)malloc(MAXEXPLEN)) == NULL) {
+  if ((ufuns[index].def = malloc(MAXEXPLEN)) == NULL) {
     if (ERROUT)
       printf("not enough memory!!\n");
     return (1);
   }
-  ufun_arg[index].narg = narg;
+  ufuns[index].narg = narg;
   for (i = 0; i < narg; i++)
-    strcpy(ufun_arg[index].args[i], args[i]);
+    strcpy(ufuns[index].args[i], args[i]);
   set_new_arg_names(narg, args);
-  if (add_expr(rhs, ufun[index], &end) == 0) {
-    fixup_endfun(ufun[index], end, narg);
-    strcpy(ufun_def[index], rhs);
-    l = strlen(ufun_def[index]);
-    ufun_def[index][l] = 0;
-    narg_fun[index] = narg;
+  if (add_expr(rhs, ufuns[index].rpn, &end) == 0) {
+    fixup_endfun(ufuns[index].rpn, end, narg);
+    strcpy(ufuns[index].def, rhs);
+    l = strlen(ufuns[index].def);
+    ufuns[index].def[l] = 0;
     set_old_arg_names(narg);
     return (0);
   }
@@ -576,45 +572,45 @@ int add_ufun(const char *name, const char *expr, int narg) {
       plintf("too many functions !!\n");
     return 1;
   }
-  if ((ufun[NFUN] = (int *)malloc(1024)) == NULL) {
+  if ((ufuns[NFUN].rpn = malloc(1024)) == NULL) {
     if (ERROUT)
       plintf("not enough memory!!\n");
     return 1;
   }
-  if ((ufun_def[NFUN] = (char *)malloc(MAXEXPLEN)) == NULL) {
-    free(ufun[NFUN]);
+  if ((ufuns[NFUN].def = malloc(MAXEXPLEN)) == NULL) {
+    free(ufuns[NFUN].rpn);
     if (ERROUT)
       plintf("not enough memory!!\n");
     return 1;
   }
 
-  if (add_expr(expr, ufun[NFUN], &end)) {
-    free(ufun_def[NFUN]);
-    free(ufun[NFUN]);
+  if (add_expr(expr, ufuns[NFUN].rpn, &end)) {
+    free(ufuns[NFUN].def);
+    free(ufuns[NFUN].rpn);
     if (ERROUT)
       plintf("ERROR IN FUNCTION DEFINITION\n");
     return 1;
   }
 
-  fixup_endfun(ufun[NFUN], end, narg);
-  strcpy(ufun_def[NFUN], expr);
-  l = strlen(ufun_def[NFUN]);
-  ufun_def[NFUN][l - 1] = 0;
-  strcpy(ufun_names[NFUN], name);
-  narg_fun[NFUN] = narg;
+  fixup_endfun(ufuns[NFUN].rpn, end, narg);
+  strcpy(ufuns[NFUN].def, expr);
+  l = strlen(ufuns[NFUN].def);
+  ufuns[NFUN].def[l - 1] = 0;
+  strcpy(ufuns[NFUN].name, name);
+  ufuns[NFUN].narg = narg;
   for (i = 0; i < narg; i++) {
-    sprintf(ufun_arg[NFUN].args[i], "ARG%d", i + 1);
+    sprintf(ufuns[NFUN].args[i], "ARG%d", i + 1);
   }
   NFUN++;
 
   if (add_symbol(name, 10, narg, COM(UFUNTYPE, NFUN - 1)) < 0) {
     --NFUN;
-    free(ufun_def[NFUN]);
-    free(ufun[NFUN]);
+    free(ufuns[NFUN].def);
+    free(ufuns[NFUN].rpn);
     return 1;
   }
 
-  return (0);
+  return 0;
 }
 
 int check_num(int *tok, double value) {
@@ -1474,7 +1470,7 @@ static double eval_rpn(int *equat) {
           ustack[uptr] = POP;
           uptr++;
         }
-        PUSH(eval_rpn(ufun[in]));
+        PUSH(eval_rpn(ufuns[in].rpn));
         break;
       }
       break;

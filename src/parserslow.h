@@ -14,24 +14,24 @@
 
 /* --- Types --- */
 typedef struct {
-  int narg;
+  char name[12];
   char args[MAXARG][11];
-} UFUN_ARG;
+  int narg;
+
+  char *def;
+  int *rpn;
+} UserFunction;
 
 /* --- Data --- */
 extern double constants[MAXPAR];
 extern int ERROUT;
-extern int narg_fun[MAXUFUN];
 extern int NCON;
 extern int NDELAYS;
 extern int NFUN;
 extern int NSYM;
 extern int NVAR;
 extern int RandSeed;
-extern int *ufun[MAXUFUN];
-extern UFUN_ARG ufun_arg[MAXUFUN];
-extern char *ufun_def[MAXUFUN];
-extern char ufun_names[MAXUFUN][12];
+extern UserFunction ufuns[MAXUFUN];
 extern double variables[MAXODE1];
 
 /* --- Functions --- */

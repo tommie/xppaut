@@ -31,7 +31,6 @@ extern double constants[MAXPAR];
 extern int ERROUT;
 extern KERNEL kernel[MAXKER];
 extern int MaxPoints;
-extern double *Memory[MAXKER];
 extern int narg_fun[MAXUFUN];
 extern int NCON;
 extern int NDELAYS;

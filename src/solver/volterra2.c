@@ -45,6 +45,7 @@ int AutoEvaluate = 0;
 
 static int CurrentPoint;
 static int KnFlag;
+static double *Memory[MAXKER];
 
 double ker_val(int in) {
   if (KnFlag)

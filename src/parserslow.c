@@ -118,7 +118,6 @@ int narg_fun[MAXUFUN];
 KERNEL kernel[MAXKER];
 int NKernel;
 int MaxPoints;
-double *Memory[MAXKER];
 
 UFUN_ARG ufun_arg[MAXUFUN];
 

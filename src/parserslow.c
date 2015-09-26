@@ -20,58 +20,58 @@
 #include "solver/volterra2.h"
 
 /* --- Macros --- */
-#define FUN1TYPE 9
+/* Command types */
 #define FUN2TYPE 1
-#define VARTYPE 3
 #define CONTYPE 2
-#define UFUNTYPE 24
+#define VARTYPE 3
 #define SVARTYPE 4
-#define SCONTYPE 32
 #define NETTYPE 6
 #define TABTYPE 7
 #define USTACKTYPE 8
+#define FUN1TYPE 9
 #define KERTYPE 10
+#define UFUNTYPE 24
+#define SCONTYPE 32
 #define MAXTYPE 20000000
-
 #define COM(a, b) ((a)*MAXTYPE + (b))
 
-#define NEGATE 9
-#define MINUS 4
-#define LPAREN 0
-#define RPAREN 1
-#define COMMA 2
-#define STARTTOK 10
-#define ENDTOK 11
-
+/* Simple commands */
 #define ENDEXP 999
 #define ENDFUN 998
-#define DELSYM 42
 #define ENDDELAY 996
 #define MYIF 995
 #define MYELSE 993
 #define MYTHEN 994
 #define SUMSYM 990
 #define ENDSUM 991
-#define SHIFTSYM 64
-#define ISHIFTSYM 67
 #define ENDSHIFT 988
-#define LASTTOK MAX_SYMBS - 2
 #define NUMSYM 987
-#define NUMTOK 59
-#define FIRST_ARG 73
 #define ENDDELSHFT 986
-#define DELSHFTSYM 65
 #define ENDISHIFT 985
 #define ENDSET 981
-#define INDX 68
-
-#define STDSYM 95
-
 #define INDXCOM 922
+
+/* Tokens */
+#define LPAREN 0
+#define RPAREN 1
+#define COMMA 2
+#define MINUS 4
+#define NEGATE 9
+#define STARTTOK 10
+#define ENDTOK 11
+#define DELSYM 42
+#define NUMTOK 59
+#define SHIFTSYM 64
+#define DELSHFTSYM 65
+#define ISHIFTSYM 67
+#define INDX 68
+#define FIRST_ARG 73
+
+#define LASTTOK MAX_SYMBS - 2
+#define NUM_STDSYM 95
 
 #define MAXEXPLEN 1024
 #define MXLEN 10
-#define THOUS 10000
 #define DOUB_EPS 2.23E-15
 #define POP stack[--stack_pointer]
 #define PUSH(a)                                                                \
@@ -124,7 +124,7 @@ int NTable;
 UFUN_ARG ufun_arg[MAXUFUN];
 
 int NCON = 0, NVAR = 0, NFUN = 0;
-int NSYM = STDSYM;
+int NSYM = NUM_STDSYM;
 
 static double zippy;
 static double CurrentIndex = 0;
@@ -269,7 +269,7 @@ void init_rpn(void) {
   NKernel = 0;
 
   MaxPoints = 4000;
-  NSYM = STDSYM;
+  NSYM = NUM_STDSYM;
   add_con("PI", M_PI);
 
   add_con("I'", 0.0);
@@ -912,12 +912,6 @@ static int alg_to_rpn(int *toklist, int *command) {
       tokptr++;
       goto getnew;
     }
-    /* ram -- the THOUS problem */
-    /*           if(my_symb[oldtok%THOUS].pri>=my_symb[newtok%THOUS].pri)
-    {
-     command[comptr]=my_symb[oldtok%THOUS].com;
-     if((my_symb[oldtok%THOUS].arg==2)&&
-     (my_symb[oldtok%THOUS].com/MAXTYPE==FUN2TYPE)) */
 
     if (my_symb[oldtok].pri >= my_symb[newtok].pri) {
       command[comptr] = my_symb[oldtok].com;

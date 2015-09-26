@@ -38,7 +38,6 @@ extern int NDELAYS;
 extern int NFUN;
 extern int NKernel;
 extern int NSYM;
-extern int NTable;
 extern int NVAR;
 extern int RandSeed;
 extern int *ufun[MAXUFUN];

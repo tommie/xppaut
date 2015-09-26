@@ -26,7 +26,6 @@
 #include "my_svg.h"
 #include "nullcline.h"
 #include "numerics.h"
-#include "parserslow.h"
 #include "pop_list.h"
 #include "rubber.h"
 #include "tabular.h"

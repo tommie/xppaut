@@ -76,6 +76,7 @@ static void view_table(int index);
 
 /* --- Data --- */
 TABULAR my_table[MAX_TAB];
+int NTable;
 
 void set_auto_eval_flags(int f) {
   int i;

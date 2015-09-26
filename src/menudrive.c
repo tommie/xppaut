@@ -28,7 +28,6 @@
 #include "menus.h"
 #include "nullcline.h"
 #include "numerics.h"
-#include "parserslow.h"
 #include "pop_list.h"
 #include "pp_shoot.h"
 #include "tabular.h"

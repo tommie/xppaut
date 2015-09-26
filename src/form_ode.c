@@ -23,6 +23,7 @@
 #include "simplenet.h"
 #include "solver.h"
 #include "strutil.h"
+#include "tabular.h"
 #include "ui-x11/file-selector.h"
 
 /* --- Macros --- */

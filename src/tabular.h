@@ -20,6 +20,7 @@ typedef struct {
 
 /* --- Data --- */
 extern TABULAR my_table[MAX_TAB];
+extern int NTable;
 
 /* --- Functions --- */
 int create_fun_table(int npts, double xlo, double xhi, char *formula,

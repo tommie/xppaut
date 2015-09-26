@@ -119,7 +119,6 @@ KERNEL kernel[MAXKER];
 int NKernel;
 int MaxPoints;
 double *Memory[MAXKER];
-int NTable;
 
 UFUN_ARG ufun_arg[MAXUFUN];
 

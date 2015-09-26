@@ -74,9 +74,10 @@
 #define MXLEN 10
 #define DOUB_EPS 2.23E-15
 #define POP stack[--stack_pointer]
-#define PUSH(a)                                                                \
-  zippy = (a);                                                                 \
-  stack[stack_pointer++] = zippy;
+#define PUSH(a) do {                            \
+    double zippy = (a);                         \
+    stack[stack_pointer++] = zippy;             \
+  } while (0);
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846264338327950288
@@ -115,7 +116,6 @@ UserFunction ufuns[MAXUFUN];
 int NCON = 0, NVAR = 0, NFUN = 0;
 int NSYM = NUM_STDSYM;
 
-static double zippy;
 static double CurrentIndex = 0;
 static int SumIndex = 1;
 

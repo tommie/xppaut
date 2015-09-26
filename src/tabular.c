@@ -247,7 +247,7 @@ int eval_fun_table(int n, double xlo, double xhi, char *formula, double *y) {
   double dx;
   double oldt;
   int command[200], ncold = NCON, nsym = NSYM;
-  if (add_expr(formula, command, &i)) {
+  if (parse_expr(formula, command, &i)) {
     err_msg("Illegal formula...");
     NCON = ncold;
     NSYM = nsym;

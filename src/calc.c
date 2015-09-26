@@ -196,7 +196,7 @@ int has_eq(char *z, char *w, int *where) {
 double calculate(char *expr, int *ok) {
   int com[400], i;
   double z = 0.0;
-  if (add_expr(expr, com, &i)) {
+  if (parse_expr(expr, com, &i)) {
     err_msg("Illegal formula ..");
     *ok = 0;
     goto bye;

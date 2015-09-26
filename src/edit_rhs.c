@@ -319,7 +319,7 @@ void edit_rhs(void) {
     for (i = 0; i < n; i++) {
       if (i < NODE || (i >= (NODE + NMarkov))) {
 
-        err = add_expr(values[i], command[i], &len);
+        err = parse_expr(values[i], command[i], &len);
         if (err == 1) {
           sprintf(msg, "Bad rhs:%s=%s", names[i], values[i]);
           err_msg(msg);
@@ -397,7 +397,7 @@ void edit_functions(void) {
 
     for (i = 0; i < n; i++) {
       set_new_arg_names(ufuns[i].narg, ufuns[i].args);
-      err = add_expr(values[i], command[i], &len);
+      err = parse_expr(values[i], command[i], &len);
       set_old_arg_names(ufuns[i].narg);
       if (err == 1) {
         sprintf(msg, "Bad func.:%s=%s", names[i], values[i]);

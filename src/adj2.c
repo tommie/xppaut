@@ -305,7 +305,7 @@ static int make_h(float **orb, float **adj, float **h, int nt, double dt,
     for (i = 0; i < NODE; i++) {
       sprintf(name, "Coupling for %s eqn:", uvar_names[i]);
       new_string(name, coup_string[i]);
-      if (add_expr(coup_string[i], coup_fun[i], &j)) {
+      if (parse_expr(coup_string[i], coup_fun[i], &j)) {
         err_msg("Illegal formula");
         goto bye;
       }

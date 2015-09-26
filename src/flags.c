@@ -179,7 +179,7 @@ int compile_flags(void) {
   if (NFlags == 0)
     return (0);
   for (j = 0; j < NFlags; j++) {
-    if (add_expr(flag[j].cond, command, &nc)) {
+    if (parse_expr(flag[j].cond, command, &nc)) {
       plintf("Illegal global condition:  %s\n", flag[j].cond);
       return (1);
     }
@@ -217,7 +217,7 @@ int compile_flags(void) {
         flag[j].lhs[i] = index;
         flag[j].type[i] = 0;
       }
-      if (add_expr(flag[j].rhs[i], command, &nc)) {
+      if (parse_expr(flag[j].rhs[i], command, &nc)) {
         printf("Illegal event %s for global %s\n", flag[j].rhs[i],
                flag[j].cond);
         return (1);

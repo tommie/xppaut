@@ -398,7 +398,7 @@ int add_var(const char *name, double value) {
   return 0;
 }
 
-int add_expr(const char *expr, int *command, int *length) {
+int parse_expr(const char *expr, int *command, int *length) {
   char dest[1024];
   int my_token[1024];
   int err, i;
@@ -548,7 +548,7 @@ int add_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
   for (i = 0; i < narg; i++)
     strcpy(ufuns[index].args[i], args[i]);
   set_new_arg_names(narg, args);
-  if (add_expr(rhs, ufuns[index].rpn, &end)) {
+  if (parse_expr(rhs, ufuns[index].rpn, &end)) {
     set_old_arg_names(narg);
     if (ERROUT)
       plintf("ERROR IN FUNCTION DEFINITION\n");
@@ -585,7 +585,7 @@ int add_ufun(const char *name, const char *expr, int narg) {
     return 1;
   }
 
-  if (add_expr(expr, ufuns[NFUN].rpn, &end)) {
+  if (parse_expr(expr, ufuns[NFUN].rpn, &end)) {
     free(ufuns[NFUN].def);
     free(ufuns[NFUN].rpn);
     if (ERROUT)

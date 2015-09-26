@@ -27,7 +27,7 @@ int compile_derived(void) {
   int i, k;
   int f[256], n;
   for (i = 0; i < nderived; i++) {
-    if (add_expr(derived[i].rhs, f, &n) == 1) {
+    if (parse_expr(derived[i].rhs, f, &n) == 1) {
       plintf(" Bad right-hand side for derived parameters \n");
       return (1);
     }

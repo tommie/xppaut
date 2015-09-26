@@ -64,7 +64,7 @@ void alloc_v_memory(void) {
   /* First parse the kernels   since these were deferred */
   for (i = 0; i < NKernel; i++) {
     kernel[i].k_n = 0.0;
-    if (add_expr(kernel[i].expr, formula, &len)) {
+    if (parse_expr(kernel[i].expr, formula, &len)) {
       plintf("Illegal kernel %s=%s\n", kernel[i].name, kernel[i].expr);
       exit(0); /* fatal error ... */
     }
@@ -74,7 +74,7 @@ void alloc_v_memory(void) {
       kernel[i].formula[j] = formula[j];
     }
     if (kernel[i].flag == CONV) {
-      if (add_expr(kernel[i].kerexpr, formula, &len)) {
+      if (parse_expr(kernel[i].kerexpr, formula, &len)) {
         plintf("Illegal convolution %s=%s\n", kernel[i].name,
                kernel[i].kerexpr);
         exit(0); /* fatal error ... */

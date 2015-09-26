@@ -1641,7 +1641,7 @@ static int add_ani_expr(char *x, int *c) {
   int err;
 
   /* plintf(" n_ani=%d exp=%s \n",n_anicom,x); */
-  err = add_expr(x, com, &n);
+  err = parse_expr(x, com, &n);
   if (err == 1)
     return 1;
   for (i = 0; i < n; i++) {
@@ -2407,7 +2407,7 @@ static int add_grab_command(char *xs, char *ys, char *ts, FILE *fp) {
   if (z <= 0.0)
     z = .02;
   ani_grab[j].tol = z;
-  if (add_expr(xs, com, &nc)) {
+  if (parse_expr(xs, com, &nc)) {
     plintf("Bad grab x %s \n", xs);
     return (-1);
   }
@@ -2415,7 +2415,7 @@ static int add_grab_command(char *xs, char *ys, char *ts, FILE *fp) {
   for (k = 0; k <= nc; k++)
     ani_grab[j].x[k] = com[k];
 
-  if (add_expr(ys, com, &nc)) {
+  if (parse_expr(ys, com, &nc)) {
     plintf("Bad grab y %s \n", ys);
     return (-1);
   }
@@ -2519,7 +2519,7 @@ static int add_grab_task(char *lhs, char *rhs, int igrab, int which) {
     if (i >= MAX_GEVENTS)
       return (-1); /* too many events */
     strcpy(ani_grab[igrab].start.lhsname[i], lhs);
-    if (add_expr(rhs, com, &nc)) {
+    if (parse_expr(rhs, com, &nc)) {
       plintf("Bad right-hand side for grab event %s\n", rhs);
 
       return (-1);
@@ -2543,7 +2543,7 @@ static int add_grab_task(char *lhs, char *rhs, int igrab, int which) {
       return (-1); /* too many events */
 
     strcpy(ani_grab[igrab].end.lhsname[i], lhs);
-    if (add_expr(rhs, com, &nc)) {
+    if (parse_expr(rhs, com, &nc)) {
       plintf("Bad right-hand side for grab event %s\n", rhs);
       plintf("should return -1\n");
       return (-1);

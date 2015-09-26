@@ -37,7 +37,6 @@ extern double variables[MAXODE1];
 /* --- Functions --- */
 int add_2d_table(char *name, char *file);
 int add_con(const char *name, double value);
-int add_expr(const char *expr, int *command, int *length);
 int add_file_table(int index, char *file);
 int add_form_table(int index, int nn, double xlo, double xhi, char *formula);
 int add_kernel(const char *name, double mu, const char *expr);
@@ -58,6 +57,7 @@ int get_param_index(char *name);
 int get_val(char *name, double *value);
 int get_var_index(char *name);
 void init_rpn(void);
+int parse_expr(const char *expr, int *command, int *length);
 void set_ivar(int i, double value);
 void set_new_arg_names(int narg, char args[10][11]);
 void set_old_arg_names(int narg);

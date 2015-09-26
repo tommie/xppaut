@@ -94,7 +94,7 @@ int compile_svars(void) {
   }
 
   for (i = 0; i < naeqn; i++) {
-    if (add_expr(aeqn[i].rhs, f, &n) == 1) {
+    if (parse_expr(aeqn[i].rhs, f, &n) == 1) {
       plintf(" Bad right-hand side for alg-eqn \n");
       return (1);
     }
@@ -104,7 +104,7 @@ int compile_svars(void) {
   }
 
   for (i = 0; i < nsvar; i++) {
-    if (add_expr(svar[i].rhs, f, &n) == 1) {
+    if (parse_expr(svar[i].rhs, f, &n) == 1) {
       plintf(" Bad initial guess for sol-var \n");
       return (1);
     }
@@ -276,7 +276,7 @@ void get_new_guesses(void) {
     z = svar[i].last;
     sprintf(name, "Initial %s(%g):", svar[i].name, z);
     new_string(name, svar[i].rhs);
-    if (add_expr(svar[i].rhs, svar[i].form, &n)) {
+    if (parse_expr(svar[i].rhs, svar[i].form, &n)) {
       err_msg("Illegal formula");
       return;
     }

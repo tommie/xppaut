@@ -88,7 +88,7 @@ void compile_bvp(void) {
   BVP_FLAG = 0;
   for (i = 0; i < NODE; i++) {
 
-    if (add_expr(my_bc[i].string, my_bc[i].com, &len)) {
+    if (parse_expr(my_bc[i].string, my_bc[i].com, &len)) {
       sprintf(badcom, "Bad syntax on %d th BC", i + 1);
       err_msg(badcom);
       return;

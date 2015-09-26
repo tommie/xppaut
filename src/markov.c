@@ -238,7 +238,7 @@ static int compile_markov(int index, int j, int k) {
   int com[256];
   expr = markov[index].trans[l0];
 
-  if (add_expr(expr, com, &leng))
+  if (parse_expr(expr, com, &leng))
     return -1;
   markov[index].command[l0] = (int *)malloc(sizeof(int) * (leng + 2));
   for (i = 0; i < leng; i++) {

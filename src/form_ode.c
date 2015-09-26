@@ -847,7 +847,7 @@ int compiler(char *bob, FILE *fptr) {
       }
     }
     plintf("RHS(%d)=%s\n", NODE, formula);
-    if (add_expr(formula, my_ode[NODE], &leng[NODE])) {
+    if (parse_expr(formula, my_ode[NODE], &leng[NODE])) {
       printf("ERROR at line %d\n", NLINES);
       exit(0);
     }
@@ -1769,7 +1769,7 @@ void compile_em(void) {
       strcpy(ode_names[nvar], v->rhs);
       find_ker(v->rhs, &alt);
       /*       ode_names[nvar][nn-1]=0; */
-      if (add_expr(v->rhs, my_ode[nvar], &leng[nvar])) {
+      if (parse_expr(v->rhs, my_ode[nvar], &leng[nvar])) {
         printf("A\n");
         plintf("ERROR compiling %s' \n", v->lhs);
         exit(0);
@@ -1789,7 +1789,7 @@ void compile_em(void) {
       find_ker(v->rhs, &alt);
       if ((my_ode[nfix + IN_VARS] = (int *)malloc(MAXEXPLEN * sizeof(int))) ==
               NULL ||
-          add_expr(v->rhs, my_ode[nfix + IN_VARS], &leng[IN_VARS + nfix]) !=
+          parse_expr(v->rhs, my_ode[nfix + IN_VARS], &leng[IN_VARS + nfix]) !=
               0) {
         plintf(" Error allocating or compiling %s\n", v->lhs);
         exit(0);
@@ -1815,7 +1815,7 @@ void compile_em(void) {
 
       strcpy(ode_names[in1], v->rhs);
       /* ode_names[in1][nn]=0; */
-      if (add_expr(v->rhs, my_ode[in2], &leng[in2])) {
+      if (parse_expr(v->rhs, my_ode[in2], &leng[in2])) {
         printf("B\n");
         plintf("ERROR compiling %s \n", v->lhs);
         exit(0);

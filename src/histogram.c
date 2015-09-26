@@ -283,7 +283,7 @@ void new_hist(int nbins, double zlo, double zhi, int col, int col2,
     if (strlen(condition) == 0)
       cond = 0;
     else {
-      if (add_expr(condition, command, &i)) {
+      if (parse_expr(condition, command, &i)) {
         err_msg("Bad condition. Ignoring...");
 
       } else {

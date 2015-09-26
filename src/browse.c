@@ -210,7 +210,7 @@ void data_add_col(BROWSER *b) {
 int add_stor_col(char *name, char *formula, BROWSER *b) {
   int com[4000], i, j;
 
-  if (add_expr(formula, com, &i)) {
+  if (parse_expr(formula, com, &i)) {
     err_msg("Bad Formula .... ");
     return (0);
   }
@@ -332,7 +332,7 @@ void replace_column(char *var, char *form, float **dat, int n) {
   /*  first compile formula ... */
 
   if (dif_var < 0 && seq == 0) {
-    if (add_expr(form, com, &i)) {
+    if (parse_expr(form, com, &i)) {
       NCON = NCON_START;
       NSYM = NSYM_START;
       err_msg("Illegal formula...");

@@ -350,7 +350,7 @@ int add_spec_fun(char *name, char *rhs)
     str = strtok_r(NULL, ")", &toksave);
     strcpy(fname, str);
     sprintf(junk, "%s(%s,%s)", fname, rootname, root2name);
-    if (add_expr(junk, my_net[ind].f, &elen)) {
+    if (parse_expr(junk, my_net[ind].f, &elen)) {
       plintf(" bad function %s \n", fname);
       return 0;
     }
@@ -420,7 +420,7 @@ int add_spec_fun(char *name, char *rhs)
     str = strtok_r(NULL, ")", &toksave);
     strcpy(fname, str);
     sprintf(junk, "%s(%s,%s)", fname, rootname, root2name);
-    if (add_expr(junk, my_net[ind].f, &elen)) {
+    if (parse_expr(junk, my_net[ind].f, &elen)) {
       plintf(" bad function %s \n", fname);
       return 0;
     }
@@ -596,7 +596,7 @@ int add_spec_fun(char *name, char *rhs)
     str = strtok_r(NULL, ")", &toksave);
     strcpy(fname, str);
     sprintf(junk, "%s(%s,%s)", fname, rootname, root2name);
-    if (add_expr(junk, my_net[ind].f, &elen)) {
+    if (parse_expr(junk, my_net[ind].f, &elen)) {
       plintf(" bad function %s \n", fname);
       return 0;
     }

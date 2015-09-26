@@ -180,7 +180,7 @@ int do_init_delay(double big) {
       return (0);
     }
 
-    if (add_expr(delay_string[i], del_form[i], &len)) {
+    if (parse_expr(delay_string[i], del_form[i], &len)) {
       err_msg("Illegal delay expression");
       for (j = 0; j <= i; j++)
         free(del_form[j]);

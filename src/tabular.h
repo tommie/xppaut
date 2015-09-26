@@ -32,6 +32,6 @@ double lookup(double x, int index);
 void new_lookup_com(int i);
 void redo_all_fun_tables(void);
 void set_auto_eval_flags(int f);
-void set_table_name(char *name, int index);
+void set_table_name(const char *name, int index);
 
 #endif /* XPPAUT_TABULAR_H */

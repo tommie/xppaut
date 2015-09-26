@@ -84,7 +84,7 @@ void set_auto_eval_flags(int f) {
     my_table[i].autoeval = f;
 }
 
-void set_table_name(char *name, int index) {
+void set_table_name(const char *name, int index) {
   strcpy(my_table[index].name, name);
 }
 

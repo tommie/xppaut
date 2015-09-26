@@ -36,19 +36,19 @@ extern double variables[MAXODE1];
 
 /* --- Functions --- */
 int add_2d_table(char *name, char *file);
-int add_con(char *name, double value);
-int add_expr(char *expr, int *command, int *length);
+int add_con(const char *name, double value);
+int add_expr(const char *expr, int *command, int *length);
 int add_file_table(int index, char *file);
 int add_form_table(int index, int nn, double xlo, double xhi, char *formula);
-int add_kernel(char *name, double mu, char *expr);
-int add_net_name(int index, char *name);
-int add_table_name(int index, char *name);
-int add_ufun(char *junk, char *expr, int narg);
+int add_kernel(const char *name, double mu, const char *expr);
+int add_net_name(int index, const char *name);
+int add_table_name(int index, const char *name);
+int add_ufun(const char *name, const char *expr, int narg);
 int add_ufun_name(char *name, int index, int narg);
 int add_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]);
-int add_var(char *junk, double value);
+int add_var(const char *name, double value);
 int add_vect_name(int index, char *name);
-void convert(char *source, char *dest);
+void convert(const char *source, char *dest);
 int do_num(const char *source, char *num, double *value, int *ind);
 double evaluate(int *equat);
 int find_lookup(char *name);

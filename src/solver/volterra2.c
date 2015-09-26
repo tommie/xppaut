@@ -174,6 +174,23 @@ int volterra2_add_kernel(const char *expr, double mu) {
   return NKernel++;
 }
 
+/**
+ * Remove a kernel function previously added by volterra2_add_kernel.
+ *
+ * @param index the index of the kernel function to remove.
+ */
+void volterra2_remove_kernel(int index) {
+  KERNEL *k = &kernel[index];
+
+  free(k->expr);
+  free(k->kerexpr);
+  memset(k, 0, sizeof(*k));
+
+  // TODO: Properly handle kernel not at the end.
+  if (index + 1 == NKernel)
+    --NKernel;
+}
+
 void re_evaluate_kernels(void) {
   int i, j, n = MaxPoints;
 

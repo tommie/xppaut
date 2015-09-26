@@ -94,7 +94,7 @@ typedef struct {
 /* --- Forward Declarations --- */
 static int is_uvar(int x);
 
-static void find_name(char *string, int *index);
+static void find_name(const char *string, int *index);
 static int alg_to_rpn(int *toklist, int *command);
 static int unary_sym(int token);
 static int binary_sym(int token);
@@ -293,44 +293,68 @@ void free_ufuns(void) {
   }
 }
 
-int duplicate_name(char *junk) {
+int duplicate_name(const char *name) {
   int i;
-  find_name(junk, &i);
+  find_name(name, &i);
   if (i >= 0) {
     if (ERROUT)
-      printf("%s is a duplicate name\n", junk);
+      printf("%s is a duplicate name\n", name);
     return (1);
   }
   return (0);
 }
 
-int add_constant(char *junk) {
+/**
+ * Add a symbol to the lookup table.
+ *
+ * @param name is the symbol name.
+ * @param pri the priority of the symbol.
+ * @param arg the number of arguments.
+ * @param com the RPN command.
+ * @return the symbol index, and negative on error.
+ */
+static int add_symbol(const char *name, int pri, int arg, int com) {
   int len;
-  char string[100];
+  char cname[100];
 
-  if (duplicate_name(junk) == 1)
-    return (1);
+  if (duplicate_name(name))
+    return -1;
+
+  convert(name, cname);
+  len = strlen(cname);
+  if (len < 1) {
+    plintf("Empty parameter - remove spaces\n");
+    return -1;
+  }
+
+  if (len > MXLEN)
+    len = MXLEN;
+  strncpy(my_symb[NSYM].name, cname, len);
+  my_symb[NSYM].name[len] = '\0';
+  my_symb[NSYM].len = len;
+  my_symb[NSYM].pri = pri;
+  my_symb[NSYM].arg = arg;
+  my_symb[NSYM].com = com;
+
+  return NSYM++;
+}
+
+int add_con(const char *name, double value) {
   if (NCON >= MAXPAR) {
     if (ERROUT)
       printf("too many constants !!\n");
-    return (1);
-  }
-  convert(junk, string);
-  len = strlen(string);
-  if (len < 1) {
-    plintf("Empty parameter - remove spaces\n");
     return 1;
   }
-  if (len > MXLEN)
-    len = MXLEN;
-  strncpy(my_symb[NSYM].name, string, len);
-  my_symb[NSYM].name[len] = '\0';
-  my_symb[NSYM].len = len;
-  my_symb[NSYM].pri = 10;
-  my_symb[NSYM].arg = 0;
-  my_symb[NSYM].com = COM(CONTYPE, NCON - 1);
-  NSYM++;
-  return (0);
+
+  constants[NCON] = value;
+  ++NCON;
+
+  if (add_symbol(name, 10, 0, COM(CONTYPE, NCON - 1)) < 0) {
+    --NCON;
+    return 1;
+  }
+
+  return 0;
 }
 
 int get_var_index(char *name) {
@@ -347,70 +371,38 @@ int get_var_index(char *name) {
 
 int get_type(int index) { return (my_symb[index].com); }
 
-int add_con(char *name, double value) {
-  if (NCON >= MAXPAR) {
-    if (ERROUT)
-      printf("too many constants !!\n");
-    return (1);
-  }
-  constants[NCON] = value;
-  NCON++;
-  return (add_constant(name));
-}
-
-int add_kernel(char *name, double mu, char *expr) {
-  char cname[100];
-  int len, ki;
-
-  if (duplicate_name(name) == 1)
-    return 1;
-  ki = volterra2_add_kernel(expr, mu);
+int add_kernel(const char *name, double mu, const char *expr) {
+  int ki = volterra2_add_kernel(expr, mu);
   if (ki < 0)
     return 1;
 
-  convert(name, cname);
-  len = strlen(cname);
-  if (len > MXLEN)
-    len = MXLEN;
-  strncpy(my_symb[NSYM].name, cname, len);
-  my_symb[NSYM].name[len] = '\0';
-  my_symb[NSYM].len = len;
-  my_symb[NSYM].pri = 10;
-  my_symb[NSYM].arg = 0;
-  my_symb[NSYM].com = COM(KERTYPE, ki);
-  NSYM++;
+  if (add_symbol(name, 10, 0, COM(KERTYPE, ki)) < 0) {
+    volterra2_remove_kernel(ki);
+    return 1;
+  }
 
   return 0;
 }
 
-int add_var(char *junk, double value) {
-  char string[100];
-  int len;
-  /*   plintf(" variable - %s \n",junk); */
-  if (duplicate_name(junk) == 1)
-    return (1);
+int add_var(const char *name, double value) {
   if (NVAR >= MAXODE1) {
     if (ERROUT)
       printf("too many variables !!\n");
-    return (1);
+    return 1;
   }
-  convert(junk, string);
-  len = strlen(string);
-  if (len > MXLEN)
-    len = MXLEN;
-  strncpy(my_symb[NSYM].name, string, len);
-  my_symb[NSYM].name[len] = '\0';
-  my_symb[NSYM].len = len;
-  my_symb[NSYM].pri = 10;
-  my_symb[NSYM].arg = 0;
-  my_symb[NSYM].com = COM(VARTYPE, NVAR);
-  NSYM++;
+
   variables[NVAR] = value;
   NVAR++;
-  return (0);
+
+  if (add_symbol(name, 10, 0, COM(VARTYPE, NVAR - 1)) < 0) {
+    --NVAR;
+    return 1;
+  }
+
+  return 0;
 }
 
-int add_expr(char *expr, int *command, int *length) {
+int add_expr(const char *expr, int *command, int *length) {
   char dest[1024];
   int my_token[1024];
   int err, i;
@@ -437,23 +429,11 @@ int add_expr(char *expr, int *command, int *length) {
   return (0);
 }
 
-int add_net_name(int index, char *name) {
-  char string[50];
-  int len = strlen(name);
-  plintf(" Adding net %s %d \n", name, index);
-  if (duplicate_name(name) == 1)
-    return (1);
-  convert(name, string);
-  if (len > MXLEN)
-    len = MXLEN;
-  strncpy(my_symb[NSYM].name, string, len);
-  my_symb[NSYM].name[len] = '\0';
-  my_symb[NSYM].len = len;
-  my_symb[NSYM].pri = 10;
-  my_symb[NSYM].arg = 1;
-  my_symb[NSYM].com = COM(NETTYPE, index);
-  NSYM++;
-  return (0);
+int add_net_name(int index, const char *name) {
+  if (add_symbol(name, 10, 1, COM(NETTYPE, index)) < 0)
+    return 1;
+
+  return 0;
 }
 
 int add_2d_table(char *name, char *file) {
@@ -495,23 +475,13 @@ int add_file_table(int index, char *file) {
   return (0);
 }
 
-int add_table_name(int index, char *name) {
-  char string[50];
-  int len = strlen(name);
-  if (duplicate_name(name) == 1)
-    return (1);
-  convert(name, string);
-  if (len > MXLEN)
-    len = MXLEN;
-  strncpy(my_symb[NSYM].name, string, len);
-  my_symb[NSYM].name[len] = '\0';
-  my_symb[NSYM].len = len;
-  my_symb[NSYM].pri = 10;
-  my_symb[NSYM].arg = 1;
-  my_symb[NSYM].com = COM(TABTYPE, index);
+int add_table_name(int index, const char *name) {
   set_table_name(name, index);
-  NSYM++;
-  return (0);
+
+  if (add_symbol(name, 10, 1, COM(TABTYPE, index)) < 0)
+    return 1;
+
+  return 0;
 }
 
 int add_form_table(int index, int nn, double xlo, double xhi, char *formula) {
@@ -540,28 +510,18 @@ void set_new_arg_names(int narg, char args[10][11]) {
 }
 
 int add_ufun_name(char *name, int index, int narg) {
-  char string[50];
-  int len = strlen(name);
-  if (duplicate_name(name) == 1)
-    return (1);
   if (index >= MAXUFUN) {
     if (ERROUT)
       printf("too many functions !!\n");
-    return (1);
+    return 1;
   }
-  plintf(" Added user fun %s \n", name);
-  convert(name, string);
-  if (len > MXLEN)
-    len = MXLEN;
-  strncpy(my_symb[NSYM].name, string, len);
-  my_symb[NSYM].name[len] = '\0';
-  my_symb[NSYM].len = len;
-  my_symb[NSYM].pri = 10;
-  my_symb[NSYM].arg = narg;
-  my_symb[NSYM].com = COM(UFUNTYPE, index);
-  NSYM++;
+
   strcpy(ufun_names[index], name);
-  return (0);
+
+  if (add_symbol(name, 10, narg, COM(UFUNTYPE, index)) < 0)
+    return 1;
+
+  return 0;
 }
 
 void fixup_endfun(int *u, int l, int narg) {
@@ -592,7 +552,6 @@ int add_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
     strcpy(ufun_arg[index].args[i], args[i]);
   set_new_arg_names(narg, args);
   if (add_expr(rhs, ufun[index], &end) == 0) {
-
     ufun[index][end - 1] = ENDFUN;
     ufun[index][end] = narg;
     ufun[index][end + 1] = ENDEXP;
@@ -610,58 +569,56 @@ int add_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
   return (1);
 }
 
-int add_ufun(char *junk, char *expr, int narg) {
-  char string[50];
+int add_ufun(const char *name, const char *expr, int narg) {
   int i, l;
   int end;
-  int len = strlen(junk);
 
-  if (duplicate_name(junk) == 1)
-    return (1);
   if (NFUN >= MAXUFUN) {
     if (ERROUT)
-      printf("too many functions !!\n");
-    return (1);
+      plintf("too many functions !!\n");
+    return 1;
   }
   if ((ufun[NFUN] = (int *)malloc(1024)) == NULL) {
     if (ERROUT)
-      printf("not enough memory!!\n");
-    return (1);
+      plintf("not enough memory!!\n");
+    return 1;
   }
   if ((ufun_def[NFUN] = (char *)malloc(MAXEXPLEN)) == NULL) {
+    free(ufun[NFUN]);
     if (ERROUT)
-      printf("not enough memory!!\n");
-    return (1);
+      plintf("not enough memory!!\n");
+    return 1;
   }
 
-  convert(junk, string);
-  if (add_expr(expr, ufun[NFUN], &end) == 0) {
-    if (len > MXLEN)
-      len = MXLEN;
-    strncpy(my_symb[NSYM].name, string, len);
-    my_symb[NSYM].name[len] = '\0';
-    my_symb[NSYM].len = len;
-    my_symb[NSYM].pri = 10;
-    my_symb[NSYM].arg = narg;
-    my_symb[NSYM].com = COM(UFUNTYPE, NFUN);
-    NSYM++;
-    ufun[NFUN][end - 1] = ENDFUN;
-    ufun[NFUN][end] = narg;
-    ufun[NFUN][end + 1] = ENDEXP;
-    strcpy(ufun_def[NFUN], expr);
-    l = strlen(ufun_def[NFUN]);
-    ufun_def[NFUN][l - 1] = 0;
-    strcpy(ufun_names[NFUN], junk);
-    narg_fun[NFUN] = narg;
-    for (i = 0; i < narg; i++) {
-      sprintf(ufun_arg[NFUN].args[i], "ARG%d", i + 1);
-    }
-    NFUN++;
-    return (0);
+  if (add_expr(expr, ufun[NFUN], &end)) {
+    free(ufun_def[NFUN]);
+    free(ufun[NFUN]);
+    if (ERROUT)
+      plintf("ERROR IN FUNCTION DEFINITION\n");
+    return 1;
   }
-  if (ERROUT)
-    printf(" ERROR IN FUNCTION DEFINITION\n");
-  return (1);
+
+  ufun[NFUN][end - 1] = ENDFUN;
+  ufun[NFUN][end] = narg;
+  ufun[NFUN][end + 1] = ENDEXP;
+  strcpy(ufun_def[NFUN], expr);
+  l = strlen(ufun_def[NFUN]);
+  ufun_def[NFUN][l - 1] = 0;
+  strcpy(ufun_names[NFUN], name);
+  narg_fun[NFUN] = narg;
+  for (i = 0; i < narg; i++) {
+    sprintf(ufun_arg[NFUN].args[i], "ARG%d", i + 1);
+  }
+  NFUN++;
+
+  if (add_symbol(name, 10, narg, COM(UFUNTYPE, NFUN - 1)) < 0) {
+    --NFUN;
+    free(ufun_def[NFUN]);
+    free(ufun[NFUN]);
+    return 1;
+  }
+
+  return (0);
 }
 
 int check_num(int *tok, double value) {
@@ -701,7 +658,7 @@ int find_lookup(char *name) {
   return (-1);
 }
 
-static void find_name(char *string, int *index) {
+static void find_name(const char *string, int *index) {
   char junk[100];
   int i, len;
   convert(string, junk);
@@ -1244,7 +1201,7 @@ int do_num(const char *source, char *num, double *value, int *ind) {
   return (error);
 }
 
-void convert(char *source, char *dest) {
+void convert(const char *source, char *dest) {
   char ch;
   int i = 0, j = 0;
   while (1) {

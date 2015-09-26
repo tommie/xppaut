@@ -29,5 +29,6 @@ void re_evaluate_kernels(void);
 int volterra(double *y, double *t, double dt, int nt, int neq, int *istart,
              double *work);
 int volterra2_add_kernel(const char *expr, double mu);
+void volterra2_remove_kernel(int index);
 
 #endif /* XPPAUT_SOLVER_VOLTERRA2_H */

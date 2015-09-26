@@ -425,6 +425,27 @@ int parse_expr(const char *expr, int *command, int *length) {
   return (0);
 }
 
+int parse_ufun_expr(const UserFunction *ufun, const char *expr, int *command,
+                    int *length) {
+  int err;
+
+  /* Set the user-function's argument names in my_symb. */
+  for (int i = 0; i < ufun->narg; i++) {
+    strcpy(my_symb[FIRST_ARG + i].name, ufun->args[i]);
+    my_symb[FIRST_ARG + i].len = strlen(ufun->args[i]);
+  }
+
+  err = parse_expr(expr, command, length);
+
+  /* Switch back to ARG* names. */
+  for (int i = 0; i < ufun->narg; i++) {
+    sprintf(my_symb[FIRST_ARG + i].name, "ARG%d", i + 1);
+    my_symb[FIRST_ARG + i].len = strlen(my_symb[FIRST_ARG + i].name);
+  }
+
+  return err;
+}
+
 int add_net_name(int index, const char *name) {
   if (add_symbol(name, 10, 1, COM(NETTYPE, index)) < 0)
     return 1;
@@ -489,22 +510,6 @@ int add_form_table(int index, int nn, double xlo, double xhi, char *formula) {
   return (0);
 }
 
-void set_old_arg_names(int narg) {
-  int i;
-  for (i = 0; i < narg; i++) {
-    sprintf(my_symb[FIRST_ARG + i].name, "ARG%d", i + 1);
-    my_symb[FIRST_ARG + i].len = 4;
-  }
-}
-
-void set_new_arg_names(int narg, char args[10][11]) {
-  int i;
-  for (i = 0; i < narg; i++) {
-    strcpy(my_symb[FIRST_ARG + i].name, args[i]);
-    my_symb[FIRST_ARG + i].len = strlen(args[i]);
-  }
-}
-
 int add_ufun_name(char *name, int index, int narg) {
   if (index >= MAXUFUN) {
     if (ERROUT)
@@ -547,19 +552,16 @@ int add_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
   ufuns[index].narg = narg;
   for (i = 0; i < narg; i++)
     strcpy(ufuns[index].args[i], args[i]);
-  set_new_arg_names(narg, args);
-  if (parse_expr(rhs, ufuns[index].rpn, &end)) {
-    set_old_arg_names(narg);
+  strcpy(ufuns[index].def, rhs);
+  l = strlen(ufuns[index].def);
+  ufuns[index].def[l] = '\0';
+  if (parse_ufun_expr(&ufuns[index], rhs, ufuns[index].rpn, &end)) {
     if (ERROUT)
       plintf("ERROR IN FUNCTION DEFINITION\n");
     return 1;
   }
 
   fixup_endfun(ufuns[index].rpn, end, narg);
-  strcpy(ufuns[index].def, rhs);
-  l = strlen(ufuns[index].def);
-  ufuns[index].def[l] = '\0';
-  set_old_arg_names(narg);
 
   return 0;
 }
@@ -585,6 +587,15 @@ int add_ufun(const char *name, const char *expr, int narg) {
     return 1;
   }
 
+  strcpy(ufuns[NFUN].def, expr);
+  l = strlen(ufuns[NFUN].def);
+  ufuns[NFUN].def[l - 1] = '\0';
+  strcpy(ufuns[NFUN].name, name);
+  ufuns[NFUN].narg = narg;
+  for (i = 0; i < narg; i++) {
+    sprintf(ufuns[NFUN].args[i], "ARG%d", i + 1);
+  }
+
   if (parse_expr(expr, ufuns[NFUN].rpn, &end)) {
     free(ufuns[NFUN].def);
     free(ufuns[NFUN].rpn);
@@ -594,14 +605,6 @@ int add_ufun(const char *name, const char *expr, int narg) {
   }
 
   fixup_endfun(ufuns[NFUN].rpn, end, narg);
-  strcpy(ufuns[NFUN].def, expr);
-  l = strlen(ufuns[NFUN].def);
-  ufuns[NFUN].def[l - 1] = '\0';
-  strcpy(ufuns[NFUN].name, name);
-  ufuns[NFUN].narg = narg;
-  for (i = 0; i < narg; i++) {
-    sprintf(ufuns[NFUN].args[i], "ARG%d", i + 1);
-  }
   NFUN++;
 
   if (add_symbol(name, 10, narg, COM(UFUNTYPE, NFUN - 1)) < 0) {

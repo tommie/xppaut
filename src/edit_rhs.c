@@ -367,7 +367,7 @@ void user_fun_info(FILE *fp) {
 void edit_functions(void) {
   char **names, **values;
   int **command;
-  int i, status, err, len, j;
+  int i, status, len, j;
   int n = NFUN;
   char msg[200];
   if (n == 0 || n > NEQMAXFOREDIT)
@@ -396,10 +396,7 @@ void edit_functions(void) {
   if (status != 0) {
 
     for (i = 0; i < n; i++) {
-      set_new_arg_names(ufuns[i].narg, ufuns[i].args);
-      err = parse_expr(values[i], command[i], &len);
-      set_old_arg_names(ufuns[i].narg);
-      if (err == 1) {
+      if (parse_ufun_expr(&ufuns[i], values[i], command[i], &len) == 1) {
         sprintf(msg, "Bad func.:%s=%s", names[i], values[i]);
         err_msg(msg);
       } else {

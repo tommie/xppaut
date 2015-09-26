@@ -58,9 +58,9 @@ int get_val(char *name, double *value);
 int get_var_index(char *name);
 void init_rpn(void);
 int parse_expr(const char *expr, int *command, int *length);
+int parse_ufun_expr(const UserFunction *ufun, const char *expr, int *command,
+                    int *length);
 void set_ivar(int i, double value);
-void set_new_arg_names(int narg, char args[10][11]);
-void set_old_arg_names(int narg);
 int set_val(char *name, double value);
 
 #endif /* XPPAUT_PARSERSLOW_H */

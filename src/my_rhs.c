@@ -15,13 +15,13 @@ void extra(double *y__y, double t, int nod, int neq) {
   int i;
   if (nod >= neq)
     return;
-  SETVAR(0, t);
+  set_ivar(0, t);
   for (i = 0; i < nod; i++)
-    SETVAR(i + 1, y__y[i]);
+    set_ivar(i + 1, y__y[i]);
   for (i = nod + FIX_VAR; i < nod + FIX_VAR + NMarkov; i++)
-    SETVAR(i + 1, y__y[i - FIX_VAR]);
+    set_ivar(i + 1, y__y[i - FIX_VAR]);
   for (i = nod; i < nod + FIX_VAR; i++)
-    SETVAR(i + 1, evaluate(my_ode[i]));
+    set_ivar(i + 1, evaluate(my_ode[i]));
   do_in_out();
   for (i = nod + NMarkov; i < neq; i++)
     y__y[i] = evaluate(my_ode[i + FIX_VAR - NMarkov]);
@@ -29,26 +29,26 @@ void extra(double *y__y, double t, int nod, int neq) {
 
 void set_fix_rhs(double t, double *y) {
   int i;
-  SETVAR(0, t);
+  set_ivar(0, t);
   for (i = 0; i < NODE; i++)
-    SETVAR(i + 1, y[i]);
+    set_ivar(i + 1, y[i]);
   for (i = 0; i < NMarkov; i++)
-    SETVAR(i + 1 + NODE + FIX_VAR, y[i + NODE]);
+    set_ivar(i + 1 + NODE + FIX_VAR, y[i + NODE]);
   for (i = NODE; i < NODE + FIX_VAR; i++)
-    SETVAR(i + 1, evaluate(my_ode[i]));
+    set_ivar(i + 1, evaluate(my_ode[i]));
   eval_all_nets();
   do_in_out();
 }
 
 int my_rhs(double t, double *y, double *ydot, int neq) {
   int i;
-  SETVAR(0, t);
+  set_ivar(0, t);
   for (i = 0; i < NODE; i++)
-    SETVAR(i + 1, y[i]);
+    set_ivar(i + 1, y[i]);
 
   for (i = NODE; i < NODE + FIX_VAR; i++) {
-    SETVAR(i + 1, evaluate(my_ode[i]));
-    /* plintf("%d %g \n",i+1,GETVAR(i+1)); */
+    set_ivar(i + 1, evaluate(my_ode[i]));
+    /* plintf("%d %g \n",i+1,get_ivar(i+1)); */
   }
   /*printf("WTF %g\n",evaluate(my_ode[1]));
   */
@@ -68,7 +68,7 @@ int my_rhs(double t, double *y, double *ydot, int neq) {
 void update_based_on_current(void) {
   int i;
   for (i = NODE; i < NODE + FIX_VAR; i++)
-    SETVAR(i + 1, evaluate(my_ode[i]));
+    set_ivar(i + 1, evaluate(my_ode[i]));
 
   eval_all_nets();
   do_in_out();
@@ -77,7 +77,7 @@ void update_based_on_current(void) {
 void fix_only(void) {
   int i;
   for (i = NODE; i < NODE + FIX_VAR; i++)
-    SETVAR(i + 1, evaluate(my_ode[i]));
+    set_ivar(i + 1, evaluate(my_ode[i]));
 }
 
 void rhs_only(double *y, double *ydot) {

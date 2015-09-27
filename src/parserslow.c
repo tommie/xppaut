@@ -718,9 +718,14 @@ int set_val(char *name, double value) {
   return (0);
 }
 
-void set_ivar(int i, double value) { SETVAR(i, value); }
+void set_ivar(int i, double value) {
+  if (i < NVAR)
+    variables[i] = value;
+}
 
-double get_ivar(int i) { return (GETVAR(i)); }
+double get_ivar(int i) {
+  return i < NVAR ? variables[i] : 0.0;
+}
 
 static int alg_to_rpn(int *toklist, int *command) {
   int tokstak[500], comptr = 0, tokptr = 0, lstptr = 0, temp;

@@ -30,11 +30,11 @@ double delay_stab_eval(double delay, int var) {
   {
     for (i = 0; i < NDelay; i++) {
       if (delay == delay_list[i])
-        return (GETVAR(var));
+        return (get_ivar(var));
     }
     delay_list[NDelay] = delay;
     NDelay++;
-    return (GETVAR(var));
+    return (get_ivar(var));
   }
   /*  now we must determine the value to return  */
   /*  del_stab_flag =-1 */

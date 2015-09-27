@@ -126,7 +126,7 @@ void set_init_guess(void) {
     return;
   for (i = 0; i < nsvar; i++) {
     z = evaluate(svar[i].form);
-    SETVAR(svar[i].index, z);
+    set_ivar(svar[i].index, z);
     svar[i].value = z;
     svar[i].last = z;
   }
@@ -163,9 +163,9 @@ static void get_dae_fun(double *y, double *f) {
   int i;
   /* better do this in case fixed variables depend on sol_var */
   for (i = 0; i < nsvar; i++)
-    SETVAR(svar[i].index, y[i]);
+    set_ivar(svar[i].index, y[i]);
   for (i = NODE; i < NODE + FIX_VAR; i++)
-    SETVAR(i + 1, evaluate(my_ode[i]));
+    set_ivar(i + 1, evaluate(my_ode[i]));
   for (i = 0; i < naeqn; i++)
     f[i] = evaluate(aeqn[i].form);
 }
@@ -211,7 +211,7 @@ static int solve_dae(void) {
     }
     if (err < tol) { /* success */
       for (i = 0; i < n; i++) {
-        SETVAR(svar[i].index, y[i]);
+        set_ivar(svar[i].index, y[i]);
         svar[i].last = y[i];
       }
       return 1;
@@ -232,7 +232,7 @@ static int solve_dae(void) {
     sgefa(jac, n, n, dae_work.iwork, &info);
     if (info != -1) {
       for (i = 0; i < n; i++)
-        SETVAR(svar[i].index, ynew[i]);
+        set_ivar(svar[i].index, ynew[i]);
       return -1; /* singular jacobian */
     }
     sgesl(jac, n, n, dae_work.iwork, errvec, 0); /* get x=J^(-1) f */
@@ -243,14 +243,14 @@ static int solve_dae(void) {
     }
     if (err > (n * BOUND)) {
       for (i = 0; i < n; i++)
-        SETVAR(svar[i].index, svar[i].last);
+        set_ivar(svar[i].index, svar[i].last);
       return (-3); /* getting too big */
     }
     if (err < tol) /* not much change */
     {
       /* plintf(" no change .... \n"); */
       for (i = 0; i < n; i++) {
-        SETVAR(svar[i].index, y[i]);
+        set_ivar(svar[i].index, y[i]);
         svar[i].last = y[i];
       }
       return 2;
@@ -259,7 +259,7 @@ static int solve_dae(void) {
     if (iter > maxit) {
       /* plintf(" Too many iterates ... \n"); */
       for (i = 0; i < n; i++)
-        SETVAR(svar[i].index, svar[i].last);
+        set_ivar(svar[i].index, svar[i].last);
       return (-2); /* too many iterates */
     }
   }
@@ -281,7 +281,7 @@ void get_new_guesses(void) {
       return;
     }
     z = evaluate(svar[i].form);
-    SETVAR(svar[i].index, z);
+    set_ivar(svar[i].index, z);
     svar[i].value = z;
     svar[i].last = z;
   }

@@ -249,8 +249,8 @@ int one_flag_step(double *yold, double *ynew, int *istart, double told,
   /* If this is the first call, then need f1  */
   if (*istart == 1) {
     for (i = 0; i < neq; i++)
-      SETVAR(i + 1, yold[i]);
-    SETVAR(0, told);
+      set_ivar(i + 1, yold[i]);
+    set_ivar(0, told);
     for (i = 0; i < NFlags; i++)
       *istart = 0;
   }
@@ -259,8 +259,8 @@ int one_flag_step(double *yold, double *ynew, int *istart, double told,
     flag[i].f0 = flag[i].f1;
     f0 = flag[i].f0;
     for (j = 0; j < neq; j++)
-      SETVAR(j + 1, ynew[j]);
-    SETVAR(0, *tnew);
+      set_ivar(j + 1, ynew[j]);
+    set_ivar(0, *tnew);
     f1 = evaluate(flag[i].comcond);
     flag[i].f1 = f1;
     tol = fabs(f1 - f0);
@@ -309,10 +309,10 @@ int one_flag_step(double *yold, double *ynew, int *istart, double told,
     return (0);
 
   *tnew = told + dt *smin;
-  SETVAR(0, *tnew);
+  set_ivar(0, *tnew);
   for (i = 0; i < neq; i++) {
     ynew[i] = yold[i] + smin * (ynew[i] - yold[i]);
-    SETVAR(i + 1, ynew[i]);
+    set_ivar(i + 1, ynew[i]);
   }
   for (i = 0; i < NFlags; i++)
     flag[i].f0 = evaluate(flag[i].comcond);
@@ -329,7 +329,7 @@ int one_flag_step(double *yold, double *ynew, int *istart, double told,
           flag[i].vrhs[j] = evaluate(flag[i].comrhs[j]);
           in = flag[i].lhs[j];
           if (flag[i].type[j] == 0)
-            SETVAR(in + 1, flag[i].vrhs[j]);
+            set_ivar(in + 1, flag[i].vrhs[j]);
         }
       }
     }
@@ -355,7 +355,7 @@ int one_flag_step(double *yold, double *ynew, int *istart, double told,
     }
     /*    plintf(" %g %g %g \n",*tnew,ynew[0],ynew[1]); */
     for (i = 0; i < neq; i++)
-      SETVAR(i + 1, ynew[i]);
+      set_ivar(i + 1, ynew[i]);
     for (i = 0; i < NFlags; i++) {
       flag[i].f1 = evaluate(flag[i].comcond);
       if (flag[i].hit > 0)

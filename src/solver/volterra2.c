@@ -199,7 +199,7 @@ void re_evaluate_kernels(void) {
   for (i = 0; i < NKernel; i++) {
     if (kernel[i].flag == CONV) {
       for (j = 0; j <= n; j++) {
-        SETVAR(0, T0 + DELTA_T * j);
+        set_ivar(0, T0 + DELTA_T * j);
         kernel[i].cnv[j] = evaluate(kernel[i].kerform);
       }
     }
@@ -216,7 +216,7 @@ void alloc_kernels(int flag) {
         free(kernel[i].cnv);
       kernel[i].cnv = (double *)malloc((n + 1) * sizeof(double));
       for (j = 0; j <= n; j++) {
-        SETVAR(0, T0 + DELTA_T * j);
+        set_ivar(0, T0 + DELTA_T * j);
         kernel[i].cnv[j] = evaluate(kernel[i].kerform);
       }
     }
@@ -249,10 +249,10 @@ void init_sums(double t0, int n, double dt, int i0, int iend, int ishift) {
   double sum[MAXODE], al, alpbet, mu;
   int nvar = FIX_VAR + NODE + NMarkov;
   int l, ioff, ker, i;
-  SETVAR(0, t);
-  SETVAR(PrimeStart, tp);
+  set_ivar(0, t);
+  set_ivar(PrimeStart, tp);
   for (l = 0; l < nvar; l++)
-    SETVAR(l + 1, Memory[l][ishift]);
+    set_ivar(l + 1, Memory[l][ishift]);
   for (ker = 0; ker < NKernel; ker++) {
     kernel[ker].k_n1 = kernel[ker].k_n;
     mu = kernel[ker].mu;
@@ -267,9 +267,9 @@ void init_sums(double t0, int n, double dt, int i0, int iend, int ishift) {
   for (i = 1; i <= iend; i++) {
     ioff = (ishift + i) % MaxPoints;
     tp += dt;
-    SETVAR(PrimeStart, tp);
+    set_ivar(PrimeStart, tp);
     for (l = 0; l < nvar; l++)
-      SETVAR(l + 1, Memory[l][ioff]);
+      set_ivar(l + 1, Memory[l][ioff]);
     for (ker = 0; ker < NKernel; ker++) {
       mu = kernel[ker].mu;
       if (mu == 0.0)
@@ -323,12 +323,12 @@ double betnn(double mu, double dt, double t0, double t) {
 void get_kn(double *y, double t) {
   int i;
 
-  SETVAR(0, t);
-  SETVAR(PrimeStart, t);
+  set_ivar(0, t);
+  set_ivar(PrimeStart, t);
   for (i = 0; i < NODE; i++)
-    SETVAR(i + 1, y[i]);
+    set_ivar(i + 1, y[i]);
   for (i = NODE; i < NODE + FIX_VAR; i++)
-    SETVAR(i + 1, evaluate(my_ode[i]));
+    set_ivar(i + 1, evaluate(my_ode[i]));
   for (i = 0; i < NKernel; i++) {
     if (kernel[i].flag == CONV)
       kernel[i].k_n =
@@ -367,21 +367,21 @@ int volterra(double *y, double *t, double dt, int nt, int neq, int *istart,
         bet = betnn(mu, dt, *t, *t);
       kernel[i].betnn = bet;
     }
-    SETVAR(0, *t);
-    SETVAR(PrimeStart, *t);
+    set_ivar(0, *t);
+    set_ivar(PrimeStart, *t);
     for (i = 0; i < NODE; i++)
       if (!EqType[i])
-        SETVAR(i + 1, y[i]); /* assign initial data             */
+        set_ivar(i + 1, y[i]); /* assign initial data             */
     for (i = NODE; i < NODE + FIX_VAR; i++)
-      SETVAR(i + 1, evaluate(my_ode[i])); /* set fixed variables  for pass 1 */
+      set_ivar(i + 1, evaluate(my_ode[i])); /* set fixed variables  for pass 1 */
     for (i = 0; i < NODE; i++)
       if (EqType[i]) {
         z = evaluate(my_ode[i]); /* reset IC for integral eqns      */
-        SETVAR(i + 1, z);
+        set_ivar(i + 1, z);
         y[i] = z;
       }
     for (i = NODE; i < NODE + FIX_VAR; i++) /* pass 2 for fixed variables */
-      SETVAR(i + 1, evaluate(my_ode[i]));
+      set_ivar(i + 1, evaluate(my_ode[i]));
     for (i = 0; i < NODE + FIX_VAR + NMarkov; i++)
       Memory[i][0] = get_ivar(i + 1); /* save everything                 */
     CurrentPoint = 1;
@@ -412,14 +412,14 @@ int volt_step(double *y, double t, double dt, int neq, double *yg, double *yp,
             ishift); /*  initialize all the sums */
   KnFlag = 0;
   for (i = 0; i < neq; i++) {
-    SETVAR(i + 1, y[i]);
+    set_ivar(i + 1, y[i]);
     yg[i] = y[i];
   }
   for (i = NODE; i < NODE + NMarkov; i++)
-    SETVAR(i + 1 + FIX_VAR, y[i]);
-  SETVAR(0, t - dt);
+    set_ivar(i + 1 + FIX_VAR, y[i]);
+  set_ivar(0, t - dt);
   for (i = NODE; i < NODE + FIX_VAR; i++)
-    SETVAR(i + 1, evaluate(my_ode[i]));
+    set_ivar(i + 1, evaluate(my_ode[i]));
   for (i = 0; i < NODE; i++) {
     if (!EqType[i])
       yp2[i] = y[i] + dt2 * evaluate(my_ode[i]);
@@ -430,7 +430,7 @@ int volt_step(double *y, double t, double dt, int neq, double *yg, double *yp,
   while (1) {
     get_kn(yg, t);
     for (i = NODE; i < NODE + FIX_VAR; i++)
-      SETVAR(i + 1, evaluate(my_ode[i]));
+      set_ivar(i + 1, evaluate(my_ode[i]));
     for (i = 0; i < NODE; i++) {
       yp[i] = evaluate(my_ode[i]);
       /*  plintf(" yp[%d]=%g\n",i,yp[i]); */
@@ -447,7 +447,7 @@ int volt_step(double *y, double t, double dt, int neq, double *yg, double *yp,
       delinv = 1. / del;
       get_kn(yg, t);
       for (j = NODE; j < NODE + FIX_VAR; j++)
-        SETVAR(j + 1, evaluate(my_ode[j]));
+        set_ivar(j + 1, evaluate(my_ode[j]));
       for (j = 0; j < NODE; j++) {
         fac = delinv;
         if (!EqType[j])
@@ -479,12 +479,12 @@ int volt_step(double *y, double t, double dt, int neq, double *yg, double *yp,
   /* We have a good point; lets save it    */
   get_kn(yg, t);
   /*  for(i=NODE;i<NODE+FIX_VAR;i++)
-     SETVAR(i+1,evaluate(my_ode[i])); */
+     set_ivar(i+1,evaluate(my_ode[i])); */
   for (i = 0; i < NODE; i++)
     y[i] = yg[i];
   ind = CurrentPoint % MaxPoints;
   for (i = 0; i < NODE + FIX_VAR + NMarkov; i++)
-    Memory[i][ind] = GETVAR(i + 1);
+    Memory[i][ind] = get_ivar(i + 1);
   CurrentPoint++;
 
   return (0);

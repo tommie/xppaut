@@ -61,15 +61,15 @@ void do_bc(double *y__0, double t0, double *y__1, double t1, double *f, int n) {
   int i;
   if (HOMOCLINIC_FLAG)
     do_projection(y__0, t0, y__1, t1);
-  SETVAR(0, t0);
-  SETVAR(n0, t1);
+  set_ivar(0, t0);
+  set_ivar(n0, t1);
 
   for (i = 0; i < n; i++) {
-    SETVAR(i + 1, y__0[i]);
-    SETVAR(i + n0 + 1, y__1[i]);
+    set_ivar(i + 1, y__0[i]);
+    set_ivar(i + n0 + 1, y__1[i]);
   }
   for (i = n; i < n + FIX_VAR; i++)
-    SETVAR(i + 1, evaluate(my_ode[i]));
+    set_ivar(i + 1, evaluate(my_ode[i]));
 
   for (i = 0; i < n; i++)
     f[i] = evaluate(my_bc[i].com);

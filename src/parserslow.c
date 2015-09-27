@@ -732,85 +732,75 @@ static int alg_to_rpn(int *toklist, int *command) {
   tokstak[0] = STARTTOK;
   tokptr = 1;
   oldtok = STARTTOK;
-  while (1) {
-  getnew:
+  for (;;) {
     newtok = toklist[lstptr++];
-    /*    for(zip=0;zip<tokptr;zip++)
-             plintf("%d %d\n",zip,tokstak[zip]);  */
-    /*        check for delay symbol             */
-    if (newtok == DELSYM) {
+
+    switch (newtok) {
+    case DELSYM:
       temp = my_symb[toklist[lstptr + 1]].com;
-      /* !! */ if (is_uvar(temp)) {
-        /* ram -- is this right? not sure I understand what was happening here
-         */
-        my_symb[LASTTOK].com =
-            COM(SVARTYPE, temp % MAXTYPE); /* create a temporary sybol */
-        NDELAYS++;
-        toklist[lstptr + 1] = LASTTOK;
-
-        my_symb[LASTTOK].pri = 10;
-
-      } else {
+      if (!is_uvar(temp)) {
         printf("Illegal use of DELAY \n");
-        return (1);
+        return 1;
       }
-    }
 
-    /*        check for delshft symbol             */
-    if (newtok == DELSHFTSYM) {
+      /* ram -- is this right? not sure I understand what was happening here */
+      /* create a temporary sybol */
+      my_symb[LASTTOK].com = COM(SVARTYPE, temp % MAXTYPE);
+      NDELAYS++;
+      toklist[lstptr + 1] = LASTTOK;
+      my_symb[LASTTOK].pri = 10;
+      break;
+
+    case DELSHFTSYM:
       temp = my_symb[toklist[lstptr + 1]].com;
-      /* !! */ if (is_uvar(temp)) {
-        /* ram -- same issue */
-        my_symb[LASTTOK].com =
-            COM(SVARTYPE, temp % MAXTYPE); /* create a temporary sybol */
-        NDELAYS++;
-        toklist[lstptr + 1] = LASTTOK;
-
-        my_symb[LASTTOK].pri = 10;
-
-      } else {
+      if (!is_uvar(temp)) {
         printf("Illegal use of DELAY Shift \n");
-        return (1);
+        return 1;
       }
-    }
 
-    /* check for shift  */
-    if (newtok == SHIFTSYM || newtok == ISHIFTSYM) {
+      /* ram -- same issue */
+      /* create a temporary sybol */
+      my_symb[LASTTOK].com = COM(SVARTYPE, temp % MAXTYPE);
+      NDELAYS++;
+      toklist[lstptr + 1] = LASTTOK;
+      my_symb[LASTTOK].pri = 10;
+      break;
+
+    case SHIFTSYM:
+    case ISHIFTSYM:
       temp = my_symb[toklist[lstptr + 1]].com;
-      /* !! */ if (is_uvar(temp) || is_ucon(temp)) {
-        /* ram -- same issue */
-        if (is_uvar(temp))
-          my_symb[LASTTOK].com = COM(SVARTYPE, temp % MAXTYPE);
-        if (is_ucon(temp))
-          my_symb[LASTTOK].com = COM(SCONTYPE, temp % MAXTYPE);
-        /* create a temporary sybol */
-
-        toklist[lstptr + 1] = LASTTOK;
-
-        my_symb[LASTTOK].pri = 10;
-
-      } else {
+      if (!is_uvar(temp) && !is_ucon(temp)) {
         printf("Illegal use of SHIFT \n");
-        return (1);
+        return 1;
       }
+
+      /* ram -- same issue */
+      /* create a temporary sybol */
+      if (is_uvar(temp))
+        my_symb[LASTTOK].com = COM(SVARTYPE, temp % MAXTYPE);
+      if (is_ucon(temp))
+        my_symb[LASTTOK].com = COM(SCONTYPE, temp % MAXTYPE);
+      toklist[lstptr + 1] = LASTTOK;
+      my_symb[LASTTOK].pri = 10;
+      break;
     }
 
   next:
-    if ((newtok == ENDTOK) && (oldtok == STARTTOK))
+    if (newtok == ENDTOK && oldtok == STARTTOK)
       break;
 
     if (newtok == LPAREN) {
       tokstak[tokptr] = LPAREN;
       tokptr++;
       oldtok = LPAREN;
-      goto getnew;
+      continue;
     }
     if (newtok == RPAREN) {
       switch (oldtok) {
       case LPAREN:
         tokptr--;
         oldtok = tokstak[tokptr - 1];
-        goto getnew;
+        continue;
       case COMMA:
         tokptr--;
         ncomma++;
@@ -818,10 +808,10 @@ static int alg_to_rpn(int *toklist, int *command) {
         goto next;
       }
     }
-    if ((newtok == COMMA) && (oldtok == COMMA)) {
+    if (newtok == COMMA && oldtok == COMMA) {
       tokstak[tokptr] = COMMA;
       tokptr++;
-      goto getnew;
+      continue;
     }
 
     if (my_symb[oldtok].pri >= my_symb[newtok].pri) {
@@ -831,20 +821,14 @@ static int alg_to_rpn(int *toklist, int *command) {
         ncomma--;
       my_com = command[comptr];
       comptr++;
-      /*   New code   3/95      */
       if (my_com == NUMSYM) {
-        /*             plintf("tp=%d ",tokptr);  */
         tokptr--;
-        /*     plintf(" ts[%d]=%d ",tokptr,tokstak[tokptr]); */
         command[comptr] = tokstak[tokptr - 1];
-        /*	     plintf("xcom(%d)=%d\n",comptr,command[comptr]);  */
         comptr++;
         tokptr--;
         command[comptr] = tokstak[tokptr - 1];
-        /*	     plintf("xcom(%d)=%d\n",comptr,command[comptr]);  */
         comptr++;
       }
-      /*   end new code    3/95    */
       if (my_com == SUMSYM) {
         loopstk[lptr] = comptr;
         comptr++;
@@ -880,15 +864,10 @@ static int alg_to_rpn(int *toklist, int *command) {
         nelse++;
       }
 
-      if (my_com == ENDDELAY || my_com == ENDSHIFT || my_com == ENDISHIFT) {
-
+      if (my_com == ENDDELAY || my_com == ENDSHIFT || my_com == ENDISHIFT)
         ncomma -= 1;
-      }
       if (my_com == ENDDELSHFT)
         ncomma -= 2;
-      /*  if(my_com==CONV||my_com==DCONV){
-         ncomma-=1;
-        }  */
 
       /*    CHECK FOR USER FUNCTION       */
       if (is_ufun(my_com)) {
@@ -902,28 +881,27 @@ static int alg_to_rpn(int *toklist, int *command) {
       oldtok = tokstak[tokptr - 1];
       goto next;
     }
-    /*    NEW code       3/95     */
     if (newtok == NUMTOK) {
       tokstak[tokptr++] = toklist[lstptr++];
       tokstak[tokptr++] = toklist[lstptr++];
     }
-    /*  end  3/95     */
+
     tokstak[tokptr] = newtok;
     oldtok = newtok;
     tokptr++;
-    goto getnew;
   }
+
   if (ncomma != 0) {
     plintf("Illegal number of arguments\n");
-    return (1);
+    return 1;
   }
-  if ((nif != nelse) || (nif != nthen)) {
+  if (nif != nelse || nif != nthen) {
     plintf("If statement missing ELSE or THEN \n");
-    return (1);
+    return 1;
   }
   command[comptr] = my_symb[ENDTOK].com;
 
-  return (0);
+  return 0;
 }
 
 static void show_where(const char *string, int index) {

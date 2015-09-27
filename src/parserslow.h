@@ -40,7 +40,6 @@ int add_ufun(const char *name, const char *expr, int narg);
 int add_ufun_name(char *name, int index, int narg);
 int add_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]);
 int add_var(const char *name, double value);
-int add_vect_name(int index, char *name);
 void convert(const char *source, char *dest);
 int do_num(const char *source, char *num, double *value, int *ind);
 double evaluate(int *equat);

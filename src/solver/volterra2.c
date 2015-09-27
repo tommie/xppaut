@@ -44,8 +44,8 @@ static int volt_step(double *y, double t, double dt, int neq, double *yg,
 /* --- Data --- */
 int AutoEvaluate = 0;
 KERNEL kernel[MAXKER];
-int NKernel;
-int MaxPoints;
+int NKernel = 0;
+int MaxPoints = 4000;
 
 static int CurrentPoint;
 static int KnFlag;

@@ -252,9 +252,6 @@ void init_rpn(void) {
   NCON = 0;
   NFUN = 0;
   NVAR = 0;
-  NKernel = 0;
-
-  MaxPoints = 4000;
   NSYM = NUM_STDSYM;
   add_con("PI", M_PI);
 

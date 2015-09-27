@@ -45,7 +45,6 @@ void convert(const char *source, char *dest);
 int do_num(const char *source, char *num, double *value, int *ind);
 double evaluate(int *equat);
 int find_lookup(char *name);
-void fixup_endfun(int *u, int l, int narg);
 double get_ivar(int i);
 int get_param_index(char *name);
 int get_val(char *name, double *value);

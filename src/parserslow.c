@@ -424,6 +424,12 @@ int parse_expr(const char *expr, int *command, int *length) {
   return (0);
 }
 
+static void fixup_endfun(int *u, int l, int narg) {
+  u[l - 1] = ENDFUN;
+  u[l] = narg;
+  u[l + 1] = ENDEXP;
+}
+
 int parse_ufun_expr(const UserFunction *ufun, const char *expr, int *command,
                     int *length) {
   int err;
@@ -441,6 +447,9 @@ int parse_ufun_expr(const UserFunction *ufun, const char *expr, int *command,
     sprintf(my_symb[FIRST_ARG + i].name, "ARG%d", i + 1);
     my_symb[FIRST_ARG + i].len = strlen(my_symb[FIRST_ARG + i].name);
   }
+
+  if (!err)
+    fixup_endfun(command, *length, ufun->narg);
 
   return err;
 }
@@ -525,12 +534,6 @@ int add_ufun_name(char *name, int index, int narg) {
   return 0;
 }
 
-void fixup_endfun(int *u, int l, int narg) {
-  u[l - 1] = ENDFUN;
-  u[l] = narg;
-  u[l + 1] = ENDEXP;
-}
-
 int add_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
   int i, l;
   int end;
@@ -559,8 +562,6 @@ int add_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
       plintf("ERROR IN FUNCTION DEFINITION\n");
     return 1;
   }
-
-  fixup_endfun(ufuns[index].rpn, end, narg);
 
   return 0;
 }

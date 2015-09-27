@@ -404,7 +404,6 @@ void edit_functions(void) {
         for (j = 0; j <= len; j++) {
           ufuns[i].rpn[j] = command[i][j];
         }
-        fixup_endfun(ufuns[i].rpn, len, ufuns[i].narg);
       }
     }
   }

@@ -31,7 +31,6 @@ int querypars = 0;
 int queryics = 0;
 int dryrun = 0;
 int noicon = 1;
-int newseed = 0;
 
 static char setfilename[XPP_MAX_NAME];
 static char parfilename[XPP_MAX_NAME];

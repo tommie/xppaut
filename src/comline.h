@@ -12,7 +12,6 @@ typedef struct {
 /* --- Data --- */
 extern int dryrun;
 extern char includefilename[MaxIncludeFiles][XPP_MAX_NAME];
-extern int newseed;
 extern int NincludedFiles;
 extern int Nintern_2_use;
 extern int noicon;

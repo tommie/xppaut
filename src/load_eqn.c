@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "adj2.h"
 #include "arrayplot.h"
@@ -47,6 +48,8 @@ static void do_intern_set(char *name1, char *value);
 static void split_apart(char *bob, char *name, char *value);
 
 /* --- Data --- */
+int newseed = 0;
+int RandSeed = 12345678;
 int RunImmediately = 0;
 int IX_PLT[10], IY_PLT[10], IZ_PLT[10], NPltV;
 int MultiWin = 0;
@@ -250,6 +253,10 @@ void loadeqn_setup_all(void) {
   alloc_v_memory(); /* allocate stuff for volterra equations */
   alloc_meth();
   arr_ic_start(); /* take care of all predefined array ics */
+
+  if (newseed)
+    RandSeed = time(NULL);
+  nsrand48(RandSeed);
 }
 
 /* here is some new code for internal set files:

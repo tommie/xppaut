@@ -24,7 +24,6 @@ extern int NDELAYS;
 extern int NFUN;
 extern int NSYM;
 extern int NVAR;
-extern int RandSeed;
 extern UserFunction ufuns[MAXUFUN];
 extern double variables[MAXODE1];
 

@@ -5,7 +5,6 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 
 #include "comline.h"
 #include "delay_handle.h"
@@ -108,7 +107,6 @@ static double eval_rpn(int *equat);
 /* --- Data --- */
 int ERROUT;
 int NDELAYS = 0;
-int RandSeed = 12345678;
 double constants[MAXPAR];
 double variables[MAXODE1];
 UserFunction ufuns[MAXUFUN];
@@ -275,9 +273,6 @@ void init_rpn(void) {
       add_con("c___3",0.0); */
 
   init_table();
-  if (newseed == 1)
-    RandSeed = time(0);
-  nsrand48(RandSeed);
 }
 
 void free_ufuns(void) {

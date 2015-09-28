@@ -721,15 +721,14 @@ double get_ivar(int i) {
 }
 
 static int alg_to_rpn(int *toklist, int *command) {
-  int tokstak[500], comptr = 0, tokptr = 0, lstptr = 0, temp;
+  int tokstak[500], comptr = 0, stakptr = 0, lstptr = 0, temp;
   int ncomma = 0;
   int loopstk[100];
-  int lptr = 0;
+  int loopptr = 0;
   int nif = 0, nthen = 0, nelse = 0;
-  int my_com, my_arg, jmp;
 
   tokstak[0] = STARTTOK;
-  tokptr = 1;
+  stakptr = 1;
   for (;;) {
     int newtok = toklist[lstptr++];
     int oldtok;
@@ -785,78 +784,74 @@ static int alg_to_rpn(int *toklist, int *command) {
     }
 
   next:
-    oldtok = tokstak[tokptr - 1];
+    oldtok = tokstak[stakptr - 1];
 
     if (newtok == ENDTOK && oldtok == STARTTOK)
       break;
 
     if (newtok == LPAREN) {
-      tokstak[tokptr++] = LPAREN;
+      tokstak[stakptr++] = LPAREN;
       continue;
     }
     if (newtok == RPAREN) {
       switch (oldtok) {
       case LPAREN:
-        tokptr--;
+        stakptr--;
         continue;
       case COMMA:
-        tokptr--;
+        stakptr--;
         ncomma++;
         goto next;
       }
     }
     if (newtok == COMMA && oldtok == COMMA) {
-      tokstak[tokptr++] = COMMA;
+      tokstak[stakptr++] = COMMA;
       continue;
     }
 
     if (my_symb[oldtok].pri >= my_symb[newtok].pri) {
-      command[comptr] = my_symb[oldtok].com;
-      if ((my_symb[oldtok].arg == 2) &&
-          (my_symb[oldtok].com / MAXTYPE == FUN2TYPE))
-        ncomma--;
-      my_com = command[comptr];
+      int my_com = my_symb[oldtok].com;
+      command[comptr] = my_com;
       comptr++;
+      if (my_com / MAXTYPE == FUN2TYPE && my_symb[oldtok].arg == 2)
+        ncomma--;
       if (my_com == NUMSYM) {
-        tokptr--;
-        command[comptr] = tokstak[tokptr - 1];
+        stakptr--;
+        command[comptr] = tokstak[stakptr - 1];
         comptr++;
-        tokptr--;
-        command[comptr] = tokstak[tokptr - 1];
+        stakptr--;
+        command[comptr] = tokstak[stakptr - 1];
         comptr++;
       }
       if (my_com == SUMSYM) {
-        loopstk[lptr] = comptr;
+        loopstk[loopptr] = comptr;
         comptr++;
-        lptr++;
+        loopptr++;
         ncomma -= 1;
       }
       if (my_com == ENDSUM) {
-        lptr--;
-        jmp = comptr - loopstk[lptr] - 1;
-        command[loopstk[lptr]] = jmp;
+        loopptr--;
+        command[loopstk[loopptr]] = comptr - loopstk[loopptr] - 1;
       }
       if (my_com == MYIF) {
-        loopstk[lptr] = comptr; /* add some space for jump */
+        loopstk[loopptr] = comptr; /* add some space for jump */
         comptr++;
-        lptr++;
+        loopptr++;
         nif++;
       }
       if (my_com == MYTHEN) {
         /* First resolve the if jump */
-        lptr--;
-        jmp = comptr - loopstk[lptr]; /* -1 is old */
-        command[loopstk[lptr]] = jmp;
+        loopptr--;
+        command[loopstk[loopptr]] = comptr - loopstk[loopptr]; /* -1 is old */
         /* Then set up for the then jump */
-        loopstk[lptr] = comptr;
-        lptr++;
+        loopstk[loopptr] = comptr;
+        loopptr++;
         comptr++;
         nthen++;
       }
       if (my_com == MYELSE) {
-        lptr--;
-        jmp = comptr - loopstk[lptr] - 1;
-        command[loopstk[lptr]] = jmp;
+        loopptr--;
+        command[loopstk[loopptr]] = comptr - loopstk[loopptr] - 1;
         nelse++;
       }
 
@@ -867,21 +862,21 @@ static int alg_to_rpn(int *toklist, int *command) {
 
       /*    CHECK FOR USER FUNCTION       */
       if (is_ufun(my_com)) {
-        my_arg = my_symb[oldtok].arg;
+        int my_arg = my_symb[oldtok].arg;
         command[comptr] = my_arg;
         comptr++;
-        ncomma = ncomma + 1 - my_arg;
+        ncomma += 1 - my_arg;
       }
-      /*      USER FUNCTION OKAY          */
-      tokptr--;
+
+      stakptr--;
       goto next;
     }
     if (newtok == NUMTOK) {
-      tokstak[tokptr++] = toklist[lstptr++];
-      tokstak[tokptr++] = toklist[lstptr++];
+      tokstak[stakptr++] = toklist[lstptr++];
+      tokstak[stakptr++] = toklist[lstptr++];
     }
 
-    tokstak[tokptr++] = newtok;
+    tokstak[stakptr++] = newtok;
   }
 
   if (ncomma != 0) {

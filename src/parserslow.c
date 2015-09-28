@@ -726,14 +726,13 @@ static int alg_to_rpn(int *toklist, int *command) {
   int loopstk[100];
   int lptr = 0;
   int nif = 0, nthen = 0, nelse = 0;
-  int newtok, oldtok;
   int my_com, my_arg, jmp;
 
   tokstak[0] = STARTTOK;
   tokptr = 1;
-  oldtok = STARTTOK;
   for (;;) {
-    newtok = toklist[lstptr++];
+    int newtok = toklist[lstptr++];
+    int oldtok;
 
     switch (newtok) {
     case DELSYM:
@@ -786,31 +785,28 @@ static int alg_to_rpn(int *toklist, int *command) {
     }
 
   next:
+    oldtok = tokstak[tokptr - 1];
+
     if (newtok == ENDTOK && oldtok == STARTTOK)
       break;
 
     if (newtok == LPAREN) {
-      tokstak[tokptr] = LPAREN;
-      tokptr++;
-      oldtok = LPAREN;
+      tokstak[tokptr++] = LPAREN;
       continue;
     }
     if (newtok == RPAREN) {
       switch (oldtok) {
       case LPAREN:
         tokptr--;
-        oldtok = tokstak[tokptr - 1];
         continue;
       case COMMA:
         tokptr--;
         ncomma++;
-        oldtok = tokstak[tokptr - 1];
         goto next;
       }
     }
     if (newtok == COMMA && oldtok == COMMA) {
-      tokstak[tokptr] = COMMA;
-      tokptr++;
+      tokstak[tokptr++] = COMMA;
       continue;
     }
 
@@ -878,7 +874,6 @@ static int alg_to_rpn(int *toklist, int *command) {
       }
       /*      USER FUNCTION OKAY          */
       tokptr--;
-      oldtok = tokstak[tokptr - 1];
       goto next;
     }
     if (newtok == NUMTOK) {
@@ -886,9 +881,7 @@ static int alg_to_rpn(int *toklist, int *command) {
       tokstak[tokptr++] = toklist[lstptr++];
     }
 
-    tokstak[tokptr] = newtok;
-    oldtok = newtok;
-    tokptr++;
+    tokstak[tokptr++] = newtok;
   }
 
   if (ncomma != 0) {

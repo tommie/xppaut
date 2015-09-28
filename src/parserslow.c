@@ -813,33 +813,37 @@ static int alg_to_rpn(int *toklist, int *command) {
       int my_com = my_symb[oldtok].com;
       command[comptr] = my_com;
       comptr++;
-      if (my_com / MAXTYPE == FUN2TYPE && my_symb[oldtok].arg == 2)
-        ncomma--;
-      if (my_com == NUMSYM) {
+
+      switch (my_com) {
+      case NUMSYM:
         stakptr--;
         command[comptr] = tokstak[stakptr - 1];
         comptr++;
         stakptr--;
         command[comptr] = tokstak[stakptr - 1];
         comptr++;
-      }
-      if (my_com == SUMSYM) {
+        break;
+
+      case SUMSYM:
         loopstk[loopptr] = comptr;
         comptr++;
         loopptr++;
         ncomma -= 1;
-      }
-      if (my_com == ENDSUM) {
+        break;
+
+      case ENDSUM:
         loopptr--;
         command[loopstk[loopptr]] = comptr - loopstk[loopptr] - 1;
-      }
-      if (my_com == MYIF) {
+        break;
+
+      case MYIF:
         loopstk[loopptr] = comptr; /* add some space for jump */
         comptr++;
         loopptr++;
         nif++;
-      }
-      if (my_com == MYTHEN) {
+        break;
+
+      case MYTHEN:
         /* First resolve the if jump */
         loopptr--;
         command[loopstk[loopptr]] = comptr - loopstk[loopptr]; /* -1 is old */
@@ -848,24 +852,35 @@ static int alg_to_rpn(int *toklist, int *command) {
         loopptr++;
         comptr++;
         nthen++;
-      }
-      if (my_com == MYELSE) {
+        break;
+
+      case MYELSE:
         loopptr--;
         command[loopstk[loopptr]] = comptr - loopstk[loopptr] - 1;
         nelse++;
-      }
+        break;
 
-      if (my_com == ENDDELAY || my_com == ENDSHIFT || my_com == ENDISHIFT)
+      case ENDDELAY:
+      case ENDSHIFT:
+      case ENDISHIFT:
         ncomma -= 1;
-      if (my_com == ENDDELSHFT)
-        ncomma -= 2;
+        break;
 
-      /*    CHECK FOR USER FUNCTION       */
-      if (is_ufun(my_com)) {
-        int my_arg = my_symb[oldtok].arg;
-        command[comptr] = my_arg;
-        comptr++;
-        ncomma += 1 - my_arg;
+      case ENDDELSHFT:
+        ncomma -= 2;
+        break;
+
+      default:
+        if (my_com / MAXTYPE == FUN2TYPE && my_symb[oldtok].arg == 2)
+          ncomma--;
+
+        /*    CHECK FOR USER FUNCTION       */
+        if (is_ufun(my_com)) {
+          int my_arg = my_symb[oldtok].arg;
+          command[comptr] = my_arg;
+          comptr++;
+          ncomma += 1 - my_arg;
+        }
       }
 
       stakptr--;

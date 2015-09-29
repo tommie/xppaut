@@ -816,6 +816,7 @@ static int alg_to_rpn(int *toklist, int *command) {
 
       switch (my_com) {
       case NUMSYM:
+        /* NUMSYM stores the encoded value as two extra integers. */
         stakptr--;
         command[comptr] = tokstak[stakptr - 1];
         comptr++;
@@ -825,6 +826,7 @@ static int alg_to_rpn(int *toklist, int *command) {
         break;
 
       case SUMSYM:
+        /* SUMSYM has a jump location to be filled in. */
         loopstk[loopptr] = comptr;
         comptr++;
         loopptr++;
@@ -832,22 +834,25 @@ static int alg_to_rpn(int *toklist, int *command) {
         break;
 
       case ENDSUM:
+        /* Fill in SUMSYM jump location. */
         loopptr--;
         command[loopstk[loopptr]] = comptr - loopstk[loopptr] - 1;
         break;
 
       case MYIF:
-        loopstk[loopptr] = comptr; /* add some space for jump */
+        /* MYIF has a jump location to be filled in. */
+        loopstk[loopptr] = comptr;
         comptr++;
         loopptr++;
         nif++;
         break;
 
       case MYTHEN:
-        /* First resolve the if jump */
+        /* Fill in the MYIF jump location. */
         loopptr--;
         command[loopstk[loopptr]] = comptr - loopstk[loopptr]; /* -1 is old */
-        /* Then set up for the then jump */
+
+        /* MYTHEN has a jump location to be filled in. */
         loopstk[loopptr] = comptr;
         loopptr++;
         comptr++;
@@ -855,6 +860,7 @@ static int alg_to_rpn(int *toklist, int *command) {
         break;
 
       case MYELSE:
+        /* Fill in the MYTHEN jump location. */
         loopptr--;
         command[loopstk[loopptr]] = comptr - loopstk[loopptr] - 1;
         nelse++;
@@ -886,11 +892,12 @@ static int alg_to_rpn(int *toklist, int *command) {
       stakptr--;
       goto next;
     }
+
     if (newtok == NUMTOK) {
+      /* NUMTOK stores the encoded value as two extra integers. */
       tokstak[stakptr++] = toklist[lstptr++];
       tokstak[stakptr++] = toklist[lstptr++];
     }
-
     tokstak[stakptr++] = newtok;
   }
 

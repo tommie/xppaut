@@ -7,6 +7,7 @@ AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_HEADERS([src/config.h])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
+AC_REQUIRE_AUX_FILE([tap-driver.sh])
 
 # Checks for programs.
 AC_PROG_CC
@@ -19,6 +20,7 @@ AC_PROG_RANLIB
 AC_CHECK_LIB([X11], [XOpenDisplay])
 AC_CHECK_LIB([dl], [dlopen])
 AC_CHECK_LIB([m], [floor])
+AM_PATH_CHECK
 
 # Checks for header files.
 AC_PATH_X

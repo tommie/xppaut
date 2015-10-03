@@ -7,6 +7,9 @@ AM_CPPFLAGS = \
 	-DMYSTR2=$(MINORVER) \
 	-I$(top_srcdir)/cvodesrc \
 	-I$(top_srcdir)/libi77
+TEST_LOG_DRIVER = \
+	env AM_TAP_AWK='$(AWK)' $(SHELL) \
+	$(top_srcdir)/build-aux/tap-driver.sh
 
 bin_PROGRAMS = \
 	xppaut
@@ -103,7 +106,8 @@ noinst_HEADERS = \
 
 base_headers = \
 	base/ndrand.h \
-	base/timeutil.h
+	base/timeutil.h \
+	base/vector.h
 
 bitmap_headers = \
 	bitmap/alert.bitmap \
@@ -304,7 +308,8 @@ auto_sources = \
 
 base_sources = \
 	base/ndrand.c \
-	base/timeutil.c
+	base/timeutil.c \
+	base/vector.c
 
 solver_sources = \
 	solver/adams.c \
@@ -333,3 +338,10 @@ strutil_sources =
 else
 strutil_sources = strutil.c
 endif
+
+TESTS = $(check_PROGRAMS)
+check_PROGRAMS = base_vector_test
+
+base_vector_test_SOURCES = base/vector_test.c
+base_vector_test_CFLAGS = @CHECK_CFLAGS@
+base_vector_test_LDADD = $(builddir)/libxpp.a @CHECK_LIBS@

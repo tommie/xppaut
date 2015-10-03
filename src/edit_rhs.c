@@ -351,15 +351,15 @@ void edit_rhs(void) {
 void user_fun_info(FILE *fp) {
   char fundef[256];
   int i, j;
-  for (j = 0; j < NFUN; j++) {
-    sprintf(fundef, "%s(", ufuns[j].name);
-    for (i = 0; i < ufuns[j].narg; i++) {
-      strcat(fundef, ufuns[j].args[i]);
-      if (i < ufuns[j].narg - 1)
+  for (j = 0; j < ufuns.len; j++) {
+    sprintf(fundef, "%s(", ufuns.elems[j].name);
+    for (i = 0; i < ufuns.elems[j].narg; i++) {
+      strcat(fundef, ufuns.elems[j].args[i]);
+      if (i < ufuns.elems[j].narg - 1)
         strcat(fundef, ",");
     }
     strcat(fundef, ") = ");
-    strcat(fundef, ufuns[j].def);
+    strcat(fundef, ufuns.elems[j].def);
     fprintf(fp, "%s\n", fundef);
   }
 }
@@ -368,7 +368,7 @@ void edit_functions(void) {
   char **names, **values;
   int **command;
   int i, status, len, j;
-  int n = NFUN;
+  int n = ufuns.len;
   char msg[200];
   if (n == 0 || n > NEQMAXFOREDIT)
     return;
@@ -379,30 +379,31 @@ void edit_functions(void) {
     values[i] = (char *)malloc(MAX_LEN_EBOX * sizeof(char));
     names[i] = (char *)malloc(MAX_LEN_EBOX * sizeof(char));
     command[i] = (int *)malloc(200 * sizeof(int));
-    sprintf(values[i], "%s", ufuns[i].def);
+    sprintf(values[i], "%s", ufuns.elems[i].def);
 
-    if (ufuns[i].narg == 0) {
-      sprintf(names[i], "%s()", ufuns[i].name);
+    if (ufuns.elems[i].narg == 0) {
+      sprintf(names[i], "%s()", ufuns.elems[i].name);
     }
-    if (ufuns[i].narg == 1) {
-      sprintf(names[i], "%s(%s)", ufuns[i].name, ufuns[i].args[0]);
+    if (ufuns.elems[i].narg == 1) {
+      sprintf(names[i], "%s(%s)", ufuns.elems[i].name, ufuns.elems[i].args[0]);
     }
-    if (ufuns[i].narg > 1)
-      sprintf(names[i], "%s(%s,...,%s)", ufuns[i].name, ufuns[i].args[0],
-              ufuns[i].args[ufuns[i].narg - 1]);
+    if (ufuns.elems[i].narg > 1)
+      sprintf(names[i], "%s(%s,...,%s)", ufuns.elems[i].name,
+              ufuns.elems[i].args[0],
+              ufuns.elems[i].args[ufuns.elems[i].narg - 1]);
   }
 
   status = do_edit_box(n, "Functions", names, values);
   if (status != 0) {
 
     for (i = 0; i < n; i++) {
-      if (parse_ufun_expr(&ufuns[i], values[i], command[i], &len) == 1) {
+      if (parse_ufun_expr(&ufuns.elems[i], values[i], command[i], &len) == 1) {
         sprintf(msg, "Bad func.:%s=%s", names[i], values[i]);
         err_msg(msg);
       } else {
-        strcpy(ufuns[i].def, values[i]);
+        strcpy(ufuns.elems[i].def, values[i]);
         for (j = 0; j <= len; j++) {
-          ufuns[i].rpn[j] = command[i][j];
+          ufuns.elems[i].rpn[j] = command[i][j];
         }
       }
     }
@@ -454,8 +455,9 @@ int save_as(void) {
     fprintf(fp, " %s=%.16g   ", upar_names[i], z);
   }
   fprintf(fp, "\n");
-  for (i = 0; i < NFUN; i++) {
-    fprintf(fp, "user %s %d %s\n", ufuns[i].name, ufuns[i].narg, ufuns[i].def);
+  for (i = 0; i < ufuns.len; i++) {
+    fprintf(fp, "user %s %d %s\n", ufuns.elems[i].name, ufuns.elems[i].narg,
+            ufuns.elems[i].def);
   }
   for (i = 0; i < NODE; i++) {
     if (EqType[i] == 1)

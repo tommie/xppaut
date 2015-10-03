@@ -92,7 +92,7 @@ static void do_info(FILE *fp) {
     for (i = 0; i < FIX_VAR; i++)
       fprintf(fp, "%s = %s \n", fixinfo[i].name, fixinfo[i].value);
   }
-  if (NFUN > 0) {
+  if (ufuns.len > 0) {
     fprintf(fp, "\nUser-defined functions:\n");
     user_fun_info(fp);
   }
@@ -236,7 +236,7 @@ static void dump_eqn(FILE *fp) {
     for (i = 0; i < FIX_VAR; i++)
       fprintf(fp, "%s = %s \n", fixinfo[i].name, fixinfo[i].value);
   }
-  if (NFUN > 0) {
+  if (ufuns.len > 0) {
     fprintf(fp, "\nUser-defined functions:\n");
     user_fun_info(fp);
   }

@@ -84,6 +84,7 @@
 
 /* --- Types --- */
 VECTOR_DEFINE(parser_doubles, ParserDoubles, double)
+VECTOR_DEFINE(parser_ufuns, ParserUserFunctions, UserFunction)
 
 typedef struct {
   char name[MXLEN + 1];
@@ -111,9 +112,8 @@ int ERROUT;
 int NDELAYS = 0;
 ParserDoubles constants = VECTOR_INIT;
 ParserDoubles variables = VECTOR_INIT;
-UserFunction ufuns[MAXUFUN];
+ParserUserFunctions ufuns = VECTOR_INIT;
 
-int NFUN = 0;
 int NSYM = NUM_STDSYM;
 
 static int SumIndex = 1;
@@ -252,7 +252,7 @@ static SYMBOL my_symb[MAX_SYMBS] = {
 void init_rpn(void) {
   ERROUT = 1;
   parser_doubles_init(&constants, 0);
-  NFUN = 0;
+  parser_ufuns_init(&ufuns, 0);
   parser_doubles_init(&variables, 0);
   NSYM = NUM_STDSYM;
   add_con("PI", M_PI);
@@ -272,14 +272,6 @@ void init_rpn(void) {
       add_con("c___3",0.0); */
 
   init_table();
-}
-
-void free_ufuns(void) {
-  int i;
-  for (i = 0; i < NFUN; i++) {
-    free(ufuns[i].rpn);
-    free(ufuns[i].def);
-  }
 }
 
 int duplicate_name(const char *name) {
@@ -506,46 +498,46 @@ int add_form_table(int index, int nn, double xlo, double xhi, char *formula) {
   return (0);
 }
 
-int add_ufun_name(char *name, int index, int narg) {
-  if (index >= MAXUFUN) {
-    if (ERROUT)
-      printf("too many functions !!\n");
+int add_ufun_name(char *name, int narg) {
+  UserFunction *p = parser_ufuns_append(&ufuns);
+
+  if (!p) return 1;
+
+  strncpy(p->name, name, sizeof(p->name));
+  p->name[sizeof(p->name) - 1] = '\0';
+
+  if (add_symbol(name, 10, narg, COM(UFUNTYPE, ufuns.len - 1)) < 0) {
+    parser_ufuns_remove(&ufuns, ufuns.len - 1, 1);
     return 1;
   }
-
-  strncpy(ufuns[index].name, name, sizeof(ufuns[index].name));
-  ufuns[index].name[sizeof(ufuns[index].name) - 1] = '\0';
-
-  if (add_symbol(name, 10, narg, COM(UFUNTYPE, index)) < 0)
-    return 1;
 
   return 0;
 }
 
-int add_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
+int set_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
   int i, l;
   int end;
   if (narg > MAXARG) {
     plintf("Maximal arguments exceeded \n");
     return 1;
   }
-  if ((ufuns[index].rpn = malloc(1024)) == NULL) {
+  if ((ufuns.elems[index].rpn = malloc(1024)) == NULL) {
     if (ERROUT)
       plintf("not enough memory!!\n");
     return 1;
   }
-  if ((ufuns[index].def = malloc(MAXEXPLEN)) == NULL) {
+  if ((ufuns.elems[index].def = malloc(MAXEXPLEN)) == NULL) {
     if (ERROUT)
       plintf("not enough memory!!\n");
     return 1;
   }
-  ufuns[index].narg = narg;
+  ufuns.elems[index].narg = narg;
   for (i = 0; i < narg; i++)
-    strcpy(ufuns[index].args[i], args[i]);
-  strcpy(ufuns[index].def, rhs);
-  l = strlen(ufuns[index].def);
-  ufuns[index].def[l] = '\0';
-  if (parse_ufun_expr(&ufuns[index], rhs, ufuns[index].rpn, &end)) {
+    strcpy(ufuns.elems[index].args[i], args[i]);
+  strcpy(ufuns.elems[index].def, rhs);
+  l = strlen(ufuns.elems[index].def);
+  ufuns.elems[index].def[l] = '\0';
+  if (parse_ufun_expr(&ufuns.elems[index], rhs, ufuns.elems[index].rpn, &end)) {
     if (ERROUT)
       plintf("ERROR IN FUNCTION DEFINITION\n");
     return 1;
@@ -557,48 +549,47 @@ int add_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
 int add_ufun(const char *name, const char *expr, int narg) {
   int i, l;
   int end;
+  UserFunction *p = parser_ufuns_append(&ufuns);
 
-  if (NFUN >= MAXUFUN) {
-    if (ERROUT)
-      plintf("too many functions !!\n");
-    return 1;
-  }
-  if ((ufuns[NFUN].rpn = malloc(1024)) == NULL) {
+  if (!p) return 1;
+
+  if ((p->rpn = malloc(1024)) == NULL) {
     if (ERROUT)
       plintf("not enough memory!!\n");
     return 1;
   }
-  if ((ufuns[NFUN].def = malloc(MAXEXPLEN)) == NULL) {
-    free(ufuns[NFUN].rpn);
+  if ((p->def = malloc(MAXEXPLEN)) == NULL) {
+    free(p->rpn);
+    parser_ufuns_remove(&ufuns, ufuns.len - 1, 1);
     if (ERROUT)
       plintf("not enough memory!!\n");
     return 1;
   }
 
-  strcpy(ufuns[NFUN].def, expr);
-  l = strlen(ufuns[NFUN].def);
-  ufuns[NFUN].def[l - 1] = '\0';
-  strcpy(ufuns[NFUN].name, name);
-  ufuns[NFUN].narg = narg;
+  strcpy(p->def, expr);
+  l = strlen(p->def);
+  p->def[l - 1] = '\0';
+  strcpy(p->name, name);
+  p->narg = narg;
   for (i = 0; i < narg; i++) {
-    sprintf(ufuns[NFUN].args[i], "ARG%d", i + 1);
+    sprintf(p->args[i], "ARG%d", i + 1);
   }
 
-  if (parse_expr(expr, ufuns[NFUN].rpn, &end)) {
-    free(ufuns[NFUN].def);
-    free(ufuns[NFUN].rpn);
+  if (parse_expr(expr, p->rpn, &end)) {
+    free(p->def);
+    free(p->rpn);
+    parser_ufuns_remove(&ufuns, ufuns.len - 1, 1);
     if (ERROUT)
       plintf("ERROR IN FUNCTION DEFINITION\n");
     return 1;
   }
 
-  fixup_endfun(ufuns[NFUN].rpn, end, narg);
-  NFUN++;
+  fixup_endfun(p->rpn, end, narg);
 
-  if (add_symbol(name, 10, narg, COM(UFUNTYPE, NFUN - 1)) < 0) {
-    --NFUN;
-    free(ufuns[NFUN].def);
-    free(ufuns[NFUN].rpn);
+  if (add_symbol(name, 10, narg, COM(UFUNTYPE, ufuns.len - 1)) < 0) {
+    free(p->def);
+    free(p->rpn);
+    parser_ufuns_remove(&ufuns, ufuns.len - 1, 1);
     return 1;
   }
 
@@ -1454,7 +1445,7 @@ static double eval_rpn(int *equat) {
           ustack[uptr] = POP;
           uptr++;
         }
-        PUSH(eval_rpn(ufuns[in].rpn));
+        PUSH(eval_rpn(ufuns.elems[in].rpn));
         break;
       }
       break;

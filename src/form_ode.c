@@ -1613,22 +1613,16 @@ void compile_em(void) {
 
     if (v->type == FUNCTION) {
       convert(v->lhs, tmp);
-      if (add_ufun_name(tmp, nufun, v->nargs) == 1) {
+      if (add_ufun_name(tmp, v->nargs) == 1) {
         printf("Duplicate name or too many functions for %s \n", tmp);
         exit(0);
       }
-
-      nufun++;
     }
 
     if (v->next == NULL)
       break;
     v = v->next;
   }
-
-  /*  plintf(" Found\n %d variables\n %d markov\n %d fixed\n %d aux\n %d fun \n
-     %d tab\n ",
-      nvar,nmark,nfix,naux,nufun,ntab); */
 
   /* now we add all the names of the variables and the
      fixed stuff
@@ -1668,7 +1662,6 @@ void compile_em(void) {
   NEQ = nvar + NMarkov + Naux;
   FIX_VAR = nfix;
   NTable = ntab;
-  NFUN = nufun;
   /* plintf(" IN_VARS=%d\n",IN_VARS); */
 
   /* Reset all this stuff so we align the indices correctly */
@@ -1842,7 +1835,7 @@ void compile_em(void) {
       plintf("%s: %s", v->lhs, v->rhs);
       break;
     case FUNCTION:
-      if (add_ufun_new(nufun, v->nargs, v->rhs, v->args) != 0) {
+      if (set_ufun_new(nufun, v->nargs, v->rhs, v->args) != 0) {
         plintf(" Function %s messed up \n", v->lhs);
         exit(0);
       }

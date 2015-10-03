@@ -19,13 +19,14 @@ typedef struct {
   int *rpn;
 } UserFunction;
 
+VECTOR_DECLARE(parser_ufuns, ParserUserFunctions, UserFunction)
+
 /* --- Data --- */
 extern ParserDoubles constants;
 extern int ERROUT;
 extern int NDELAYS;
-extern int NFUN;
 extern int NSYM;
-extern UserFunction ufuns[MAXUFUN];
+extern ParserUserFunctions ufuns;
 extern ParserDoubles variables;
 
 /* --- Functions --- */
@@ -37,8 +38,7 @@ int add_kernel(const char *name, double mu, const char *expr);
 int add_net_name(int index, const char *name);
 int add_table_name(int index, const char *name);
 int add_ufun(const char *name, const char *expr, int narg);
-int add_ufun_name(char *name, int index, int narg);
-int add_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]);
+int add_ufun_name(char *name, int narg);
 int add_var(const char *name, double value);
 void convert(const char *source, char *dest);
 int do_num(const char *source, char *num, double *value, int *ind);
@@ -53,6 +53,7 @@ int parse_expr(const char *expr, int *command, int *length);
 int parse_ufun_expr(const UserFunction *ufun, const char *expr, int *command,
                     int *length);
 void set_ivar(int i, double value);
+int set_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]);
 int set_val(char *name, double value);
 
 #endif /* XPPAUT_PARSERSLOW_H */

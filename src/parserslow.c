@@ -110,10 +110,10 @@ static double eval_rpn(int *equat);
 int ERROUT;
 int NDELAYS = 0;
 ParserDoubles constants = VECTOR_INIT;
-double variables[MAXODE1];
+ParserDoubles variables = VECTOR_INIT;
 UserFunction ufuns[MAXUFUN];
 
-int NVAR = 0, NFUN = 0;
+int NFUN = 0;
 int NSYM = NUM_STDSYM;
 
 static int SumIndex = 1;
@@ -253,7 +253,7 @@ void init_rpn(void) {
   ERROUT = 1;
   parser_doubles_init(&constants, 0);
   NFUN = 0;
-  NVAR = 0;
+  parser_doubles_init(&variables, 0);
   NSYM = NUM_STDSYM;
   add_con("PI", M_PI);
 
@@ -371,17 +371,14 @@ int add_kernel(const char *name, double mu, const char *expr) {
 }
 
 int add_var(const char *name, double value) {
-  if (NVAR >= MAXODE1) {
-    if (ERROUT)
-      printf("too many variables !!\n");
-    return 1;
-  }
+  double *p = parser_doubles_append(&variables);
 
-  variables[NVAR] = value;
-  NVAR++;
+  if (!p) return 1;
 
-  if (add_symbol(name, 10, 0, COM(VARTYPE, NVAR - 1)) < 0) {
-    --NVAR;
+  *p = value;
+
+  if (add_symbol(name, 10, 0, COM(VARTYPE, variables.len - 1)) < 0) {
+    parser_doubles_remove(&variables, variables.len - 1, 1);
     return 1;
   }
 
@@ -685,7 +682,7 @@ int get_val(char *name, double *value) {
     return (1);
   }
   if (is_uvar(com)) {
-    *value = variables[com % MAXTYPE];
+    *value = variables.elems[com % MAXTYPE];
     return (1);
   }
   return (0);
@@ -703,20 +700,19 @@ int set_val(char *name, double value) {
     return (1);
   }
   if (is_uvar(com)) {
-
-    variables[com % MAXTYPE] = value;
+    variables.elems[com % MAXTYPE] = value;
     return (1);
   }
   return (0);
 }
 
 void set_ivar(int i, double value) {
-  if (i < NVAR)
-    variables[i] = value;
+  if (i < variables.len)
+    variables.elems[i] = value;
 }
 
 double get_ivar(int i) {
-  return i < NVAR ? variables[i] : 0.0;
+  return i < variables.len ? variables.elems[i] : 0.0;
 }
 
 static int alg_to_rpn(int *toklist, int *command) {
@@ -1245,7 +1241,7 @@ static double do_shift(double shift, double variable) {
     if (in > MAXODE)
       return 0.0;
     else
-      return variables[in];
+      return variables.elems[in];
   default:
     plintf("This can't happen: Invalid symbol index for SHIFT: i = %d\n", i);
     return 0.0;
@@ -1269,7 +1265,7 @@ static double do_delay_shift(double delay, double shift, double variable) {
   if (del_stab_flag > 0) {
     if (DelayFlag && delay > 0.0)
       return (get_delay(in - 1, delay));
-    return (variables[in]);
+    return (variables.elems[in]);
   }
 
   return (delay_stab_eval(delay, in));
@@ -1286,7 +1282,7 @@ static double do_delay(double delay, double i) {
       /* printf("do_delay for var #%d, delay %f\n", variable-1, delay); */
       return (get_delay(variable - 1, delay));
     }
-    return (variables[variable]);
+    return (variables.elems[variable]);
   }
 
   return (delay_stab_eval(delay, (int)variable));
@@ -1443,7 +1439,7 @@ static double eval_rpn(int *equat) {
         PUSH(ker_val(in));
         break;
       case VARTYPE:
-        PUSH(variables[in]);
+        PUSH(variables.elems[in]);
         break;
       /* indexes for shift and delay operators... */
       case SCONTYPE:

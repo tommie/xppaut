@@ -66,7 +66,7 @@ int add_svar(char *name, char *rhs) {
 int add_svar_names(void) {
   int i;
   for (i = 0; i < nsvar; i++) {
-    svar[i].index = NVAR;
+    svar[i].index = variables.len;
     if (add_var(svar[i].name, 0.0) == 1)
       return 1;
   }

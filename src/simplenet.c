@@ -144,7 +144,7 @@ static double net_interp(double x, int i) {
   double *y;
   int n = my_net[i].n;
   double dx = x - (double)jlo;
-  y = &variables[my_net[i].root];
+  y = &variables.elems[my_net[i].root];
   if (jlo < 0 || jlo > (n - 1))
     return 0.0; /* out of range */
   return (1 - dx) * y[jlo] + dx * y[jlo + 1];
@@ -774,7 +774,7 @@ static void evaluate_network(int ind)
   cc = my_net[ind].index;
   w = my_net[ind].weight;
   values = my_net[ind].values;
-  y = &variables[my_net[ind].root];
+  y = &variables.elems[my_net[ind].root];
   switch (my_net[ind].type) {
   case FINDEXT:
     mmt = my_net[ind].iwgt;
@@ -897,7 +897,7 @@ static void evaluate_network(int ind)
   /*     f stuff  */
   case FCONVE:
     f = my_net[ind].f;
-    yp = &variables[root2];
+    yp = &variables.elems[root2];
     for (i = 0; i < n; i++) {
       sum = 0.0;
       /*f[3]=(int)(&yp[i]);*/
@@ -918,7 +918,7 @@ static void evaluate_network(int ind)
     break;
   case FCONV0:
     f = my_net[ind].f;
-    yp = &variables[root2];
+    yp = &variables.elems[root2];
     for (i = 0; i < n; i++) {
       sum = 0.0;
       /*f[3]=(int)(&yp[i]);*/
@@ -937,7 +937,7 @@ static void evaluate_network(int ind)
     break;
   case FCONVP:
     f = my_net[ind].f;
-    yp = &variables[root2];
+    yp = &variables.elems[root2];
     for (i = 0; i < n; i++) {
       /*f[3]=(int)(&yp[i]);*/
       f[3] = lround(yp[i]);
@@ -954,7 +954,7 @@ static void evaluate_network(int ind)
     break;
   case FSPARSE:
     f = my_net[ind].f;
-    yp = &variables[root2];
+    yp = &variables.elems[root2];
     for (i = 0; i < n; i++) {
       /*f[3]=(int)(&yp[i]);*/
       f[3] = lround(yp[i]);
@@ -974,7 +974,7 @@ static void evaluate_network(int ind)
     break;
   case FMMULT:
     f = my_net[ind].f;
-    yp = &variables[root2];
+    yp = &variables.elems[root2];
     for (j = 0; j < n; j++) {
       /*f[3]=(int)(&yp[j]);*/
       f[3] = lround(yp[j]);

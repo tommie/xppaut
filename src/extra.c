@@ -143,15 +143,15 @@ void do_in_out(void) {
     if (in_out.intype[i] == PAR)
       in_out.vin[i] = constants.elems[in_out.in[i]];
     else
-      in_out.vin[i] = variables[in_out.in[i]];
+      in_out.vin[i] = variables.elems[in_out.in[i]];
   }
-  my_fun(in_out.vin, in_out.vout, in_out.nin, in_out.nout, variables,
+  my_fun(in_out.vin, in_out.vout, in_out.nin, in_out.nout, variables.elems,
          constants.elems);
   for (i = 0; i < in_out.nout; i++) {
     if (in_out.outtype[i] == PAR)
       constants.elems[in_out.out[i]] = in_out.vout[i];
     else
-      variables[in_out.out[i]] = in_out.vout[i];
+      variables.elems[in_out.out[i]] = in_out.vout[i];
   }
 }
 

@@ -442,8 +442,8 @@ static int get_eqn(FILE *fptr) {
     de_space(ode_names[i]);
   }
   /* add primed variables */
-  PrimeStart = NVAR;
-  if (NVAR < MAXPRIMEVAR) {
+  PrimeStart = variables.len;
+  if (variables.len < MAXPRIMEVAR) {
     add_var("t'", 0.0);
     for (i = 0; i < NODE; i++) {
       sprintf(prim, "%s'", uvar_names[i]);

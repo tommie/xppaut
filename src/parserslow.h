@@ -25,9 +25,8 @@ extern int ERROUT;
 extern int NDELAYS;
 extern int NFUN;
 extern int NSYM;
-extern int NVAR;
 extern UserFunction ufuns[MAXUFUN];
-extern double variables[MAXODE1];
+extern ParserDoubles variables;
 
 /* --- Functions --- */
 int add_2d_table(char *name, char *file);

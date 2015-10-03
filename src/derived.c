@@ -47,7 +47,7 @@ void evaluate_derived(void) {
   int i;
   for (i = 0; i < nderived; i++) {
     derived[i].value = evaluate(derived[i].form);
-    constants[derived[i].index] = derived[i].value;
+    constants.elems[derived[i].index] = derived[i].value;
   }
 }
 
@@ -64,9 +64,9 @@ int add_derived(char *name, char *rhs) {
   /* save the right hand side */
   strcpy(derived[i0].rhs, rhs);
   /* this is the constant to which it addresses */
-  derived[i0].index = NCON;
+  derived[i0].index = constants.len;
   /* add the name to the recognized symbols */
-  plintf(" derived constant[%d] is %s = %s\n", NCON, name, rhs);
+  plintf(" derived constant[%d] is %s = %s\n", constants.len, name, rhs);
   nderived++;
   return (add_con(name, 0.0));
 }

@@ -60,7 +60,7 @@ void set_wieners(double dt, double *x, double t) {
   int i;
   update_markov(x, t, fabs(dt));
   for (i = 0; i < NWiener; i++)
-    constants[Wiener[i]] = ndrand48_normal(0.00, 1.00) / sqrt(fabs(dt));
+    constants.elems[Wiener[i]] = ndrand48_normal(0.00, 1.00) / sqrt(fabs(dt));
 }
 
 void add_markov(int nstate, char *name) {

@@ -2,11 +2,14 @@
 #define XPPAUT_PARSERSLOW_H
 
 #include "xpplim.h"
+#include "base/vector.h"
 
 /* --- Macros --- */
 #define MAXARG 20
 
 /* --- Types --- */
+VECTOR_DECLARE(parser_doubles, ParserDoubles, double)
+
 typedef struct {
   char name[12];
   char args[MAXARG][11];
@@ -17,9 +20,8 @@ typedef struct {
 } UserFunction;
 
 /* --- Data --- */
-extern double constants[MAXPAR];
+extern ParserDoubles constants;
 extern int ERROUT;
-extern int NCON;
 extern int NDELAYS;
 extern int NFUN;
 extern int NSYM;

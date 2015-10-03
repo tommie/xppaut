@@ -464,14 +464,14 @@ static int get_eqn(FILE *fptr) {
   /*  add auxiliary variables   */
   for (i = NODE + NMarkov; i < NEQ; i++)
     add_var(uvar_names[i], 0.0);
-  NCON_START = NCON;
+  NCON_START = constants.len;
   NSYM_START = NSYM;
-  NCON_ORIG = NCON;
+  NCON_ORIG = constants.len;
   NSYM_ORIG = NSYM;
   NEQ_MIN = NEQ;
   xppvermaj = (float)cstringmaj;
   xppvermin = (float)cstringmin;
-  plintf("Used %d constants and %d symbols \n", NCON, NSYM);
+  plintf("Used %d constants and %d symbols \n", constants.len, NSYM);
   plintf("XPPAUT %g.%g Copyright (C) 2002-now  Bard Ermentrout \n", xppvermaj,
          xppvermin);
   return (1);
@@ -528,7 +528,7 @@ int compiler(char *bob, FILE *fptr) {
         plintf("ERROR at line %d\n", NLINES);
         exit(0);
       }
-      add_wiener(NCON - 1);
+      add_wiener(constants.len - 1);
     }
     if (ConvertStyle)
       fprintf(convertf, "\n");

@@ -103,7 +103,7 @@ static void get_fit_info(double *y, double *a, double *t0, int *flag,
   for (l = 0; l < npars; l++) {
     ip = ipar[l];
     if (ip < 0)
-      constants[-ip] = a[l];
+      constants.elems[-ip] = a[l];
     else
       y[ip] = a[l];
     /*  plintf(" par[%d]=%g \n",l,a[l]); */
@@ -149,9 +149,9 @@ static void get_fit_info(double *y, double *a, double *t0, int *flag,
       y[i] = yold[i];
     ip = ipar[l];
     if (ip < 0) {
-      par = constants[-ip];
+      par = constants.elems[-ip];
       dp = eps * MAX(eps, fabs(par));
-      constants[-ip] = par + dp;
+      constants.elems[-ip] = par + dp;
     } else {
       par = yold[ip];
       dp = eps * MAX(eps, fabs(par));
@@ -184,7 +184,7 @@ static void get_fit_info(double *y, double *a, double *t0, int *flag,
     }
     /* Now return the parameter to its old value */
     if (ip < 0)
-      constants[-ip] = par;
+      constants.elems[-ip] = par;
     evaluate_derived();
     solver_end();
   }
@@ -264,7 +264,7 @@ void test_fit(void) {
     y0[i] = last_ic[i];
   for (i = 0; i < fin.npars; i++) {
     if (fin.ipar[i] < 0)
-      a[i] = constants[-fin.ipar[i]];
+      a[i] = constants.elems[-fin.ipar[i]];
     else
       a[i] = last_ic[fin.ipar[i]];
   }
@@ -282,7 +282,7 @@ void test_fit(void) {
 
   for (i = 0; i < npars; i++) {
     if (fin.ipar[i] < 0)
-      constants[-fin.ipar[i]] = a[i];
+      constants.elems[-fin.ipar[i]] = a[i];
     else
       last_ic[fin.ipar[i]] = a[i];
   }

@@ -45,7 +45,7 @@ int func_(integer *ndim, doublereal *u, integer *icp, doublereal *par,
   int i, j;
   double zz[NAUTO];
   for (i = 0; i < NAutoPar; i++) {
-    constants[Auto_index_to_array[i]] = par[i];
+    constants.elems[Auto_index_to_array[i]] = par[i];
   }
   evaluate_derived();
   my_rhs(0.0, u, f, *ndim);
@@ -64,7 +64,7 @@ int stpnt_(integer *ndim, doublereal *u, doublereal *par, doublereal *t) {
 
   double p;
   for (i = 0; i < NAutoPar; i++)
-    par[i] = constants[Auto_index_to_array[i]];
+    par[i] = constants.elems[Auto_index_to_array[i]];
   if (NewPeriodFlag == 0) {
     for (i = 0; i < *ndim; i++)
       u[i] = last_ic[i];
@@ -90,7 +90,7 @@ int bcnd_(integer *ndim, doublereal *par, integer *icp, integer *nbc,
   int i;
   /* Hooks to the XPP bc parser!! */
   for (i = 0; i < NAutoPar; i++) {
-    constants[Auto_index_to_array[i]] = par[i];
+    constants.elems[Auto_index_to_array[i]] = par[i];
   }
 
   evaluate_derived();

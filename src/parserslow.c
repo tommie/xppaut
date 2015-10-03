@@ -83,6 +83,8 @@
 #endif
 
 /* --- Types --- */
+VECTOR_DEFINE(parser_doubles, ParserDoubles, double)
+
 typedef struct {
   char name[MXLEN + 1];
   int len;
@@ -107,11 +109,11 @@ static double eval_rpn(int *equat);
 /* --- Data --- */
 int ERROUT;
 int NDELAYS = 0;
-double constants[MAXPAR];
+ParserDoubles constants = VECTOR_INIT;
 double variables[MAXODE1];
 UserFunction ufuns[MAXUFUN];
 
-int NCON = 0, NVAR = 0, NFUN = 0;
+int NVAR = 0, NFUN = 0;
 int NSYM = NUM_STDSYM;
 
 static int SumIndex = 1;
@@ -249,7 +251,7 @@ static SYMBOL my_symb[MAX_SYMBS] = {
 
 void init_rpn(void) {
   ERROUT = 1;
-  NCON = 0;
+  parser_doubles_init(&constants, 0);
   NFUN = 0;
   NVAR = 0;
   NSYM = NUM_STDSYM;
@@ -258,7 +260,7 @@ void init_rpn(void) {
   add_con("I'", 0.0);
   /*   This is going to be for interacting with the
        animator */
-  SumIndex = NCON - 1;
+  SumIndex = constants.len - 1;
   add_con("mouse_x", 0.0);
   add_con("mouse_y", 0.0);
   add_con("mouse_vx", 0.0);
@@ -327,17 +329,14 @@ static int add_symbol(const char *name, int pri, int arg, int com) {
 }
 
 int add_con(const char *name, double value) {
-  if (NCON >= MAXPAR) {
-    if (ERROUT)
-      printf("too many constants !!\n");
-    return 1;
-  }
+  double *p = parser_doubles_append(&constants);
 
-  constants[NCON] = value;
-  ++NCON;
+  if (!p) return 1;
 
-  if (add_symbol(name, 10, 0, COM(CONTYPE, NCON - 1)) < 0) {
-    --NCON;
+  *p = value;
+
+  if (add_symbol(name, 10, 0, COM(CONTYPE, constants.len - 1)) < 0) {
+    parser_doubles_remove(&constants, constants.len - 1, 1);
     return 1;
   }
 
@@ -618,7 +617,7 @@ int check_num(int *tok, double value) {
       bob = my_symb[i].com;
       in = bob % MAXTYPE;
       /*m=bob/MAXTYPE;*/
-      if (constants[in] == value) {
+      if (constants.elems[in] == value) {
         *tok = i;
         return (1);
       }
@@ -682,7 +681,7 @@ int get_val(char *name, double *value) {
     return (0);
   com = my_symb[type].com;
   if (is_ucon(com)) {
-    *value = constants[com % MAXTYPE];
+    *value = constants.elems[com % MAXTYPE];
     return (1);
   }
   if (is_uvar(com)) {
@@ -699,7 +698,7 @@ int set_val(char *name, double value) {
     return (0);
   com = my_symb[type].com;
   if (is_ucon(com)) {
-    constants[com % MAXTYPE] = value;
+    constants.elems[com % MAXTYPE] = value;
 
     return (1);
   }
@@ -1237,10 +1236,10 @@ static double do_shift(double shift, double variable) {
   in = (i % MAXTYPE) + ish;
   switch (it) {
   case CONTYPE:
-    if (in > NCON)
+    if (in > constants.len)
       return 0.0;
     else
-      return constants[in];
+      return constants.elems[in];
     break;
   case VARTYPE:
     if (in > MAXODE)
@@ -1376,7 +1375,7 @@ static double eval_rpn(int *equat) {
       sum = 0.0;
       if (low <= high) {
         for (int is = low; is <= high; is++) {
-          constants[SumIndex] = (double)is;
+          constants.elems[SumIndex] = (double)is;
           sum += eval_rpn(equat);
         }
       }
@@ -1428,7 +1427,7 @@ static double eval_rpn(int *equat) {
         }
         break;
       case CONTYPE:
-        PUSH(constants[in]);
+        PUSH(constants.elems[in]);
         break;
       case NETTYPE:
         PUSH(network_value(POP, in));

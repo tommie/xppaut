@@ -206,7 +206,7 @@ double calculate(char *expr, int *ok) {
   *ok = 1;
 bye:
   /* plintf(" old=%d %d  new = %d %d \n",NCON,NSYM,NCON_START,NSYM_START);  */
-  NCON = NCON_START;
+  parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
   NSYM = NSYM_START;
   return (z);
 }

@@ -167,7 +167,7 @@ int do_init_delay(double big) {
 
   int *del_form[MAXODE];
   nt = (int)(big / fabs(DELTA_T));
-  NCON = NCON_START;
+  parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
   NSYM = NSYM_START;
   for (i = 0; i < (NODE); i++) {
     del_form[i] = (int *)calloc(200, sizeof(int));
@@ -175,7 +175,7 @@ int do_init_delay(double big) {
       err_msg("Failed to allocate delay formula ...");
       for (j = 0; j < i; j++)
         free(del_form[j]);
-      NCON = NCON_START;
+      parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
       NSYM = NSYM_START;
       return (0);
     }
@@ -184,7 +184,7 @@ int do_init_delay(double big) {
       err_msg("Illegal delay expression");
       for (j = 0; j <= i; j++)
         free(del_form[j]);
-      NCON = NCON_START;
+      parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
       NSYM = NSYM_START;
       return (0);
     }
@@ -202,7 +202,7 @@ int do_init_delay(double big) {
   }
   for (j = 0; j < (NODE); j++)
     free(del_form[j]);
-  NCON = NCON_START;
+  parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
   NSYM = NSYM_START;
   set_val("t", old_t);
   return (1);

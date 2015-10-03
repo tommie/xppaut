@@ -196,7 +196,7 @@ void find_point(int ibr, int pt) {
         set_ivar(i + 1, d->u0[i]);
       get_ic(0, d->u0);
       for (i = 0; i < NAutoPar; i++)
-        constants[Auto_index_to_array[i]] = d->par[i];
+        constants.elems[Auto_index_to_array[i]] = d->par[i];
       evaluate_derived();
       redraw_params();
       redraw_ics();
@@ -591,7 +591,7 @@ void traverse_diagram(void) {
     grabpt.nfpar = d->nfpar;
     grabpt.index = d->index;
     for (i = 0; i < NAutoPar; i++)
-      constants[Auto_index_to_array[i]] = grabpt.par[i];
+      constants.elems[Auto_index_to_array[i]] = grabpt.par[i];
   }
   evaluate_derived();
   redraw_params();

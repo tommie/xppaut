@@ -348,7 +348,7 @@ static int make_h(float **orb, float **adj, float **h, int nt, double dt,
 
 bye:
   NSYM = NSYM_START;
-  NCON = NCON_START;
+  parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
   return (rval);
 }
 

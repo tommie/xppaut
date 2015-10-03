@@ -333,7 +333,7 @@ void replace_column(char *var, char *form, float **dat, int n) {
 
   if (dif_var < 0 && seq == 0) {
     if (parse_expr(form, com, &i)) {
-      NCON = NCON_START;
+      parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
       NSYM = NSYM_START;
       err_msg("Illegal formula...");
       return;
@@ -344,7 +344,7 @@ void replace_column(char *var, char *form, float **dat, int n) {
   find_variable(var, &i);
   if (i < 0) {
     err_msg("No such column...");
-    NCON = NCON_START;
+    parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
     NSYM = NSYM_START;
     return;
   }
@@ -383,7 +383,7 @@ void replace_column(char *var, char *form, float **dat, int n) {
       dat[R_COL][i] = derv;
     }
   }
-  NCON = NCON_START;
+  parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
   NSYM = NSYM_START;
 }
 

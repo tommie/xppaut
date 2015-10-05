@@ -1909,21 +1909,18 @@ void compile_em(void) {
 
 /* this code checks if the right-hand side for an initial
    condition is a formula (for delays) or a number
+
+   0 is a number, 1 is a formula.
 */
 int formula_or_number(char *expr, double *z) {
   char num[80], form[80];
   int flag, i = 0;
-  int olderr = ERROUT;
-  ERROUT = 0;
   *z = 0.0; /* initial it to 0 */
   convert(expr, form);
   flag = do_num(form, num, z, &i);
   if (i < strlen(form))
     flag = 1;
-  ERROUT = olderr;
-  if (flag == 0)
-    return 0; /* 0 is a number */
-  return 1;   /* 1 is a formula */
+  return flag;
 }
 
 void strpiece(char *dest, char *src, int i0, int ie) {

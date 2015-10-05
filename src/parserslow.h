@@ -33,7 +33,6 @@ VECTOR_DECLARE(parser_ufuns, ParserUserFunctions, UserFunction)
 
 /* --- Data --- */
 extern ParserDoubles constants;
-extern int ERROUT;
 extern int NDELAYS;
 extern ParserSymbols my_symb;
 extern ParserUserFunctions ufuns;

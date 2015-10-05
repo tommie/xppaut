@@ -97,7 +97,6 @@ static int find_tok(const ParserSymbols *syms, const char *source);
 static double eval_rpn(int *equat);
 
 /* --- Data --- */
-int ERROUT;
 int NDELAYS = 0;
 ParserDoubles constants = VECTOR_INIT;
 ParserDoubles variables = VECTOR_INIT;
@@ -240,7 +239,6 @@ static const size_t NUM_BUILTIN_SYMBOLS = sizeof(BUILTIN_SYMBOLS) / sizeof(*BUIL
 *************************************************************/
 
 void init_rpn(void) {
-  ERROUT = 1;
   parser_doubles_init(&constants, 0);
   parser_ufuns_init(&ufuns, 0);
   parser_doubles_init(&variables, 0);
@@ -1060,6 +1058,7 @@ static int make_toks(const char *source, int *my_token) {
       } encoder;
 
       if (do_num(source, num, &value, &index)) {
+        plintf("illegal expression: %s\n", num);
         show_where(source, index);
         return (1);
       }
@@ -1152,8 +1151,6 @@ int do_num(const char *source, char *num, double *value, int *ind) {
   num[j] = '\0';
   if (error == 0)
     *value = atof(num);
-  else if (ERROUT)
-    plintf("illegal expression: %s\n", num);
   *ind = i;
   return (error);
 }

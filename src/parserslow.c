@@ -1,3 +1,27 @@
+/*****************************
+*      PARSER.C              *
+*
+*
+*     parses any algebraic expression
+*     and converts to an integer array
+*     to be interpreted by the rpe_val
+*     function.
+*
+*     the main data structure is a contiguous
+*     list of symbols with their priorities
+*     and their symbol value
+*
+*     on the first pass, the expression is converted to
+*     a list of integers without any checking except for
+*     valid symbols and for numbers
+*
+*     next this list of integers is converted to an RPN expression
+*     for evaluation.
+*
+*
+*  6/95  stuff added to add names to namelist without compilation
+*************************************************************/
+
 #include "config.h"
 #include "parserslow.h"
 
@@ -213,30 +237,6 @@ static const size_t NUM_BUILTIN_SYMBOLS = sizeof(BUILTIN_SYMBOLS) / sizeof(*BUIL
 /*************************
   RPN COMPILER           *
 **************************/
-
-/*****************************
-*      PARSER.C              *
-*
-*
-*     parses any algebraic expression
-*     and converts to an integer array
-*     to be interpreted by the rpe_val
-*     function.
-*
-*     the main data structure is a contiguous
-*     list of symbols with their priorities
-*     and their symbol value
-*
-*     on the first pass, the expression is converted to
-*     a list of integers without any checking except for
-*     valid symbols and for numbers
-*
-*     next this list of integers is converted to an RPN expression
-*     for evaluation.
-*
-*
-*  6/95  stuff added to add names to namelist without compilation
-*************************************************************/
 
 void init_rpn(void) {
   parser_doubles_init(&constants, 0);

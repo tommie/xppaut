@@ -84,7 +84,7 @@ void compile_bvp(void) {
     return;
 
   parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
-  NSYM = NSYM_START;
+  parser_symbols_remove(&my_symb, NSYM_START, my_symb.len - NSYM_START);
   BVP_FLAG = 0;
   for (i = 0; i < NODE; i++) {
 

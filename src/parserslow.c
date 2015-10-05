@@ -66,11 +66,7 @@
 #define INDX 68
 #define FIRST_ARG 73
 
-#define LASTTOK MAX_SYMBS - 2
-#define NUM_STDSYM 95
-
 #define MAXEXPLEN 1024
-#define MXLEN 10
 #define DOUB_EPS 2.23E-15
 #define POP stack[--stack_pointer]
 #define PUSH(a) do {                            \
@@ -84,15 +80,8 @@
 
 /* --- Types --- */
 VECTOR_DEFINE(parser_doubles, ParserDoubles, double)
+VECTOR_DEFINE(parser_symbols, ParserSymbols, ParserSymbol)
 VECTOR_DEFINE(parser_ufuns, ParserUserFunctions, UserFunction)
-
-typedef struct {
-  char name[MXLEN + 1];
-  int len;
-  int com;
-  int arg;
-  int pri;
-} SYMBOL;
 
 /* --- Forward Declarations --- */
 static int is_uvar(int x);
@@ -103,7 +92,7 @@ static int unary_sym(int token);
 static int binary_sym(int token);
 static int make_toks(const char *source, int *my_token);
 static void tokeninfo(int tok);
-static int find_tok(const SYMBOL *syms, int nsym, const char *source);
+static int find_tok(const ParserSymbols *syms, const char *source);
 
 static double eval_rpn(int *equat);
 
@@ -112,17 +101,17 @@ int ERROUT;
 int NDELAYS = 0;
 ParserDoubles constants = VECTOR_INIT;
 ParserDoubles variables = VECTOR_INIT;
+ParserSymbols my_symb = VECTOR_INIT;
 ParserUserFunctions ufuns = VECTOR_INIT;
 
-int NSYM = NUM_STDSYM;
-
 static int SumIndex = 1;
+static int shift_index = -1;
 
 /* FIXXX */
 static int stack_pointer, uptr;
 static double stack[200], ustack[200];
 
-static SYMBOL my_symb[MAX_SYMBS] = {
+static const ParserSymbol BUILTIN_SYMBOLS[] = {
     {"(", 1, ENDEXP, 0, 1}, /*  0   */
     {")", 1, ENDEXP, 0, 2},
     {",", 1, ENDEXP, 0, 3},
@@ -220,6 +209,7 @@ static SYMBOL my_symb[MAX_SYMBS] = {
     {"BESSELI", 7, COM(FUN2TYPE, 20), 2, 10}, /* Bessel I  # 93 */
     {"LGAMMA", 6, COM(FUN1TYPE, 25), 1, 10}   /* Log Gamma  #94 */
 };
+static const size_t NUM_BUILTIN_SYMBOLS = sizeof(BUILTIN_SYMBOLS) / sizeof(*BUILTIN_SYMBOLS);
 
 /*************************
   RPN COMPILER           *
@@ -254,13 +244,20 @@ void init_rpn(void) {
   parser_doubles_init(&constants, 0);
   parser_ufuns_init(&ufuns, 0);
   parser_doubles_init(&variables, 0);
-  NSYM = NUM_STDSYM;
+  parser_symbols_init(&my_symb, NUM_BUILTIN_SYMBOLS);
+  memcpy(parser_symbols_insert(&my_symb, 0, NUM_BUILTIN_SYMBOLS),
+         BUILTIN_SYMBOLS, NUM_BUILTIN_SYMBOLS * sizeof(*BUILTIN_SYMBOLS));
+
   add_con("PI", M_PI);
 
   add_con("I'", 0.0);
+  SumIndex = constants.len - 1;
+
+  add_con("", 0.0);
+  shift_index = constants.len - 1;
+
   /*   This is going to be for interacting with the
        animator */
-  SumIndex = constants.len - 1;
   add_con("mouse_x", 0.0);
   add_con("mouse_y", 0.0);
   add_con("mouse_vx", 0.0);
@@ -308,16 +305,22 @@ static int add_symbol(const char *name, int pri, int arg, int com) {
     return -1;
   }
 
-  if (len > MXLEN)
-    len = MXLEN;
-  strncpy(my_symb[NSYM].name, cname, len);
-  my_symb[NSYM].name[len] = '\0';
-  my_symb[NSYM].len = len;
-  my_symb[NSYM].pri = pri;
-  my_symb[NSYM].arg = arg;
-  my_symb[NSYM].com = com;
+  ParserSymbol *p = parser_symbols_append(&my_symb);
 
-  return NSYM++;
+  if (!p)
+    return -1;
+
+  if (len > sizeof(p->name) - 1)
+    len = sizeof(p->name) - 1;
+
+  strncpy(p->name, cname, len);
+  p->name[len] = '\0';
+  p->len = len;
+  p->pri = pri;
+  p->arg = arg;
+  p->com = com;
+
+  return my_symb.len - 1;
 }
 
 int add_con(const char *name, double value) {
@@ -340,14 +343,14 @@ int get_var_index(char *name) {
   find_name(name, &type);
   if (type < 0)
     return -1;
-  com = my_symb[type].com;
+  com = my_symb.elems[type].com;
   if (is_uvar(com)) {
     return (com % MAXTYPE);
   }
   return (-1);
 }
 
-int get_type(int index) { return (my_symb[index].com); }
+int get_type(int index) { return (my_symb.elems[index].com); }
 
 int add_kernel(const char *name, double mu, const char *expr) {
   int ki = volterra2_add_kernel(expr, mu);
@@ -416,16 +419,16 @@ int parse_ufun_expr(const UserFunction *ufun, const char *expr, int *command,
 
   /* Set the user-function's argument names in my_symb. */
   for (int i = 0; i < ufun->narg; i++) {
-    strcpy(my_symb[FIRST_ARG + i].name, ufun->args[i]);
-    my_symb[FIRST_ARG + i].len = strlen(ufun->args[i]);
+    strcpy(my_symb.elems[FIRST_ARG + i].name, ufun->args[i]);
+    my_symb.elems[FIRST_ARG + i].len = strlen(ufun->args[i]);
   }
 
   err = parse_expr(expr, command, length);
 
   /* Switch back to ARG* names. */
   for (int i = 0; i < ufun->narg; i++) {
-    sprintf(my_symb[FIRST_ARG + i].name, "ARG%d", i + 1);
-    my_symb[FIRST_ARG + i].len = strlen(my_symb[FIRST_ARG + i].name);
+    sprintf(my_symb.elems[FIRST_ARG + i].name, "ARG%d", i + 1);
+    my_symb.elems[FIRST_ARG + i].len = strlen(my_symb.elems[FIRST_ARG + i].name);
   }
 
   if (!err)
@@ -599,10 +602,9 @@ int add_ufun(const char *name, const char *expr, int narg) {
 int check_num(int *tok, double value) {
   int bob, in, i;
   /*int m;*/
-  for (i = 0; i < NSYM; i++) {
-
-    if (strncmp(my_symb[i].name, "NUM##", 5) == 0) {
-      bob = my_symb[i].com;
+  for (i = 0; i < my_symb.len; i++) {
+    if (strncmp(my_symb.elems[i].name, "NUM##", 5) == 0) {
+      bob = my_symb.elems[i].com;
       in = bob % MAXTYPE;
       /*m=bob/MAXTYPE;*/
       if (constants.elems[in] == value) {
@@ -627,7 +629,7 @@ int find_lookup(char *name) {
   find_name(name, &index);
   if (index == -1)
     return (-1);
-  com = my_symb[index].com;
+  com = my_symb.elems[index].com;
   if (is_lookup(com))
     return (com % MAXTYPE);
   return (-1);
@@ -638,12 +640,12 @@ static void find_name(const char *string, int *index) {
   int i, len;
   convert(string, junk);
   len = strlen(junk);
-  for (i = 0; i < NSYM; i++) {
-    if (len == my_symb[i].len)
-      if (strncmp(my_symb[i].name, junk, len) == 0)
+  for (i = 0; i < my_symb.len; i++) {
+    if (len == my_symb.elems[i].len)
+      if (strncmp(my_symb.elems[i].name, junk, len) == 0)
         break;
   }
-  if (i < NSYM)
+  if (i < my_symb.len)
     *index = i;
   else
     *index = -1;
@@ -654,7 +656,7 @@ int get_param_index(char *name) {
   find_name(name, &type);
   if (type < 0)
     return (-1);
-  com = my_symb[type].com;
+  com = my_symb.elems[type].com;
   if (is_ucon(com)) {
     return (com % MAXTYPE);
   }
@@ -667,7 +669,7 @@ int get_val(char *name, double *value) {
   find_name(name, &type);
   if (type < 0)
     return (0);
-  com = my_symb[type].com;
+  com = my_symb.elems[type].com;
   if (is_ucon(com)) {
     *value = constants.elems[com % MAXTYPE];
     return (1);
@@ -684,7 +686,7 @@ int set_val(char *name, double value) {
   find_name(name, &type);
   if (type < 0)
     return (0);
-  com = my_symb[type].com;
+  com = my_symb.elems[type].com;
   if (is_ucon(com)) {
     constants.elems[com % MAXTYPE] = value;
 
@@ -721,7 +723,7 @@ static int alg_to_rpn(int *toklist, int *command) {
 
     switch (newtok) {
     case DELSYM:
-      temp = my_symb[toklist[lstptr + 1]].com;
+      temp = my_symb.elems[toklist[lstptr + 1]].com;
       if (!is_uvar(temp)) {
         printf("Illegal use of DELAY \n");
         return 1;
@@ -729,14 +731,13 @@ static int alg_to_rpn(int *toklist, int *command) {
 
       /* ram -- is this right? not sure I understand what was happening here */
       /* create a temporary sybol */
-      my_symb[LASTTOK].com = COM(SVARTYPE, temp % MAXTYPE);
+      my_symb.elems[shift_index].com = COM(SVARTYPE, temp % MAXTYPE);
       NDELAYS++;
-      toklist[lstptr + 1] = LASTTOK;
-      my_symb[LASTTOK].pri = 10;
+      toklist[lstptr + 1] = shift_index;
       break;
 
     case DELSHFTSYM:
-      temp = my_symb[toklist[lstptr + 1]].com;
+      temp = my_symb.elems[toklist[lstptr + 1]].com;
       if (!is_uvar(temp)) {
         printf("Illegal use of DELAY Shift \n");
         return 1;
@@ -744,15 +745,14 @@ static int alg_to_rpn(int *toklist, int *command) {
 
       /* ram -- same issue */
       /* create a temporary sybol */
-      my_symb[LASTTOK].com = COM(SVARTYPE, temp % MAXTYPE);
+      my_symb.elems[shift_index].com = COM(SVARTYPE, temp % MAXTYPE);
       NDELAYS++;
-      toklist[lstptr + 1] = LASTTOK;
-      my_symb[LASTTOK].pri = 10;
+      toklist[lstptr + 1] = shift_index;
       break;
 
     case SHIFTSYM:
     case ISHIFTSYM:
-      temp = my_symb[toklist[lstptr + 1]].com;
+      temp = my_symb.elems[toklist[lstptr + 1]].com;
       if (!is_uvar(temp) && !is_ucon(temp)) {
         printf("Illegal use of SHIFT \n");
         return 1;
@@ -761,11 +761,10 @@ static int alg_to_rpn(int *toklist, int *command) {
       /* ram -- same issue */
       /* create a temporary sybol */
       if (is_uvar(temp))
-        my_symb[LASTTOK].com = COM(SVARTYPE, temp % MAXTYPE);
+        my_symb.elems[shift_index].com = COM(SVARTYPE, temp % MAXTYPE);
       if (is_ucon(temp))
-        my_symb[LASTTOK].com = COM(SCONTYPE, temp % MAXTYPE);
-      toklist[lstptr + 1] = LASTTOK;
-      my_symb[LASTTOK].pri = 10;
+        my_symb.elems[shift_index].com = COM(SCONTYPE, temp % MAXTYPE);
+      toklist[lstptr + 1] = shift_index;
       break;
     }
 
@@ -795,8 +794,8 @@ static int alg_to_rpn(int *toklist, int *command) {
       continue;
     }
 
-    if (my_symb[oldtok].pri >= my_symb[newtok].pri) {
-      int my_com = my_symb[oldtok].com;
+    if (my_symb.elems[oldtok].pri >= my_symb.elems[newtok].pri) {
+      int my_com = my_symb.elems[oldtok].com;
       command[comptr] = my_com;
       comptr++;
 
@@ -863,12 +862,12 @@ static int alg_to_rpn(int *toklist, int *command) {
         break;
 
       default:
-        if (my_com / MAXTYPE == FUN2TYPE && my_symb[oldtok].arg == 2)
+        if (my_com / MAXTYPE == FUN2TYPE && my_symb.elems[oldtok].arg == 2)
           ncomma--;
 
         /*    CHECK FOR USER FUNCTION       */
         if (is_ufun(my_com)) {
-          int my_arg = my_symb[oldtok].arg;
+          int my_arg = my_symb.elems[oldtok].arg;
           command[comptr] = my_arg;
           comptr++;
           ncomma += 1 - my_arg;
@@ -895,7 +894,7 @@ static int alg_to_rpn(int *toklist, int *command) {
     plintf("If statement missing ELSE or THEN \n");
     return 1;
   }
-  command[comptr] = my_symb[ENDTOK].com;
+  command[comptr] = my_symb.elems[ENDTOK].com;
 
   return 0;
 }
@@ -913,7 +912,7 @@ static void show_where(const char *string, int index) {
 
 /* functions should have ( after them  */
 int function_sym(int token) {
-  int com = my_symb[token].com;
+  int com = my_symb.elems[token].com;
   int i1 = com / MAXTYPE;
 
   if (i1 == FUN1TYPE && !unary_sym(token))
@@ -950,7 +949,7 @@ static int binary_sym(int token) {
 }
 
 int pure_number(int token) {
-  int com = my_symb[token].com;
+  int com = my_symb.elems[token].com;
   int i1 = com / MAXTYPE;
   /* !! */ if (token == NUMTOK || isvar(i1) || iscnst(i1) || isker(i1) ||
                i1 == USTACKTYPE || token == INDX)
@@ -959,7 +958,7 @@ int pure_number(int token) {
 }
 
 int gives_number(int token) {
-  int com = my_symb[token].com;
+  int com = my_symb.elems[token].com;
   int i1 = com / MAXTYPE;
   if (token == INDX)
     return (1);
@@ -984,7 +983,7 @@ int gives_number(int token) {
 
 /* 1 is BAD!   */
 int check_syntax(int oldtoken, int newtoken) {
-  int com2 = my_symb[newtoken].com;
+  int com2 = my_symb.elems[newtoken].com;
 
   /* if the first symbol or (  or binary symbol then must be unary symbol or
      something that returns a number or another (
@@ -1041,11 +1040,11 @@ static int make_toks(const char *source, int *my_token) {
   int index = 0, nparen = 0, lastindex = 0;
 
   while (source[index] != '\0') {
-    int token = find_tok(my_symb, NSYM, source + index);
+    int token = find_tok(&my_symb, source + index);
 
     lastindex = index;
-    if (token != NSYM)
-      index += my_symb[token].len;
+    if (token != my_symb.len)
+      index += my_symb.elems[token].len;
 
     if ((token == MINUS) &&
         ((old_tok == STARTTOK) || (old_tok == COMMA) || (old_tok == LPAREN)))
@@ -1055,7 +1054,7 @@ static int make_toks(const char *source, int *my_token) {
     else if (token == RPAREN)
       --nparen;
 
-    if (token == NSYM) {
+    if (token == my_symb.len) {
       char num[40];
       double value;
       /*  WARNING  -- ASSUMES 32 bit int  and 64 bit double  */
@@ -1113,8 +1112,9 @@ static int make_toks(const char *source, int *my_token) {
 }
 
 static void tokeninfo(int tok) {
-  plintf(" %s %d %d %d %d \n", my_symb[tok].name, my_symb[tok].len,
-         my_symb[tok].com, my_symb[tok].arg, my_symb[tok].pri);
+  plintf(" %s %d %d %d %d \n", my_symb.elems[tok].name, my_symb.elems[tok].len,
+         my_symb.elems[tok].com, my_symb.elems[tok].arg,
+         my_symb.elems[tok].pri);
 }
 
 int do_num(const char *source, char *num, double *value, int *ind) {
@@ -1186,20 +1186,19 @@ void convert(const char *source, char *dest) {
  * Find the longest match for beginning of source in syms.
  *
  * @param syms symbols to look up in.
- * @param nsym number of symbols in syms.
  * @param source the string to parse.
  * @return an index into my_symb.
  */
-static int find_tok(const SYMBOL *syms, int nsym, const char *source) {
+static int find_tok(const ParserSymbols *syms, const char *source) {
   int maxlen = 0;
-  int tok = nsym;
+  int tok = syms->len;
 
-  for (int k = 0; k < nsym; k++) {
-    int symlen = syms[k].len;
+  for (int k = 0; k < syms->len; k++) {
+    int symlen = syms->elems[k].len;
     if (symlen <= maxlen)
       continue;
 
-    if (strncmp(source, syms[k].name, symlen))
+    if (strncmp(source, syms->elems[k].name, symlen))
       continue;
 
     tok = k;

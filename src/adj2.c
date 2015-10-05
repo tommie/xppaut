@@ -347,7 +347,7 @@ static int make_h(float **orb, float **adj, float **h, int nt, double dt,
   rval = 1;
 
 bye:
-  NSYM = NSYM_START;
+  parser_symbols_remove(&my_symb, NSYM_START, my_symb.len - NSYM_START);
   parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
   return (rval);
 }

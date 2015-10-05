@@ -11,6 +11,16 @@
 VECTOR_DECLARE(parser_doubles, ParserDoubles, double)
 
 typedef struct {
+  char name[10 + 1];
+  int len;
+  int com;
+  int arg;
+  int pri;
+} ParserSymbol;
+
+VECTOR_DECLARE(parser_symbols, ParserSymbols, ParserSymbol)
+
+typedef struct {
   char name[12];
   char args[MAXARG][11];
   int narg;
@@ -25,7 +35,7 @@ VECTOR_DECLARE(parser_ufuns, ParserUserFunctions, UserFunction)
 extern ParserDoubles constants;
 extern int ERROUT;
 extern int NDELAYS;
-extern int NSYM;
+extern ParserSymbols my_symb;
 extern ParserUserFunctions ufuns;
 extern ParserDoubles variables;
 

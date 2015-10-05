@@ -465,13 +465,13 @@ static int get_eqn(FILE *fptr) {
   for (i = NODE + NMarkov; i < NEQ; i++)
     add_var(uvar_names[i], 0.0);
   NCON_START = constants.len;
-  NSYM_START = NSYM;
+  NSYM_START = my_symb.len;
   NCON_ORIG = constants.len;
-  NSYM_ORIG = NSYM;
+  NSYM_ORIG = my_symb.len;
   NEQ_MIN = NEQ;
   xppvermaj = (float)cstringmaj;
   xppvermin = (float)cstringmin;
-  plintf("Used %d constants and %d symbols \n", constants.len, NSYM);
+  plintf("Used %zu constants and %zu symbols \n", constants.len, my_symb.len);
   plintf("XPPAUT %g.%g Copyright (C) 2002-now  Bard Ermentrout \n", xppvermaj,
          xppvermin);
   return (1);

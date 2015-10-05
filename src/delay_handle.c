@@ -168,7 +168,7 @@ int do_init_delay(double big) {
   int *del_form[MAXODE];
   nt = (int)(big / fabs(DELTA_T));
   parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
-  NSYM = NSYM_START;
+  parser_symbols_remove(&my_symb, NSYM_START, my_symb.len - NSYM_START);
   for (i = 0; i < (NODE); i++) {
     del_form[i] = (int *)calloc(200, sizeof(int));
     if (del_form[i] == NULL) {
@@ -176,7 +176,7 @@ int do_init_delay(double big) {
       for (j = 0; j < i; j++)
         free(del_form[j]);
       parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
-      NSYM = NSYM_START;
+      parser_symbols_remove(&my_symb, NSYM_START, my_symb.len - NSYM_START);
       return (0);
     }
 
@@ -185,7 +185,7 @@ int do_init_delay(double big) {
       for (j = 0; j <= i; j++)
         free(del_form[j]);
       parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
-      NSYM = NSYM_START;
+      parser_symbols_remove(&my_symb, NSYM_START, my_symb.len - NSYM_START);
       return (0);
     }
   } /*  Okay all formulas are cool... */
@@ -203,7 +203,7 @@ int do_init_delay(double big) {
   for (j = 0; j < (NODE); j++)
     free(del_form[j]);
   parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
-  NSYM = NSYM_START;
+  parser_symbols_remove(&my_symb, NSYM_START, my_symb.len - NSYM_START);
   set_val("t", old_t);
   return (1);
 }

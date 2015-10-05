@@ -313,7 +313,7 @@ void new_hist(int nbins, double zlo, double zhi, int col, int col2,
       }
     }
     parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
-    NSYM = NSYM_START;
+    parser_symbols_remove(&my_symb, NSYM_START, my_symb.len - NSYM_START);
     hist_back();
     ping();
     return;

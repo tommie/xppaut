@@ -275,8 +275,7 @@ int duplicate_name(const char *name) {
   int i;
   find_name(name, &i);
   if (i >= 0) {
-    if (ERROUT)
-      printf("%s is a duplicate name\n", name);
+    plintf("%s is a duplicate name\n", name);
     return (1);
   }
   return (0);
@@ -475,8 +474,7 @@ int add_file_table(int index, char *file) {
   char file2[XPP_MAX_NAME];
   clean_path(file2, sizeof(file2), file);
   if (load_table(file2, index) == 0) {
-    if (ERROUT)
-      printf("Problem with creating table !!\n");
+    plintf("Problem with creating table !!\n");
     return (1);
   }
 
@@ -494,8 +492,7 @@ int add_table_name(int index, const char *name) {
 
 int add_form_table(int index, int nn, double xlo, double xhi, char *formula) {
   if (create_fun_table(nn, xlo, xhi, formula, index) == 0) {
-    if (ERROUT)
-      printf("Problem with creating table !!\n");
+    plintf("Problem with creating table !!\n");
     return (1);
   }
   return (0);
@@ -525,13 +522,11 @@ int set_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
     return 1;
   }
   if ((ufuns.elems[index].rpn = malloc(1024)) == NULL) {
-    if (ERROUT)
-      plintf("not enough memory!!\n");
+    plintf("not enough memory!!\n");
     return 1;
   }
   if ((ufuns.elems[index].def = malloc(MAXEXPLEN)) == NULL) {
-    if (ERROUT)
-      plintf("not enough memory!!\n");
+    plintf("not enough memory!!\n");
     return 1;
   }
   ufuns.elems[index].narg = narg;
@@ -541,8 +536,7 @@ int set_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
   l = strlen(ufuns.elems[index].def);
   ufuns.elems[index].def[l] = '\0';
   if (parse_ufun_expr(&ufuns.elems[index], rhs, ufuns.elems[index].rpn, &end)) {
-    if (ERROUT)
-      plintf("ERROR IN FUNCTION DEFINITION\n");
+    plintf("ERROR IN FUNCTION DEFINITION\n");
     return 1;
   }
 
@@ -557,15 +551,13 @@ int add_ufun(const char *name, const char *expr, int narg) {
   if (!p) return 1;
 
   if ((p->rpn = malloc(1024)) == NULL) {
-    if (ERROUT)
-      plintf("not enough memory!!\n");
+    plintf("not enough memory!!\n");
     return 1;
   }
   if ((p->def = malloc(MAXEXPLEN)) == NULL) {
     free(p->rpn);
     parser_ufuns_remove(&ufuns, ufuns.len - 1, 1);
-    if (ERROUT)
-      plintf("not enough memory!!\n");
+    plintf("not enough memory!!\n");
     return 1;
   }
 
@@ -582,8 +574,7 @@ int add_ufun(const char *name, const char *expr, int narg) {
     free(p->def);
     free(p->rpn);
     parser_ufuns_remove(&ufuns, ufuns.len - 1, 1);
-    if (ERROUT)
-      plintf("ERROR IN FUNCTION DEFINITION\n");
+    plintf("ERROR IN FUNCTION DEFINITION\n");
     return 1;
   }
 
@@ -1104,8 +1095,7 @@ static int make_toks(const char *source, int *my_token) {
     return (1);
   }
   if (nparen != 0) {
-    if (ERROUT)
-      printf(" parentheses don't match\n");
+    plintf("parentheses don't match\n");
     return (1);
   }
   return (0);
@@ -1163,7 +1153,7 @@ int do_num(const char *source, char *num, double *value, int *ind) {
   if (error == 0)
     *value = atof(num);
   else if (ERROUT)
-    printf(" illegal expression: %s\n", num);
+    plintf("illegal expression: %s\n", num);
   *ind = i;
   return (error);
 }

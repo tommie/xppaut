@@ -710,8 +710,7 @@ int compiler(char *bob, FILE *fptr) {
     break;
   case 't':
     if (NTable >= MAX_TAB) {
-      if (ERROUT)
-        printf("too many tables !!\n");
+      plintf("too many tables !!\n");
       exit(0);
     }
     my_string = strtok_r(NULL, " ", &toksave);

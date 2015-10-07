@@ -513,32 +513,47 @@ int add_ufun_name(char *name, int narg) {
 }
 
 int set_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
-  int i, l;
-  int end;
   if (narg > MAXARG) {
     plintf("Maximal arguments exceeded \n");
     return 1;
   }
-  if ((ufuns.elems[index].rpn = malloc(1024)) == NULL) {
-    plintf("not enough memory!!\n");
-    return 1;
-  }
-  if ((ufuns.elems[index].def = malloc(MAXEXPLEN)) == NULL) {
-    plintf("not enough memory!!\n");
-    return 1;
-  }
-  ufuns.elems[index].narg = narg;
-  for (i = 0; i < narg; i++)
-    strcpy(ufuns.elems[index].args[i], args[i]);
-  strcpy(ufuns.elems[index].def, rhs);
-  l = strlen(ufuns.elems[index].def);
-  ufuns.elems[index].def[l] = '\0';
-  if (parse_ufun_expr(&ufuns.elems[index], rhs, ufuns.elems[index].rpn, &end)) {
+  if (parser_set_ufun_rhs(index, rhs)) {
     plintf("ERROR IN FUNCTION DEFINITION\n");
     return 1;
   }
 
+  ufuns.elems[index].narg = narg;
+  for (int i = 0; i < narg; i++)
+    strcpy(ufuns.elems[index].args[i], args[i]);
+
   return 0;
+}
+
+int parser_set_ufun_rhs(int index, const char *rhs) {
+  UserFunction *uf = &ufuns.elems[index];
+  int len = 0;
+
+  char *def = strdup(rhs);
+  int *command = malloc(1024);
+
+  if (!def || !command) {
+    plintf("not enough memory!!\n");
+    goto err1;
+  }
+
+  if (parse_ufun_expr(uf, rhs, command, &len))
+    goto err1;
+
+  uf->def = def;
+  uf->rpn = command;
+
+  return 0;
+
+ err1:
+  free(command);
+  free(def);
+
+  return 1;
 }
 
 int add_ufun(const char *name, const char *expr, int narg) {

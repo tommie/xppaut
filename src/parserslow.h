@@ -61,6 +61,7 @@ void init_rpn(void);
 int parse_expr(const char *expr, int *command, int *length);
 int parse_ufun_expr(const UserFunction *ufun, const char *expr, int *command,
                     int *length);
+int parser_set_ufun_rhs(int index, const char *rhs);
 void set_ivar(int i, double value);
 int set_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]);
 int set_val(char *name, double value);

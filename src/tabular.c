@@ -243,14 +243,11 @@ void redo_all_fun_tables(void) {
 
 int eval_fun_table(int n, double xlo, double xhi, char *formula, double *y) {
   int i;
-
   double dx;
   double oldt;
-  int command[200], ncold = constants.len, nsym = my_symb.len;
+  int command[200];
   if (parse_expr(formula, command, &i)) {
     err_msg("Illegal formula...");
-    parser_doubles_remove(&constants, ncold, constants.len - ncold);
-    parser_symbols_remove(&my_symb, nsym, my_symb.len - nsym);
     return (0);
   }
   oldt = get_ivar(0);
@@ -260,8 +257,6 @@ int eval_fun_table(int n, double xlo, double xhi, char *formula, double *y) {
     y[i] = evaluate(command);
   }
   set_ivar(0, oldt);
-  parser_doubles_remove(&constants, ncold, constants.len - ncold);
-  parser_symbols_remove(&my_symb, nsym, my_symb.len - nsym);
   return (1);
 }
 

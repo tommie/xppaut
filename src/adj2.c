@@ -296,7 +296,7 @@ void dump_h_stuff(FILE *fp, int f) {
 
 static int make_h(float **orb, float **adj, float **h, int nt, double dt,
                   int node, int silent) {
-  int i, j, rval = 0;
+  int i, j;
   float sum;
   double z;
   int n0 = node + 1 + FIX_VAR, k2, k;
@@ -307,7 +307,7 @@ static int make_h(float **orb, float **adj, float **h, int nt, double dt,
       new_string(name, coup_string[i]);
       if (parse_expr(coup_string[i], coup_fun[i], &j)) {
         err_msg("Illegal formula");
-        goto bye;
+        return 0;
       }
     }
   }
@@ -344,12 +344,7 @@ static int make_h(float **orb, float **adj, float **h, int nt, double dt,
       my_h[3][k] = .5 * (my_h[1][k] + my_h[1][k2]);
     }
   }
-  rval = 1;
-
-bye:
-  parser_symbols_remove(&my_symb, NSYM_START, my_symb.len - NSYM_START);
-  parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
-  return (rval);
+  return 1;
 }
 
 void new_adjoint(void) {

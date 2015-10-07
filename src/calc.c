@@ -195,18 +195,12 @@ int has_eq(char *z, char *w, int *where) {
 
 double calculate(char *expr, int *ok) {
   int com[400], i;
-  double z = 0.0;
   if (parse_expr(expr, com, &i)) {
     err_msg("Illegal formula ..");
     *ok = 0;
-    goto bye;
+    return 0.0;
   }
   /* fpr_command(com); */
-  z = evaluate(com);
   *ok = 1;
-bye:
-  /* plintf(" old=%d %d  new = %d %d \n",NCON,NSYM,NCON_START,NSYM_START);  */
-  parser_doubles_remove(&constants, NCON_START, constants.len - NCON_START);
-  parser_symbols_remove(&my_symb, NSYM_START, my_symb.len - NSYM_START);
-  return (z);
+  return evaluate(com);
 }

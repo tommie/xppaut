@@ -90,7 +90,6 @@ BC_STRUCT my_bc[MAXODE];
 double default_ic[MAXODE];
 int NODE, NUPAR, NLINES;
 int PrimeStart;
-int NCON_START, NSYM_START;
 int ConvertStyle = 0;
 FILE *convertf;
 int NMarkov;
@@ -108,7 +107,6 @@ static int N_only = 0;
 static int is_a_map = 0;
 static int BVP_NL, BVP_NR, BVP_N;
 static int OldStyle = 1;
-static int NCON_ORIG, NSYM_ORIG;
 static int IN_VARS;
 static int Naux = 0;
 static char aux_names[MAXODE][12];
@@ -464,10 +462,6 @@ static int get_eqn(FILE *fptr) {
   /*  add auxiliary variables   */
   for (i = NODE + NMarkov; i < NEQ; i++)
     add_var(uvar_names[i], 0.0);
-  NCON_START = constants.len;
-  NSYM_START = my_symb.len;
-  NCON_ORIG = constants.len;
-  NSYM_ORIG = my_symb.len;
   NEQ_MIN = NEQ;
   xppvermaj = (float)cstringmaj;
   xppvermin = (float)cstringmin;

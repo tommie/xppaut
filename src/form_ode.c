@@ -346,10 +346,6 @@ static int get_eqn(FILE *fptr) {
   /* plintf(" NEQ: "); */
   fgets(bob, MAXEXPLEN, fptr);
   nn = strlen(bob) + 1;
-  if (NLINES > MAXLINES) {
-    fprintf(stderr, "whoops! NLINES>MAXLINES in form_ode.c ...\n");
-    exit(1);
-  };
   if ((save_eqn[NLINES] = (char *)malloc(nn)) == NULL) {
     plintf("Out of memory...");
     exit(0);
@@ -359,7 +355,6 @@ static int get_eqn(FILE *fptr) {
   /* plintf("incr NLINE in geteqn  %s \n",bob); */
   i = atoi(bob);
   if (i <= 0) { /* New parser ---   */
-
     OldStyle = 0;
     ConvertStyle = 0;
     flag = do_new_parser(fptr, bob, 0);

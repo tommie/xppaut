@@ -48,8 +48,6 @@
 
 /* --- Forward Declarations --- */
 static int add_stor_col(char *name, char *formula, BROWSER *b);
-static Window br_button_data(Window root, int row, int col, char *name,
-                             int iflag);
 static void browse_but_on(BROWSER *b, int i, Window w, int yn);
 static void browse_button(XEvent ev, BROWSER *b);
 static void browse_keypress(XEvent ev, int *used, BROWSER *b);
@@ -638,26 +636,8 @@ Window br_button(Window root, int row, int col, char *name, int iflag) {
   Window win;
   int dcol = 12 * DCURXs;
   int drow = (DCURYs + 6);
-  /*int width=strlen(name)*DCURXs;
-  */
-  int width = 8 * DCURXs;
-  int x;
-  int y;
-  if (iflag == 1)
-    dcol = 14 * DCURXs;
-  x = dcol * col + 4;
-  y = drow * row + 4;
-  win = make_window(root, x, y, width + 5, DCURYs + 1, 1);
-  XSelectInput(display, win, MYMASK);
-  return (win);
-}
-
-Window br_button_data(Window root, int row, int col, char *name, int iflag) {
-  Window win;
-  int dcol = 12 * DCURXs;
-  int drow = (DCURYs + 6);
-  int width = strlen(name) * DCURXs;
-
+  int n = strlen(name);
+  int width = (n < 8 ? 8 : n) * DCURXs;
   int x;
   int y;
   if (iflag == 1)
@@ -745,7 +725,7 @@ void make_browser(BROWSER *b, char *wname, char *iname, int row, int col) {
 
   for (i = 0; i < BMAXCOL; i++) {
     /*  plintf("%d ",i); */
-    b->label[i] = br_button_data(base, 5, i + 1, "1234567890", 1);
+    b->label[i] = br_button(base, 5, i + 1, "1234567890", 1);
     XSelectInput(display, b->label[i], SIMPMASK);
     /* plintf(" %d \n",i); */
   }

@@ -433,7 +433,7 @@ void find_variable(char *s, int *col) {
     *col = 0;
     return;
   }
-  *col = find_user_name(2, s);
+  *col = find_user_name(ICBOX, s);
   if (*col > -1)
     *col = *col + 1;
 }

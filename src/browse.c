@@ -32,12 +32,6 @@
 #include "ui-x11/file-selector.h"
 
 /* --- Macros --- */
-#define xds(a)                                                                 \
-  {                                                                            \
-    XDrawString(display, w, small_gc, 5, CURY_OFFs, a, strlen(a));             \
-    return;                                                                    \
-  }
-
 #define MYMASK                                                                 \
   (ButtonPressMask | ButtonReleaseMask | KeyPressMask | ExposureMask |         \
    StructureNotifyMask | LeaveWindowMask | EnterWindowMask)
@@ -505,7 +499,6 @@ void enter_browser(XEvent ev, BROWSER *b, int yn) {
 }
 
 void display_browser(Window w, BROWSER b) {
-  int i, i0;
   if (w == b.hint) {
     XClearWindow(display, b.hint);
     XDrawString(display, w, small_gc, 8, CURY_OFFs, b.hinttxt,
@@ -513,36 +506,63 @@ void display_browser(Window w, BROWSER b) {
     return;
   }
 
+#define xds(a) XDrawString(display, w, small_gc, 5, CURY_OFFs, a, strlen(a))
   if (w == b.find)
-    xds("Find") if (w == b.up) xds("Up") if (w == b.down)
-        xds("Down") if (w == b.pgup) xds("PgUp") if (w == b.pgdn)
-            xds("PgDn") if (w == b.left) xds("Left") if (w == b.right)
-                xds("Right") if (w == b.home) xds("Home") if (w == b.end)
-                    xds("End") if (w == b.first) xds("First") if (w == b.last)
-                        xds("Last") if (w == b.restore)
-                            xds("Restore") if (w == b.write)
-                                xds("Write") if (w == b.get)
-                                    xds("Get") if (w == b.repl) xds("Replace");
-  if (w == b.unrepl)
+    xds("Find");
+  else if (w == b.up)
+    xds("Up");
+  else if (w == b.down)
+    xds("Down");
+  else if (w == b.pgup)
+    xds("PgUp");
+  else if (w == b.pgdn)
+    xds("PgDn");
+  else if (w == b.left)
+    xds("Left");
+  else if (w == b.right)
+    xds("Right");
+  else if (w == b.home)
+    xds("Home");
+  else if (w == b.end)
+    xds("End");
+  else if (w == b.first)
+    xds("First");
+  else if (w == b.last)
+    xds("Last");
+  else if (w == b.restore)
+    xds("Restore");
+  else if (w == b.write)
+    xds("Write");
+  else if (w == b.get)
+    xds("Get");
+  else if (w == b.repl)
+    xds("Replace");
+  else if (w == b.unrepl)
     xds("Unrepl");
-  if (w == b.table)
+  else if (w == b.table)
     xds("Table");
-  if (w == b.load)
+  else if (w == b.load)
     xds("Load");
-  if (w == b.time)
-    xds("Time") if (w == b.addcol) xds("Add col") if (w == b.close)
-        xds("Close") if (w == b.delcol)
-            xds("Del col") for (i = 0; i < BMAXCOL; i++) {
-
+  else if (w == b.time)
+    xds("Time");
+  else if (w == b.addcol)
+    xds("Add col");
+  else if (w == b.close)
+    xds("Close");
+  else if (w == b.delcol)
+    xds("Del col");
+  else if (w == b.main)
+    draw_data(b);
+  else {
+    for (int i = 0; i < BMAXCOL; i++) {
       if (w == b.label[i]) {
-        i0 = i + b.col0 - 1;
+        int i0 = i + b.col0 - 1;
         if (i0 < b.maxcol - 1)
-          XDrawString(display, w, small_gc, 5, CURY_OFFs, uvar_names[i0],
-                      strlen(uvar_names[i0]));
+          xds(uvar_names[i0]);
       }
     }
-  if (w == b.main)
-    draw_data(b);
+  }
+#undef xds
 }
 
 void redraw_browser(BROWSER b) {

@@ -52,7 +52,7 @@ static void browse_but_on(BROWSER *b, int i, Window w, int yn);
 static void browse_button(XEvent ev, BROWSER *b);
 static void browse_keypress(XEvent ev, int *used, BROWSER *b);
 static int check_for_stor(float **data);
-static void chk_seq(char *f, int *seq, double *a1, double *a2);
+static int parse_seq(const char *f, double *a1, double *a2);
 static void data_add_col(BROWSER *b);
 static void data_del_col(BROWSER *b);
 static void data_down(BROWSER *b);
@@ -249,35 +249,44 @@ int add_stor_col(char *name, char *formula, BROWSER *b) {
   return (1);
 }
 
-void chk_seq(char *f, int *seq, double *a1, double *a2) {
-  int i, j = -1;
-  char n1[256], n2[256];
+/**
+ * Parse a sequence string like "4.0:42.0" or "4.0;42.0".
+ *
+ * @param f input form string.
+ * @param a1 output for lower number.
+ * @param a2 output for higher number.
+ * @return zero if not a sequence string, 1 if "start:stop", 2 if "start;step".
+ */
+static int parse_seq(const char *f, double *a1, double *a2) {
+  int j = -1;
+  char buf[256];
   int n = strlen(f);
-  *seq = 0;
+  int seq = 0;
+
   *a1 = 0.0;
   *a2 = 0.0;
-  for (i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) {
     if (f[i] == ':') {
-      *seq = 1;
+      seq = 1;
+      j = i;
+    } else if (f[i] == ';') {
+      seq = 2;
       j = i;
     }
+  }
 
-    if (f[i] == ';') {
-      *seq = 2;
-      j = i;
-    }
-  }
-  if (j > -1) {
-    for (i = 0; i < j; i++)
-      n1[i] = f[i];
-    n1[j] = 0;
-    for (i = j + 1; i < n; i++)
-      n2[i - j - 1] = f[i];
-    n2[n - j - 1] = 0;
-    *a1 = atof(n1);
-    *a2 = atof(n2);
-  }
-  /*      plintf("seq=%d a1=%g a2=%g\n",*seq,*a1,*a2); */
+  if (seq == 0)
+    return 0;
+
+  memcpy(buf, f, j);
+  buf[j] = '\0';
+  *a1 = atof(buf);
+
+  memcpy(buf, &f[j + 1], n - (j + 1));
+  buf[n - (j + 1)] = '\0';
+  *a2 = atof(buf);
+
+  return seq;
 }
 
 void replace_column(char *var, char *form, float **dat, int n) {
@@ -313,18 +322,16 @@ void replace_column(char *var, char *form, float **dat, int n) {
   }
 
   if (dif_var < 0)
-    chk_seq(form, &seq, &a1, &a2);
+    seq = parse_seq(form, &a1, &a2);
   if (seq == 1) {
-    if (a1 == a2)
-      seq = 3;
-    else
-      da = (a2 - a1) / ((double)(n - 1));
-  }
-  if (seq == 2)
+    if (a1 == a2) {
+      err_msg("Illegal sequence");
+      return;
+    }
+
+    da = (a2 - a1) / ((double)(n - 1));
+  } else if (seq == 2) {
     da = a2;
-  if (seq == 3) {
-    err_msg("Illegal sequence");
-    return;
   }
 
   /*  first compile formula ... */

@@ -10,7 +10,6 @@
 #include "init_conds.h"
 #include "load_eqn.h"
 #include "main.h"
-#include "many_pops.h"
 #include "mykeydef.h"
 #include "pop_list.h"
 #include "solver.h"

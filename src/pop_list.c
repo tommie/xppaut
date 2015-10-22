@@ -984,6 +984,22 @@ Window make_plain_window(Window root, int x, int y, int width, int height,
   return (win);
 }
 
+void make_icon(const char *icon, int wid, int hgt, Window w) {
+  Pixmap icon_map;
+  XWMHints wm_hints;
+  icon_map = XCreateBitmapFromData(display, w, icon, wid, hgt);
+  wm_hints.initial_state = NormalState;
+  wm_hints.input = True;
+  wm_hints.icon_pixmap = icon_map;
+  wm_hints.flags = StateHint | IconPixmapHint | InputHint;
+
+  XClassHint class_hints;
+  class_hints.res_name = "";
+  class_hints.res_class = "";
+  XSetWMProperties(display, w, NULL, NULL, NULL, 0, NULL, &wm_hints,
+                   &class_hints);
+}
+
 static void expose_resp_box(const char *button, const char *message, Window wb,
                             Window wm, Window w) {
   if (w == wb)

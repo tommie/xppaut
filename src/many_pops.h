@@ -75,7 +75,6 @@ void gtitle_text(char *string, Window win);
 void hi_lite(Window wi);
 void init_grafs(int x, int y, int w, int h);
 void make_active(int i);
-void make_icon(char *icon, int wid, int hgt, Window w);
 void ps_restore(void);
 void resize_all_pops(int wid, int hgt);
 void restore_off(void);

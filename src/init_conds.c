@@ -27,7 +27,6 @@
 #include "load_eqn.h"
 #include "lunch-new.h"
 #include "main.h"
-#include "many_pops.h"
 #include "menudrive.h"
 #include "mykeydef.h"
 #include "nullcline.h"

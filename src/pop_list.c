@@ -133,6 +133,13 @@ void set_window_title(Window win, char *string) {
   XFree(wname.value);
 }
 
+void get_new_size(Window win, unsigned int *wid, unsigned int *hgt) {
+  int x, y;
+  unsigned int bw, de;
+  Window root;
+  XGetGeometry(display, win, &root, &x, &y, wid, hgt, &bw, &de);
+}
+
 /* these are the standard lists that are possible */
 void make_scrbox_lists(void) {
   int i, n;

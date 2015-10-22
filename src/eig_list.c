@@ -212,13 +212,6 @@ void eq_box_import(void) {
   redraw_ics();
 }
 
-void get_new_size(Window win, unsigned int *wid, unsigned int *hgt) {
-  int x, y;
-  unsigned int bw, de;
-  Window root;
-  XGetGeometry(display, win, &root, &x, &y, wid, hgt, &bw, &de);
-}
-
 void resize_eq_list(Window win) {
   int nlines;
   unsigned int w, h;

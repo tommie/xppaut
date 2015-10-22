@@ -11,6 +11,7 @@ void do_hilite_text(char *name, char *value, int flag, Window w, int pos,
                     int col);
 int do_string_box(int n, int row, int col, char *title, char **names,
                   char values[][25], int maxchar);
+void get_new_size(Window win, unsigned int *wid, unsigned int *hgt);
 Window make_fancy_window(Window root, int x, int y, int width, int height,
                          int bw, int fc, int bc);
 void make_icon(const char *icon, int wid, int hgt, Window w);

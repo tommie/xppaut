@@ -12,7 +12,6 @@
 
 #include "comline.h"
 #include "dialog_box.h"
-#include "eig_list.h"
 #include "form_ode.h"
 #include "ggets.h"
 #include "init_conds.h"

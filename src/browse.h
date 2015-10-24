@@ -44,10 +44,9 @@ void make_new_browser(void);
 void my_browse_button(XEvent ev);
 void my_browse_keypress(XEvent ev, int *used);
 void open_write_file(FILE **fp, char *fil, int *ok);
-void refresh_browser(int length);
 void reset_browser(void);
 void resize_my_browser(Window win);
-void set_browser_data(float **data, int col0);
+void set_browser_data(float **data, int maxrow, int maxcol);
 void wipe_rep(void);
 void write_mybrowser_data(FILE *fp);
 

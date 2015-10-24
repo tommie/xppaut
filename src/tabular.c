@@ -100,7 +100,7 @@ void view_table(int index) {
     storage[0][i] = xlo + i * dx;
     storage[1][i] = y[i];
   }
-  refresh_browser(len);
+  set_browser_data(storage, len, 2);
 }
 
 void new_lookup_com(int i) {

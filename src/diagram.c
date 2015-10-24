@@ -232,7 +232,7 @@ void load_browser_with_branch(int ibr, int pts, int pte) {
     }
   }
   storind = nrows;
-  refresh_browser(nrows);
+  set_browser_data(storage, nrows, NODE + 1);
 }
 
 void write_init_data_file(void) {

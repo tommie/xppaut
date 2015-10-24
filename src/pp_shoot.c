@@ -170,7 +170,7 @@ void do_sh_range(double *ystart, double *yend) {
     if (ierr < 0) {
       bad_shoot(ierr);
 
-      refresh_browser(storind);
+      set_browser_data(storage, storind, NEQ + 1);
       swap_color(&color, 1);
       return;
     }
@@ -189,7 +189,7 @@ void do_sh_range(double *ystart, double *yend) {
       film_clip();
     ping();
   }
-  refresh_browser(storind);
+  set_browser_data(storage, storind, NEQ + 1);
   auto_freeze_it();
   swap_color(&color, 1);
 }
@@ -330,7 +330,7 @@ void find_bvp_com(int com) {
     }
     last_shot(1);
     INFLAG = 1;
-    refresh_browser(storind);
+    set_browser_data(storage, storind, NEQ + 1);
     auto_freeze_it();
     ping();
   } else if (iper)
@@ -356,11 +356,6 @@ void last_shot(int flag) {
     storind = 1;
   }
   integrate(&MyTime, x, TEND, DELTA_T, 1, NJMP, &MyStart);
-  /* if(flag){
-     INFLAG=1;
-     refresh_browser(storind);
-   }
-   */
 }
 
 int set_up_sh_range(void) {

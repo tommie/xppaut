@@ -93,20 +93,13 @@ int two_d_hist(int col1, int col2, int ndat, int n1, int n2, double xlo,
 
 void four_back(void) {
   if (FOUR_HERE) {
-    set_browser_data(my_four, 1);
-    /*   my_browser.data=my_four;
-         my_browser.col0=1; */
-    refresh_browser(four_len);
+    set_browser_data(my_four, four_len, NEQ + 1);
   }
 }
 
 void hist_back(void) {
   if (HIST_HERE) {
-    set_browser_data(my_hist, 1);
-    /*
-    my_browser.data=my_hist;
-    my_browser.col0=1; */
-    refresh_browser(hist_len);
+    set_browser_data(my_hist, hist_len, NEQ + 1);
   }
 }
 

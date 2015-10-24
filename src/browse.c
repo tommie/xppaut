@@ -92,9 +92,22 @@ static int REPLACE = 0, R_COL = 0;
 
 float **get_browser_data(void) { return my_browser.data; }
 
-void set_browser_data(float **data, int col0) {
-  my_browser.data = data;
-  my_browser.col0 = col0;
+void set_browser_data(float **data, int maxrow, int maxcol) {
+  BROWSER *b = &my_browser;
+
+  b->dataflag = 1;
+  b->data = data;
+  b->maxrow = maxrow;
+  b->maxcol = maxcol;
+
+  b->istart = 0;
+  b->iend = maxrow;
+
+  b->col0 = 1;
+  b->row0 = 0;
+
+  if (Xup && b->xflag)
+    draw_data(*b);
 }
 
 float *get_data_col(int c) { return my_browser.data[c]; }
@@ -579,14 +592,6 @@ void redraw_browser(BROWSER b) {
   }
 }
 
-void refresh_browser(int length) {
-  my_browser.dataflag = 1;
-  my_browser.maxrow = length;
-  my_browser.iend = length;
-  if (Xup && my_browser.xflag == 1)
-    draw_data(my_browser);
-}
-
 void reset_browser(void) {
   my_browser.maxrow = 0;
   my_browser.dataflag = 0;
@@ -632,8 +637,8 @@ void draw_data(BROWSER b) {
 
 void init_browser(void) {
   my_browser.dataflag = 0;
-  my_browser.data = storage;
-  my_browser.maxcol = NEQ + 1;
+  my_browser.data = NULL;
+  my_browser.maxcol = 0;
   my_browser.maxrow = 0;
   my_browser.col0 = 1;
   my_browser.row0 = 0;
@@ -1312,10 +1317,8 @@ void data_read(BROWSER *b) {
       break;
   }
   fclose(fp);
-  refresh_browser(len);
+  set_browser_data(b->data, len, b->maxcol);
   storind = len;
-  /*  b->maxrow=len;
-  draw_data(*b); */
 }
 
 void data_write(BROWSER *b) {

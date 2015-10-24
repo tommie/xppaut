@@ -281,7 +281,7 @@ void cont_integ(void) {
   MyStart = 1; /*  I know it is wasteful to restart, but lets be safe.... */
   integrate(&MyTime, x, dif, DELTA_T, 1, NJMP, &MyStart);
   ping();
-  refresh_browser(storind);
+  set_browser_data(storage, storind, NEQ + 1);
 }
 
 static int range_item(void) {
@@ -573,7 +573,7 @@ static void do_monte_carlo_search(int append, int stuffbrowse, int ishoot) {
         storage[j + 1][storind] = (float)fixptlist.x[i][j];
       storind++;
     }
-    refresh_browser(storind);
+    set_browser_data(storage, storind, NODE + 1);
   }
 }
 
@@ -636,7 +636,7 @@ static void do_eq_range(double *x) {
     if (ENDSING == 1)
       break;
   }
-  refresh_browser(storind);
+  set_browser_data(storage, storind, NODE + NMarkov + 1);
   PAR_FOL = 0;
 }
 
@@ -812,7 +812,7 @@ int do_range(double *x, int flag) {
           break;
         }
       }
-      refresh_browser(storind);
+      set_browser_data(storage, storind, NEQ + 1);
       if (AdjRange == 1) {
         sprintf(bob, "%s_%g", range.item, p);
         data_get_mybrowser(storind - 1);
@@ -850,7 +850,6 @@ int do_range(double *x, int flag) {
   evaluate_derived();
   MyGraph->color[0] = color;
   INFLAG = 1;
-  /* refresh_browser(storind); */
 
   ping();
   AdjRange = 0;
@@ -1040,7 +1039,7 @@ static void batch_integrate_once(void) {
       plintf(" Integration not completed -- will write anyway...\n");
 
     INFLAG = 1;
-    refresh_browser(storind);
+    set_browser_data(storage, storind, NEQ + 1);
   }
   post_process_stuff();
   if (!batch_range || range.reset == 0) {
@@ -1331,7 +1330,7 @@ void usual_integrate_stuff(double *x) {
 
   ping();
   INFLAG = 1;
-  refresh_browser(storind);
+  set_browser_data(storage, storind, NEQ + 1);
 
   auto_freeze_it();
   redraw_ics();
@@ -2118,7 +2117,7 @@ void restore(int i1, int i2) {
     i1 = YSHFT;
   if (i1 < XSHFT)
     i1 = XSHFT;
-  if (storind < 2)
+  if (i2 < 2)
     return;
 
   for (ip = 0; ip < np; ip++) {

@@ -443,16 +443,14 @@ void do_stochast_com(int i) {
 
 void mean_back(void) {
   if (STOCH_HERE) {
-    set_browser_data(my_mean, 1);
-    refresh_browser(stoch_len);
+    set_browser_data(my_mean, stoch_len, NEQ + 1);
     storind = stoch_len;
   }
 }
 
 void variance_back(void) {
   if (STOCH_HERE) {
-    set_browser_data(my_variance, 1);
-    refresh_browser(stoch_len);
+    set_browser_data(my_variance, stoch_len, NEQ + 1);
     storind = stoch_len;
   }
 }

@@ -2001,7 +2001,7 @@ void load_auto_orbitx(int ibr, int flag, int lab, double per) {
       storage[j + 1][i] = (float)x[j];
   }
   storind = nrow;
-  refresh_browser(nrow);
+  set_browser_data(storage, nrow, NEQ + 1);
   /* insert auxiliary stuff here */
   if (load_all_labeled_orbits == 2)
     clr_all_scrns();

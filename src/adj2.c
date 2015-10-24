@@ -150,10 +150,7 @@ static int create_transpose(void) {
     }
   }
 
-  set_browser_data(my_trans.data, 1);
-  /*  my_browser.data=my_trans.data;
-      my_browser.col0=1; */
-  refresh_browser(my_trans.ncol);
+  set_browser_data(my_trans.data, my_trans.ncol, my_trans.nrow + 1);
   my_trans.here = 1;
   return 1;
 }
@@ -169,30 +166,18 @@ void alloc_h_stuff(void) {
 
 void data_back(void) {
   FOUR_HERE = 0;
-  set_browser_data(storage, 1);
-  /*  my_browser.data=storage;
-      my_browser.col0=1; */
-  refresh_browser(storind);
+  set_browser_data(storage, storind, NEQ + 1);
 }
 
 static void adj_back(void) {
   if (ADJ_HERE) {
-    set_browser_data(my_adj, 1);
-    /*   my_browser.data=my_adj;
-
-         my_browser.col0=1; */
-    refresh_browser(adj_len);
+    set_browser_data(my_adj, adj_len, NEQ + 1);
   }
 }
 
 static void h_back(void) {
   if (H_HERE) {
-    set_browser_data(my_h, 1);
-    /*
-    my_browser.data=my_h;
-
-    my_browser.col0=1; */
-    refresh_browser(h_len);
+    set_browser_data(my_h, h_len, NEQ + 1);
   }
 }
 /*  Here is how to do the range over adjoints and h functions
@@ -584,7 +569,7 @@ void do_liapunov(void) {
     storage[1][i] = my_liap[1][i];
   }
   storind = LIAP_I;
-  refresh_browser(storind);
+  set_browser_data(storage, storind, 2);
   LIAP_FLAG = 0;
   free(my_liap[0]);
   free(my_liap[1]);

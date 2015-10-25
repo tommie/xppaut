@@ -18,7 +18,7 @@ typedef struct {
   Window time;
   Window hint;
   char hinttxt[256];
-  int dataflag, xflag;
+  int xflag;
   int col0, row0, ncol, nrow;
   int maxrow, maxcol;
   float **data;

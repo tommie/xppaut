@@ -95,7 +95,6 @@ float **get_browser_data(void) { return my_browser.data; }
 void set_browser_data(float **data, int maxrow, int maxcol) {
   BROWSER *b = &my_browser;
 
-  b->dataflag = 1;
   b->data = data;
   b->maxrow = maxrow;
   b->maxcol = maxcol;
@@ -593,8 +592,8 @@ void redraw_browser(BROWSER b) {
 }
 
 void reset_browser(void) {
+  my_browser.data = NULL;
   my_browser.maxrow = 0;
-  my_browser.dataflag = 0;
 }
 
 void draw_data(BROWSER b) {
@@ -603,8 +602,8 @@ void draw_data(BROWSER b) {
   char string[50];
   int dcol = DCURXs * 14;
   int drow = (DCURYs + 6);
-  if (b.dataflag == 0)
-    return; /*   no data  */
+  if (!b.data)
+    return;
   XClearWindow(display, b.main);
 
   /* Do time data first  */
@@ -636,7 +635,6 @@ void draw_data(BROWSER b) {
 }
 
 void init_browser(void) {
-  my_browser.dataflag = 0;
   my_browser.data = NULL;
   my_browser.maxcol = 0;
   my_browser.maxrow = 0;

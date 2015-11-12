@@ -38,31 +38,37 @@ typedef struct {
 static void choose_torus(char names[MAXODE][12], int *sel, int n);
 
 void do_torus_com(int c) {
-  int i;
-  TORUS = 0;
-  if (c == 0 || c == 2) {
-    new_float("Period :", &TOR_PERIOD);
-    if (TOR_PERIOD <= 0.0) {
-      err_msg("Choose positive period");
-      return;
-    }
-    if (c == 0) {
-      for (i = 0; i < MAXODE; i++)
-        itor[i] = 1;
-      TORUS = 1;
-      return;
-    }
-    /* Choose them   */
-    choose_torus(uvar_names, itor, NEQ);
-    for (int i = 0; i < NEQ; i++) {
-      if (itor[i] == 1)
-        TORUS = 1;
-    }
+  if (c == 1) {
+    /* None */
+    TORUS = 0;
+    for (int i = 0; i < MAXODE; i++)
+      itor[i] = 0;
+
     return;
   }
-  for (i = 0; i < MAXODE; i++)
-    itor[i] = 0;
+
+  new_float("Period :", &TOR_PERIOD);
+  if (TOR_PERIOD <= 0.0) {
+    err_msg("Choose positive period");
+    return;
+  }
+
+  if (c == 0) {
+    /* All */
+    TORUS = 1;
+    for (int i = 0; i < MAXODE; i++)
+      itor[i] = 1;
+
+    return;
+  }
+
+  choose_torus(uvar_names, itor, NEQ);
+
   TORUS = 0;
+  for (int i = 0; i < NEQ; i++) {
+    if (itor[i] == 1)
+      TORUS = 1;
+  }
 }
 
 static void draw_tor_var(TorusBox *torbox, int i) {

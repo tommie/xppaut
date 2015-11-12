@@ -14,11 +14,8 @@
 #include "bitmap/info.bitmap"
 
 /* --- Macros --- */
-#define EV_MASK                                                                \
-  (ButtonPressMask | KeyPressMask | ExposureMask | StructureNotifyMask)
-
-#define BUT_MASK                                                               \
-  (ButtonPressMask | KeyPressMask | ExposureMask | StructureNotifyMask |       \
+#define BUT_MASK                                             \
+  (ButtonPressMask | ButtonReleaseMask | ExposureMask |      \
    EnterWindowMask | LeaveWindowMask)
 
 /* --- Types --- */
@@ -167,9 +164,6 @@ static void make_tor_box(TorusBox *torbox, const char *title) {
 }
 
 static void destroy_tor_box(TorusBox *torbox) {
-  XSelectInput(display, torbox->cancel, EV_MASK);
-  XSelectInput(display, torbox->done, EV_MASK);
-  waitasec(ClickTime);
   XDestroySubwindows(display, torbox->base);
   XDestroyWindow(display, torbox->base);
 }
@@ -191,7 +185,7 @@ static int do_torus_events(TorusBox *torbox) {
       draw_torus_box(torbox, ev.xany.window);
       break;
 
-    case ButtonPress:
+    case ButtonRelease:
       if (ev.xbutton.window == torbox->done)
         return 0;
       if (ev.xbutton.window == torbox->cancel)

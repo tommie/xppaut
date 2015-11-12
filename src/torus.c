@@ -23,10 +23,10 @@
 
 /* --- Forward Declarations --- */
 static void choose_torus(void);
-static void do_torus_events(void);
+static int do_torus_events(void);
 static void draw_tor_var(int i);
 static void draw_torus_box(Window win);
-static void make_tor_box(char *title);
+static void make_tor_box(const char *title);
 
 /* --- Data --- */
 static struct {
@@ -58,7 +58,7 @@ void do_torus_com(int c) {
   TORUS = 0;
 }
 
-void draw_tor_var(int i) {
+static void draw_tor_var(int i) {
   char strng[15];
   XClearWindow(display, torbox.w[i]);
   if (itor[i] == 1)
@@ -69,7 +69,7 @@ void draw_tor_var(int i) {
               strlen(strng));
 }
 
-void draw_torus_box(Window win) {
+static void draw_torus_box(Window win) {
   int i;
 
   if (win == torbox.cancel) {
@@ -87,16 +87,7 @@ void draw_torus_box(Window win) {
   }
 }
 
-void choose_torus(void) {
-  int i;
-  make_tor_box("Fold which");
-  do_torus_events();
-  for (i = 0; i < NEQ; i++)
-    if (itor[i] == 1)
-      TORUS = 1;
-}
-
-void make_tor_box(char *title) {
+static void make_tor_box(const char *title) {
   int ndn, nac, width, height;
   int nv;
   /*int nh; Not used anywhere*/
@@ -124,7 +115,7 @@ void make_tor_box(char *title) {
   base = make_plain_window(RootWindow(display, screen), 0, 0, width, height, 4);
 
   torbox.base = base;
-  XStringListToTextProperty(&title, 1, &winname);
+  XStringListToTextProperty((char **)&title, 1, &winname);
   size_hints.flags = PPosition | PSize | PMinSize | PMaxSize;
   size_hints.x = 0;
   size_hints.y = 0;
@@ -162,38 +153,38 @@ void make_tor_box(char *title) {
   XRaiseWindow(display, torbox.base);
 }
 
-void do_torus_events(void) {
-  XEvent ev;
-  int status = -1;
-  int done = 0;
-  Window wt;
-  int i;
-  int oldit[MAXODE];
-  for (i = 0; i < NEQ; i++)
-    oldit[i] = itor[i];
-  while (!done) {
+static void destroy_tor_box(void) {
+  XSelectInput(display, torbox.cancel, EV_MASK);
+  XSelectInput(display, torbox.done, EV_MASK);
+  waitasec(ClickTime);
+  XDestroySubwindows(display, torbox.base);
+  XDestroyWindow(display, torbox.base);
+}
+
+/**
+ * Processes events in torus mode.
+ *
+ * @return zero if Done was pressed, 1 if Cancel was pressed.
+ */
+static int do_torus_events(void) {
+  for (;;) {
+    XEvent ev;
+    Window wt;
 
     XNextEvent(display, &ev);
     switch (ev.type) {
-
     case Expose:
-
       do_expose(ev); /*  menus and graphs etc  */
       draw_torus_box(ev.xany.window);
       break;
 
     case ButtonPress:
-      if (ev.xbutton.window == torbox.done) {
-        status = 1;
-        done = 1;
-        break;
-      }
-      if (ev.xbutton.window == torbox.cancel) {
-        status = -1;
-        done = 1;
-        break;
-      }
-      for (i = 0; i < NEQ; i++) {
+      if (ev.xbutton.window == torbox.done)
+        return 0;
+      if (ev.xbutton.window == torbox.cancel)
+        return 1;
+
+      for (int i = 0; i < NEQ; i++) {
         if (ev.xbutton.window == torbox.w[i]) {
           itor[i] = 1 - itor[i];
           draw_tor_var(i);
@@ -215,15 +206,26 @@ void do_torus_events(void) {
       break;
     }
   }
+}
 
-  if (status == -1) {
-    for (i = 0; i < NEQ; i++)
+static void choose_torus(void) {
+  int oldit[MAXODE];
+
+  make_tor_box("Fold which");
+
+  for (int i = 0; i < NEQ; i++)
+    oldit[i] = itor[i];
+
+  if (do_torus_events()) {
+    for (int i = 0; i < NEQ; i++)
       itor[i] = oldit[i];
     TORUS = 0;
   }
-  XSelectInput(display, torbox.cancel, EV_MASK);
-  XSelectInput(display, torbox.done, EV_MASK);
-  waitasec(ClickTime);
-  XDestroySubwindows(display, torbox.base);
-  XDestroyWindow(display, torbox.base);
+
+  destroy_tor_box();
+
+  for (int i = 0; i < NEQ; i++) {
+    if (itor[i] == 1)
+      TORUS = 1;
+  }
 }

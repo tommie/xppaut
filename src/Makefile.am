@@ -151,6 +151,7 @@ solver_headers = \
 
 ui_x11_headers = \
 	ui-x11/editutil.h \
+	ui-x11/events.h \
 	ui-x11/file-selector.h
 
 xppaut_LDADD = \
@@ -331,6 +332,7 @@ cvode_sources = \
 
 ui_x11_sources = \
 	ui-x11/editutil.c \
+	ui-x11/events.c \
 	ui-x11/file-selector.c
 
 if HAVE_STRUPR

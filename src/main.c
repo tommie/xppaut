@@ -132,6 +132,7 @@ unsigned int GrFore, GrBack;
 int SCALEX, SCALEY;
 Display *display;
 int screen;
+X11Events *g_x11_events;
 int DCURYb, DCURXb, CURY_OFFb;
 int DCURYs, DCURXs, CURY_OFFs;
 int DCURY, DCURX, CURY_OFF;
@@ -628,10 +629,10 @@ static void do_events(unsigned int min_wid, unsigned int min_hgt) {
     RunImmediately = 0;
   }
   while (1) {
-    /*  put_command("Command:");  */
     XNextEvent(display, &report);
+    x11_events_dispatch(g_x11_events, &report);
     xpp_events(report, min_wid, min_hgt);
-  } /* end while */
+  }
 }
 
 void bye_bye(void) {
@@ -910,6 +911,7 @@ static Window init_win(unsigned int bw, char *icon_name, char *win_name, int x,
     plintf(" Failed to open X-Display \n");
     exit(-1);
   }
+  g_x11_events = x11_events_alloc(display);
   /*   Remove after debugging is done */
   /* XSynchronize(display,1); */
   screen = DefaultScreen(display);

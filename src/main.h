@@ -3,6 +3,7 @@
 
 #include <X11/Xlib.h>
 #include "xpplim.h"
+#include "ui-x11/events.h"
 
 /* --- Macros --- */
 /* FixWindowSize(flag) values */
@@ -67,6 +68,7 @@ extern GC font_gc;
 extern GC gc_graph;
 extern GC small_gc;
 extern int screen;
+extern X11Events *g_x11_events;
 extern Window command_pop;
 extern Window draw_win;
 extern Window main_win;

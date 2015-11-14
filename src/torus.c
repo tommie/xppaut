@@ -36,8 +36,10 @@ typedef struct {
 } TorusBox;
 
 /* --- Forward Declarations --- */
-static void choose_torus(char names[MAXODE][12], int *sel, int n,
-                         TorusBoxCommitFunc commit_func, void *cookie);
+static void destroy_tor_box(TorusBox *torbox);
+
+/* --- Data --- */
+static TorusBox g_torbox;
 
 static int commit_torus(void *cookie, const int *sel, int n) {
   for (int i = 0; i < n; i++)
@@ -50,34 +52,6 @@ static int commit_torus(void *cookie, const int *sel, int n) {
   }
 
   return 0;
-}
-
-void do_torus_com(int c) {
-  if (c == 1) {
-    /* None */
-    TORUS = 0;
-    for (int i = 0; i < MAXODE; i++)
-      itor[i] = 0;
-
-    return;
-  }
-
-  new_float("Period :", &TOR_PERIOD);
-  if (TOR_PERIOD <= 0.0) {
-    err_msg("Choose positive period");
-    return;
-  }
-
-  if (c == 0) {
-    /* All */
-    TORUS = 1;
-    for (int i = 0; i < MAXODE; i++)
-      itor[i] = 1;
-
-    return;
-  }
-
-  choose_torus(uvar_names, itor, NEQ, commit_torus, NULL);
 }
 
 static void draw_tor_var(TorusBox *torbox, int i) {
@@ -106,6 +80,52 @@ static void draw_torus_box(TorusBox *torbox, Window win) {
   for (i = 0; i < torbox->n; i++) {
     if (win == torbox->w[i])
       draw_tor_var(torbox, i);
+  }
+}
+
+/**
+ * Processes an event in torus mode.
+ */
+static void tor_box_event(void *cookie, const XEvent *ev) {
+  TorusBox *torbox = cookie;
+  Window wt;
+
+  switch (ev->type) {
+  case Expose:
+    draw_torus_box(torbox, ev->xany.window);
+    break;
+
+  case ButtonRelease:
+    if (ev->xbutton.window == torbox->done) {
+      if (!torbox->commit_func(torbox->cookie, torbox->sel, torbox->n)) {
+        destroy_tor_box(torbox);
+        return;
+      }
+    } else if (ev->xbutton.window == torbox->cancel) {
+      destroy_tor_box(torbox);
+      return;
+    }
+
+    for (int i = 0; i < torbox->n; i++) {
+      if (ev->xbutton.window == torbox->w[i]) {
+        torbox->sel[i] = 1 - torbox->sel[i];
+        draw_tor_var(torbox, i);
+        break;
+      }
+    }
+    break;
+
+  case EnterNotify:
+    wt = ev->xcrossing.window;
+    if (wt == torbox->done || wt == torbox->cancel)
+      XSetWindowBorderWidth(display, wt, 2);
+    break;
+
+  case LeaveNotify:
+    wt = ev->xcrossing.window;
+    if (wt == torbox->done || wt == torbox->cancel)
+      XSetWindowBorderWidth(display, wt, 1);
+    break;
   }
 }
 
@@ -173,91 +193,54 @@ static void make_tor_box(TorusBox *torbox, const char *title) {
 
   XSelectInput(display, torbox->cancel, BUT_MASK);
   XSelectInput(display, torbox->done, BUT_MASK);
+  x11_events_listen(g_x11_events, X11_EVENTS_ANY_WINDOW, BUT_MASK, tor_box_event, torbox);
 
   XRaiseWindow(display, torbox->base);
 }
 
 static void destroy_tor_box(TorusBox *torbox) {
-  XDestroySubwindows(display, torbox->base);
+  x11_events_unlisten(g_x11_events, X11_EVENTS_ANY_WINDOW, BUT_MASK, tor_box_event, torbox);
   XDestroyWindow(display, torbox->base);
+  torbox->base = 0;
 }
 
-/**
- * Processes an event in torus mode.
- *
- * @return zero to continue, 1 to close the box.
- */
-static int do_torus_event(TorusBox *torbox, const XEvent *ev) {
-  Window wt;
+void do_torus_com(int c) {
+  /* Skip if dialog already open. */
+  if (g_torbox.base)
+    return;
 
-  switch (ev->type) {
-  case Expose:
-    draw_torus_box(torbox, ev->xany.window);
-    break;
+  if (c == 1) {
+    /* None */
+    TORUS = 0;
+    for (int i = 0; i < MAXODE; i++)
+      itor[i] = 0;
 
-  case ButtonRelease:
-    if (ev->xbutton.window == torbox->done) {
-      if (!torbox->commit_func(torbox->cookie, torbox->sel, torbox->n)) {
-        destroy_tor_box(torbox);
-        return 1;
-      }
-    } else if (ev->xbutton.window == torbox->cancel) {
-      destroy_tor_box(torbox);
-      return 1;
-    }
-
-    for (int i = 0; i < torbox->n; i++) {
-      if (ev->xbutton.window == torbox->w[i]) {
-        torbox->sel[i] = 1 - torbox->sel[i];
-        draw_tor_var(torbox, i);
-        break;
-      }
-    }
-    break;
-
-  case EnterNotify:
-    wt = ev->xcrossing.window;
-    if (wt == torbox->done || wt == torbox->cancel)
-      XSetWindowBorderWidth(display, wt, 2);
-    break;
-
-  case LeaveNotify:
-    wt = ev->xcrossing.window;
-    if (wt == torbox->done || wt == torbox->cancel)
-      XSetWindowBorderWidth(display, wt, 1);
-    break;
+    return;
   }
 
-  return 0;
-}
-
-/**
- * Handle events until the torus box is closed.
- */
-static void run_tor_box(TorusBox *torbox) {
-  for (;;) {
-    XEvent ev;
-
-    XNextEvent(display, &ev);
-    if (ev.type == Expose)
-      do_expose(ev);
-    if (do_torus_event(torbox, &ev))
-      return;
+  new_float("Period :", &TOR_PERIOD);
+  if (TOR_PERIOD <= 0.0) {
+    err_msg("Choose positive period");
+    return;
   }
-}
 
-static void choose_torus(char names[MAXODE][12], int *sel, int n,
-                         TorusBoxCommitFunc commit_func, void *cookie) {
-  TorusBox torbox;
+  if (c == 0) {
+    /* All */
+    TORUS = 1;
+    for (int i = 0; i < MAXODE; i++)
+      itor[i] = 1;
 
-  for (int i = 0; i < n; ++i) {
-    torbox.names[i] = names[i];
-    torbox.sel[i] = sel[i];
+    return;
   }
-  torbox.n = n;
-  torbox.commit_func = commit_func;
-  torbox.cookie = cookie;
 
-  make_tor_box(&torbox, "Fold which");
-  run_tor_box(&torbox);
+  /* Open dialog box. */
+  for (int i = 0; i < NEQ; ++i) {
+    g_torbox.names[i] = uvar_names[i];
+    g_torbox.sel[i] = itor[i];
+  }
+  g_torbox.n = NEQ;
+  g_torbox.commit_func = commit_torus;
+  g_torbox.cookie = NULL;
+
+  make_tor_box(&g_torbox, "Fold which");
 }

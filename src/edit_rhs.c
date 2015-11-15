@@ -37,19 +37,14 @@ typedef struct {
   char name[MAX_N_EBOX][MAX_LEN_EBOX], value[MAX_N_EBOX][MAX_LEN_EBOX],
       rval[MAX_N_EBOX][MAX_LEN_EBOX];
   int n, hot;
+  int pos, col;
 } EDIT_BOX;
 
 /* --- Forward Declarations --- */
-static int do_edit_box(int n, char *title, char **names, char **values);
-static int e_box_event_loop(EDIT_BOX *sb, int *pos, int *col);
-static void enew_editable(EDIT_BOX *sb, int inew, int *pos, int *col, int *done,
-                          Window *w);
-static void ereset_hot(int inew, EDIT_BOX *sb);
-static void expose_ebox(EDIT_BOX *sb, Window w, int pos, int col);
+static int e_box_event_loop(EDIT_BOX *sb);
 static void make_ebox_windows(EDIT_BOX *sb, char *title);
-static void reset_ebox(EDIT_BOX *sb, int *pos, int *col);
 
-static void reset_ebox(EDIT_BOX *sb, int *pos, int *col) {
+static void reset_ebox(EDIT_BOX *sb) {
   int n = sb->n;
   int i, l;
   Window w;
@@ -64,15 +59,14 @@ static void reset_ebox(EDIT_BOX *sb, int *pos, int *col) {
   }
   XFlush(display);
   sb->hot = 0;
-  *pos = strlen(sb->value[0]);
-  *col = (*pos + strlen(sb->name[0])) * DCURX;
-  put_cursor_at(sb->win[0], DCURX * strlen(sb->name[0]), *pos);
+  sb->pos = strlen(sb->value[0]);
+  sb->col = (sb->pos + strlen(sb->name[0])) * DCURX;
+  put_cursor_at(sb->win[0], DCURX * strlen(sb->name[0]), sb->pos);
 }
 
 static int do_edit_box(int n, char *title, char **names, char **values) {
   EDIT_BOX sb;
   int i, status;
-  int colm, pos;
 
   for (i = 0; i < n; i++) {
     sprintf(sb.name[i], "%s=", names[i]);
@@ -85,11 +79,11 @@ static int do_edit_box(int n, char *title, char **names, char **values) {
   XSelectInput(display, sb.cancel, BUT_MASK);
   XSelectInput(display, sb.ok, BUT_MASK);
   XSelectInput(display, sb.reset, BUT_MASK);
-  pos = strlen(sb.value[0]);
-  colm = (pos + strlen(sb.name[0])) * DCURX;
+  sb.pos = strlen(sb.value[0]);
+  sb.col = (sb.pos + strlen(sb.name[0])) * DCURX;
 
   while (1) {
-    status = e_box_event_loop(&sb, &pos, &colm);
+    status = e_box_event_loop(&sb);
     if (status != -1)
       break;
   }
@@ -108,7 +102,7 @@ static int do_edit_box(int n, char *title, char **names, char **values) {
   return (status);
 }
 
-static void expose_ebox(EDIT_BOX *sb, Window w, int pos, int col) {
+static void expose_ebox(EDIT_BOX *sb, Window w) {
   int i, flag;
 
   if (w == sb->ok) {
@@ -129,7 +123,7 @@ static void expose_ebox(EDIT_BOX *sb, Window w, int pos, int col) {
     flag = 0;
     if (i == sb->hot)
       flag = 1;
-    do_hilite_text(sb->name[i], sb->value[i], flag, w, pos, col);
+    do_hilite_text(sb->name[i], sb->value[i], flag, w, sb->pos, sb->col);
   }
 }
 
@@ -144,16 +138,15 @@ static void ereset_hot(int inew, EDIT_BOX *sb) {
                  0);
 }
 
-static void enew_editable(EDIT_BOX *sb, int inew, int *pos, int *col, int *done,
-                          Window *w) {
+static void enew_editable(EDIT_BOX *sb, int inew, int *done, Window *w) {
   ereset_hot(inew, sb);
-  *pos = strlen(sb->value[inew]);
-  *col = (*pos + strlen(sb->name[inew])) * DCURX;
+  sb->pos = strlen(sb->value[inew]);
+  sb->col = (sb->pos + strlen(sb->name[inew])) * DCURX;
   *done = 0;
   *w = sb->win[inew];
 }
 
-static int e_box_event_loop(EDIT_BOX *sb, int *pos, int *col) {
+static int e_box_event_loop(EDIT_BOX *sb) {
   XEvent ev;
   int status = -1, inew;
   int nn = sb->n;
@@ -171,7 +164,7 @@ static int e_box_event_loop(EDIT_BOX *sb, int *pos, int *col) {
   case Expose:
   case MapNotify:
     do_expose(ev); /*  menus and graphs etc  */
-    expose_ebox(sb, ev.xany.window, *pos, *col);
+    expose_ebox(sb, ev.xany.window);
     break;
 
   case ButtonPress:
@@ -184,14 +177,14 @@ static int e_box_event_loop(EDIT_BOX *sb, int *pos, int *col) {
       break;
     }
     if (ev.xbutton.window == sb->reset) {
-      reset_ebox(sb, pos, col);
+      reset_ebox(sb);
       break;
     }
     for (i = 0; i < nn; i++) {
       if (ev.xbutton.window == sb->win[i]) {
         XSetInputFocus(display, sb->win[i], RevertToParent, CurrentTime);
         if (i != sb->hot)
-          enew_editable(sb, i, pos, col, &done, &w);
+          enew_editable(sb, i, &done, &w);
         break;
       }
     }
@@ -211,14 +204,14 @@ static int e_box_event_loop(EDIT_BOX *sb, int *pos, int *col) {
 
   case KeyPress:
     ch = get_key_press(&ev);
-    edit_window(w, pos, s, col, &done, ch);
+    edit_window(w, &sb->pos, s, &sb->col, &done, ch);
     if (done != 0) {
       if (done == DONE_ALL) {
         status = DONE_ALL;
         break;
       }
       inew = (sb->hot + 1) % nn;
-      enew_editable(sb, inew, pos, col, &done, &w);
+      enew_editable(sb, inew, &done, &w);
     }
     break;
   }
@@ -261,9 +254,9 @@ static void make_ebox_windows(EDIT_BOX *sb, char *title) {
 
   ypos = height - 2 * DCURY;
   xpos = (width - 19 * DCURX) / 2;
-  (sb->ok) = make_window(base, xpos, ypos, 2 * DCURX, DCURY, 1);
-  (sb->cancel) = make_window(base, xpos + 4 * DCURX, ypos, 6 * DCURX, DCURY, 1);
-  (sb->reset) = make_window(base, xpos + 12 * DCURX, ypos, 5 * DCURX, DCURY, 1);
+  sb->ok = make_window(base, xpos, ypos, 2 * DCURX, DCURY, 1);
+  sb->cancel = make_window(base, xpos + 4 * DCURX, ypos, 6 * DCURX, DCURY, 1);
+  sb->reset = make_window(base, xpos + 12 * DCURX, ypos, 5 * DCURX, DCURY, 1);
   XRaiseWindow(display, base);
 }
 

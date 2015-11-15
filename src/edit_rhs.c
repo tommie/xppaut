@@ -297,19 +297,17 @@ void edit_menu(void) {
 
 void edit_rhs(void) {
   char **names, **values;
-  int **command;
   int i, status, err, len, i0, j;
   int n = NEQ;
   char msg[200];
+
   if (NEQ > NEQMAXFOREDIT)
     return;
   names = (char **)malloc(n * sizeof(char *));
   values = (char **)malloc(n * sizeof(char *));
-  command = (int **)malloc(n * sizeof(int *));
   for (i = 0; i < n; i++) {
     values[i] = (char *)malloc(MAX_LEN_EBOX * sizeof(char));
     names[i] = (char *)malloc(MAX_LEN_EBOX * sizeof(char));
-    command[i] = (int *)malloc(200 * sizeof(int));
     form_ode_format_lhs(names[i], MAX_LEN_EBOX, i);
     strcpy(values[i], ode_names[i]);
   }
@@ -318,8 +316,9 @@ void edit_rhs(void) {
 
     for (i = 0; i < n; i++) {
       if (i < NODE || (i >= (NODE + NMarkov))) {
+        int command[200];
 
-        err = parse_expr(values[i], command[i], &len);
+        err = parse_expr(values[i], command, &len);
         if (err == 1) {
           sprintf(msg, "Bad rhs:%s=%s", names[i], values[i]);
           err_msg(msg);
@@ -332,7 +331,7 @@ void edit_rhs(void) {
             i0 = i0 + FIX_VAR - NMarkov;
 
           for (j = 0; j < len; j++)
-            my_ode[i0][j] = command[i][j];
+            my_ode[i0][j] = command[j];
         }
       }
     }
@@ -341,11 +340,9 @@ void edit_rhs(void) {
   for (i = 0; i < n; i++) {
     free(values[i]);
     free(names[i]);
-    free(command[i]);
   }
   free(values);
   free(names);
-  free(command);
 }
 
 void user_fun_info(FILE *fp) {

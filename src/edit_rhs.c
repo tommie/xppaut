@@ -23,12 +23,9 @@
 #define NEQMAXFOREDIT 20
 #define MAX_N_EBOX MAXODE
 #define MAX_LEN_EBOX 86
-#define EV_MASK                                                                \
-  (ButtonPressMask | KeyPressMask | ExposureMask | StructureNotifyMask)
-
 #define BUT_MASK                                                               \
-  (ButtonPressMask | KeyPressMask | ExposureMask | StructureNotifyMask |       \
-   EnterWindowMask | LeaveWindowMask)
+  (ButtonPressMask | ButtonReleaseMask | KeyPressMask | ExposureMask |         \
+   StructureNotifyMask | EnterWindowMask | LeaveWindowMask)
 
 /* --- Types --- */
 typedef struct {
@@ -87,12 +84,7 @@ static int do_edit_box(int n, char *title, char **names, char **values) {
     if (status != -1)
       break;
   }
-  XSelectInput(display, sb.cancel, EV_MASK);
-  XSelectInput(display, sb.ok, EV_MASK);
-  XSelectInput(display, sb.reset, EV_MASK);
 
-  waitasec(ClickTime);
-  XDestroySubwindows(display, sb.base);
   XDestroyWindow(display, sb.base);
 
   if (status == FORGET_ALL)
@@ -167,7 +159,7 @@ static int e_box_event_loop(EDIT_BOX *sb) {
     expose_ebox(sb, ev.xany.window);
     break;
 
-  case ButtonPress:
+  case ButtonRelease:
     if (ev.xbutton.window == sb->ok) {
       status = DONE_ALL;
       break;
@@ -180,6 +172,9 @@ static int e_box_event_loop(EDIT_BOX *sb) {
       reset_ebox(sb);
       break;
     }
+    break;
+
+  case ButtonPress:
     for (i = 0; i < nn; i++) {
       if (ev.xbutton.window == sb->win[i]) {
         XSetInputFocus(display, sb->win[i], RevertToParent, CurrentTime);

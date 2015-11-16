@@ -10,9 +10,6 @@
 /* --- Macros --- */
 #define FORGET_ALL 0
 #define DONE_ALL 2
-#define FORGET_THIS 3
-#define DONE_THIS 1
-#define RESET_ALL 4
 
 /* --- Functions --- */
 void edit_functions(void);

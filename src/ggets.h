@@ -24,7 +24,7 @@ void edit_command_string(XEvent ev, char *name, char *value, int *done,
                          int *pos, int *col);
 void edit_window(Window w, int *pos, char *value, int *col, int *done, int ch);
 void err_msg(const char *string);
-int get_key_press(XEvent *ev);
+int get_key_press(const XEvent *ev);
 int get_mouse_xy(int *x, int *y, Window w);
 int new_float(char *name, double *value);
 int new_int(char *name, int *value);

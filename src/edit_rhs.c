@@ -28,7 +28,13 @@
    StructureNotifyMask | EnterWindowMask | LeaveWindowMask)
 
 /* --- Types --- */
+typedef int (*EditBoxCommitFunc)(void *,
+                                 const char * /*[MAX_N_EBOX][MAX_LEN_EBOX]*/,
+                                 int n);
 typedef struct {
+  EditBoxCommitFunc commit_func;
+  void *cookie;
+
   Window base, ok, cancel, reset;
   Window win[MAX_N_EBOX];
   char name[MAX_N_EBOX][MAX_LEN_EBOX], value[MAX_N_EBOX][MAX_LEN_EBOX],
@@ -36,10 +42,6 @@ typedef struct {
   int n, hot;
   int pos, col;
 } EDIT_BOX;
-
-/* --- Forward Declarations --- */
-static int e_box_event_loop(EDIT_BOX *sb);
-static void make_ebox_windows(EDIT_BOX *sb, char *title);
 
 static void reset_ebox(EDIT_BOX *sb) {
   int n = sb->n;
@@ -59,39 +61,6 @@ static void reset_ebox(EDIT_BOX *sb) {
   sb->pos = strlen(sb->value[0]);
   sb->col = (sb->pos + strlen(sb->name[0])) * DCURX;
   put_cursor_at(sb->win[0], DCURX * strlen(sb->name[0]), sb->pos);
-}
-
-static int do_edit_box(int n, char *title, char **names, char **values) {
-  EDIT_BOX sb;
-  int i, status;
-
-  for (i = 0; i < n; i++) {
-    sprintf(sb.name[i], "%s=", names[i]);
-    strcpy(sb.value[i], values[i]);
-    strcpy(sb.rval[i], values[i]);
-  }
-  sb.n = n;
-  sb.hot = 0;
-  make_ebox_windows(&sb, title);
-  XSelectInput(display, sb.cancel, BUT_MASK);
-  XSelectInput(display, sb.ok, BUT_MASK);
-  XSelectInput(display, sb.reset, BUT_MASK);
-  sb.pos = strlen(sb.value[0]);
-  sb.col = (sb.pos + strlen(sb.name[0])) * DCURX;
-
-  while (1) {
-    status = e_box_event_loop(&sb);
-    if (status != -1)
-      break;
-  }
-
-  XDestroyWindow(display, sb.base);
-
-  if (status == FORGET_ALL)
-    return (status);
-  for (i = 0; i < n; i++)
-    strcpy(values[i], sb.value[i]);
-  return (status);
 }
 
 static void expose_ebox(EDIT_BOX *sb, Window w) {
@@ -138,45 +107,37 @@ static void enew_editable(EDIT_BOX *sb, int inew, int *done, Window *w) {
   *w = sb->win[inew];
 }
 
-static int e_box_event_loop(EDIT_BOX *sb) {
-  XEvent ev;
-  int status = -1, inew;
+static int e_box_event_loop(EDIT_BOX *sb, const XEvent *ev) {
+  int inew;
   int nn = sb->n;
   int done = 0, i;
   char ch;
   int ihot = sb->hot;
   Window wt;
-  Window w = sb->win[ihot]; /* active window   */
-  char *s;
-  s = sb->value[ihot];
+  Window w = sb->win[ihot]; /* active window */
+  char *s = sb->value[ihot];
 
-  XNextEvent(display, &ev);
-  switch (ev.type) {
+  switch (ev->type) {
   case ConfigureNotify:
   case Expose:
   case MapNotify:
-    do_expose(ev); /*  menus and graphs etc  */
-    expose_ebox(sb, ev.xany.window);
+    expose_ebox(sb, ev->xany.window);
     break;
 
   case ButtonRelease:
-    if (ev.xbutton.window == sb->ok) {
-      status = DONE_ALL;
-      break;
-    }
-    if (ev.xbutton.window == sb->cancel) {
-      status = FORGET_ALL;
-      break;
-    }
-    if (ev.xbutton.window == sb->reset) {
+    if (ev->xbutton.window == sb->ok) {
+      if (!sb->commit_func(sb->cookie, (char *)sb->value, sb->n))
+        return DONE_ALL;
+    } else if (ev->xbutton.window == sb->cancel) {
+      return FORGET_ALL;
+    } else if (ev->xbutton.window == sb->reset) {
       reset_ebox(sb);
-      break;
     }
     break;
 
   case ButtonPress:
     for (i = 0; i < nn; i++) {
-      if (ev.xbutton.window == sb->win[i]) {
+      if (ev->xbutton.window == sb->win[i]) {
         XSetInputFocus(display, sb->win[i], RevertToParent, CurrentTime);
         if (i != sb->hot)
           enew_editable(sb, i, &done, &w);
@@ -186,31 +147,31 @@ static int e_box_event_loop(EDIT_BOX *sb) {
     break;
 
   case EnterNotify:
-    wt = ev.xcrossing.window;
+    wt = ev->xcrossing.window;
     if (wt == sb->ok || wt == sb->cancel || wt == sb->reset)
       XSetWindowBorderWidth(display, wt, 2);
     break;
 
   case LeaveNotify:
-    wt = ev.xcrossing.window;
+    wt = ev->xcrossing.window;
     if (wt == sb->ok || wt == sb->cancel || wt == sb->reset)
       XSetWindowBorderWidth(display, wt, 1);
     break;
 
   case KeyPress:
-    ch = get_key_press(&ev);
+    ch = get_key_press(ev);
     edit_window(w, &sb->pos, s, &sb->col, &done, ch);
     if (done != 0) {
       if (done == DONE_ALL) {
-        status = DONE_ALL;
-        break;
+        return DONE_ALL;
       }
       inew = (sb->hot + 1) % nn;
       enew_editable(sb, inew, &done, &w);
     }
     break;
   }
-  return (status);
+
+  return -1;
 }
 
 static void make_ebox_windows(EDIT_BOX *sb, char *title) {
@@ -255,6 +216,54 @@ static void make_ebox_windows(EDIT_BOX *sb, char *title) {
   XRaiseWindow(display, base);
 }
 
+static void edit_box_destroy(EDIT_BOX *sb) {
+  XDestroyWindow(display, sb->base);
+}
+
+/**
+ * Opens an edit dialog box.
+ *
+ * @param n number of edit rows.
+ * @param title the window title.
+ * @param names a list of row labels. Not used after function returns.
+ * @param values a list of initial values. Not used after function returns.
+ * @param commit the function to call to commit the values.
+ * @param cookie an arbitrary cookie passed to the commit function.
+ */
+static void do_edit_box(int n, char *title, char **names, char **values,
+                        EditBoxCommitFunc commit, void *cookie) {
+  EDIT_BOX sb;
+
+  sb.commit_func = commit;
+  sb.cookie = cookie;
+
+  for (int i = 0; i < n; i++) {
+    sprintf(sb.name[i], "%s=", names[i]);
+    strcpy(sb.value[i], values[i]);
+    strcpy(sb.rval[i], values[i]);
+  }
+  sb.n = n;
+  sb.hot = 0;
+  make_ebox_windows(&sb, title);
+  XSelectInput(display, sb.cancel, BUT_MASK);
+  XSelectInput(display, sb.ok, BUT_MASK);
+  XSelectInput(display, sb.reset, BUT_MASK);
+  sb.pos = strlen(sb.value[0]);
+  sb.col = (sb.pos + strlen(sb.name[0])) * DCURX;
+
+  while (1) {
+    XEvent ev;
+
+    XNextEvent(display, &ev);
+    if (ev.type == Expose)
+      do_expose(ev);
+    if (e_box_event_loop(&sb, &ev) != -1)
+      break;
+  }
+
+  edit_box_destroy(&sb);
+}
+
 void edit_menu(void) {
   Window temp = main_win;
   static char *n[] = {"RHS's", "Functions", "Save as", "Load DLL"};
@@ -283,49 +292,61 @@ void edit_menu(void) {
   }
 }
 
+/**
+ * Update ode_names with the given values.
+ */
+static int commit_rhs(void *cookie,
+                      const char *values /*[MAX_N_EBOX][MAX_LEN_EBOX]*/,
+                      int n) {
+  for (int i = 0; i < n; i++, values += MAX_LEN_EBOX) {
+    if (i >= NODE && i < NODE + NMarkov)
+      continue;
+
+    int command[200];
+    int len;
+    int err = parse_expr(values, command, &len);
+
+    if (err == 1) {
+      char name[MAX_LEN_EBOX];
+      char msg[200];
+
+      form_ode_format_lhs(name, MAX_LEN_EBOX, i);
+      sprintf(msg, "Bad rhs:%s=%s", name, values);
+      err_msg(msg);
+    } else {
+      ode_names[i] = realloc(ode_names[i], strlen(values) + 5);
+      strcpy(ode_names[i], values);
+
+      int i0 = i;
+      if (i >= NODE)
+        i0 = i0 + FIX_VAR - NMarkov;
+
+      for (int j = 0; j < len; j++)
+        my_ode[i0][j] = command[j];
+    }
+  }
+
+  return 0;
+}
+
 void edit_rhs(void) {
   char **names, **values;
-  int i, status, err, len, i0, j;
   int n = NEQ;
-  char msg[200];
 
   if (NEQ > NEQMAXFOREDIT)
     return;
   names = (char **)malloc(n * sizeof(char *));
   values = (char **)malloc(n * sizeof(char *));
-  for (i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) {
     values[i] = (char *)malloc(MAX_LEN_EBOX * sizeof(char));
     names[i] = (char *)malloc(MAX_LEN_EBOX * sizeof(char));
     form_ode_format_lhs(names[i], MAX_LEN_EBOX, i);
     strcpy(values[i], ode_names[i]);
   }
-  status = do_edit_box(n, "Right Hand Sides", names, values);
-  if (status != 0) {
 
-    for (i = 0; i < n; i++) {
-      if (i < NODE || (i >= (NODE + NMarkov))) {
-        int command[200];
+  do_edit_box(n, "Right Hand Sides", names, values, commit_rhs, NULL);
 
-        err = parse_expr(values[i], command, &len);
-        if (err == 1) {
-          sprintf(msg, "Bad rhs:%s=%s", names[i], values[i]);
-          err_msg(msg);
-        } else {
-          free(ode_names[i]);
-          ode_names[i] = (char *)malloc(strlen(values[i]) + 5);
-          strcpy(ode_names[i], values[i]);
-          i0 = i;
-          if (i >= NODE)
-            i0 = i0 + FIX_VAR - NMarkov;
-
-          for (j = 0; j < len; j++)
-            my_ode[i0][j] = command[j];
-        }
-      }
-    }
-  }
-
-  for (i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) {
     free(values[i]);
     free(names[i]);
   }
@@ -333,16 +354,32 @@ void edit_rhs(void) {
   free(names);
 }
 
+/**
+ * Update ufun_rhs with the given values.
+ */
+static int commit_functions(void *cookie,
+                            const char *values /*[MAX_N_EBOX][MAX_LEN_EBOX]*/,
+                            int n) {
+  for (int i = 0; i < n; i++, values += MAX_LEN_EBOX) {
+    if (parser_set_ufun_rhs(i, values)) {
+      char msg[200];
+
+      sprintf(msg, "Bad func.:%s=%s", ufuns.elems[i].name, values);
+      err_msg(msg);
+    }
+  }
+
+  return 0;
+}
+
 void edit_functions(void) {
   char **names, **values;
-  int i, status;
   int n = ufuns.len;
-  char msg[200];
   if (n == 0 || n > NEQMAXFOREDIT)
     return;
   names = (char **)malloc(n * sizeof(char *));
   values = (char **)malloc(n * sizeof(char *));
-  for (i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) {
     values[i] = (char *)malloc(MAX_LEN_EBOX * sizeof(char));
     names[i] = (char *)malloc(MAX_LEN_EBOX * sizeof(char));
     sprintf(values[i], "%s", ufuns.elems[i].def);
@@ -359,17 +396,9 @@ void edit_functions(void) {
               ufuns.elems[i].args[ufuns.elems[i].narg - 1]);
   }
 
-  status = do_edit_box(n, "Functions", names, values);
-  if (status) {
-    for (i = 0; i < n; i++) {
-      if (parser_set_ufun_rhs(i, values[i])) {
-        sprintf(msg, "Bad func.:%s=%s", names[i], values[i]);
-        err_msg(msg);
-      }
-    }
-  }
+  do_edit_box(n, "Functions", names, values, commit_functions, NULL);
 
-  for (i = 0; i < n; i++) {
+  for (int i = 0; i < n; i++) {
     free(values[i]);
     free(names[i]);
   }

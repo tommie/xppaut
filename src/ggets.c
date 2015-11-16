@@ -121,7 +121,7 @@ void put_command(char *string) {
   CURS_X = strlen(string);
 }
 
-int get_key_press(XEvent *ev) {
+int get_key_press(const XEvent *ev) {
   int maxlen = 64;
   char buf[65];
   XComposeStatus comp;

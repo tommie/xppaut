@@ -517,14 +517,15 @@ int set_ufun_new(int index, int narg, char *rhs, char args[MAXARG][11]) {
     plintf("Maximal arguments exceeded \n");
     return 1;
   }
-  if (parser_set_ufun_rhs(index, rhs)) {
-    plintf("ERROR IN FUNCTION DEFINITION\n");
-    return 1;
-  }
 
   ufuns.elems[index].narg = narg;
   for (int i = 0; i < narg; i++)
     strcpy(ufuns.elems[index].args[i], args[i]);
+
+  if (parser_set_ufun_rhs(index, rhs)) {
+    plintf("ERROR IN FUNCTION DEFINITION\n");
+    return 1;
+  }
 
   return 0;
 }

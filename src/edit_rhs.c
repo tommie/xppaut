@@ -333,22 +333,6 @@ void edit_rhs(void) {
   free(names);
 }
 
-void user_fun_info(FILE *fp) {
-  char fundef[256];
-  int i, j;
-  for (j = 0; j < ufuns.len; j++) {
-    sprintf(fundef, "%s(", ufuns.elems[j].name);
-    for (i = 0; i < ufuns.elems[j].narg; i++) {
-      strcat(fundef, ufuns.elems[j].args[i]);
-      if (i < ufuns.elems[j].narg - 1)
-        strcat(fundef, ",");
-    }
-    strcat(fundef, ") = ");
-    strcat(fundef, ufuns.elems[j].def);
-    fprintf(fp, "%s\n", fundef);
-  }
-}
-
 void edit_functions(void) {
   char **names, **values;
   int i, status;

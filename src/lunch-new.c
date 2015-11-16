@@ -8,7 +8,6 @@
 #include "arrayplot.h"
 #include "browse.h"
 #include "delay_handle.h"
-#include "edit_rhs.h"
 #include "form_ode.h"
 #include "ggets.h"
 #include "graf_par.h"
@@ -73,6 +72,22 @@ void ps_write_pars(FILE *fp) {
   }
 
   fprintf(fp, "\n");
+}
+
+static void user_fun_info(FILE *fp) {
+  char fundef[256];
+  int i, j;
+  for (j = 0; j < ufuns.len; j++) {
+    sprintf(fundef, "%s(", ufuns.elems[j].name);
+    for (i = 0; i < ufuns.elems[j].narg; i++) {
+      strcat(fundef, ufuns.elems[j].args[i]);
+      if (i < ufuns.elems[j].narg - 1)
+        strcat(fundef, ",");
+    }
+    strcat(fundef, ") = ");
+    strcat(fundef, ufuns.elems[j].def);
+    fprintf(fp, "%s\n", fundef);
+  }
 }
 
 static void do_info(FILE *fp) {

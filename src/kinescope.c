@@ -22,13 +22,18 @@ typedef struct {
   Pixmap xi;
 } MOVIE;
 
+typedef struct {
+  unsigned int w;
+  unsigned int h;
+  int frame;
+} Player;
+
 /* --- Forward Declarations --- */
 static void auto_play(void);
 static void make_anigif(void);
 static void play_back(void);
 static void save_kine(void);
 static void save_movie(char *basename, int fmat);
-static int show_frame(int i, int h, int w);
 static void too_small(void);
 
 /* --- Data --- */
@@ -93,74 +98,86 @@ int film_clip(void) {
   return 1;
 }
 
-static int show_frame(int i, int h, int w) {
-  if (h < movie[i].h || w < movie[i].w) {
+static int show_frame(const Player *p) {
+  if (p->h < movie[p->frame].h || p->w < movie[p->frame].w) {
     too_small();
     return 1;
   }
-  XCopyArea(display, movie[i].xi, draw_win, gc_graph, 0, 0, w, h, 0, 0);
+  XCopyArea(display, movie[p->frame].xi, draw_win, gc_graph, 0, 0, p->w, p->h,
+            0, 0);
   XFlush(display);
+
+  return 0;
+}
+
+static int play_back_event(void *cookie, const XEvent *ev) {
+  Player *p = cookie;
+
+  switch (ev->type) {
+  case ButtonPress:
+    p->frame++;
+    if (p->frame >= mov_ind)
+      p->frame = 0;
+    if (show_frame(p))
+      return 1;
+    break;
+
+  case KeyPress:
+    switch (get_key_press(ev)) {
+    case ESC:
+      return 1;
+
+    case RIGHT:
+      p->frame++;
+      if (p->frame >= mov_ind)
+        p->frame = 0;
+      if (show_frame(p))
+        return 1;
+      break;
+
+    case LEFT:
+      p->frame--;
+      if (p->frame < 0)
+        p->frame = mov_ind - 1;
+      if (show_frame(p))
+        return 1;
+      break;
+    case HOME:
+      p->frame = 0;
+      if (show_frame(p))
+        return 1;
+      break;
+    case END:
+      p->frame = mov_ind - 1;
+      if (show_frame(p))
+        return 1;
+      break;
+    }
+  }
 
   return 0;
 }
 
 static void play_back(void) {
   int x, y;
-  unsigned int h, w, bw, d;
-
+  unsigned int bw, d;
   Window root;
-  XEvent ev;
-  int i = 0;
-  XGetGeometry(display, draw_win, &root, &x, &y, &w, &h, &bw, &d);
+  Player p;
+
+  p.frame = 0;
+  XGetGeometry(display, draw_win, &root, &x, &y, &p.w, &p.h, &bw, &d);
   if (mov_ind == 0)
     return;
-  if (h < movie[i].h || w < movie[i].w) {
-    too_small();
-    return;
-  }
 
-  XCopyArea(display, movie[i].xi, draw_win, gc_graph, 0, 0, w, h, 0, 0);
-  XFlush(display);
+  if (show_frame(&p))
+    return;
+
   while (1) {
+    XEvent ev;
+
     XNextEvent(display, &ev);
-    switch (ev.type) {
-    case ButtonPress:
-      i++;
-      if (i >= mov_ind)
-        i = 0;
-      if (show_frame(i, h, w))
-        return;
+    if (play_back_event(&p, &ev))
       break;
-    case KeyPress:
-      switch (get_key_press(&ev)) {
-      case ESC:
-        return;
-      case RIGHT:
-        i++;
-        if (i >= mov_ind)
-          i = 0;
-        if (show_frame(i, h, w))
-          return;
-        break;
-      case LEFT:
-        i--;
-        if (i < 0)
-          i = mov_ind - 1;
-        if (show_frame(i, h, w))
-          return;
-        break;
-      case HOME:
-        i = 0;
-        if (show_frame(i, h, w))
-          return;
-        break;
-      case END:
-        i = mov_ind - 1;
-        if (show_frame(i, h, w))
-          return;
-        break;
-      }
-    }
   }
 }
 

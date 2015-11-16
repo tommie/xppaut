@@ -43,6 +43,12 @@ typedef struct {
   int pos, col;
 } EDIT_BOX;
 
+/* --- Forward Declarations --- */
+static void edit_box_destroy(EDIT_BOX *sb);
+
+/* --- Data --- */
+static EDIT_BOX g_editbox;
+
 static void reset_ebox(EDIT_BOX *sb) {
   int n = sb->n;
   int i, l;
@@ -107,7 +113,8 @@ static void enew_editable(EDIT_BOX *sb, int inew, int *done, Window *w) {
   *w = sb->win[inew];
 }
 
-static int e_box_event_loop(EDIT_BOX *sb, const XEvent *ev) {
+static void edit_box_event(void *cookie, const XEvent *ev) {
+  EDIT_BOX *sb = cookie;
   int inew;
   int nn = sb->n;
   int done = 0, i;
@@ -126,10 +133,13 @@ static int e_box_event_loop(EDIT_BOX *sb, const XEvent *ev) {
 
   case ButtonRelease:
     if (ev->xbutton.window == sb->ok) {
-      if (!sb->commit_func(sb->cookie, (char *)sb->value, sb->n))
-        return DONE_ALL;
+      if (!sb->commit_func(sb->cookie, (char *)sb->value, sb->n)) {
+        edit_box_destroy(sb);
+        return;
+      }
     } else if (ev->xbutton.window == sb->cancel) {
-      return FORGET_ALL;
+      edit_box_destroy(sb);
+      return;
     } else if (ev->xbutton.window == sb->reset) {
       reset_ebox(sb);
     }
@@ -163,18 +173,17 @@ static int e_box_event_loop(EDIT_BOX *sb, const XEvent *ev) {
     edit_window(w, &sb->pos, s, &sb->col, &done, ch);
     if (done != 0) {
       if (done == DONE_ALL) {
-        return DONE_ALL;
+        edit_box_destroy(sb);
+        return;
       }
       inew = (sb->hot + 1) % nn;
       enew_editable(sb, inew, &done, &w);
     }
     break;
   }
-
-  return -1;
 }
 
-static void make_ebox_windows(EDIT_BOX *sb, char *title) {
+static void make_ebox_windows(EDIT_BOX *sb, const char *title) {
   int width, height;
   int i;
   int xpos, ypos, n = sb->n;
@@ -186,7 +195,6 @@ static void make_ebox_windows(EDIT_BOX *sb, char *title) {
   width = (MAX_LEN_EBOX + 4) * DCURX;
   height = (n + 4) * (DCURY + 16);
   base = make_plain_window(DefaultRootWindow(display), 0, 0, width, height, 4);
-  XStringListToTextProperty(&title, 1, &winname);
   size_hints.flags = PPosition | PSize | PMinSize | PMaxSize;
   size_hints.x = 0;
   size_hints.y = 0;
@@ -196,8 +204,10 @@ static void make_ebox_windows(EDIT_BOX *sb, char *title) {
   size_hints.min_height = height;
   size_hints.max_width = width;
   size_hints.max_height = height;
+  XStringListToTextProperty((char **)&title, 1, &winname);
   XSetWMProperties(display, base, &winname, NULL, NULL, 0, &size_hints, NULL,
                    NULL);
+  XFree(winname.value);
   sb->base = base;
 
   ystart = DCURY;
@@ -213,11 +223,21 @@ static void make_ebox_windows(EDIT_BOX *sb, char *title) {
   sb->ok = make_window(base, xpos, ypos, 2 * DCURX, DCURY, 1);
   sb->cancel = make_window(base, xpos + 4 * DCURX, ypos, 6 * DCURX, DCURY, 1);
   sb->reset = make_window(base, xpos + 12 * DCURX, ypos, 5 * DCURX, DCURY, 1);
+
+  XSelectInput(display, sb->cancel, BUT_MASK);
+  XSelectInput(display, sb->ok, BUT_MASK);
+  XSelectInput(display, sb->reset, BUT_MASK);
+  x11_events_listen(g_x11_events, X11_EVENTS_ANY_WINDOW, BUT_MASK,
+                    edit_box_event, sb);
+
   XRaiseWindow(display, base);
 }
 
 static void edit_box_destroy(EDIT_BOX *sb) {
+  x11_events_unlisten(g_x11_events, X11_EVENTS_ANY_WINDOW, BUT_MASK,
+                      edit_box_event, sb);
   XDestroyWindow(display, sb->base);
+  sb->base = 0;
 }
 
 /**
@@ -230,38 +250,25 @@ static void edit_box_destroy(EDIT_BOX *sb) {
  * @param commit the function to call to commit the values.
  * @param cookie an arbitrary cookie passed to the commit function.
  */
-static void do_edit_box(int n, char *title, char **names, char **values,
+static void do_edit_box(int n, const char *title, char **names, char **values,
                         EditBoxCommitFunc commit, void *cookie) {
-  EDIT_BOX sb;
+  if (g_editbox.base)
+    return;
 
-  sb.commit_func = commit;
-  sb.cookie = cookie;
+  g_editbox.commit_func = commit;
+  g_editbox.cookie = cookie;
 
   for (int i = 0; i < n; i++) {
-    sprintf(sb.name[i], "%s=", names[i]);
-    strcpy(sb.value[i], values[i]);
-    strcpy(sb.rval[i], values[i]);
+    sprintf(g_editbox.name[i], "%s=", names[i]);
+    strcpy(g_editbox.value[i], values[i]);
+    strcpy(g_editbox.rval[i], values[i]);
   }
-  sb.n = n;
-  sb.hot = 0;
-  make_ebox_windows(&sb, title);
-  XSelectInput(display, sb.cancel, BUT_MASK);
-  XSelectInput(display, sb.ok, BUT_MASK);
-  XSelectInput(display, sb.reset, BUT_MASK);
-  sb.pos = strlen(sb.value[0]);
-  sb.col = (sb.pos + strlen(sb.name[0])) * DCURX;
+  g_editbox.n = n;
+  g_editbox.hot = 0;
+  g_editbox.pos = strlen(g_editbox.value[0]);
+  g_editbox.col = (g_editbox.pos + strlen(g_editbox.name[0])) * DCURX;
 
-  while (1) {
-    XEvent ev;
-
-    XNextEvent(display, &ev);
-    if (ev.type == Expose)
-      do_expose(ev);
-    if (e_box_event_loop(&sb, &ev) != -1)
-      break;
-  }
-
-  edit_box_destroy(&sb);
+  make_ebox_windows(&g_editbox, title);
 }
 
 void edit_menu(void) {
@@ -382,7 +389,7 @@ void edit_functions(void) {
   for (int i = 0; i < n; i++) {
     values[i] = (char *)malloc(MAX_LEN_EBOX * sizeof(char));
     names[i] = (char *)malloc(MAX_LEN_EBOX * sizeof(char));
-    sprintf(values[i], "%s", ufuns.elems[i].def);
+    strcpy(values[i], ufuns.elems[i].def);
 
     if (ufuns.elems[i].narg == 0) {
       sprintf(names[i], "%s()", ufuns.elems[i].name);

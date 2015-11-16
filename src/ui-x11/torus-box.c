@@ -137,7 +137,6 @@ static void make_tor_box(X11TorusBox *torbox, const char *title) {
   base = make_plain_window(RootWindow(display, screen), 0, 0, width, height, 4);
 
   torbox->base = base;
-  XStringListToTextProperty((char **)&title, 1, &winname);
   size_hints.flags = PPosition | PSize | PMinSize | PMaxSize;
   size_hints.x = 0;
   size_hints.y = 0;
@@ -154,8 +153,10 @@ static void make_tor_box(X11TorusBox *torbox, const char *title) {
 
   make_icon((char *)info_bits, info_width, info_height, base);
 
+  XStringListToTextProperty((char **)&title, 1, &winname);
   XSetWMProperties(display, base, &winname, NULL, NULL, 0, &size_hints, NULL,
                    &class_hints);
+  XFree(winname.value);
   for (i = 0; i < torbox->n; i++) {
     i1 = i / nv;
     j1 = i % nv;

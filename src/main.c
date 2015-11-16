@@ -93,7 +93,6 @@ static void test_color_info(void);
 static void top_button_cross(Window w, int b);
 static void top_button_events(XEvent report);
 static void top_button_press(Window w);
-static void xpp_events(XEvent report, int min_wid, int min_hgt);
 
 /* --- Data --- */
 int allwinvis = 0;
@@ -493,10 +492,8 @@ static void set_big_font(void) {
   XSetFont(display, gc, big_font->fid);
 }
 
-static void xpp_events(XEvent report, int min_wid, int min_hgt) {
-  /*int window_size,com;
-   */
-
+static void xpp_events(void *cookie, const XEvent *ev) {
+  int *minsize = cookie;
   int com;
   char ch;
 
@@ -504,11 +501,11 @@ static void xpp_events(XEvent report, int min_wid, int min_hgt) {
 
   /*  put_command("Command:");  */
 
-  do_array_plot_events(report);
-  txt_view_events(report);
-  do_ani_events(report);
-  top_button_events(report);
-  switch (report.type) {
+  do_array_plot_events(*ev);
+  txt_view_events(*ev);
+  do_ani_events(*ev);
+  top_button_events(*ev);
+  switch (ev->type) {
   /* case ClientMessage:
            if(report.xclient.data.l[0]==deleteWindowAtom){
 
@@ -518,24 +515,24 @@ static void xpp_events(XEvent report, int min_wid, int min_hgt) {
   case Expose:
   case MapNotify:
 
-    if (report.xany.window == command_pop)
+    if (ev->xany.window == command_pop)
       put_command("Command:");
-    do_expose(report);
+    do_expose(*ev);
 
     break;
   case ConfigureNotify:
-    resize_par_box(report.xany.window);
-    resize_my_browser(report.xany.window);
-    resize_eq_list(report.xany.window);
-    resize_auto_window(report);
-    if (report.xconfigure.window == main_win) {
+    resize_par_box(ev->xany.window);
+    resize_my_browser(ev->xany.window);
+    resize_eq_list(ev->xany.window);
+    resize_auto_window(*ev);
+    if (ev->xconfigure.window == main_win) {
 
-      SCALEX = report.xconfigure.width;
-      SCALEY = report.xconfigure.height;
-      if ((SCALEX < min_wid) || (SCALEY < min_hgt)) {
+      SCALEX = ev->xconfigure.width;
+      SCALEY = ev->xconfigure.height;
+      if (SCALEX < minsize[0] || SCALEY < minsize[1]) {
         /*window_size=TOO_SMALL;*/
-        SCALEX = min_wid;
-        SCALEY = min_hgt;
+        SCALEX = minsize[0];
+        SCALEY = minsize[0];
       } else {
         /*window_size=BIG_ENOUGH;*/
         XResizeWindow(display, command_pop, SCALEX - 4, DCURY + 1);
@@ -551,68 +548,68 @@ static void xpp_events(XEvent report, int min_wid, int min_hgt) {
 
   case KeyPress:
     used = 0;
-    box_keypress(report, &used);
+    box_keypress(*ev, &used);
     if (used)
       break;
-    eq_list_keypress(report, &used);
+    eq_list_keypress(*ev, &used);
     if (used)
       break;
-    my_browse_keypress(report, &used);
+    my_browse_keypress(*ev, &used);
     if (used)
       break;
 #ifdef AUTO
-    auto_keypress(report, &used);
+    auto_keypress(*ev, &used);
     if (used)
       break;
 #endif
-    ch = (char)get_key_press(&report);
+    ch = (char)get_key_press(ev);
     commander(ch);
 
-    /* do_key_stuff(report); */
+    /* do_key_stuff(*ev); */
 
     break;
   case EnterNotify:
-    enter_eq_stuff(report.xcrossing.window, 2);
-    enter_my_browser(report, 1);
-    enter_slides(report.xcrossing.window, 1);
-    box_enter_events(report.xcrossing.window, 1);
-    menu_crossing(report.xcrossing.window, 1);
+    enter_eq_stuff(ev->xcrossing.window, 2);
+    enter_my_browser(*ev, 1);
+    enter_slides(ev->xcrossing.window, 1);
+    box_enter_events(ev->xcrossing.window, 1);
+    menu_crossing(ev->xcrossing.window, 1);
 #ifdef AUTO
-    auto_enter(report.xcrossing.window, 2);
+    auto_enter(ev->xcrossing.window, 2);
 #endif
     break;
   case LeaveNotify:
-    enter_eq_stuff(report.xcrossing.window, 1);
-    enter_my_browser(report, 0);
-    enter_slides(report.xcrossing.window, 0);
-    box_enter_events(report.xcrossing.window, 0);
-    menu_crossing(report.xcrossing.window, 0);
+    enter_eq_stuff(ev->xcrossing.window, 1);
+    enter_my_browser(*ev, 0);
+    enter_slides(ev->xcrossing.window, 0);
+    box_enter_events(ev->xcrossing.window, 0);
+    menu_crossing(ev->xcrossing.window, 0);
 #ifdef AUTO
-    auto_enter(report.xcrossing.window, 1);
+    auto_enter(ev->xcrossing.window, 1);
 #endif
     break;
   case MotionNotify:
-    do_motion_events(report);
+    do_motion_events(*ev);
     break;
   case ButtonRelease:
-    slide_release(report.xbutton.window);
+    slide_release(ev->xbutton.window);
 
     break;
   case ButtonPress:
     /* check_box_cursor(); */
-    if (!rotate3dcheck(report)) {
-      menu_button(report.xbutton.window);
-      /* box_select_events(report.xbutton.window,&i1); */
-      box_buttons(report.xbutton.window);
+    if (!rotate3dcheck(*ev)) {
+      menu_button(ev->xbutton.window);
+      /* box_select_events(ev->xbutton.window,&i1); */
+      box_buttons(ev->xbutton.window);
 
-      slide_button_press(report.xbutton.window);
-      eq_list_button(report);
-      my_browse_button(report);
+      slide_button_press(ev->xbutton.window);
+      eq_list_button(*ev);
+      my_browse_button(*ev);
 #ifdef AUTO
-      auto_button(report);
+      auto_button(*ev);
 #endif
 
-      show_position(report, &com);
+      show_position(*ev, &com);
     }
     break;
 
@@ -620,7 +617,10 @@ static void xpp_events(XEvent report, int min_wid, int min_hgt) {
 }
 
 static void do_events(unsigned int min_wid, unsigned int min_hgt) {
-  XEvent report;
+#define EV_MASK                                                                \
+  ExposureMask | StructureNotifyMask | SubstructureNotifyMask | KeyPressMask | \
+      EnterWindowMask | LeaveWindowMask | ButtonMotionMask |                   \
+      PointerMotionMask | ButtonReleaseMask | ButtonPressMask
 
   blank_screen(main_win);
   help();
@@ -628,11 +628,19 @@ static void do_events(unsigned int min_wid, unsigned int min_hgt) {
     run_the_commands(4);
     RunImmediately = 0;
   }
-  while (1) {
-    XNextEvent(display, &report);
-    x11_events_dispatch(g_x11_events, &report);
-    xpp_events(report, min_wid, min_hgt);
-  }
+
+  int minsize[2];
+
+  minsize[0] = min_wid;
+  minsize[1] = min_hgt;
+  x11_events_listen(g_x11_events, X11_EVENTS_ANY_WINDOW, EV_MASK, xpp_events,
+                    minsize);
+
+  x11_events_run(g_x11_events);
+
+  x11_events_unlisten(g_x11_events, X11_EVENTS_ANY_WINDOW, EV_MASK, xpp_events,
+                      minsize);
+#undef EV_MASK
 }
 
 void bye_bye(void) {

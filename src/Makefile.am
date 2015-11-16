@@ -150,6 +150,7 @@ solver_headers = \
 	solver/volterra2.h
 
 ui_x11_headers = \
+	ui-x11/edit-box.h \
 	ui-x11/editutil.h \
 	ui-x11/events.h \
 	ui-x11/file-selector.h \
@@ -332,6 +333,7 @@ cvode_sources = \
 	solver/cv2.c
 
 ui_x11_sources = \
+	ui-x11/edit-box.c \
 	ui-x11/editutil.c \
 	ui-x11/events.c \
 	ui-x11/file-selector.c \

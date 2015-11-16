@@ -7,10 +7,6 @@
 #include <stdio.h>
 #include "xpplim.h"
 
-/* --- Macros --- */
-#define FORGET_ALL 0
-#define DONE_ALL 2
-
 /* --- Functions --- */
 void edit_functions(void);
 void edit_menu(void);

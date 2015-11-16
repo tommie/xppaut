@@ -2129,6 +2129,7 @@ void free_varinfo(void) {
     free(v);
     v = vnew;
   }
+  free(v);
   init_varinfo();
 }
 

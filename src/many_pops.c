@@ -842,7 +842,6 @@ void do_expose(XEvent ev) {
   expose_aplot(ev.xany.window);
   redraw_txtview(ev.xany.window);
   ani_expose(ev.xany.window);
-  expose_my_browser(ev);
   /* draw_info_pop(ev.xany.window); */
   RedrawMessageBox(ev.xany.window);
   draw_eq_list(ev.xany.window);

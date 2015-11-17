@@ -522,7 +522,6 @@ static void xpp_events(void *cookie, const XEvent *ev) {
     break;
   case ConfigureNotify:
     resize_par_box(ev->xany.window);
-    resize_my_browser(ev->xany.window);
     resize_eq_list(ev->xany.window);
     resize_auto_window(*ev);
     if (ev->xconfigure.window == main_win) {
@@ -554,9 +553,6 @@ static void xpp_events(void *cookie, const XEvent *ev) {
     eq_list_keypress(*ev, &used);
     if (used)
       break;
-    my_browse_keypress(*ev, &used);
-    if (used)
-      break;
 #ifdef AUTO
     auto_keypress(*ev, &used);
     if (used)
@@ -570,7 +566,6 @@ static void xpp_events(void *cookie, const XEvent *ev) {
     break;
   case EnterNotify:
     enter_eq_stuff(ev->xcrossing.window, 2);
-    enter_my_browser(*ev, 1);
     enter_slides(ev->xcrossing.window, 1);
     box_enter_events(ev->xcrossing.window, 1);
     menu_crossing(ev->xcrossing.window, 1);
@@ -580,7 +575,6 @@ static void xpp_events(void *cookie, const XEvent *ev) {
     break;
   case LeaveNotify:
     enter_eq_stuff(ev->xcrossing.window, 1);
-    enter_my_browser(*ev, 0);
     enter_slides(ev->xcrossing.window, 0);
     box_enter_events(ev->xcrossing.window, 0);
     menu_crossing(ev->xcrossing.window, 0);
@@ -604,7 +598,6 @@ static void xpp_events(void *cookie, const XEvent *ev) {
 
       slide_button_press(ev->xbutton.window);
       eq_list_button(*ev);
-      my_browse_button(*ev);
 #ifdef AUTO
       auto_button(*ev);
 #endif

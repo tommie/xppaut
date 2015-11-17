@@ -42,8 +42,12 @@
 /* --- Forward Declarations --- */
 static int add_stor_col(char *name, char *formula, BROWSER *b);
 static void browse_but_on(BROWSER *b, int i, Window w, int yn);
-static void browse_button(XEvent ev, BROWSER *b);
-static void browse_keypress(XEvent ev, int *used, BROWSER *b);
+static void browser_button_press(BROWSER *b, const XEvent *ev);
+static void browser_display(BROWSER *b, Window w);
+static void browser_enter(BROWSER *b, const XEvent *ev, int yn);
+static void browser_keypress(BROWSER *b, const XEvent *ev);
+static void browser_redraw(BROWSER *b);
+static void browser_resize(BROWSER *b, Window win);
 static int check_for_stor(float **data);
 static int parse_seq(const char *f, double *a1, double *a2);
 static void data_add_col(BROWSER *b);
@@ -67,19 +71,14 @@ static void data_unreplace(BROWSER *b);
 static void data_up(BROWSER *b);
 static void data_write(BROWSER *b);
 static void del_stor_col(char *var, BROWSER *b);
-static void display_browser(Window w, BROWSER b);
-static void draw_data(BROWSER b);
-static void enter_browser(XEvent ev, BROWSER *b, int yn);
-static void expose_browser(XEvent ev, BROWSER b);
+static void draw_data(BROWSER *b);
 static void find_value(int col, double val, int *row, BROWSER b);
 static void kill_browser(BROWSER *b);
 static void make_browser(BROWSER *b, char *wname, char *iname, int row,
                          int col);
 static void make_d_table(double xlo, double xhi, int col, char *filename,
                          BROWSER b);
-static void redraw_browser(BROWSER b);
 static void replace_column(char *var, char *form, float **dat, int n);
-static void resize_browser(Window win, BROWSER *b);
 static void unreplace_column(void);
 static void write_browser_data(FILE *fp, BROWSER *b);
 
@@ -106,7 +105,7 @@ void set_browser_data(float **data, int maxrow, int maxcol) {
   b->row0 = 0;
 
   if (Xup && b->xflag)
-    draw_data(*b);
+    draw_data(b);
 }
 
 float *get_data_col(int c) { return my_browser.data[c]; }
@@ -174,7 +173,7 @@ void del_stor_col(char *var, BROWSER *b) {
   free(my_ode[NEQ + FIX_VAR]);
   NEQ--;
   b->maxcol = NEQ + 1;
-  redraw_browser(*b);
+  browser_redraw(b);
 }
 
 /*  this only works with storage  */
@@ -250,7 +249,7 @@ int add_stor_col(char *name, char *formula, BROWSER *b) {
   add_var(uvar_names[NEQ], 0.0); /*  this could be trouble .... */
   NEQ++;
   b->maxcol = NEQ + 1;
-  redraw_browser(*b);
+  browser_redraw(b);
   return (1);
 }
 
@@ -450,19 +449,19 @@ void find_variable(char *s, int *col) {
     *col = *col + 1;
 }
 
-void browse_but_on(BROWSER *b, int i, Window w, int yn) {
+static void browse_but_on(BROWSER *b, int i, Window w, int yn) {
   int val = 1;
   if (yn)
     val = 2;
   XSetWindowBorderWidth(display, w, val);
   if (yn && TipsFlag && i >= 0) {
     strcpy(b->hinttxt, browse_hint[i]);
-    display_browser(b->hint, *b);
+    browser_display(b, b->hint);
   }
 }
 
-void enter_browser(XEvent ev, BROWSER *b, int yn) {
-  Window w = ev.xexpose.window;
+static void browser_enter(BROWSER *b, const XEvent *ev, int yn) {
+  Window w = ev->xcrossing.window;
   if (w == b->find)
     browse_but_on(b, 0, w, yn);
   if (w == b->up)
@@ -509,66 +508,66 @@ void enter_browser(XEvent ev, BROWSER *b, int yn) {
     browse_but_on(b, -1, w, yn);
 }
 
-void display_browser(Window w, BROWSER b) {
-  if (w == b.hint) {
-    XClearWindow(display, b.hint);
-    XDrawString(display, w, small_gc, 8, CURY_OFFs, b.hinttxt,
-                strlen(b.hinttxt));
+static void browser_display(BROWSER *b, Window w) {
+  if (w == b->hint) {
+    XClearWindow(display, b->hint);
+    XDrawString(display, w, small_gc, 8, CURY_OFFs, b->hinttxt,
+                strlen(b->hinttxt));
     return;
   }
 
 #define xds(a) XDrawString(display, w, small_gc, 5, CURY_OFFs, a, strlen(a))
-  if (w == b.find)
+  if (w == b->find)
     xds("Find");
-  else if (w == b.up)
+  else if (w == b->up)
     xds("Up");
-  else if (w == b.down)
+  else if (w == b->down)
     xds("Down");
-  else if (w == b.pgup)
+  else if (w == b->pgup)
     xds("PgUp");
-  else if (w == b.pgdn)
+  else if (w == b->pgdn)
     xds("PgDn");
-  else if (w == b.left)
+  else if (w == b->left)
     xds("Left");
-  else if (w == b.right)
+  else if (w == b->right)
     xds("Right");
-  else if (w == b.home)
+  else if (w == b->home)
     xds("Home");
-  else if (w == b.end)
+  else if (w == b->end)
     xds("End");
-  else if (w == b.first)
+  else if (w == b->first)
     xds("First");
-  else if (w == b.last)
+  else if (w == b->last)
     xds("Last");
-  else if (w == b.restore)
+  else if (w == b->restore)
     xds("Restore");
-  else if (w == b.write)
+  else if (w == b->write)
     xds("Write");
-  else if (w == b.get)
+  else if (w == b->get)
     xds("Get");
-  else if (w == b.repl)
+  else if (w == b->repl)
     xds("Replace");
-  else if (w == b.unrepl)
+  else if (w == b->unrepl)
     xds("Unrepl");
-  else if (w == b.table)
+  else if (w == b->table)
     xds("Table");
-  else if (w == b.load)
+  else if (w == b->load)
     xds("Load");
-  else if (w == b.time)
+  else if (w == b->time)
     xds("Time");
-  else if (w == b.addcol)
+  else if (w == b->addcol)
     xds("Add col");
-  else if (w == b.close)
+  else if (w == b->close)
     xds("Close");
-  else if (w == b.delcol)
+  else if (w == b->delcol)
     xds("Del col");
-  else if (w == b.main)
+  else if (w == b->main)
     draw_data(b);
   else {
     for (int i = 0; i < BMAXCOL; i++) {
-      if (w == b.label[i]) {
-        int i0 = i + b.col0 - 1;
-        if (i0 < b.maxcol - 1)
+      if (w == b->label[i]) {
+        int i0 = i + b->col0 - 1;
+        if (i0 < b->maxcol - 1)
           xds(uvar_names[i0]);
       }
     }
@@ -576,14 +575,14 @@ void display_browser(Window w, BROWSER b) {
 #undef xds
 }
 
-void redraw_browser(BROWSER b) {
+static void browser_redraw(BROWSER *b) {
   int i, i0;
   Window w;
   draw_data(b);
   for (i = 0; i < BMAXCOL; i++) {
-    w = b.label[i];
-    i0 = i + b.col0 - 1;
-    if (i0 < (b.maxcol - 1)) {
+    w = b->label[i];
+    i0 = i + b->col0 - 1;
+    if (i0 < (b->maxcol - 1)) {
       XClearWindow(display, w);
       XDrawString(display, w, small_gc, 5, CURY_OFFs, uvar_names[i0],
                   strlen(uvar_names[i0]));
@@ -596,38 +595,38 @@ void reset_browser(void) {
   my_browser.maxrow = 0;
 }
 
-void draw_data(BROWSER b) {
+static void draw_data(BROWSER *b) {
   int i, i0, j, j0;
   int x0;
   char string[50];
   int dcol = DCURXs * 14;
   int drow = (DCURYs + 6);
-  if (!b.data)
+  if (!b->data)
     return;
-  XClearWindow(display, b.main);
+  XClearWindow(display, b->main);
 
   /* Do time data first  */
 
-  for (i = 0; i < b.nrow; i++) {
-    i0 = i + b.row0;
-    if (i0 < b.maxrow) {
-      sprintf(string, "%.8g", b.data[0][i0]);
-      XDrawString(display, b.main, small_gc, DCURXs / 2 + 5, i * drow + DCURYs,
+  for (i = 0; i < b->nrow; i++) {
+    i0 = i + b->row0;
+    if (i0 < b->maxrow) {
+      sprintf(string, "%.8g", b->data[0][i0]);
+      XDrawString(display, b->main, small_gc, DCURXs / 2 + 5, i * drow + DCURYs,
                   string, strlen(string));
     }
   }
 
   /* Do data stuff   */
-  for (j = 0; j < b.ncol; j++) {
+  for (j = 0; j < b->ncol; j++) {
     x0 = (j + 1) * dcol + DCURXs / 2;
-    j0 = j + b.col0;
-    if (j0 >= b.maxcol)
+    j0 = j + b->col0;
+    if (j0 >= b->maxcol)
       return; /* if this one is too big, they all are  */
-    for (i = 0; i < b.nrow; i++) {
-      i0 = i + b.row0;
-      if (i0 < b.maxrow) {
-        sprintf(string, "%.7g", b.data[j0][i0]);
-        XDrawString(display, b.main, small_gc, x0 + 5, i * drow + DCURYs,
+    for (i = 0; i < b->nrow; i++) {
+      i0 = i + b->row0;
+      if (i0 < b->maxrow) {
+        sprintf(string, "%.7g", b->data[j0][i0]);
+        XDrawString(display, b->main, small_gc, x0 + 5, i * drow + DCURYs,
                     string, strlen(string));
       }
     }
@@ -643,13 +642,6 @@ void init_browser(void) {
   my_browser.istart = 0;
   my_browser.iend = 0;
   strcpy(my_browser.hinttxt, "hint");
-}
-
-void kill_browser(BROWSER *b) {
-  b->xflag = 0;
-  waitasec(ClickTime);
-  XDestroySubwindows(display, b->base);
-  XDestroyWindow(display, b->base);
 }
 
 void make_new_browser(void) {
@@ -676,6 +668,33 @@ Window br_button(Window root, int row, int col, char *name, int iflag) {
   win = make_window(root, x, y, width + 5, DCURYs + 1, 1);
   XSelectInput(display, win, MYMASK);
   return (win);
+}
+
+static void browser_event(void *cookie, const XEvent *ev) {
+  BROWSER *b = cookie;
+
+  switch (ev->type) {
+  case ConfigureNotify:
+    browser_resize(b, ev->xconfigure.window);
+    break;
+
+  case Expose:
+    browser_display(b, ev->xexpose.window);
+    break;
+
+  case EnterNotify:
+  case LeaveNotify:
+    browser_enter(b, ev, ev->type == EnterNotify);
+    break;
+
+  case ButtonPress:
+    browser_button_press(b, ev);
+    break;
+
+  case KeyPress:
+    browser_keypress(b, ev);
+    break;
+  }
 }
 
 void make_browser(BROWSER *b, char *wname, char *iname, int row, int col) {
@@ -762,55 +781,28 @@ void make_browser(BROWSER *b, char *wname, char *iname, int row, int col) {
   if (noicon == 0)
     XIconifyWindow(display, base, screen);
   /*  XMapWindow(display,base);  */
+
+  x11_events_listen(g_x11_events, X11_EVENTS_ANY_WINDOW,
+                    ExposureMask | KeyPressMask | ButtonPressMask |
+                        StructureNotifyMask | MYMASK | SIMPMASK,
+                    browser_event, b);
 }
 
-/*   These are the global exporters ...   */
-
-void expose_my_browser(XEvent ev) {
-  if (my_browser.xflag == 0)
-    return;
-  expose_browser(ev, my_browser);
+void kill_browser(BROWSER *b) {
+  x11_events_unlisten(g_x11_events, X11_EVENTS_ANY_WINDOW,
+                      ExposureMask | KeyPressMask | ButtonPressMask |
+                          StructureNotifyMask | MYMASK | SIMPMASK,
+                      browser_event, b);
+  b->xflag = 0;
+  waitasec(ClickTime);
+  XDestroyWindow(display, b->base);
 }
 
-void enter_my_browser(XEvent ev, int yn) {
-  if (my_browser.xflag == 0)
-    return;
-  enter_browser(ev, &my_browser, yn);
-}
-
-void my_browse_button(XEvent ev) {
-  if (my_browser.xflag == 0)
-    return;
-  browse_button(ev, &my_browser);
-}
-
-void my_browse_keypress(XEvent ev, int *used) {
-  if (my_browser.xflag == 0)
-    return;
-  browse_keypress(ev, used, &my_browser);
-}
-
-void resize_my_browser(Window win) {
-  if (my_browser.xflag == 0)
-    return;
-  resize_browser(win, &my_browser);
-}
-
-void expose_browser(XEvent ev, BROWSER b) {
-  if (my_browser.xflag == 0)
-    return;
-  if (ev.type != Expose)
-    return;
-  display_browser(ev.xexpose.window, b);
-}
-
-void resize_browser(Window win, BROWSER *b) {
+static void browser_resize(BROWSER *b, Window win) {
   unsigned int w, h, hreal;
   int dcol = 17 * DCURXs, drow = DCURYs + 6;
   int i0;
   int newrow, newcol;
-  if (my_browser.xflag == 0)
-    return;
   if (win != b->base)
     return;
   /* w=ev.xconfigure.width;
@@ -854,12 +846,10 @@ void resize_browser(Window win, BROWSER *b) {
 
 /*  if button is pressed in the browser
     then do the following  */
-void browse_button(XEvent ev, BROWSER *b) {
+static void browser_button_press(BROWSER *b, const XEvent *ev) {
   XEvent zz;
   int done = 1;
-  Window w = ev.xbutton.window;
-  if (my_browser.xflag == 0)
-    return;
+  Window w = ev->xbutton.window;
   if (w == b->up || w == b->down || w == b->pgup || w == b->pgdn ||
       w == b->left || w == b->right) {
     done = 1;
@@ -966,142 +956,126 @@ void browse_button(XEvent ev, BROWSER *b) {
   }
 }
 
-void browse_keypress(XEvent ev, int *used, BROWSER *b) {
-  Window w = ev.xkey.window;
-
-  char ks;
+static void browser_keypress(BROWSER *b, const XEvent *ev) {
+  Window w = ev->xkey.window;
   Window w2;
   int rev;
 
-  *used = 0;
-  if (my_browser.xflag == 0)
-    return;
   XGetInputFocus(display, &w2, &rev);
 
-  if (w == b->main || w == b->base || w == b->upper || w2 == b->base) {
-    *used = 1;
+  if (w != b->main && w != b->base && w != b->upper && w2 != b->base)
+    return;
 
-    ks = (char)get_key_press(&ev);
+  switch (get_key_press(ev)) {
+  case UP:
+    data_up(b);
+    break;
 
-    if (ks == UP) {
-      data_up(b);
-      return;
-    }
+  case DOWN:
+    data_down(b);
+    break;
 
-    if (ks == DOWN) {
-      data_down(b);
-      return;
-    }
+  case PGUP:
+    data_pgup(b);
+    break;
 
-    if (ks == PGUP) {
-      data_pgup(b);
-      return;
-    }
+  case PGDN:
+    data_pgdn(b);
+    break;
 
-    if (ks == PGDN) {
-      data_pgdn(b);
-      return;
-    }
+  case LEFT:
+    data_left(b);
+    break;
 
-    if (ks == LEFT) {
-      data_left(b);
-      return;
-    }
+  case RIGHT:
+    data_right(b);
+    break;
 
-    if (ks == RIGHT) {
-      data_right(b);
-      return;
-    }
+  case HOME:
+    data_home(b);
+    break;
 
-    if (ks == HOME) {
-      data_home(b);
-      return;
-    }
+  case END:
+    data_end(b);
+    break;
 
-    if (ks == END) {
-      data_end(b);
-      return;
-    }
+  case 's':
+  case 'S':
+    data_first(b);
+    break;
 
-    if (ks == 's' || ks == 'S') {
-      data_first(b);
-      return;
-    }
+  case 'e':
+  case 'E':
+    data_last(b);
+    break;
 
-    if (ks == 'e' || ks == 'E') {
-      data_last(b);
-      return;
-    }
+  case 'r':
+  case 'R':
+    data_restore(b);
+    break;
 
-    if (ks == 'r' || ks == 'R') {
-      data_restore(b);
-      return;
-    }
+  case 'w':
+  case 'W':
+    data_write(b);
+    break;
 
-    if (ks == 'W' || ks == 'w') {
-      data_write(b);
-      return;
-    }
+  case 'g':
+  case 'G':
+    data_get(b);
+    break;
 
-    if (ks == 'g' || ks == 'G') {
-      data_get(b);
-      return;
-    }
+  case 'f':
+  case 'F':
+    data_find(b);
+    break;
 
-    if (ks == 'f' || ks == 'F') {
-      data_find(b);
-      return;
-    }
+  case 'l':
+  case 'L':
+    data_read(b);
+    break;
 
-    if (ks == 'l' || ks == 'L') {
-      data_read(b);
-      return;
-    }
+  case 'u':
+  case 'U':
+    data_unreplace(b);
+    break;
 
-    if (ks == 'u' || ks == 'U') {
-      data_unreplace(b);
-      return;
-    }
+  case 't':
+  case 'T':
+    data_table(b);
+    break;
 
-    if (ks == 't' || ks == 'T') {
-      data_table(b);
-      return;
-    }
+  case 'p':
+  case 'P':
+    data_replace(b);
+    break;
 
-    if (ks == 'p' || ks == 'P') {
-      data_replace(b);
-      return;
-    }
+  case 'a':
+  case 'A':
+    data_add_col(b);
+    break;
 
-    if (ks == 'a' || ks == 'A') {
-      data_add_col(b);
-      return;
-    }
+  case 'd':
+  case 'D':
+    data_del_col(b);
+    break;
 
-    if (ks == 'd' || ks == 'D') {
-      data_del_col(b);
-      return;
-    }
-
-    if (ks == ESC) {
-      XSetInputFocus(display, command_pop, RevertToParent, CurrentTime);
-      return;
-    }
-
-  } /* end of cases */
+  case ESC:
+    XSetInputFocus(display, command_pop, RevertToParent, CurrentTime);
+    break;
+  }
 }
 
 void data_up(BROWSER *b) {
   if (b->row0 > 0) {
     b->row0--;
-    draw_data(*b);
+    draw_data(b);
   }
 }
 
 void data_down(BROWSER *b) {
   if (b->row0 < (b->maxrow - 1)) {
     b->row0++;
-    draw_data(*b);
+    draw_data(b);
   }
 }
 
@@ -1111,7 +1085,7 @@ void data_pgup(BROWSER *b) {
     b->row0 = i;
   else
     b->row0 = 0;
-  draw_data(*b);
+  draw_data(b);
 }
 
 void data_pgdn(BROWSER *b) {
@@ -1120,19 +1094,19 @@ void data_pgdn(BROWSER *b) {
     b->row0 = i;
   else
     b->row0 = b->maxrow - 1;
-  draw_data(*b);
+  draw_data(b);
 }
 
 void data_home(BROWSER *b) {
   b->row0 = 0;
   b->istart = 0;
   b->iend = b->maxrow;
-  draw_data(*b);
+  draw_data(b);
 }
 
 void data_end(BROWSER *b) {
   b->row0 = b->maxrow - 1;
-  draw_data(*b);
+  draw_data(b);
 }
 
 void get_data_xyz(float *x, float *y, float *z, int i1, int i2, int i3,
@@ -1177,7 +1151,7 @@ void data_replace(BROWSER *b) {
     status = get_dialog("Replace", "Formula:", form, "Replace", "Cancel", 80);
     if (status != FORGET_ALL)
       replace_column(var, form, b->data, b->maxrow);
-    draw_data(*b);
+    draw_data(b);
   }
 
   XSetInputFocus(display, w, rev, CurrentTime);
@@ -1185,7 +1159,7 @@ void data_replace(BROWSER *b) {
 
 void data_unreplace(BROWSER *b) {
   unreplace_column();
-  draw_data(*b);
+  draw_data(b);
 }
 
 void data_table(BROWSER *b) {
@@ -1238,7 +1212,7 @@ void data_find(BROWSER *b) {
     find_value(col, val, &row, *b);
   if (row >= 0) {
     b->row0 = row;
-    draw_data(*b);
+    draw_data(b);
   }
 }
 
@@ -1356,7 +1330,7 @@ void data_left(BROWSER *b) {
   int i = b->col0;
   if (i > 1) {
     b->col0--;
-    redraw_browser(*b);
+    browser_redraw(b);
   }
 }
 
@@ -1364,7 +1338,7 @@ void data_right(BROWSER *b) {
   int i = b->col0 + b->ncol;
   if (i <= b->maxcol) {
     b->col0++;
-    redraw_browser(*b);
+    browser_redraw(b);
   }
 }
 

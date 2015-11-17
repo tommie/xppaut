@@ -363,6 +363,8 @@ static void create_vcr(char *name) {
   XStringListToTextProperty(&name, 1, &iconname);
   XSetWMProperties(display, base, &winname, &iconname, NULL, 0, &size_hints,
                    NULL, NULL);
+  XFree(iconname.value);
+  XFree(winname.value);
   make_icon((char *)aniwin_bits, aniwin_width, aniwin_height, base);
   vcr.wfile = br_button(base, 0, 0, "File", 0);
   vcr.wgo = br_button(base, 0, 1, "Go", 0);
@@ -1016,7 +1018,7 @@ int getppmbits(Window window, int *wid, int *hgt, unsigned char *out) {
       }
     }
   }
-  /* XDestroyImage(ximage); */
+  XDestroyImage(ximage);
 
   return (1);
 }

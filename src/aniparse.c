@@ -587,31 +587,25 @@ static void ani_button(Window w) {
       ani_frame(0);
       ani_grab_flag = 1;
     }
-  }
-  if (w == vcr.wmpeg)
+  } else if (w == vcr.wmpeg) {
     ani_create_mpeg();
-  if (w == vcr.wgo)
-
-  {
+  } else if (w == vcr.wgo) {
     ani_flip();
-  }
-  if (w == vcr.wskip)
+  } else if (w == vcr.wskip) {
     ani_newskip();
-  if (w == vcr.wup)
+  } else if (w == vcr.wup) {
     ani_flip1(1);
-  if (w == vcr.wdn)
+  } else if (w == vcr.wdn) {
     ani_flip1(-1);
-  if (w == vcr.wfile)
+  } else if (w == vcr.wfile) {
     get_ani_file(NULL);
-  if (w == vcr.wfly) {
+  } else if (w == vcr.wfly) {
     animation_on_the_fly = 1 - animation_on_the_fly;
     check_on_the_fly();
-  }
-  if (w == vcr.wreset) {
+  } else if (w == vcr.wreset) {
     vcr.pos = 0;
     reset_comets();
-  }
-  if (w == vcr.kill) {
+  } else if (w == vcr.kill) {
     destroy_vcr();
   }
 }

@@ -14,6 +14,7 @@
 #include "base/timeutil.h"
 
 /* --- Macros --- */
+#define EV_MASK ButtonPressMask | ButtonReleaseMask | KeyPressMask
 #define MAXFILM 250
 
 /* --- Types --- */
@@ -28,14 +29,17 @@ typedef struct {
   int frame;
 
   int ncycles;
-  int speed;
+  int ival;
   int cycle;
+  int curr_ival;
 } Player;
 
 /* --- Forward Declarations --- */
 static void auto_play(void);
+static void auto_play_stop(Player *p);
 static void make_anigif(void);
 static void play_back(void);
+static void play_back_stop(Player *p);
 static void save_kine(void);
 static void save_movie(char *basename, int fmat);
 static void too_small(void);
@@ -112,29 +116,30 @@ static int show_frame(const Player *p) {
   return 0;
 }
 
-static int play_back_event(void *cookie, const XEvent *ev) {
+static void play_back_event(void *cookie, const XEvent *ev) {
   Player *p = cookie;
 
   switch (ev->type) {
-  case ButtonPress:
+  case ButtonRelease:
     p->frame++;
     if (p->frame >= mov_ind)
       p->frame = 0;
     if (show_frame(p))
-      return 1;
+      play_back_stop(p);
     break;
 
   case KeyPress:
     switch (get_key_press(ev)) {
     case ESC:
-      return 1;
+      play_back_stop(p);
+      break;
 
     case RIGHT:
       p->frame++;
       if (p->frame >= mov_ind)
         p->frame = 0;
       if (show_frame(p))
-        return 1;
+        play_back_stop(p);
       break;
 
     case LEFT:
@@ -142,45 +147,46 @@ static int play_back_event(void *cookie, const XEvent *ev) {
       if (p->frame < 0)
         p->frame = mov_ind - 1;
       if (show_frame(p))
-        return 1;
+        play_back_stop(p);
       break;
     case HOME:
       p->frame = 0;
       if (show_frame(p))
-        return 1;
+        play_back_stop(p);
       break;
     case END:
       p->frame = mov_ind - 1;
       if (show_frame(p))
-        return 1;
+        play_back_stop(p);
       break;
     }
   }
-
-  return 0;
 }
 
 static void play_back(void) {
   int x, y;
   unsigned int bw, d;
   Window root;
-  Player p;
+  Player *p = malloc(sizeof(*p));
+  if (!p)
+    return;
 
-  p.frame = 0;
-  XGetGeometry(display, draw_win, &root, &x, &y, &p.w, &p.h, &bw, &d);
+  p->frame = 0;
+  XGetGeometry(display, draw_win, &root, &x, &y, &p->w, &p->h, &bw, &d);
   if (mov_ind == 0)
     return;
 
-  if (show_frame(&p))
+  if (show_frame(p))
     return;
 
-  while (1) {
-    XEvent ev;
+  x11_events_listen(g_x11_events, X11_EVENTS_ANY_WINDOW, EV_MASK,
+                    play_back_event, p);
+}
 
-    XNextEvent(display, &ev);
-    if (play_back_event(&p, &ev))
-      break;
-  }
+static void play_back_stop(Player *p) {
+  x11_events_unlisten(g_x11_events, X11_EVENTS_ANY_WINDOW, EV_MASK,
+                      play_back_event, p);
+  free(p);
 }
 
 static void save_kine(void) {
@@ -274,81 +280,107 @@ static void save_movie(char *basename, int fmat) {
   }
 }
 
-static int auto_play_event(void *cookie, const XEvent *ev) {
+static void auto_play_event(void *cookie, const XEvent *ev) {
   const int dt = 20;
   const int smax = 500;
   Player *p = cookie;
   unsigned int key;
 
   switch (ev->type) {
-  case ButtonPress:
-    return 1;
+  case ButtonRelease:
+    auto_play_stop(p);
+    break;
 
   case KeyPress:
     key = get_key_press(ev);
     switch (key) {
     case ESC:
-      return 1;
+      auto_play_stop(p);
+      break;
 
     case ',':
-      p->speed -= dt;
-      if (p->speed < dt)
-        p->speed = dt;
+      p->ival -= dt;
+      if (p->ival < dt)
+        p->ival = dt;
       break;
 
     case '.':
-      p->speed += dt;
-      if (p->speed > smax)
-        p->speed = smax;
+      p->ival += dt;
+      if (p->ival > smax)
+        p->ival = smax;
       break;
     }
     break;
   }
+}
 
-  return 0;
+static void auto_play_timeout(void *cookie) {
+  Player *p = cookie;
+
+  p->frame++;
+  if (p->frame >= mov_ind) {
+    p->cycle++;
+    p->frame = 0;
+    if (p->cycle >= p->ncycles) {
+      auto_play_stop(p);
+      return;
+    }
+  }
+
+  if (show_frame(p)) {
+    auto_play_stop(p);
+    return;
+  }
+
+  if (p->ival != p->curr_ival) {
+    struct timeval rtv = {.tv_sec = 0, .tv_usec = p->ival * 1000};
+
+    x11_events_timeout_cancel(g_x11_events, auto_play_timeout, p);
+    x11_events_timeout(g_x11_events, &rtv, X11_EVENTS_T_REPEAT,
+                       auto_play_timeout, p);
+    p->curr_ival = p->ival;
+  }
 }
 
 static void auto_play(void) {
   int x, y;
   unsigned int bw, d;
   Window root;
-  Player p;
-  XEvent ev;
+  Player *p = malloc(sizeof(*p));
+  if (!p)
+    return;
 
   if (mov_ind == 0)
     return;
 
-  p.frame = 0;
-  p.ncycles = 1;
-  p.speed = 50;
-  p.cycle = 0;
-  new_int("Number of cycles", &p.ncycles);
-  new_int("Msec between frames", &p.speed);
-  if (p.speed < 0)
-    p.speed = 0;
-  if (p.ncycles <= 0)
+  p->frame = 0;
+  p->ncycles = 1;
+  p->ival = 50;
+  p->cycle = 0;
+  new_int("Number of cycles", &p->ncycles);
+  new_int("Msec between frames", &p->ival);
+  if (p->ival < 0)
+    p->ival = 0;
+  if (p->ncycles <= 0)
     return;
-  XGetGeometry(display, draw_win, &root, &x, &y, &p.w, &p.h, &bw, &d);
+  XGetGeometry(display, draw_win, &root, &x, &y, &p->w, &p->h, &bw, &d);
 
-  if (show_frame(&p))
+  if (show_frame(p))
     return;
 
-  while (p.cycle < p.ncycles) {
-    if (XPending(display) > 0) {
-      XNextEvent(display, &ev);
-      if (auto_play_event(&p, &ev))
-        return;
-    }
+  struct timeval rtv = {.tv_sec = 0, .tv_usec = p->ival * 1000};
+  p->curr_ival = p->ival;
+  x11_events_timeout(g_x11_events, &rtv, X11_EVENTS_T_REPEAT, auto_play_timeout,
+                     p);
+  x11_events_listen(g_x11_events, X11_EVENTS_ANY_WINDOW, EV_MASK,
+                    auto_play_event, p);
+}
 
-    waitasec(p.speed);
-    p.frame++;
-    if (p.frame >= mov_ind) {
-      p.cycle++;
-      p.frame = 0;
-    }
-    if (show_frame(&p))
-      return;
-  }
+static void auto_play_stop(Player *p) {
+  x11_events_unlisten(g_x11_events, X11_EVENTS_ANY_WINDOW, EV_MASK,
+                      auto_play_event, p);
+  x11_events_timeout_cancel(g_x11_events, auto_play_timeout, p);
+  free(p);
 }
 
 static void too_small(void) {

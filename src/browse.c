@@ -43,6 +43,7 @@
 static int add_stor_col(char *name, char *formula, BROWSER *b);
 static void browse_but_on(BROWSER *b, int i, Window w, int yn);
 static void browser_button_press(BROWSER *b, const XEvent *ev);
+static void browser_button_release(BROWSER *b, const XEvent *ev);
 static void browser_display(BROWSER *b, Window w);
 static void browser_enter(BROWSER *b, const XEvent *ev, int yn);
 static void browser_keypress(BROWSER *b, const XEvent *ev);
@@ -691,6 +692,10 @@ static void browser_event(void *cookie, const XEvent *ev) {
     browser_button_press(b, ev);
     break;
 
+  case ButtonRelease:
+    browser_button_release(b, ev);
+    break;
+
   case KeyPress:
     browser_keypress(b, ev);
     break;
@@ -784,7 +789,8 @@ void make_browser(BROWSER *b, char *wname, char *iname, int row, int col) {
 
   x11_events_listen(g_x11_events, X11_EVENTS_ANY_WINDOW,
                     ExposureMask | KeyPressMask | ButtonPressMask |
-                        StructureNotifyMask | MYMASK | SIMPMASK,
+                        ButtonReleaseMask | StructureNotifyMask | MYMASK |
+                        SIMPMASK,
                     browser_event, b);
 }
 
@@ -794,7 +800,6 @@ void kill_browser(BROWSER *b) {
                           StructureNotifyMask | MYMASK | SIMPMASK,
                       browser_event, b);
   b->xflag = 0;
-  waitasec(ClickTime);
   XDestroyWindow(display, b->base);
 }
 
@@ -847,113 +852,75 @@ static void browser_resize(BROWSER *b, Window win) {
 /*  if button is pressed in the browser
     then do the following  */
 static void browser_button_press(BROWSER *b, const XEvent *ev) {
-  XEvent zz;
-  int done = 1;
   Window w = ev->xbutton.window;
-  if (w == b->up || w == b->down || w == b->pgup || w == b->pgdn ||
-      w == b->left || w == b->right) {
-    done = 1;
-    while (done) {
-      if (w == b->up)
-        data_up(b);
-      if (w == b->down)
-        data_down(b);
-      if (w == b->pgup)
-        data_pgup(b);
-      if (w == b->pgdn)
-        data_pgdn(b);
-      if (w == b->left)
-        data_left(b);
-      if (w == b->right)
-        data_right(b);
-      waitasec(100);
-      if (XPending(display) > 0) {
 
-        XNextEvent(display, &zz);
-        switch (zz.type) {
-        case ButtonRelease:
-          done = 0;
-          break;
-        }
+  if (w != b->up && w != b->down && w != b->pgup && w != b->pgdn &&
+      w != b->left && w != b->right)
+    return;
+
+  int done = 0;
+
+  while (!done) {
+    if (w == b->up)
+      data_up(b);
+    else if (w == b->down)
+      data_down(b);
+    else if (w == b->pgup)
+      data_pgup(b);
+    else if (w == b->pgdn)
+      data_pgdn(b);
+    else if (w == b->left)
+      data_left(b);
+    else if (w == b->right)
+      data_right(b);
+
+    waitasec(100);
+    if (XPending(display) > 0) {
+      XEvent zz;
+
+      XNextEvent(display, &zz);
+      switch (zz.type) {
+      case ButtonRelease:
+        done = 1;
+        break;
       }
     }
-    return;
   }
+}
 
-  if (w == b->home) {
+static void browser_button_release(BROWSER *b, const XEvent *ev) {
+  Window w = ev->xbutton.window;
+
+  if (w == b->home)
     data_home(b);
-    return;
-  }
-
-  if (w == b->end) {
+  else if (w == b->end)
     data_end(b);
-    return;
-  }
-
-  if (w == b->first) {
+  else if (w == b->first)
     data_first(b);
-    return;
-  }
-
-  if (w == b->last) {
+  else if (w == b->last)
     data_last(b);
-    return;
-  }
-
-  if (w == b->restore) {
+  else if (w == b->restore)
     data_restore(b);
-    return;
-  }
-
-  if (w == b->write) {
+  else if (w == b->write)
     data_write(b);
-    return;
-  }
-
-  if (w == b->get) {
+  else if (w == b->get)
     data_get(b);
-    return;
-  }
-
-  if (w == b->find) {
+  else if (w == b->find)
     data_find(b);
-    return;
-  }
-
-  if (w == b->repl) {
+  else if (w == b->repl)
     data_replace(b);
-    return;
-  }
-
-  if (w == b->load) {
+  else if (w == b->load)
     data_read(b);
-    return;
-  }
-
-  if (w == b->addcol) {
+  else if (w == b->addcol)
     data_add_col(b);
-    return;
-  }
-
-  if (w == b->delcol) {
+  else if (w == b->delcol)
     data_del_col(b);
-    return;
-  }
-
-  if (w == b->unrepl) {
+  else if (w == b->unrepl)
     data_unreplace(b);
-    return;
-  }
-
-  if (w == b->table) {
+  else if (w == b->table)
     data_table(b);
-    return;
-  }
-
-  if (w == b->close) {
+  else if (w == b->close)
     kill_browser(b);
-    return;
-  }
 }
 
 static void browser_keypress(BROWSER *b, const XEvent *ev) {

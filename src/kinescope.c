@@ -26,6 +26,10 @@ typedef struct {
   unsigned int w;
   unsigned int h;
   int frame;
+
+  int ncycles;
+  int speed;
+  int cycle;
 } Player;
 
 /* --- Forward Declarations --- */
@@ -38,8 +42,6 @@ static void too_small(void);
 
 /* --- Data --- */
 int mov_ind;
-static int ks_ncycle = 1;
-static int ks_speed = 50;
 
 static MOVIE movie[MAXFILM];
 
@@ -272,81 +274,81 @@ static void save_movie(char *basename, int fmat) {
   }
 }
 
-static void auto_play(void) {
-  int x, y;
-  unsigned int h, w, bw, d, key;
-  Window root;
+static int auto_play_event(void *cookie, const XEvent *ev) {
+  const int dt = 20;
+  const int smax = 500;
+  Player *p = cookie;
+  unsigned int key;
 
-  int dt = 20;
-  int smax = 500;
-  XEvent ev;
-  int i = 0, cycle = 0;
+  switch (ev->type) {
+  case ButtonPress:
+    return 1;
 
-  new_int("Number of cycles", &ks_ncycle);
-  new_int("Msec between frames", &ks_speed);
-  if (ks_speed < 0)
-    ks_speed = 0;
-  if (ks_ncycle <= 0)
-    return;
-  XGetGeometry(display, draw_win, &root, &x, &y, &w, &h, &bw, &d);
-  if (mov_ind == 0)
-    return;
-  if (h < movie[i].h || w < movie[i].w) {
-    too_small();
-    return;
+  case KeyPress:
+    key = get_key_press(ev);
+    switch (key) {
+    case ESC:
+      return 1;
+
+    case ',':
+      p->speed -= dt;
+      if (p->speed < dt)
+        p->speed = dt;
+      break;
+
+    case '.':
+      p->speed += dt;
+      if (p->speed > smax)
+        p->speed = smax;
+      break;
+    }
+    break;
   }
 
-  XCopyArea(display, movie[i].xi, draw_win, gc_graph, 0, 0, w, h, 0, 0);
-  XFlush(display);
+  return 0;
+}
 
-  while (1) {
+static void auto_play(void) {
+  int x, y;
+  unsigned int bw, d;
+  Window root;
+  Player p;
+  XEvent ev;
 
-    /* check for events    */
+  if (mov_ind == 0)
+    return;
+
+  p.frame = 0;
+  p.ncycles = 1;
+  p.speed = 50;
+  p.cycle = 0;
+  new_int("Number of cycles", &p.ncycles);
+  new_int("Msec between frames", &p.speed);
+  if (p.speed < 0)
+    p.speed = 0;
+  if (p.ncycles <= 0)
+    return;
+  XGetGeometry(display, draw_win, &root, &x, &y, &p.w, &p.h, &bw, &d);
+
+  if (show_frame(&p))
+    return;
+
+  while (p.cycle < p.ncycles) {
     if (XPending(display) > 0) {
-
       XNextEvent(display, &ev);
-      switch (ev.type) {
-      case ButtonPress:
-
+      if (auto_play_event(&p, &ev))
         return;
-        break;
-
-      case KeyPress:
-        key = get_key_press(&ev);
-        if (key == 27)
-          return;
-        if (key == ',') {
-          ks_speed -= dt;
-          if (ks_speed < dt)
-            ks_speed = dt;
-        }
-        if (key == '.') {
-          ks_speed += dt;
-          if (ks_speed > smax)
-            ks_speed = smax;
-        }
-
-        break;
-      }
-
-    } /* done checking  now increment pix   */
-
-    waitasec(ks_speed);
-    i++;
-    if (i >= mov_ind) {
-      cycle++;
-      i = 0;
     }
-    if (h < movie[i].h || w < movie[i].w) {
-      too_small();
-      return;
-    }
-    XCopyArea(display, movie[i].xi, draw_win, gc_graph, 0, 0, w, h, 0, 0);
-    XFlush(display);
-    if (cycle >= ks_ncycle)
-      return;
 
-  } /*  Big loop   */
+    waitasec(p.speed);
+    p.frame++;
+    if (p.frame >= mov_ind) {
+      p.cycle++;
+      p.frame = 0;
+    }
+    if (show_frame(&p))
+      return;
+  }
 }
 
 static void too_small(void) {

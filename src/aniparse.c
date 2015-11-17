@@ -206,6 +206,10 @@ typedef struct {
   int pos, inc;
   char file[XPP_MAX_NAME];
   /*char file[256];*/
+
+  int frame;
+  int mpeg_frame;
+  FILE *angiffile;
 } VCR;
 
 /* --- Forward Declarations --- */
@@ -822,115 +826,121 @@ static void ani_flip1(int n) {
   XFlush(display);
 }
 
-static void ani_flip(void) {
+static int ani_play_event(VCR *vcr, const XEvent *ev) {
+  Window w;
+
+  switch (ev->type) {
+  case ButtonPress:
+    w = ev->xbutton.window;
+    if (w == vcr->wpause) {
+      return 1;
+    } else if (w == vcr->wfast) {
+      ani_speed = ani_speed - ani_speed_inc;
+      if (ani_speed < 0)
+        ani_speed = 0;
+    } else if (w == vcr->wslow) {
+      ani_speed = ani_speed + ani_speed_inc;
+      if (ani_speed > 100)
+        ani_speed = 100;
+    }
+    break;
+  }
+
+  return 0;
+}
+
+static int ani_play_timeout(VCR *vcr) {
+  int row = vcr->pos;
   double y[MAXODE];
   double t;
-  char fname[256];
-  FILE *angiffile = NULL;
-  float **ss;
-  int i, row, done;
-  int mpeg_frame = 0, mpeg_write = 0, count = 0;
-  XEvent ev;
-  Window w;
-  /*Window root;
-  unsigned int he,wi,bw,d;
-  int x0,y0;
-  */
-  done = 0;
+  float **ss = my_browser.data;
+
+  /* first set all the variables */
+  XSetForeground(display, ani_gc, WhitePixel(display, screen));
+  XFillRectangle(display, ani_pixmap, ani_gc, 0, 0, vcr->wid, vcr->hgt);
+  XSetForeground(display, ani_gc, BlackPixel(display, screen));
+  t = (double)ss[0][row];
+  for (int i = 0; i < NODE + NMarkov; i++)
+    y[i] = (double)ss[i + 1][row];
+  set_fix_rhs(t, y);
+
+  /* now draw the stuff  */
+
+  render_ani();
+
+  /*  done drawing   */
+
+  XCopyArea(display, ani_pixmap, vcr->view, ani_gc, 0, 0, vcr->wid, vcr->hgt, 0,
+            0);
+
+  XFlush(display);
+
+  /* now check mpeg stuff */
+  if (mpeg.flag > 0 && vcr->frame % mpeg.skip == 0) {
+    char fname[256];
+
+    sprintf(fname, "%s_%d.ppm", mpeg.root, vcr->mpeg_frame);
+    vcr->mpeg_frame++;
+    writeframe(fname, ani_pixmap, vcr->wid, vcr->hgt);
+  }
+
+  /* now check AVI stuff */
+  if (mpeg.aviflag == 1)
+    add_ani_gif(vcr->view, vcr->angiffile, vcr->frame);
+
+  vcr->frame++;
+
+  vcr->pos = vcr->pos + vcr->inc;
+  if (vcr->pos >= my_browser.maxrow) {
+    vcr->pos = 0;
+    reset_comets();
+    return 1;
+  }
+
+  return 0;
+}
+
+static void vcr_stop(VCR *vcr) {
+  mpeg.flag = 0;
+  if (mpeg.aviflag == 1) {
+    end_ani_gif(vcr->angiffile);
+    fclose(vcr->angiffile);
+    set_global_map(0);
+  }
+}
+
+static void ani_flip(void) {
   if (n_anicom == 0)
     return;
   if (my_browser.maxrow < 2)
     return;
-  ss = my_browser.data;
   set_ani_perm(); /* evaluate all permanent structures  */
   /* check avi_flags for initialization */
   if (mpeg.aviflag == 1) {
-    angiffile = fopen("anim.gif", "wb");
+    vcr.angiffile = fopen("anim.gif", "wb");
     set_global_map(1);
   }
-  count = 0;
-  while (!done) { /* Ignore all events except the button presses */
+  vcr.frame = 0;
+  vcr.mpeg_frame = 0;
+
+  for (;;) {
     if (XPending(display) > 0) {
+      XEvent ev;
+
       XNextEvent(display, &ev);
-      switch (ev.type) {
-      case ButtonPress:
-        w = ev.xbutton.window;
-        if (w == vcr.wpause) {
-          done = 1;
-          break;
-        }
-        if (w == vcr.wfast) {
-          ani_speed = ani_speed - ani_speed_inc;
-          if (ani_speed < 0)
-            ani_speed = 0;
-          break;
-        }
-        if (w == vcr.wslow) {
-          ani_speed = ani_speed + ani_speed_inc;
-          if (ani_speed > 100)
-            ani_speed = 100;
-          break;
-        }
+      if (ani_play_event(&vcr, &ev))
         break;
-      }
     }
-    /* Okay no events  so lets go! */
 
-    /* first set all the variables */
-    XSetForeground(display, ani_gc, WhitePixel(display, screen));
-    XFillRectangle(display, ani_pixmap, ani_gc, 0, 0, vcr.wid, vcr.hgt);
-    XSetForeground(display, ani_gc, BlackPixel(display, screen));
-    row = vcr.pos;
-    t = (double)ss[0][row];
-    for (i = 0; i < NODE + NMarkov; i++)
-      y[i] = (double)ss[i + 1][row];
-    set_fix_rhs(t, y);
-
-    /* now draw the stuff  */
-
-    render_ani();
-
-    /*  done drawing   */
-
-    XCopyArea(display, ani_pixmap, vcr.view, ani_gc, 0, 0, vcr.wid, vcr.hgt, 0,
-              0);
-
-    XFlush(display);
+    if (ani_play_timeout(&vcr))
+      break;
 
     waitasec(ani_speed);
     if (mpeg.aviflag == 1 || mpeg.flag > 0)
       waitasec(5 * ani_speed);
-    vcr.pos = vcr.pos + vcr.inc;
-    if (vcr.pos >= my_browser.maxrow) {
-      done = 1;
-      vcr.pos = 0;
-      reset_comets();
-    }
-
-    /* now check mpeg stuff */
-    if (mpeg.flag > 0 && ((mpeg_frame % mpeg.skip) == 0)) {
-      sprintf(fname, "%s_%d.ppm", mpeg.root, mpeg_write);
-      mpeg_write++;
-      writeframe(fname, ani_pixmap, vcr.wid, vcr.hgt);
-    }
-    mpeg_frame++;
-    /* now check AVI stuff */
-
-    if (mpeg.aviflag == 1)
-    /* add_ani_gif(ani_pixmap,angiffile,count); */
-    {
-      add_ani_gif(vcr.view, angiffile, count);
-    }
-
-    count++;
   }
-  /* always stop mpeg writing */
-  mpeg.flag = 0;
-  if (mpeg.aviflag == 1) {
-    end_ani_gif(angiffile);
-    fclose(angiffile);
-    set_global_map(0);
-  }
+
+  vcr_stop(&vcr);
 }
 
 static void ani_disk_warn(void) {

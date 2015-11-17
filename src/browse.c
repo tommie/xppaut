@@ -702,9 +702,6 @@ void make_browser(BROWSER *b, char *wname, char *iname, int row, int col) {
   b->base = base;
   XSelectInput(display, base, ExposureMask | KeyPressMask | ButtonPressMask |
                                   StructureNotifyMask);
-  /* plintf("Browser base: %d \n",base); */
-  XStringListToTextProperty(&wname, 1, &winname);
-  XStringListToTextProperty(&iname, 1, &iconname);
 
   size_hints.flags = PPosition | PSize | PMinSize;
   size_hints.x = 0;
@@ -720,8 +717,12 @@ void make_browser(BROWSER *b, char *wname, char *iname, int row, int col) {
   class_hints.res_name = "";
   class_hints.res_class = "";
 
+  XStringListToTextProperty(&wname, 1, &winname);
+  XStringListToTextProperty(&iname, 1, &iconname);
   XSetWMProperties(display, base, &winname, &iconname, NULL, 0, &size_hints,
                    NULL, &class_hints);
+  XFree(iconname.value);
+  XFree(winname.value);
   make_icon((char *)browse_bits, browse_width, browse_height, base);
   b->upper = make_window(base, 0, 0, width, ystart + drow * 6, 1);
   XSetWindowBackground(display, b->upper, MyMainWinColor);

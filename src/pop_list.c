@@ -571,7 +571,6 @@ static void make_sbox_windows(STRING_BOX *sb, int row, int col, char *title,
   width = (maxchar + 4) * col * DCURX;
   height = (row + 4) * (DCURY + 16);
   base = make_plain_window(DefaultRootWindow(display), 0, 0, width, height, 4);
-  XStringListToTextProperty(&title, 1, &winname);
   size_hints.flags = PPosition | PSize | PMinSize | PMaxSize;
   size_hints.x = 0;
   size_hints.y = 0;
@@ -587,8 +586,10 @@ static void make_sbox_windows(STRING_BOX *sb, int row, int col, char *title,
   class_hints.res_class = "";
 
   make_icon((char *)info_bits, info_width, info_height, base);
+  XStringListToTextProperty(&title, 1, &winname);
   XSetWMProperties(display, base, &winname, NULL, NULL, 0, &size_hints, NULL,
                    &class_hints);
+  XFree(winname.value);
   sb->base = base;
   sb->hgt = height;
   sb->wid = width;

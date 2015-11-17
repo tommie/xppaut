@@ -210,6 +210,7 @@ typedef struct {
   int frame;
   int mpeg_frame;
   FILE *angiffile;
+  int flipping;
 } VCR;
 
 /* --- Forward Declarations --- */
@@ -239,6 +240,7 @@ static int add_ani_text(ANI_COM *a, char *x1, char *y1, char *y2);
 static int add_ani_vtext(ANI_COM *a, char *x1, char *y1, char *x2, char *y2);
 static int add_grab_command(char *xs, char *ys, char *ts, FILE *fp);
 static int add_grab_task(char *lhs, char *rhs, int igrab, int which);
+static void ani_add_speed(int delta);
 static void ani_border(Window w, int i);
 static void ani_button(Window w);
 static void ani_buttonx(XEvent ev, int flag);
@@ -297,6 +299,7 @@ static void set_from_init_data(void);
 static void set_to_init_data(void);
 static void tst_pix_draw(void);
 static void update_ani_motion_stuff(int x, int y);
+static void vcr_stop(VCR *vcr);
 static void xset_ani_col(int icol);
 
 /* --- Data --- */
@@ -316,7 +319,7 @@ static int LastAniColor;
 static int ani_line;
 
 static int ani_speed = 10;
-static int ani_speed_inc = 2;
+static const int ani_speed_inc = 2;
 
 static double ani_xlo = 0, ani_xhi = 1, ani_ylo = 0, ani_yhi = 1;
 static double ani_lastx, ani_lasty;
@@ -430,6 +433,9 @@ static void ani_border(Window w, int i) {
 }
 
 static void destroy_vcr(void) {
+  if (vcr.flipping)
+    vcr_stop(&vcr);
+
   vcr.iexist = 0;
   XDestroySubwindows(display, vcr.base);
 
@@ -591,6 +597,12 @@ static void ani_button(Window w) {
     ani_create_mpeg();
   } else if (w == vcr.wgo) {
     ani_flip();
+  } else if (w == vcr.wpause) {
+    vcr_stop(&vcr);
+  } else if (w == vcr.wfast) {
+    ani_add_speed(-ani_speed_inc);
+  } else if (w == vcr.wslow) {
+    ani_add_speed(ani_speed_inc);
   } else if (w == vcr.wskip) {
     ani_newskip();
   } else if (w == vcr.wup) {
@@ -820,30 +832,8 @@ static void ani_flip1(int n) {
   XFlush(display);
 }
 
-static int ani_play_event(VCR *vcr, const XEvent *ev) {
-  Window w;
-
-  switch (ev->type) {
-  case ButtonPress:
-    w = ev->xbutton.window;
-    if (w == vcr->wpause) {
-      return 1;
-    } else if (w == vcr->wfast) {
-      ani_speed = ani_speed - ani_speed_inc;
-      if (ani_speed < 0)
-        ani_speed = 0;
-    } else if (w == vcr->wslow) {
-      ani_speed = ani_speed + ani_speed_inc;
-      if (ani_speed > 100)
-        ani_speed = 100;
-    }
-    break;
-  }
-
-  return 0;
-}
-
-static int ani_play_timeout(VCR *vcr) {
+static void vcr_timeout(void *cookie) {
+  VCR *vcr = cookie;
   int row = vcr->pos;
   double y[MAXODE];
   double t;
@@ -888,18 +878,44 @@ static int ani_play_timeout(VCR *vcr) {
   if (vcr->pos >= my_browser.maxrow) {
     vcr->pos = 0;
     reset_comets();
-    return 1;
+    vcr_stop(vcr);
   }
-
-  return 0;
 }
 
 static void vcr_stop(VCR *vcr) {
+  x11_events_timeout_cancel(g_x11_events, vcr_timeout, vcr);
+  vcr->flipping = 0;
   mpeg.flag = 0;
   if (mpeg.aviflag == 1) {
     end_ani_gif(vcr->angiffile);
     fclose(vcr->angiffile);
     set_global_map(0);
+  }
+}
+
+static void vcr_register_timeout(VCR *vcr, int ani_speed) {
+  struct timeval ival;
+
+  ival.tv_sec = 0;
+  if (mpeg.aviflag || mpeg.flag)
+    ival.tv_usec = 6 * ani_speed * 1000;
+  else
+    ival.tv_usec = ani_speed * 1000;
+
+  x11_events_timeout(g_x11_events, &ival, X11_EVENTS_T_REPEAT, vcr_timeout, vcr);
+  vcr->flipping = 1;
+}
+
+static void ani_add_speed(int delta) {
+  ani_speed += delta;
+  if (ani_speed < 0)
+    ani_speed = 0;
+  if (ani_speed > 100)
+    ani_speed = 100;
+
+  if (vcr.flipping) {
+    x11_events_timeout_cancel(g_x11_events, vcr_timeout, &vcr);
+    vcr_register_timeout(&vcr, ani_speed);
   }
 }
 
@@ -917,24 +933,7 @@ static void ani_flip(void) {
   vcr.frame = 0;
   vcr.mpeg_frame = 0;
 
-  for (;;) {
-    if (XPending(display) > 0) {
-      XEvent ev;
-
-      XNextEvent(display, &ev);
-      if (ani_play_event(&vcr, &ev))
-        break;
-    }
-
-    if (ani_play_timeout(&vcr))
-      break;
-
-    waitasec(ani_speed);
-    if (mpeg.aviflag == 1 || mpeg.flag > 0)
-      waitasec(5 * ani_speed);
-  }
-
-  vcr_stop(&vcr);
+  vcr_register_timeout(&vcr, ani_speed);
 }
 
 static void ani_disk_warn(void) {

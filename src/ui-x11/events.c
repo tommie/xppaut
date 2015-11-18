@@ -190,7 +190,7 @@ static int x11_events_expire_timeouts(X11Events *evs,
     X11EventsTimeoutCb *cb = &evs->timeout_cbs.elems[n - i - 1];
 
     if (cb->flags & X11_EVENTS_T_REPEAT) {
-      // while (cb->next >= now)
+      // while (cb->next <= now)
       while (!timeval_less(now, &cb->next))
         timeval_add(&cb->next, &cb->ival);
       continue;
@@ -214,7 +214,6 @@ static int x11_events_next_timeout(X11Events *evs, struct timeval *buf) {
   for (size_t i = 0; i < evs->timeout_cbs.len; ++i) {
     const X11EventsTimeoutCb *cb = &evs->timeout_cbs.elems[i];
 
-    // if (... cb->next < buf)
     if (i == 0 || timeval_less(&cb->next, buf))
       *buf = cb->next;
   }
@@ -280,6 +279,8 @@ int x11_events_run(X11Events *evs) {
     if (!x11_events_next_timeout(evs, &tv) && XPending(evs->display) == 0) {
       if (x11_events_wait(evs, &tv))
         return 1;
+
+      continue;
     }
 
     if (XNextEvent(evs->display, &ev))

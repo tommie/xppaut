@@ -849,6 +849,23 @@ static void browser_resize(BROWSER *b, Window win) {
   /* Let the browser know how many rows and columns of data  */
 }
 
+static void browser_button_repeat(void *cookie) {
+  BROWSER *b = cookie;
+
+  if (b->repeat_button == b->up)
+    data_up(b);
+  else if (b->repeat_button == b->down)
+    data_down(b);
+  else if (b->repeat_button == b->pgup)
+    data_pgup(b);
+  else if (b->repeat_button == b->pgdn)
+    data_pgdn(b);
+  else if (b->repeat_button == b->left)
+    data_left(b);
+  else if (b->repeat_button == b->right)
+    data_right(b);
+}
+
 /*  if button is pressed in the browser
     then do the following  */
 static void browser_button_press(BROWSER *b, const XEvent *ev) {
@@ -858,38 +875,24 @@ static void browser_button_press(BROWSER *b, const XEvent *ev) {
       w != b->left && w != b->right)
     return;
 
-  int done = 0;
+  if (b->repeat_button)
+    return;
 
-  while (!done) {
-    if (w == b->up)
-      data_up(b);
-    else if (w == b->down)
-      data_down(b);
-    else if (w == b->pgup)
-      data_pgup(b);
-    else if (w == b->pgdn)
-      data_pgdn(b);
-    else if (w == b->left)
-      data_left(b);
-    else if (w == b->right)
-      data_right(b);
+  b->repeat_button = w;
 
-    waitasec(100);
-    if (XPending(display) > 0) {
-      XEvent zz;
-
-      XNextEvent(display, &zz);
-      switch (zz.type) {
-      case ButtonRelease:
-        done = 1;
-        break;
-      }
-    }
-  }
+  struct timeval ival;
+  ival.tv_sec = 0;
+  ival.tv_usec = 100000;
+  x11_events_timeout(g_x11_events, &ival, X11_EVENTS_T_REPEAT, browser_button_repeat, b);
 }
 
 static void browser_button_release(BROWSER *b, const XEvent *ev) {
   Window w = ev->xbutton.window;
+
+  if (w == b->repeat_button) {
+    x11_events_timeout_cancel(g_x11_events, browser_button_repeat, b);
+    b->repeat_button = 0;
+  }
 
   if (w == b->home)
     data_home(b);

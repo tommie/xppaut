@@ -23,6 +23,8 @@ typedef struct {
   int maxrow, maxcol;
   float **data;
   int istart, iend;
+
+  Window repeat_button;
 } BROWSER;
 
 /* --- Data --- */

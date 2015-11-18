@@ -135,6 +135,7 @@ void MessageBox(char *m) {
   MsgBox.w = make_plain_window(RootWindow(display, screen), DisplayWidth / 2,
                                DisplayHeight / 2, wid, hgt, 4);
 
+  XSetTransientForHint(display, MsgBox.w, main_win);
   make_icon((char *)alert_bits, alert_width, alert_height, MsgBox.w);
   MsgBox.here = 1;
   set_window_title(MsgBox.w, "Yo!");

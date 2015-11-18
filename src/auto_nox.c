@@ -588,6 +588,20 @@ void auto_num_par(void) {
   }
 }
 
+static void auto_zoom_end(void *cookie, int commit, const int *start, const int *end) {
+  int f = (intptr_t)cookie;
+
+  if (!commit)
+    return;
+
+  if (f < 0)
+    auto_zoom_in(start[0], start[1], end[0], end[1]);
+  else
+    auto_zoom_out(start[0], start[1], end[0], end[1]);
+
+  redraw_diagram();
+}
+
 void auto_plot_par(void) {
   static char *m[] = {"Hi",         "Norm",      "hI-lo",      "Period",
                       "Two par",    "(Z)oom in", "Zoom (O)ut", "last 1 par",
@@ -600,7 +614,6 @@ void auto_plot_par(void) {
                       "Ymin",     "Xmax",        "Ymax"};
   char values[7][MAX_LEN_SBOX];
   int status, i;
-  int ii1, ii2, ji1, ji2;
   int i1 = Auto.var + 1;
   char n1[15];
   ch = (char)auto_pop_up_list("Plot Type", m, key, 13, 10, Auto.plot, 10, 50,
@@ -614,19 +627,12 @@ void auto_plot_par(void) {
   if (ch == key[11])
     Auto.plot = 11;
   if (ch == key[5]) {
-    if (auto_rubber(&ii1, &ji1, &ii2, &ji2, RUBBOX) != 0) {
-      auto_zoom_in(ii1, ji1, ii2, ji2);
-      redraw_diagram();
-    }
+    auto_rubber(RUBBOX, auto_zoom_end, (void *)(intptr_t)-1);
     return;
   }
 
   if (ch == key[6]) {
-    if (auto_rubber(&ii1, &ji1, &ii2, &ji2, RUBBOX) != 0) {
-      auto_zoom_out(ii1, ji1, ii2, ji2);
-
-      redraw_diagram();
-    }
+    auto_rubber(RUBBOX, auto_zoom_end, (void *)(intptr_t)1);
     return;
   }
 

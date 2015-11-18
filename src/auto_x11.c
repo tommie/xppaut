@@ -649,8 +649,8 @@ void autobw(void) {
   XSetForeground(display, small_gc, MyForeColor);
 }
 
-int auto_rubber(int *i1, int *j1, int *i2, int *j2, int flag) {
-  return (rubber(i1, j1, i2, j2, AutoW.canvas, flag));
+void auto_rubber(int flag, RubberEndFunc end_func, void *cookie) {
+  rubber(AutoW.canvas, flag, end_func, cookie);
 }
 
 int auto_pop_up_list(char *title, char **list, char *key, int n, int max,

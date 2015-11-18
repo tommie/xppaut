@@ -3,6 +3,8 @@
 
 #include <X11/Xlib.h>
 
+#include "rubber.h"
+
 /* --- Data --- */
 extern int AutoRedrawFlag;
 extern int mark_flag;
@@ -24,7 +26,7 @@ void auto_keypress(XEvent ev, int *used);
 void auto_motion(XEvent ev);
 int auto_pop_up_list(char *title, char **list, char *key, int n, int max,
                      int def, int x, int y, char **hints, char *httxt);
-int auto_rubber(int *i1, int *j1, int *i2, int *j2, int flag);
+void auto_rubber(int flag, RubberEndFunc end_func, void *cookie);
 void auto_set_mark(int i);
 void auto_stab_line(int x, int y, int xp, int yp);
 void autobw(void);

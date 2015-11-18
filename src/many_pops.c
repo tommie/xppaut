@@ -1,5 +1,6 @@
 #include "many_pops.h"
 
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <X11/Xlib.h>
@@ -68,6 +69,12 @@ typedef struct {
   int number, start, skip;
   double size;
 } MARKINFO;
+
+typedef struct {
+  int type;
+  double size;
+  int color;
+} PointArrayContext;
 
 /* --- Forward Declarations --- */
 static void add_grob(double xs, double ys, double xe, double ye, double size,
@@ -441,27 +448,43 @@ static void add_markers(void) {
   redraw_all();
 }
 
-static void add_pntarr(int type) {
-  double size = .1;
-  int i1, j1, i2, j2, color = 0;
+static void pntarr_end(void *cookie, int commit, const int *start, const int *end) {
+  PointArrayContext *ctx = cookie;
   float xe, ye, xs, ys;
-  int flag;
-  if (new_float("Size: ", &size))
-    return;
-  if (new_int("Color: ", &color))
-    return;
-  MessageBox("Choose start/end");
-  flag = rubber(&i1, &j1, &i2, &j2, draw_win, 1);
+
   KillMessageBox();
-  XFlush(display);
-  if (flag) {
-    scale_to_real(i1, j1, &xs, &ys);
-    scale_to_real(i2, j2, &xe, &ye);
-    if (i1 == i2 && j1 == j2)
-      return;
-    add_grob(xs, ys, xe, ye, size, type, color);
-    redraw_all();
-  }
+
+  if (!commit)
+    goto end;
+
+  scale_to_real(start[0], start[1], &xs, &ys);
+  scale_to_real(end[0], end[1], &xe, &ye);
+  if (start[0] == end[0] && start[1] == end[1])
+    goto end;
+
+  add_grob(xs, ys, xe, ye, ctx->size, ctx->type, ctx->color);
+  redraw_all();
+
+ end:
+  free(ctx);
+}
+
+static void add_pntarr(int type) {
+  PointArrayContext *ctx = malloc(sizeof(*ctx));
+  if (!ctx)
+    return;
+
+  ctx->type = type;
+  ctx->size = .1;
+  ctx->color = 0;
+
+  if (new_float("Size: ", &ctx->size))
+    return;
+  if (new_int("Color: ", &ctx->color))
+    return;
+
+  MessageBox("Choose start/end");
+  rubber(draw_win, RUBLINE, pntarr_end, ctx);
 }
 
 void edit_object_com(int com) {

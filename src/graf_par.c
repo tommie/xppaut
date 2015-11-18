@@ -1,6 +1,7 @@
 #include "graf_par.h"
 
 #include <math.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -648,31 +649,30 @@ void get_3d_par_com(void) {
   }
 }
 
+static void zoom_end(void *cookie, int commit, const int *start, const int *end) {
+  int f = (intptr_t)cookie;
+
+  if (!commit)
+    return;
+
+  if (f < 0)
+    zoom_in(start[0], start[1], end[0], end[1]);
+  else
+    zoom_out(start[0], start[1], end[0], end[1]);
+
+  set_normal_scale();
+}
+
 void window_zoom_com(int c) {
-  int i1, i2, j1, j2;
   switch (c) {
   case 0:
     user_window();
     break;
   case 1:
-
-    /*  XSelectInput(display,w,
-KeyPressMask|ButtonPressMask|ButtonReleaseMask|
-         PointerMotionMask|ButtonMotionMask|ExposureMask);
-            while(1)
-            {
-                 XNextEvent(display,&ev);
-                 switch(ev.type){
-            } */
-    if (rubber(&i1, &j1, &i2, &j2, draw_win, RUBBOX) == 0)
-      break;
-    zoom_in(i1, j1, i2, j2);
-
+    rubber(draw_win, RUBBOX, zoom_end, (void *)-1);
     break;
   case 2:
-    if (rubber(&i1, &j1, &i2, &j2, draw_win, RUBBOX) == 0)
-      break;
-    zoom_out(i1, j1, i2, j2);
+    rubber(draw_win, RUBBOX, zoom_end, (void *)1);
     break;
   case 3:
     fit_window();

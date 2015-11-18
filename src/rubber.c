@@ -1,99 +1,116 @@
 #include "rubber.h"
 
+#include <string.h>
+
 #include "ggets.h"
 #include "many_pops.h"
 #include "load_eqn.h"
 #include "main.h"
 
+/* --- Types --- */
+typedef struct {
+  int f; /* RUBBOX, RUBLINE */
+  Window w;
+  RubberEndFunc end_func;
+  void *cookie;
+
+  int start[2];
+  int end[2];
+  int state;
+} RubberContext;
+
 /* --- Forward Declarations --- */
 static void rbox(int i1, int j1, int i2, int j2, Window w, int f);
+static void rubber_stop(RubberContext *ctx);
 
-int rubber(int *x1, int *y1, int *x2, int *y2, Window w, int f) {
-  XEvent ev;
-  int there = 0;
-  int error = 0;
-  int dragx = 0, dragy = 0;
-  int oldx = 0, oldy = 0;
-  int state = 0;
-  xor_flag = 1;
+static int rubber_event(RubberContext *ctx, const XEvent *ev) {
+  switch (ev->type) {
+  case Expose:
+    XSetFunction(display, gc, GXxor);
+    if (xorfix) {
+      XSetForeground(display, gc, MyDrawWinColor);
+      XSetBackground(display, gc, MyForeColor);
+    }
+    break;
+
+  case KeyPress:
+    if (ctx->state > 0)
+      break;
+
+    ctx->end_func(ctx->cookie, 0, ctx->start, ctx->end);
+    return 1;
+
+  case ButtonPress:
+    if (ctx->state > 0)
+      break;
+
+    ctx->state = 1;
+    ctx->end[0] = ctx->start[0] = ev->xkey.x;
+    ctx->end[1] = ctx->start[1] = ev->xkey.y;
+    rbox(ctx->start[0], ctx->start[1], ctx->end[0], ctx->end[1], ctx->w, ctx->f);
+    break;
+
+  case MotionNotify:
+    if (ctx->state == 0)
+      break;
+
+    rbox(ctx->start[0], ctx->start[1], ctx->end[0], ctx->end[1], ctx->w, ctx->f);
+    ctx->end[0] = ev->xmotion.x;
+    ctx->end[1] = ev->xmotion.y;
+    rbox(ctx->start[0], ctx->start[1], ctx->end[0], ctx->end[1], ctx->w, ctx->f);
+    break;
+  case ButtonRelease:
+    if (ctx->state == 0)
+      break;
+
+    rbox(ctx->start[0], ctx->start[1], ctx->end[0], ctx->end[1], ctx->w, ctx->f);
+    ctx->end_func(ctx->cookie, 1, ctx->start, ctx->end);
+    return 1;
+  }
+
+  return 0;
+}
+
+void rubber(Window w, int f, RubberEndFunc end_func, void *cookie) {
+  RubberContext ctx;
+
+  memset(&ctx, 0, sizeof(ctx));
+  ctx.w = w;
+  ctx.f = f;
+  ctx.end_func = end_func;
+  ctx.cookie = cookie;
+
   XFlush(display);
-  chk_xor();
+  XSetFunction(display, gc, GXxor);
   if (xorfix) {
     XSetForeground(display, gc, MyDrawWinColor);
     XSetBackground(display, gc, MyForeColor);
-    /*XSetForeground(display,gc,GrFore);*/
   }
-
   XSelectInput(display, w, KeyPressMask | ButtonPressMask | ButtonReleaseMask |
                                PointerMotionMask | ButtonMotionMask |
                                ExposureMask);
-  while (!there) {
+
+  for (;;) {
+    XEvent ev;
+
     XNextEvent(display, &ev);
-    switch (ev.type) {
-    case Expose:
+    if (ev.type == Expose)
       do_expose(ev);
-      xor_flag = 1;
-      chk_xor();
-      if (xorfix) {
-        XSetForeground(display, gc, MyDrawWinColor);
-        XSetBackground(display, gc, MyForeColor);
-        /*XSetForeground(display,gc,GrFore);*/
-      }
+    if (rubber_event(&ctx, &ev))
       break;
-
-    case KeyPress:
-      if (state > 0)
-        break; /* too late Bozo   */
-      there = 1;
-      error = 1;
-      break;
-    case ButtonPress:
-      if (state > 0)
-        break;
-      state = 1;
-      dragx = ev.xkey.x;
-      dragy = ev.xkey.y;
-      oldx = dragx;
-      oldy = dragy;
-      rbox(dragx, dragy, oldx, oldy, w, f);
-      break;
-    case MotionNotify:
-      if (state == 0)
-        break;
-      rbox(dragx, dragy, oldx, oldy, w, f);
-      oldx = ev.xmotion.x;
-      oldy = ev.xmotion.y;
-      rbox(dragx, dragy, oldx, oldy, w, f);
-      break;
-    case ButtonRelease:
-      if (state == 0)
-        break;
-      there = 1;
-      rbox(dragx, dragy, oldx, oldy, w, f);
-      break;
-    }
   }
-  xor_flag = 0;
-  chk_xor();
 
+  rubber_stop(&ctx);
+}
+
+static void rubber_stop(RubberContext *ctx) {
+  XSetFunction(display, gc, GXcopy);
   if (xorfix) {
-    /*XSetForeground(display,gc,GrBack); */
     XSetForeground(display, gc, MyForeColor);
     XSetBackground(display, gc, MyDrawWinColor);
   }
-
-  if (!error) {
-    *x1 = dragx;
-    *y1 = dragy;
-    *x2 = oldx;
-    *y2 = oldy;
-  }
-
-  XSelectInput(display, w, KeyPressMask | ButtonPressMask | ExposureMask |
-                               ButtonReleaseMask | ButtonMotionMask);
-  if (error)
-    return (0);
-  return (1);
+  XSelectInput(display, ctx->w, KeyPressMask | ButtonPressMask | ExposureMask |
+                                    ButtonReleaseMask | ButtonMotionMask);
 }
 
 static void rbox(int i1, int j1, int i2, int j2, Window w, int f) {

@@ -8,7 +8,10 @@
 #define RUBBOX 0
 #define RUBLINE 1
 
+/* --- Types --- */
+typedef void (*RubberEndFunc)(void *cookie, int commit, const int *start/*[2]*/, const int *end/*[2]*/);
+
 /* --- Functions --- */
-int rubber(int *x1, int *y1, int *x2, int *y2, Window w, int f);
+void rubber(Window w, int f, RubberEndFunc end_func, void *cookie);
 
 #endif /* XPPAUT_RUBBER_H */

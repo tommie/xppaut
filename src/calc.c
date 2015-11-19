@@ -63,7 +63,6 @@ static void make_calc(double z) {
     base =
         make_plain_window(RootWindow(display, screen), 0, 0, width, height, 4);
     my_calc.base = base;
-    XStringListToTextProperty(name, 1, &winname);
     size_hints.flags = PPosition | PSize | PMinSize | PMaxSize;
     size_hints.x = 0;
     size_hints.y = 0;
@@ -74,8 +73,10 @@ static void make_calc(double z) {
     size_hints.max_width = width;
     size_hints.max_height = height;
 
+    XStringListToTextProperty(name, 1, &winname);
     XSetWMProperties(display, base, &winname, &winname, NULL, 0, &size_hints,
                      NULL, NULL);
+    XFree(winname.value);
     my_calc.answer = make_window(base, 10, DCURYs / 2, 24 * DCURXs, DCURYs, 0);
     width = (width - 4 * DCURXs) / 2;
     my_calc.quit =

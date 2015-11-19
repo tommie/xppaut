@@ -15,11 +15,8 @@
 
 /* --- Macros --- */
 #define MYMASK                                                                 \
-  (ButtonPressMask | KeyPressMask | ExposureMask | StructureNotifyMask |       \
-   LeaveWindowMask | EnterWindowMask)
-
-#define SIMPMASK                                                               \
-  (ButtonPressMask | KeyPressMask | ExposureMask | StructureNotifyMask)
+  (ButtonPressMask | ButtonReleaseMask | KeyPressMask | ExposureMask |         \
+   StructureNotifyMask | LeaveWindowMask | EnterWindowMask)
 
 /* --- Types --- */
 typedef struct {
@@ -93,9 +90,6 @@ static void make_calc(double z) {
 
 static void quit_calc(void) {
   g_calc.use = 0;
-  XSelectInput(display, g_calc.quit, SIMPMASK);
-  waitasec(ClickTime);
-  XDestroySubwindows(display, g_calc.base);
   XDestroyWindow(display, g_calc.base);
   clr_command();
 }
@@ -130,7 +124,7 @@ static int calc_event(Calc *calc, const XEvent *ev) {
     draw_calc(ev->xexpose.window);
     break;
 
-  case ButtonPress:
+  case ButtonRelease:
     if (ev->xbutton.window == calc->quit)
       return 1;
     break;

@@ -815,8 +815,6 @@ void make_auto(char *wname, char *iname) {
   strcpy(Auto.hinttxt, "hint");
   XSelectInput(display, base, ExposureMask | KeyPressMask | ButtonPressMask |
                                   StructureNotifyMask);
-  XStringListToTextProperty(&wname, 1, &winname);
-  XStringListToTextProperty(&iname, 1, &iconname);
 
   size_hints.flags = PPosition | PSize | PMinSize;
   size_hints.x = 0;
@@ -828,8 +826,12 @@ void make_auto(char *wname, char *iname) {
   class_hints.res_name = "";
   class_hints.res_class = "";
 
+  XStringListToTextProperty(&wname, 1, &winname);
+  XStringListToTextProperty(&iname, 1, &iconname);
   XSetWMProperties(display, base, &winname, &iconname, NULL, 0, &size_hints,
                    NULL, &class_hints);
+  XFree(iconname.value);
+  XFree(winname.value);
   make_icon((char *)auto_bits, auto_width, auto_height, base);
   AutoW.canvas = make_plain_window(base, x, y, STD_WID_var + xmargin,
                                    STD_HGT_var + ymargin, 1);

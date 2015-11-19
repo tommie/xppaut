@@ -29,6 +29,7 @@ typedef struct {
 } Calc;
 
 /* --- Forward Declarations --- */
+static void quit_calc(Calc *calc);
 static double calculate(char *expr, int *ok);
 static int has_eq(char *z, char *w, int *where);
 
@@ -49,51 +50,6 @@ static void draw_calc(Window w) {
   }
 }
 
-static void make_calc(double z) {
-  int width, height;
-  static char *name[] = {"Answer"};
-  Window base;
-  XTextProperty winname;
-  XSizeHints size_hints;
-  g_calc.last_val = z;
-
-  if (g_calc.use == 0) {
-    width = 20 + 24 * DCURXs;
-    height = 4 * DCURYs;
-    base =
-        make_plain_window(RootWindow(display, screen), 0, 0, width, height, 4);
-    g_calc.base = base;
-    size_hints.flags = PPosition | PSize | PMinSize | PMaxSize;
-    size_hints.x = 0;
-    size_hints.y = 0;
-    size_hints.width = width;
-    size_hints.height = height;
-    size_hints.min_width = width;
-    size_hints.min_height = height;
-    size_hints.max_width = width;
-    size_hints.max_height = height;
-
-    XStringListToTextProperty(name, 1, &winname);
-    XSetWMProperties(display, base, &winname, &winname, NULL, 0, &size_hints,
-                     NULL, NULL);
-    XFree(winname.value);
-    g_calc.answer = make_window(base, 10, DCURYs / 2, 24 * DCURXs, DCURYs, 0);
-    width = (width - 4 * DCURXs) / 2;
-    g_calc.quit =
-        make_window(base, width, (int)(2.5 * DCURYs), 4 * DCURXs, DCURYs, 1);
-    XSelectInput(display, g_calc.quit, MYMASK);
-    g_calc.use = 1;
-  }
-  draw_calc(g_calc.answer);
-  XFlush(display);
-}
-
-static void quit_calc(void) {
-  g_calc.use = 0;
-  XDestroyWindow(display, g_calc.base);
-  clr_command();
-}
-
 static void ini_calc_string(Calc *calc) {
   strcpy(calc->value, " ");
   strcpy(calc->name, "Formula:");
@@ -103,7 +59,8 @@ static void ini_calc_string(Calc *calc) {
   display_command(calc->name, calc->value, 2, 0);
 }
 
-static int calc_event(Calc *calc, const XEvent *ev) {
+static void calc_event(void *cookie, const XEvent *ev) {
+  Calc *calc = cookie;
   int done = 0;
 
   edit_command_string(*ev, calc->name, calc->value, &done, &calc->pos,
@@ -112,11 +69,14 @@ static int calc_event(Calc *calc, const XEvent *ev) {
     double z = 0;
     int flag = do_calc(calc->value, &z);
 
-    if (flag != -1)
-      make_calc(z);
+    if (flag != -1) {
+      calc->last_val = z;
+      draw_calc(calc->answer);
+    }
     ini_calc_string(calc);
   } else if (done == -1) {
-    return 1;
+    quit_calc(calc);
+    return;
   }
 
   switch (ev->type) {
@@ -126,7 +86,7 @@ static int calc_event(Calc *calc, const XEvent *ev) {
 
   case ButtonRelease:
     if (ev->xbutton.window == calc->quit)
-      return 1;
+      quit_calc(calc);
     break;
 
   case EnterNotify:
@@ -139,25 +99,57 @@ static int calc_event(Calc *calc, const XEvent *ev) {
       XSetWindowBorderWidth(display, ev->xcrossing.window, 1);
     break;
   }
+}
 
-  return 0;
+static void make_calc(Calc *calc) {
+  int width, height;
+  static char *name[] = {"Answer"};
+  Window base;
+  XTextProperty winname;
+  XSizeHints size_hints;
+
+  calc->last_val = 0;
+  width = 20 + 24 * DCURXs;
+  height = 4 * DCURYs;
+  base =
+    make_plain_window(RootWindow(display, screen), 0, 0, width, height, 4);
+  calc->base = base;
+  size_hints.flags = PPosition | PSize | PMinSize | PMaxSize;
+  size_hints.x = 0;
+  size_hints.y = 0;
+  size_hints.width = width;
+  size_hints.height = height;
+  size_hints.min_width = width;
+  size_hints.min_height = height;
+  size_hints.max_width = width;
+  size_hints.max_height = height;
+
+  XStringListToTextProperty(name, 1, &winname);
+  XSetWMProperties(display, base, &winname, &winname, NULL, 0, &size_hints,
+                   NULL, NULL);
+  XFree(winname.value);
+  calc->answer = make_window(base, 10, DCURYs / 2, 24 * DCURXs, DCURYs, 0);
+  width = (width - 4 * DCURXs) / 2;
+  calc->quit =
+    make_window(base, width, (int)(2.5 * DCURYs), 4 * DCURXs, DCURYs, 1);
+  XSelectInput(display, calc->quit, MYMASK);
+  x11_events_listen(g_x11_events, X11_EVENTS_ANY_WINDOW, MYMASK, calc_event, &g_calc);
+  calc->use = 1;
+}
+
+static void quit_calc(Calc *calc) {
+  x11_events_unlisten(g_x11_events, X11_EVENTS_ANY_WINDOW, MYMASK, calc_event, calc);
+  XDestroyWindow(display, calc->base);
+  clr_command();
+  calc->use = 0;
 }
 
 void q_calc(void) {
   if (g_calc.use)
     return;
 
-  make_calc(0);
+  make_calc(&g_calc);
   ini_calc_string(&g_calc);
-
-  while (1) {
-    XEvent ev;
-    XNextEvent(display, &ev);
-    if (calc_event(&g_calc, &ev))
-      break;
-  }
-
-  quit_calc();
 }
 
 int do_calc(char *temp, double *z) {

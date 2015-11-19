@@ -150,7 +150,9 @@ static int calc_event(Calc *calc, const XEvent *ev) {
 }
 
 void q_calc(void) {
-  g_calc.use = 0;
+  if (g_calc.use)
+    return;
+
   make_calc(0);
   ini_calc_string(&g_calc);
 

@@ -70,7 +70,10 @@ void chk_xor(void) {
     XSetFunction(display, gc, GXcopy);
 }
 
-void clr_command(void) { blank_screen(command_pop); }
+void clr_command(void) {
+  blank_screen(command_pop);
+  XSetInputFocus(display, main_win, RevertToParent, CurrentTime);
+}
 
 void bottom_msg(int line, char *msg) {
   XClearWindow(display, info_pop);
@@ -295,6 +298,7 @@ void display_command(char *name, char *value, int pos, int col) {
     /* showchar('_',DCURX*(l+m),0,command_pop); */
     put_cursor_at(command_pop, DCURX * l, pos);
   }
+  XSetInputFocus(display, command_pop, RevertToParent, CurrentTime);
 }
 
 void clr_line_at(Window w, int col0, int pos, int n) {

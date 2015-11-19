@@ -495,8 +495,6 @@ static void set_big_font(void) {
 static void xpp_events(void *cookie, const XEvent *ev) {
   int *minsize = cookie;
   int com;
-  char ch;
-
   int used = 0;
 
   /*  put_command("Command:");  */
@@ -558,10 +556,8 @@ static void xpp_events(void *cookie, const XEvent *ev) {
     if (used)
       break;
 #endif
-    ch = (char)get_key_press(ev);
-    commander(ch);
-
-    /* do_key_stuff(*ev); */
+    if (ev->xkey.window == main_win || ev->xkey.window == draw_win)
+      commander(get_key_press(ev));
 
     break;
   case EnterNotify:

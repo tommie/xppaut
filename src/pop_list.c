@@ -1258,10 +1258,8 @@ int pop_up_list(Window *root, char *title, char **list, char *key, int n,
 
   for (i = 0; i < n; i++)
     XSelectInput(display, p.w[i], EV_MASK);
-  /*waitasec(ClickTime); Not here. Don't want to delay short cuts*/
-  XDestroySubwindows(display, p.base);
   XDestroyWindow(display, p.base);
-  XFlush(display);
+  free(p.w);
   if (value == 13)
     value = (int)key[def];
   return (value);

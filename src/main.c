@@ -931,6 +931,7 @@ static Window init_win(unsigned int bw, char *icon_name, char *win_name, int x,
   icon_map = XCreateBitmapFromData(display, wine, (char *)pp_bits, pp_width,
                                    pp_height);
 
+  memset(&size_hints, 0, sizeof(size_hints));
 #ifdef X11R3
   size_hints.flags = PPosition | PSize | PMinsize;
   size_hints.x = x;

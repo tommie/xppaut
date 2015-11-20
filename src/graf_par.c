@@ -26,9 +26,9 @@
 #include "my_svg.h"
 #include "nullcline.h"
 #include "pop_list.h"
-#include "rubber.h"
 #include "storage.h"
 #include "ui-x11/file-selector.h"
+#include "ui-x11/rubber.h"
 
 /* --- Macros --- */
 #define MAXNCLINE 26
@@ -669,10 +669,10 @@ void window_zoom_com(int c) {
     user_window();
     break;
   case 1:
-    rubber(draw_win, RUBBOX, zoom_end, (void *)-1);
+    x11_rubber(draw_win, X11_RUBBER_BOX, zoom_end, (void *)-1);
     break;
   case 2:
-    rubber(draw_win, RUBBOX, zoom_end, (void *)1);
+    x11_rubber(draw_win, X11_RUBBER_BOX, zoom_end, (void *)1);
     break;
   case 3:
     fit_window();

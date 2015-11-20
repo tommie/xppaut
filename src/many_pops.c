@@ -28,11 +28,11 @@
 #include "nullcline.h"
 #include "numerics.h"
 #include "pop_list.h"
-#include "rubber.h"
 #include "tabular.h"
 #include "txtread.h"
 #include "base/timeutil.h"
 #include "bitmap/graph.bitmap"
+#include "ui-x11/rubber.h"
 
 /* --- Macros --- */
 #define MAXLAB 50
@@ -484,7 +484,7 @@ static void add_pntarr(int type) {
     return;
 
   MessageBox("Choose start/end");
-  rubber(draw_win, RUBLINE, pntarr_end, ctx);
+  x11_rubber(draw_win, X11_RUBBER_LINE, pntarr_end, ctx);
 }
 
 void edit_object_com(int com) {

@@ -30,7 +30,6 @@
 #include "parserslow.h"
 #include "pop_list.h"
 #include "pp_shoot.h"
-#include "rubber.h"
 #include "run_auto.h"
 #include "solver.h"
 #include "storage.h"
@@ -627,12 +626,12 @@ void auto_plot_par(void) {
   if (ch == key[11])
     Auto.plot = 11;
   if (ch == key[5]) {
-    auto_rubber(RUBBOX, auto_zoom_end, (void *)(intptr_t)-1);
+    auto_rubber(X11_RUBBER_BOX, auto_zoom_end, (void *)(intptr_t)-1);
     return;
   }
 
   if (ch == key[6]) {
-    auto_rubber(RUBBOX, auto_zoom_end, (void *)(intptr_t)1);
+    auto_rubber(X11_RUBBER_BOX, auto_zoom_end, (void *)(intptr_t)1);
     return;
   }
 

@@ -22,7 +22,6 @@
 #include "numerics.h"
 #include "parserslow.h"
 #include "pop_list.h"
-#include "rubber.h"
 #include "base/timeutil.h"
 #include "bitmap/auto.bitmap"
 
@@ -649,8 +648,8 @@ void autobw(void) {
   XSetForeground(display, small_gc, MyForeColor);
 }
 
-void auto_rubber(int flag, RubberEndFunc end_func, void *cookie) {
-  rubber(AutoW.canvas, flag, end_func, cookie);
+void auto_rubber(X11RubberType t, X11RubberEndFunc end_func, void *cookie) {
+  x11_rubber(AutoW.canvas, t, end_func, cookie);
 }
 
 int auto_pop_up_list(char *title, char **list, char *key, int n, int max,

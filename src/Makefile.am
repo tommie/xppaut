@@ -85,7 +85,6 @@ noinst_HEADERS = \
 	pop_list.h \
 	pp_shoot.h \
 	read_dir.h \
-	rubber.h \
 	run_auto.h \
 	scrngif.h \
 	simplenet.h \
@@ -154,6 +153,7 @@ ui_x11_headers = \
 	ui-x11/editutil.h \
 	ui-x11/events.h \
 	ui-x11/file-selector.h \
+	ui-x11/rubber.h \
 	ui-x11/torus-box.h
 
 xppaut_LDADD = \
@@ -214,7 +214,6 @@ xppaut_SOURCES = \
 	pop_list.c \
 	pp_shoot.c \
 	read_dir.c\
-	rubber.c \
 	scrngif.c \
 	simplenet.c \
 	solver.c \
@@ -282,7 +281,6 @@ libxpp_a_SOURCES = \
 	pop_list.c \
 	pp_shoot.c \
 	read_dir.c \
-	rubber.c \
 	scrngif.c \
 	simplenet.c \
 	solver.c \
@@ -337,6 +335,7 @@ ui_x11_sources = \
 	ui-x11/editutil.c \
 	ui-x11/events.c \
 	ui-x11/file-selector.c \
+	ui-x11/rubber.c \
 	ui-x11/torus-box.c
 
 if HAVE_STRUPR

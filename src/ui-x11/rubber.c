@@ -15,9 +15,9 @@
 
 /* --- Types --- */
 typedef struct {
-  int f; /* RUBBOX, RUBLINE */
   Window w;
-  RubberEndFunc end_func;
+  X11RubberType t;
+  X11RubberEndFunc end_func;
   void *cookie;
   long event_mask;
 
@@ -77,7 +77,7 @@ static void rubber_event(void *cookie, const XEvent *ev) {
   }
 }
 
-void rubber(Window w, int f, RubberEndFunc end_func, void *cookie) {
+void x11_rubber(Window w, X11RubberType t, X11RubberEndFunc end_func, void *cookie) {
   // TODO(tommie): Replace XGetWindowAttributes and XSelectInput with
   // x11_events_listen(w) when all callers use it. If used now, it will
   // overwrite the event mask rather than augment it.
@@ -98,7 +98,7 @@ void rubber(Window w, int f, RubberEndFunc end_func, void *cookie) {
 
   memset(ctx, 0, sizeof(*ctx));
   ctx->w = w;
-  ctx->f = f;
+  ctx->t = t;
   ctx->end_func = end_func;
   ctx->cookie = cookie;
   ctx->event_mask = wa.your_event_mask;
@@ -126,12 +126,12 @@ static void rubber_draw(const RubberContext *ctx) {
     XSetBackground(display, gc, MyForeColor);
   }
 
-  switch (ctx->f) {
-  case RUBLINE:
+  switch (ctx->t) {
+  case X11_RUBBER_LINE:
     XDrawLine(display, ctx->w, gc, ctx->start[0], ctx->start[1], ctx->end[0], ctx->end[1]);
     break;
 
-  case RUBBOX:
+  case X11_RUBBER_BOX:
     if (x1 > x2) {
       x2 = ctx->start[0];
       x1 = ctx->end[0];
@@ -142,9 +142,6 @@ static void rubber_draw(const RubberContext *ctx) {
     }
     rectangle(x1, y1, x2, y2, ctx->w);
     break;
-
-  default:
-    plintf("rubber_draw: unknown type: %d\n", ctx->f);
   }
 
   XSetFunction(display, gc, GXcopy);

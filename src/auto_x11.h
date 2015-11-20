@@ -42,6 +42,5 @@ void make_auto(char *wname, char *iname);
 void redraw_auto_menus(void);
 void refreshdisplay(void);
 void resize_auto_window(XEvent ev);
-void traverse_diagram(void);
 
 #endif /* XPPAUT_AUTO_X11_H */

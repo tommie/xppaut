@@ -89,7 +89,6 @@ int IYVal(double y);
 void add_point(double *par, double per, double *uhigh, double *ulow, double *ubar, double a, int type, int flag, int lab, int npar, int icp1, int icp2, int flag2, double *evr, double *evi);
 void add_ps_point(double *par, double per, double *uhigh, double *ulow, double *ubar, double a, int type, int flag, int lab, int npar, int icp1, int icp2, int flag2, double *evr, double *evi);
 void auto_file(void);
-void auto_grab(void);
 void auto_num_par(void);
 void auto_params(void);
 void auto_per_par(void);

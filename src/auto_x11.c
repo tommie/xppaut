@@ -248,7 +248,7 @@ static void traverse_out(DIAGRAM *d, int *ix, int *iy, int dodraw) {
     load_auto_orbitx(ibr, 1, lab, per);
 }
 
-void traverse_diagram(void) {
+static void auto_grab(void) {
   DIAGRAM *d, *dnew, *dold;
   int done = 0;
   int ix, iy, i;

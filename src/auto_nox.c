@@ -1323,8 +1323,6 @@ int reset_auto(void) {
   return (yes_reset_auto());
 }
 
-void auto_grab(void) { traverse_diagram(); }
-
 void auto_next(void) {
   static char *m[] = {"EP", "HB", "LP", "PD", "MX"};
   /*static char *m[]={"Fixed period","Extend"}; */

@@ -1118,7 +1118,7 @@ int do_new_parser(FILE *fp, char *first, int nnn) {
   VAR_INFO v;
   char **markovarrays = NULL;
   char *strings[256];
-  int nstrings, ns;
+  int nstrings = 0, ns;
   char **markovarrays2 = NULL;
   int done = 0, start = 0, i0, i1, i2, istates;
   int jj1 = 0, jj2 = 0, jj, notdone = 1, jjsgn = 1;
@@ -1135,7 +1135,6 @@ int do_new_parser(FILE *fp, char *first, int nnn) {
     init_varinfo();
   }
   while (notdone) {
-    nstrings = 0;
     if (start || nnn == 1) {
       read_a_line(fp, old);
       /* plintf(" read line BVP_N=%d  \n",BVP_N); */
@@ -1197,6 +1196,8 @@ int do_new_parser(FILE *fp, char *first, int nnn) {
     switch (is_array) {
     case 0: /*  not a for loop so */
     case 1:
+      if (nstrings != 0)
+        plintf("nstrings is not zero: %d\n", nstrings);
       nstrings = 1;
       strings[0] = (char *)malloc(strlen(new) + 10);
       strcpy(strings[0], new);
@@ -1226,6 +1227,8 @@ int do_new_parser(FILE *fp, char *first, int nnn) {
 
         if (done == -1) {
           plintf(" Error in parsing %s \n", big);
+          for(int i = 0; i < nstrings; i++)
+            free(strings[i]);
           return -1;
         }
         if (done == 1) {
@@ -1242,6 +1245,8 @@ int do_new_parser(FILE *fp, char *first, int nnn) {
               nstates = atoi(my_string);
             if (nstates < 1) {
               plintf("Group %s  must have at least 1 part \n", name);
+              for(int i = 0; i < nstrings; i++)
+                free(strings[i]);
               return -1;
             }
             plintf("Group %s has %d parts\n", name, nstates);
@@ -1266,6 +1271,8 @@ int do_new_parser(FILE *fp, char *first, int nnn) {
             if (nstates < 2) {
               plintf("Markov variable %s  must have at least 2 states \n",
                      name);
+              for(int i = 0; i < nstrings; i++)
+                free(strings[i]);
               return -1;
             }
             /*nlin=NLINES;
@@ -1385,13 +1392,11 @@ int do_new_parser(FILE *fp, char *first, int nnn) {
           count_object(v.type);
         }
       } /* end loop for the strings */
-        /*     if(nstrings>0){
-          for(i=0;i<nstrings;i++)
-             free(strings[i]);
-          nstrings=0;
 
+      for(int i = 0; i < nstrings; i++)
+        free(strings[i]);
+      nstrings = 0;
 
-          } */
       if (done == 2)
         notdone = 0;
       if (feof(fp)) {
@@ -1419,8 +1424,6 @@ int do_new_parser(FILE *fp, char *first, int nnn) {
       free(markovarrays2);
     }
   }
-  for (ns = 0; ns < nstrings; ns++)
-    free(strings[ns]);
   compile_em();
 
   free_varinfo();

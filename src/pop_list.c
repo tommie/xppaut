@@ -68,6 +68,9 @@ typedef struct {
   int n, max;
   char *key;
   int hot;
+
+  Window hint_win;
+  char *active_hint;
 } POP_UP;
 
 typedef struct {
@@ -90,7 +93,6 @@ static void create_scroll_box(Window root, int x0, int y0, int nent, int nw,
                               char **list, SCROLLBOX *sb);
 static void crossing_scroll_box(Window w, int c, SCROLLBOX sb);
 static void destroy_scroll_box(SCROLLBOX *sb);
-static void draw_pop_up(POP_UP p, Window w);
 static void expose_choice(char *choice1, char *choice2, char *msg, Window c1,
                           Window c2, Window wm, Window w);
 static void expose_resp_box(const char *button, const char *message, Window wb,
@@ -1183,15 +1185,79 @@ int yes_no_box(void) {
   return (0);
 }
 
+static void draw_pop_up(const POP_UP *p, Window w) {
+  int i;
+
+  if (w == p->tit) {
+    set_fore();
+    bar(0, 0, DCURX * (p->max + 5), (DCURY + 7), w);
+    set_back();
+    Ftext(DCURX * 2, 4, p->title, w);
+    set_fore();
+    return;
+  }
+  for (i = 0; i < p->n; i++) {
+    if (w == p->w[i]) {
+      Ftext(DCURX / 2, 3, p->entries[i], w);
+      if (i == p->hot)
+        Ftext(DCURX * (p->max + 1), 4, "X", w);
+      return;
+    }
+  }
+}
+
+static int pop_up_list_event(POP_UP *p, const XEvent *ev) {
+  switch (ev->type) {
+  case Expose:
+  case MapNotify:
+    do_expose(*ev);
+    draw_pop_up(p, ev->xexpose.window);
+    break;
+
+  case KeyPress:
+    return get_key_press(ev);
+
+  case ButtonPress:
+    for (int i = 0; i < p->n; i++) {
+      if (ev->xbutton.window == p->w[i]) {
+        return (int)p->key[i];
+      }
+    }
+
+    break;
+
+  case EnterNotify:
+    for (int i = 0; i < p->n; i++) {
+      if (ev->xcrossing.window == p->w[i]) {
+        XSetWindowBorderWidth(display, p->w[i], 1);
+        if (TipsFlag) {
+          sprintf(p->active_hint, p->hints[i]);
+          XClearWindow(display, p->hint_win);
+          XDrawString(display, p->hint_win, gc, 5, CURY_OFF, p->hints[i],
+                      strlen(p->hints[i]));
+        }
+      }
+    }
+    break;
+
+  case LeaveNotify:
+    for (int i = 0; i < p->n; i++)
+      if (ev->xcrossing.window == p->w[i])
+        XSetWindowBorderWidth(display, p->w[i], 0);
+    break;
+  }
+
+  return 0;
+}
+
 /*  new pop_up_list   */
 int pop_up_list(Window *root, char *title, char **list, char *key, int n,
                 int max, int def, int x, int y, char **hints, Window hwin,
                 char *httxt) {
   POP_UP p;
-  XEvent ev;
   Window w;
   Cursor txt;
-  int i, done = 0, value;
+  int i, value;
   int width = DCURX * (max + 5);
   int length = (DCURY + 6) * (n + 2);
   w = make_plain_window(*root, x, y, width, length, 2);
@@ -1202,6 +1268,8 @@ int pop_up_list(Window *root, char *title, char **list, char *key, int n,
   p.title = title;
   p.n = n;
   p.hints = hints;
+  p.hint_win = hwin;
+  p.active_hint = httxt;
   p.max = max;
   p.key = key;
   p.hot = def;
@@ -1214,74 +1282,18 @@ int pop_up_list(Window *root, char *title, char **list, char *key, int n,
     XSelectInput(display, p.w[i], BUT_MASK);
   }
 
-  while (!done) {
+  for (;;) {
+    XEvent ev;
+
     XNextEvent(display, &ev);
-    switch (ev.type) {
-    case Expose:
-    case MapNotify:
-      do_expose(ev);
-      draw_pop_up(p, ev.xexpose.window);
+    value = pop_up_list_event(&p, &ev);
+    if (value)
       break;
-    case KeyPress:
-      value = get_key_press(&ev);
-      done = 1;
-      break;
-    case ButtonPress:
-      for (i = 0; i < n; i++) {
-        if (ev.xbutton.window == p.w[i]) {
-          value = (int)p.key[i];
-          done = 1;
-        }
-      }
-
-      break;
-    case EnterNotify:
-      for (i = 0; i < p.n; i++)
-        if (ev.xcrossing.window == p.w[i]) {
-          XSetWindowBorderWidth(display, p.w[i], 1);
-          if (TipsFlag) {
-            sprintf(httxt, hints[i]);
-            XClearWindow(display, hwin);
-            XDrawString(display, hwin, gc, 5, CURY_OFF, hints[i],
-                        strlen(hints[i]));
-          }
-        }
-
-      break;
-    case LeaveNotify:
-      for (i = 0; i < p.n; i++)
-        if (ev.xcrossing.window == p.w[i])
-          XSetWindowBorderWidth(display, p.w[i], 0);
-      break;
-    }
   }
 
-  for (i = 0; i < n; i++)
-    XSelectInput(display, p.w[i], EV_MASK);
   XDestroyWindow(display, p.base);
   free(p.w);
   if (value == 13)
     value = (int)key[def];
-  return (value);
-}
-
-static void draw_pop_up(POP_UP p, Window w) {
-  int i;
-
-  if (w == p.tit) {
-    set_fore();
-    bar(0, 0, DCURX * (p.max + 5), (DCURY + 7), w);
-    set_back();
-    Ftext(DCURX * 2, 4, p.title, w);
-    set_fore();
-    return;
-  }
-  for (i = 0; i < p.n; i++) {
-    if (w == p.w[i]) {
-      Ftext(DCURX / 2, 3, p.entries[i], w);
-      if (i == p.hot)
-        Ftext(DCURX * (p.max + 1), 4, "X", w);
-      return;
-    }
-  }
+  return value;
 }

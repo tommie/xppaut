@@ -494,7 +494,7 @@ void auto_per_par(void) {
   int status, i, in;
   char ch;
   ch = (char)auto_pop_up_list("Number", m, key, 10, 12, Auto.nper, 10, 10,
-                              no_hint, Auto.hinttxt);
+                              no_hint);
   for (i = 0; i < 10; i++)
     if (ch == key[i])
       Auto.nper = i;
@@ -616,7 +616,7 @@ void auto_plot_par(void) {
   int i1 = Auto.var + 1;
   char n1[15];
   ch = (char)auto_pop_up_list("Plot Type", m, key, 13, 10, Auto.plot, 10, 50,
-                              aaxes_hint, Auto.hinttxt);
+                              aaxes_hint);
 
   for (i = 0; i < 5; i++)
     if (ch == key[i])
@@ -1329,7 +1329,7 @@ void auto_next(void) {
   static char key[] = "ehlpm";
   char ch;
   ch = (char)auto_pop_up_list("Special Point", m, key, 5, 13, 0, 10, 10,
-                              no_hint, Auto.hinttxt);
+                              no_hint);
   if (ch == 'e') {
     /*auto_new_per();*/
     printf("End point\n");
@@ -1519,8 +1519,7 @@ void auto_start_choice(void) {
     auto_new_discrete();
     return;
   }
-  ch = (char)auto_pop_up_list("Start", m, key, 4, 13, 0, 10, 10, arun_hint,
-                              Auto.hinttxt);
+  ch = (char)auto_pop_up_list("Start", m, key, 4, 13, 0, 10, 10, arun_hint);
   if (ch == 's') {
     auto_new_ss();
     return;
@@ -1554,8 +1553,7 @@ void torus_choice(void) {
   /*static char *m[]={"Fixed period","Extend"}; */
   static char key[] = "tfe";
   char ch;
-  ch = (char)auto_pop_up_list("Torus", m, key, 3, 10, 0, 10, 10, no_hint,
-                              Auto.hinttxt);
+  ch = (char)auto_pop_up_list("Torus", m, key, 3, 10, 0, 10, 10, no_hint);
   if (ch == 'e') {
     auto_new_per();
     return;
@@ -1575,8 +1573,7 @@ void per_doub_choice(void) {
   static char *m[] = {"Doubling", "Two Param", "Fixed period", "Extend"};
   static char key[] = "dtfe";
   char ch;
-  ch = (char)auto_pop_up_list("Per. Doub.", m, key, 4, 10, 0, 10, 10, no_hint,
-                              Auto.hinttxt);
+  ch = (char)auto_pop_up_list("Per. Doub.", m, key, 4, 10, 0, 10, 10, no_hint);
   if (ch == 'd') {
     auto_period_double();
     return;
@@ -1600,8 +1597,7 @@ void periodic_choice(void) {
   static char *m[] = {"Extend", "Fixed Period"};
   static char key[] = "ef";
   char ch;
-  ch = (char)auto_pop_up_list("Periodic ", m, key, 2, 14, 0, 10, 10, no_hint,
-                              Auto.hinttxt);
+  ch = (char)auto_pop_up_list("Periodic ", m, key, 2, 14, 0, 10, 10, no_hint);
   if (ch == 'e') {
     auto_new_per();
     return;
@@ -1623,8 +1619,7 @@ void hopf_choice(void) {
     return;
   }
 
-  ch = (char)auto_pop_up_list("Hopf Pt", m, key, 4, 10, 0, 10, 10, no_hint,
-                              Auto.hinttxt);
+  ch = (char)auto_pop_up_list("Hopf Pt", m, key, 4, 10, 0, 10, 10, no_hint);
   if (ch == 'p') {
     auto_new_per();
     return;
@@ -1786,8 +1781,7 @@ void auto_branch_choice(int ibr, int ips) {
   static char *m[] = {"Switch", "Extend", "New Point", "Two Param"};
   static char key[] = "sent";
   char ch;
-  ch = (char)auto_pop_up_list("Branch Pt", m, key, 4, 10, 0, 10, 10, no_hint,
-                              Auto.hinttxt);
+  ch = (char)auto_pop_up_list("Branch Pt", m, key, 4, 10, 0, 10, 10, no_hint);
   if (ch == 's') {
     if (ibr < 0 && ips == 2)
       auto_switch_per();
@@ -2202,8 +2196,7 @@ void auto_file(void) {
                       "lOad branch"};
   static char key[] = "islpvrcwadtnebo";
   char ch;
-  ch = (char)auto_pop_up_list("File", m, key, 15, 15, 0, 10, 10, afile_hint,
-                              Auto.hinttxt);
+  ch = (char)auto_pop_up_list("File", m, key, 15, 15, 0, 10, 10, afile_hint);
   if (ch == 'i') {
     load_auto_orbit();
     return;

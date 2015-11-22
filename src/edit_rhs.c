@@ -25,7 +25,7 @@ void edit_menu(void) {
   char ch;
   int edtype = 0, i;
   ch = (char)pop_up_list(&temp, "Edit Stuff", n, key, 4, 11, edtype, 10,
-                         13 * DCURY + 8, edrh_hint, info_pop, info_message);
+                         13 * DCURY + 8, edrh_hint, main_status_bar);
   edtype = -1;
   for (i = 0; i < 4; i++)
     if (ch == key[i])

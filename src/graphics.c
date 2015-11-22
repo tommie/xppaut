@@ -603,7 +603,6 @@ void init_graph(int i) {
   graph[i].grtype = AXES;
   graph[i].color_scale = 1.0;
   graph[i].min_scale = 0.0;
-  strcpy(graph[i].gr_info, "");
   graph[i].xmax = x_3d[1];
   graph[i].ymax = y_3d[1];
   graph[i].zmax = z_3d[1];

@@ -412,10 +412,10 @@ static Method get_method(void) {
 
   nmeth = sizeof(n) / sizeof(*n);
   ch = (char)pop_up_list(&temp, "Method", n, key, nmeth, nmeth, METHOD, 10,
-                         DCURY + 8, meth_hint, info_pop, info_message);
+                         DCURY + 8, meth_hint, main_status_bar);
   for (i = 0; i < nmeth; i++)
     if (ch == key[i])
-      return (Method) i;
+      return (Method)i;
 
   return METHOD_UNKNOWN;
 }

@@ -25,7 +25,7 @@ void auto_get_info(int *n, char *pname);
 void auto_keypress(XEvent ev, int *used);
 void auto_motion(XEvent ev);
 int auto_pop_up_list(char *title, char **list, char *key, int n, int max,
-                     int def, int x, int y, char **hints, char *httxt);
+                     int def, int x, int y, char **hints);
 void auto_rubber(X11RubberType t, X11RubberEndFunc end_func, void *cookie);
 void auto_set_mark(int i);
 void auto_stab_line(int x, int y, int xp, int yp);

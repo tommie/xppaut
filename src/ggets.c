@@ -24,7 +24,6 @@ static void clr_line_at(Window w, int col0, int pos, int n);
 static void put_string_at(Window w, int col, char *s, int off);
 
 /* --- Data --- */
-char *info_message;
 int MSStyle = 0;
 static int CURS_X, CURS_Y;
 int xor_flag;
@@ -73,13 +72,6 @@ void chk_xor(void) {
 void clr_command(void) {
   blank_screen(command_pop);
   XSetInputFocus(display, main_win, RevertToParent, CurrentTime);
-}
-
-void bottom_msg(int line, char *msg) {
-  XClearWindow(display, info_pop);
-  BaseCol();
-  strcpy(info_message, msg);
-  XDrawString(display, info_pop, gc, 5, CURY_OFF, msg, strlen(msg));
 }
 
 void err_msg(const char *string) {

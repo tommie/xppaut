@@ -3,6 +3,8 @@
 
 #include <X11/Xlib.h>
 
+#include "ui-x11/status-bar.h"
+
 /* --- Macros --- */
 #define MAXFRZ 26
 #define MAXPERPLOT 10
@@ -10,7 +12,8 @@
 
 /* --- Types --- */
 typedef struct {
-  Window w, w_info;
+  Window w;
+  X11StatusBar *sb;
   int Use;
   int Restore;
   int Nullrestore;
@@ -33,7 +36,6 @@ typedef struct {
   int xorgflag, yorgflag, zorgflag;
   int ColorFlag, ColorValue;
   char xlabel[30], ylabel[30], zlabel[30];
-  char gr_info[256];
 } GRAPH;
 
 typedef struct {
@@ -59,7 +61,6 @@ void GrCol(void);
 void SmallBase(void);
 void SmallGr(void);
 void add_label(char *s, int x, int y, int size, int font);
-void canvas_xy(char *buf);
 void change_plot_vars(int k);
 int check_active_plot(int k);
 void check_draw_button(XEvent ev);

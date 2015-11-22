@@ -7,7 +7,6 @@
 #define ClickTime 200
 
 /* --- Data --- */
-extern char *info_message;
 extern int MSStyle;
 extern int xor_flag;
 
@@ -15,7 +14,6 @@ extern int xor_flag;
 void Ftext(int x, int y, const char *string, Window o);
 void bar(int x, int y, int x2, int y2, Window w);
 void blank_screen(Window w);
-void bottom_msg(int line, char *msg);
 void chk_xor(void);
 void clr_command(void);
 void cput_text(void);

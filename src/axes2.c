@@ -130,7 +130,7 @@ void redraw_cube_pt(double theta,double phi)
   clr_scrn();
 
   sprintf(bob,"theta=%g phi=%g",theta,phi);
-  canvas_xy(bob);
+  x11_status_bar_set_text(main_status_bar, bob);
 }
 
 void do_axes()
@@ -161,7 +161,7 @@ void redraw_cube(double theta,double phi)
   blank_screen(draw_win);
   draw_unit_cube();
   sprintf(bob,"theta=%g phi=%g",theta,phi);
-  canvas_xy(bob);
+  x11_status_bar_set_text(main_status_bar, bob);
 }
 
 void draw_unit_cube()

@@ -159,7 +159,7 @@ void do_sh_range(double *ystart, double *yend) {
     temp = parlo + dpar * (double)i;
     set_val(shoot_range.item, temp);
     sprintf(bob, "%s=%.16g", shoot_range.item, temp);
-    bottom_msg(2, bob);
+    x11_status_bar_set_text(main_status_bar, bob);
     if (shoot_range.movie == 1)
       clr_scrn();
 
@@ -359,7 +359,7 @@ void last_shot(int flag) {
 }
 
 int set_up_sh_range(void) {
-  static char *n[] = {"*2Range over", "Steps", "Start", "End",
+  static char *n[] = {"*2Range over",     "Steps",     "Start",     "End",
                       "Cycle color(Y/N)", "Side(0/1)", "Movie(Y/N)"};
   char values[7][MAX_LEN_SBOX];
   int status, i;

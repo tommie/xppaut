@@ -126,7 +126,7 @@ int select_table(void) {
   }
   key[NTable] = 0;
   ch = (char)pop_up_list(&temp, "Table", n, key, NTable, 12, 0, 10, 0, no_hint,
-                         info_pop, info_message);
+                         main_status_bar);
   for (i = 0; i < NTable; i++)
     free(n[i]);
   j = (int)(ch - 'a');
@@ -151,7 +151,7 @@ void get_intern_set(void) {
   }
   key[count] = 0;
   ch = (char)pop_up_list(&temp, "Param set", n, key, count, 12, 0, 10, 0,
-                         no_hint, info_pop, info_message);
+                         no_hint, main_status_bar);
   for (i = 0; i < count; i++)
     free(n[i]);
   j = (int)(ch - 'a');
@@ -226,33 +226,31 @@ static void draw_marker(double x, double y, double size, int type) {
 
   static int sym_dir[] = {
       /*          box              */
-      0,  -6, -6, 1,  12, 0,   1, 0,   12, 1, -12, 0,   1, 0,  -12, 3,
-      0,  0,  3,  0,  0,  3,   0, 0,   3,  0, 0,   3,   0, 0,  3,   0,
-      0,  3,  0,  0,  3,  0,   0, 3,   0,  0, 3,   0,   0, 3,  0,   0,
+      0, -6, -6, 1, 12, 0, 1, 0, 12, 1, -12, 0, 1, 0, -12, 3, 0, 0, 3, 0, 0, 3,
+      0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0,
+      0,
 
       /*          diamond             */
-      0,  8,  0,  1,  -8, -8,  1, 8,   -8, 1, 8,   8,   1, -8, 8,   3,
-      0,  0,  3,  0,  0,  3,   0, 0,   3,  0, 0,   3,   0, 0,  3,   0,
-      0,  3,  0,  0,  3,  0,   0, 3,   0,  0, 3,   0,   0, 3,  0,   0,
+      0, 8, 0, 1, -8, -8, 1, 8, -8, 1, 8, 8, 1, -8, 8, 3, 0, 0, 3, 0, 0, 3, 0,
+      0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0,
       /*          triangle         */
-      0,  -6, -6, 1,  12, 0,   1, -6,  12, 1, -6,  -12, 3, 0,  0,   3,
-      0,  0,  3,  0,  0,  3,   0, 0,   3,  0, 0,   3,   0, 0,  3,   0,
-      0,  3,  0,  0,  3,  0,   0, 3,   0,  0, 3,   0,   0, 3,  0,   0,
+      0, -6, -6, 1, 12, 0, 1, -6, 12, 1, -6, -12, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3,
+      0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0,
+      0,
 
       /*          plus            */
-      0,  -6, 0,  1,  12, 0,   0, -6,  -6, 1, 0,   12,  3, 0,  0,   3,
-      0,  0,  3,  0,  0,  3,   0, 0,   3,  0, 0,   3,   0, 0,  3,   0,
-      0,  3,  0,  0,  3,  0,   0, 3,   0,  0, 3,   0,   0, 3,  0,   0,
+      0, -6, 0, 1, 12, 0, 0, -6, -6, 1, 0, 12, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0,
+      0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0,
 
       /*          cross            */
-      0,  -6, 6,  1,  12, -12, 0, -12, 0,  1, 12,  12,  3, 0,  0,   3,
-      0,  0,  3,  0,  0,  3,   0, 0,   3,  0, 0,   3,   0, 0,  3,   0,
-      0,  3,  0,  0,  3,  0,   0, 3,   0,  0, 3,   0,   0, 3,  0,   0,
+      0, -6, 6, 1, 12, -12, 0, -12, 0, 1, 12, 12, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3,
+      0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0, 0, 3, 0,
+      0,
 
       /*          circle           */
-      0,  6,  0,  1,  -1, 3,   1, -2,  2,  1, -3,  1,   1, -3, -1,  1,
-      -2, -2, 1,  -1, -3, 1,   1, -3,  1,  2, -2,  1,   3, -1, 1,   3,
-      1,  1,  2,  2,  1,  1,   3, 3,   0,  0, 3,   0,   0, 3,  0,   0,
+      0, 6, 0, 1, -1, 3, 1, -2, 2, 1, -3, 1, 1, -3, -1, 1, -2, -2, 1, -1, -3, 1,
+      1, -3, 1, 2, -2, 1, 3, -1, 1, 3, 1, 1, 2, 2, 1, 1, 3, 3, 0, 0, 3, 0, 0, 3,
+      0, 0,
   };
   float dx = (MyGraph->xhi - MyGraph->xlo) * WDMARK * size;
   float dy = (MyGraph->yhi - MyGraph->ylo) * HTMARK * size;
@@ -357,7 +355,7 @@ static int select_marker_type(int *type) {
   Window temp = main_win;
   char ch;
   ch = (char)pop_up_list(&temp, "Markers", list, key, 6, 9, ival, 10,
-                         4 * DCURY + 8, no_hint, info_pop, info_message);
+                         4 * DCURY + 8, no_hint, main_status_bar);
   if (ch == 27)
     return (0);
   for (i = 0; i < 6; i++) {
@@ -448,7 +446,8 @@ static void add_markers(void) {
   redraw_all();
 }
 
-static void pntarr_end(void *cookie, int commit, const int *start, const int *end) {
+static void pntarr_end(void *cookie, int commit, const int *start,
+                       const int *end) {
   PointArrayContext *ctx = cookie;
   float xe, ye, xs, ys;
 
@@ -465,7 +464,7 @@ static void pntarr_end(void *cookie, int commit, const int *start, const int *en
   add_grob(xs, ys, xe, ye, ctx->size, ctx->type, ctx->color);
   redraw_all();
 
- end:
+end:
   free(ctx);
 }
 
@@ -747,8 +746,7 @@ void init_grafs(int x, int y, int w, int h) {
 
   graph[0].w = XCreateSimpleWindow(display, main_win, x, y + 4, w, h, 2, GrFore,
                                    MyDrawWinColor);
-  graph[0].w_info = info_pop;
-  info_message = graph[0].gr_info;
+  graph[0].sb = main_status_bar;
   graph[0].Use = 1;
   graph[0].Restore = 1;
   graph[0].Nullrestore = 1;
@@ -852,7 +850,7 @@ void do_motion_events(XEvent ev) {
   if (ev.xmotion.window == draw_win) {
     scale_to_real(i, j, &x, &y);
     sprintf(buf, "x=%f y=%f ", x, y);
-    canvas_xy(buf);
+    x11_status_bar_set_text(main_status_bar, buf);
   }
 }
 
@@ -878,19 +876,6 @@ void do_expose(XEvent ev) {
   GrCol();
 
   for (i = 0; i < MAXPOP; i++) {
-    if ((graph[i].Use) && (ev.xexpose.window == graph[i].w_info)) {
-      XClearWindow(display, graph[i].w_info);
-      if (i == 0) {
-        BaseCol();
-        XDrawString(display, graph[i].w_info, gc, 5, CURY_OFF, graph[i].gr_info,
-                    strlen(graph[i].gr_info));
-      } else {
-        SmallBase();
-        XDrawString(display, graph[i].w_info, small_gc, 0, CURY_OFFs,
-                    graph[i].gr_info, strlen(graph[i].gr_info));
-        SmallGr();
-      }
-    }
     if ((ev.type == Expose) && (graph[i].Use) &&
         (ev.xexpose.window == graph[i].w)) {
       /* redraw_dfield(); */
@@ -937,6 +922,7 @@ static void kill_all_pops(void) {
       destroy_label(graph[i].w);
       destroy_grob(graph[i].w);
 
+      x11_status_bar_free(graph[i].sb);
       XDestroySubwindows(display, graph[i].w);
       XDestroyWindow(display, graph[i].w);
     }
@@ -958,8 +944,8 @@ void create_a_pop(void) {
 
   graph[index].w = XCreateSimpleWindow(display, RootWindow(display, screen), 0,
                                        0, MINI_W, MINI_H, 2, GrFore, GrBack);
-  graph[index].w_info =
-      make_window(graph[index].w, 10, 0, 40 * DCURXs, DCURYs, 0);
+  graph[index].sb =
+      x11_status_bar_alloc(graph[index].w, 10, 0, 40 * DCURXs, DCURYs);
   XSetWindowBackground(display, graph[i].w, MyDrawWinColor);
 
   copy_graph(index, current_pop);
@@ -1082,20 +1068,6 @@ static void lo_lite(Window w) {
 
 static void select_sym(Window w) { bar(0, 0, 5, 5, w); }
 
-void canvas_xy(char *buf) {
-  XClearWindow(display, MyGraph->w_info);
-  strcpy(MyGraph->gr_info, buf);
-  if (MyGraph->w_info == info_pop) {
-    BaseCol();
-    XDrawString(display, MyGraph->w_info, gc, 5, CURY_OFF, buf, strlen(buf));
-  } else {
-    SmallBase();
-    XDrawString(display, MyGraph->w_info, small_gc, 0, CURY_OFFs, buf,
-                strlen(buf));
-    /* SmallGr(); */
-  }
-}
-
 void check_draw_button(XEvent ev) {
   int k;
   char buf[256];
@@ -1122,6 +1094,6 @@ void check_draw_button(XEvent ev) {
       return;
     scale_to_real(i, j, &x, &y);
     sprintf(buf, "x=%f y=%f ", x, y);
-    canvas_xy(buf);
+    x11_status_bar_set_text(MyGraph->sb, buf);
   }
 }

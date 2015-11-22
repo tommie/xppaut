@@ -24,6 +24,7 @@
 #include "pop_list.h"
 #include "base/timeutil.h"
 #include "bitmap/auto.bitmap"
+#include "ui-x11/status-bar.h"
 
 /* --- Macros --- */
 /* golden mean  */
@@ -45,7 +46,8 @@
 /* --- Types --- */
 typedef struct {
   Window canvas, axes, numerics, grab, next, run, clear, redraw, base, per;
-  Window info, param, file, abort, stab, hint, kill;
+  Window info, param, file, abort, stab, kill;
+  X11StatusBar *sb;
 } AUTOWIN;
 
 /* --- Forward Declarations --- */
@@ -120,8 +122,8 @@ int query_special(char *title, char *nsymb) {
   int status = 1;
   static char *m[] = {"BP", "EP", "HB", "LP", "MX", "PD", "TR", "UZ"};
   static char key[] = "behlmptu";
-  int ch = (char)auto_pop_up_list(title, m, key, 8, 11, 1, 10, 10,
-                                  aspecial_hint, Auto.hinttxt);
+  int ch =
+      (char)auto_pop_up_list(title, m, key, 8, 11, 1, 10, 10, aspecial_hint);
   if (ch == 'b') {
     sprintf(nsymb, "BP");
   } else if (ch == 'e') {
@@ -405,8 +407,10 @@ static void auto_grab(void) {
         if (found) {
           d = dnew;
         } else {
-          snprintf(Auto.hinttxt, 255, "  Higher %s not found", nsymb);
-          display_auto(AutoW.hint);
+          char buf[64];
+
+          snprintf(buf, sizeof(buf), "  Higher %s not found", nsymb);
+          x11_status_bar_set_text(AutoW.sb, buf);
           d = dold;
         }
         CUR_DIAGRAM = d;
@@ -436,8 +440,10 @@ static void auto_grab(void) {
         if (found) {
           d = dnew;
         } else {
-          snprintf(Auto.hinttxt, 255, "  Lower %s not found", nsymb);
-          display_auto(AutoW.hint);
+          char buf[64];
+
+          snprintf(buf, sizeof(buf), "  Lower %s not found", nsymb);
+          x11_status_bar_set_text(AutoW.sb, buf);
           d = dold;
         }
         CUR_DIAGRAM = d;
@@ -653,10 +659,10 @@ void auto_rubber(X11RubberType t, X11RubberEndFunc end_func, void *cookie) {
 }
 
 int auto_pop_up_list(char *title, char **list, char *key, int n, int max,
-                     int def, int x, int y, char **hints, char *httxt) {
+                     int def, int x, int y, char **hints) {
   Window temp = AutoW.base;
   return pop_up_list(&temp, title, list, key, n, max, def, x, y, hints,
-                     AutoW.hint, httxt);
+                     AutoW.sb);
 }
 
 void RedrawMark(void) {
@@ -720,14 +726,16 @@ void auto_motion(XEvent ev) {
   if (Auto.exist == 0)
     return;
   if (w == AutoW.canvas) {
+    char buf[64];
+
     x = Auto.xmin +
         (double)(i - Auto.x0) * (Auto.xmax - Auto.xmin) / (double)Auto.wid;
     y = Auto.ymin +
         (double)(Auto.y0 - j + Auto.hgt) * (Auto.ymax - Auto.ymin) /
             (double)Auto.hgt;
-    sprintf(Auto.hinttxt, "x=%g,y=%g", x, y);
+    snprintf(buf, sizeof(buf), "x=%g,y=%g", x, y);
+    x11_status_bar_set_text(AutoW.sb, buf);
     storeautopoint(x, y);
-    display_auto(AutoW.hint);
   }
 }
 
@@ -770,12 +778,6 @@ void display_auto(Window w) {
     xds("File");
   if (w == AutoW.abort)
     xds("ABORT");
-  if (w == AutoW.hint) {
-    XClearWindow(display, w);
-    XDrawString(display, w, gc, 8, CURY_OFF, Auto.hinttxt,
-                strlen(Auto.hinttxt));
-    return;
-  }
 }
 
 Window lil_button(Window root, int x, int y, char *name) {
@@ -811,7 +813,6 @@ void make_auto(char *wname, char *iname) {
   base = make_plain_window(RootWindow(display, screen), 0, 0, wid, hgt, 4);
   XSetWindowBackground(display, base, MyMainWinColor);
   AutoW.base = base;
-  strcpy(Auto.hinttxt, "hint");
   XSelectInput(display, base, ExposureMask | KeyPressMask | ButtonPressMask |
                                   StructureNotifyMask);
 
@@ -871,8 +872,10 @@ void make_auto(char *wname, char *iname) {
   y = DCURY + STD_HGT_var + ymargin + 5;
   x = addwid + 5;
   AutoW.info = make_plain_window(base, x, y, STD_WID_var + xmargin, addhgt, 2);
-  AutoW.hint = make_plain_window(base, x, y + addhgt + 6, STD_WID_var + xmargin,
-                                 DCURY + 2, 2);
+  AutoW.sb = x11_status_bar_alloc(base, x, y + addhgt + 6,
+                                  STD_WID_var + xmargin, DCURY + 2);
+  if (!AutoW.sb)
+    exit(1);
   draw_bif_axes();
 }
 
@@ -904,8 +907,8 @@ void resize_auto_window(XEvent ev) {
     Auto.wid = cwid - xmargin;
 
     XMoveResizeWindow(display, AutoW.info, xloc, yloc + chgt + 4, wid, addhgt);
-    XMoveResizeWindow(display, AutoW.hint, xloc, yloc + chgt + addhgt + 10, wid,
-                      DCURY + 2);
+    x11_status_bar_set_extents(AutoW.sb, xloc, yloc + chgt + addhgt + 10, wid,
+                               DCURY + 2);
 
     int ix, iy;
 
@@ -918,14 +921,11 @@ void resize_auto_window(XEvent ev) {
 void a_msg(int i, int v) {
   if (v == 0 || TipsFlag == 0)
     return;
-  snprintf(Auto.hinttxt, 255, auto_hint[i]);
-  display_auto(AutoW.hint);
+
+  x11_status_bar_set_text(AutoW.sb, auto_hint[i]);
 }
 
-void clear_msg(void) {
-  Auto.hinttxt[0] = '\0';
-  display_auto(AutoW.hint);
-}
+void clear_msg(void) { x11_status_bar_set_text(AutoW.sb, ""); }
 
 /*  Auto event handlers   */
 void auto_enter(Window w, int v) {
@@ -1041,6 +1041,7 @@ void auto_button(XEvent ev) {
 void auto_kill(void) {
   Auto.exist = 0;
   waitasec(ClickTime);
+  x11_status_bar_free(AutoW.sb);
   XDestroySubwindows(display, AutoW.base);
   XDestroyWindow(display, AutoW.base);
 }

@@ -25,7 +25,6 @@ typedef struct {
   int plot,var;
   int icp1,icp2,icp3,icp4,icp5;
   int nper;
-  char hinttxt[256];
   double period[MAX_AUT_PER];
   int uzrpar[MAX_AUT_PER];
   double epsl,epsu,epss;

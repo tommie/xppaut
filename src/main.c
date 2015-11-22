@@ -116,7 +116,8 @@ int PaperWhite = -1;
 
 Window draw_win;
 Window main_win;
-Window command_pop, info_pop;
+Window command_pop;
+X11StatusBar *main_status_bar;
 GC gc, gc_graph, small_gc, font_gc;
 char UserBlack[8];
 char UserWhite[8];
@@ -533,8 +534,8 @@ static void xpp_events(void *cookie, const XEvent *ev) {
       } else {
         /*window_size=BIG_ENOUGH;*/
         XResizeWindow(display, command_pop, SCALEX - 4, DCURY + 1);
-        XMoveResizeWindow(display, info_pop, 0, SCALEY - DCURY - 4, SCALEX - 4,
-                          DCURY);
+        x11_status_bar_set_extents(main_status_bar, 0, SCALEY - DCURY - 4,
+                                   SCALEX - 4, DCURY);
         resize_par_slides(SCALEY - 3 * DCURYs - 1 * DCURYb - 13);
         resize_all_pops(SCALEX, SCALEY);
         redraw_all();
@@ -1133,13 +1134,13 @@ static void make_pops(void) {
   create_the_menus(main_win);
   command_pop = XCreateSimpleWindow(display, main_win, 0, DCURYs + 4, w - 2,
                                     DCURY + 4, 2, MyForeColor, MyBackColor);
-  info_pop = XCreateSimpleWindow(display, main_win, 0, h - DCURY - 4, w - 2,
-                                 DCURY, 2, MyForeColor, MyBackColor);
+  main_status_bar =
+      x11_status_bar_alloc(main_win, 0, h - DCURY - 4, w - 2, DCURY);
+  if (!main_status_bar)
+    exit(1);
   XCreateFontCursor(display, XC_hand2);
   XSelectInput(display, command_pop,
                KeyPressMask | ButtonPressMask | ExposureMask);
-  XSelectInput(display, info_pop, ExposureMask);
-  XMapWindow(display, info_pop);
   XMapWindow(display, command_pop);
   init_grafs(16 * DCURX + 6, DCURYs + DCURYb + 6, w - 16 - 16 * DCURX,
              h - 6 * DCURY - 16);

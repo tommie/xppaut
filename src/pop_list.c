@@ -37,8 +37,8 @@
   (ButtonPressMask | KeyPressMask | ExposureMask | StructureNotifyMask)
 
 #define BUT_MASK                                                               \
-  (ButtonPressMask | KeyPressMask | ExposureMask | StructureNotifyMask |       \
-   EnterWindowMask | LeaveWindowMask)
+  (ButtonPressMask | ButtonReleaseMask | KeyPressMask | ExposureMask |         \
+   StructureNotifyMask | EnterWindowMask | LeaveWindowMask)
 
 /* --- Types --- */
 /*  This is a string box widget which handles a list of
@@ -69,8 +69,7 @@ typedef struct {
   char *key;
   int hot;
 
-  Window hint_win;
-  char *active_hint;
+  X11StatusBar *sb;
 } POP_UP;
 
 typedef struct {
@@ -1230,12 +1229,8 @@ static int pop_up_list_event(POP_UP *p, const XEvent *ev) {
     for (int i = 0; i < p->n; i++) {
       if (ev->xcrossing.window == p->w[i]) {
         XSetWindowBorderWidth(display, p->w[i], 1);
-        if (TipsFlag) {
-          sprintf(p->active_hint, p->hints[i]);
-          XClearWindow(display, p->hint_win);
-          XDrawString(display, p->hint_win, gc, 5, CURY_OFF, p->hints[i],
-                      strlen(p->hints[i]));
-        }
+        if (TipsFlag)
+          x11_status_bar_set_text(p->sb, p->hints[i]);
       }
     }
     break;
@@ -1252,8 +1247,8 @@ static int pop_up_list_event(POP_UP *p, const XEvent *ev) {
 
 /*  new pop_up_list   */
 int pop_up_list(Window *root, char *title, char **list, char *key, int n,
-                int max, int def, int x, int y, char **hints, Window hwin,
-                char *httxt) {
+                int max, int def, int x, int y, char **hints,
+                X11StatusBar *sb) {
   POP_UP p;
   Window w;
   Cursor txt;
@@ -1268,8 +1263,7 @@ int pop_up_list(Window *root, char *title, char **list, char *key, int n,
   p.title = title;
   p.n = n;
   p.hints = hints;
-  p.hint_win = hwin;
-  p.active_hint = httxt;
+  p.sb = sb;
   p.max = max;
   p.key = key;
   p.hot = def;

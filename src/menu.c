@@ -121,7 +121,7 @@ void menu_crossing(Window win, int yn)
     if (win == my_menus[j].w[i]) {
       XSetWindowBorderWidth(display, win, yn);
       if (yn && TipsFlag)
-        bottom_msg(0, z[i]);
+        x11_status_bar_set_text(main_status_bar, z[i]);
       return;
     }
   }

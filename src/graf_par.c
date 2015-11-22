@@ -1333,7 +1333,7 @@ int get_frz_index(Window w) {
     return (-1);
   key[count] = 0;
   ch = (char)pop_up_list(&temp, "Curves", n, key, count, 12, 0, 10,
-                         8 * DCURY + 8, no_hint, info_pop, info_message);
+                         8 * DCURY + 8, no_hint, main_status_bar);
   for (i = 0; i < count; i++)
     free(n[i]);
   return ((int)(ch - 'a'));

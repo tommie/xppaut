@@ -611,7 +611,7 @@ static void do_eq_range(double *x) {
     set_val(eq_range.item, temp);
     PAR_FOL = 1;
     sprintf(bob, "%s=%.16g", eq_range.item, temp);
-    bottom_msg(2, bob);
+    x11_status_bar_set_text(main_status_bar, bob);
     evaluate_derived();
     if (DelayFlag)
       do_delay_sing(x, NEWT_ERR, EVEC_ERR, BOUND, EVEC_ITER, NODE, &ierr,
@@ -778,7 +778,7 @@ int do_range(double *x, int flag) {
             sprintf(bob, "%s=%.16g  %s=%.16g", range.item, p, range.item2, p2);
           else
             sprintf(bob, "%s=%.16g  i=%d", range.item, p, i);
-          bottom_msg(2, bob);
+          x11_status_bar_set_text(main_status_bar, bob);
         }
       }      /* normal range stuff   */
       else { /* auto range stuff */
@@ -786,7 +786,7 @@ int do_range(double *x, int flag) {
         get_ic(2, x);
         get_val(parn, &temp);
         sprintf(bob, "%s=%.16g", parn, temp);
-        bottom_msg(2, bob);
+        x11_status_bar_set_text(main_status_bar, bob);
       }
       do_start_flags(x, &MyTime);
       if (fabs(MyTime) >= TRANS && STORFLAG == 1 && POIMAP == 0) {

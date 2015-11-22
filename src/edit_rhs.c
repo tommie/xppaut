@@ -19,12 +19,11 @@
 #define NEQMAXFOREDIT 20
 
 void edit_menu(void) {
-  Window temp = main_win;
   static char *n[] = {"RHS's", "Functions", "Save as", "Load DLL"};
   static char key[] = "rfsl";
   char ch;
   int edtype = 0, i;
-  ch = (char)pop_up_list(&temp, "Edit Stuff", n, key, 4, 11, edtype, 10,
+  ch = (char)pop_up_list(main_win, "Edit Stuff", n, key, 4, 11, edtype, 10,
                          13 * DCURY + 8, edrh_hint, main_status_bar);
   edtype = -1;
   for (i = 0; i < 4; i++)

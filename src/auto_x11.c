@@ -660,8 +660,7 @@ void auto_rubber(X11RubberType t, X11RubberEndFunc end_func, void *cookie) {
 
 int auto_pop_up_list(char *title, char **list, char *key, int n, int max,
                      int def, int x, int y, char **hints) {
-  Window temp = AutoW.base;
-  return pop_up_list(&temp, title, list, key, n, max, def, x, y, hints,
+  return pop_up_list(AutoW.base, title, list, key, n, max, def, x, y, hints,
                      AutoW.sb);
 }
 

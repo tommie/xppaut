@@ -401,7 +401,6 @@ static Method get_method(void) {
   int i;
   int nmeth;
 
-  Window temp = main_win;
   /* This must match enum Method. */
   static char *n[] = {"(D)iscrete",    "(E)uler",   "(M)od. Euler",
                       "(R)unge-Kutta", "(A)dams",   "(G)ear",
@@ -411,7 +410,7 @@ static Method get_method(void) {
   static char key[] = "demragvbqsc582y";
 
   nmeth = sizeof(n) / sizeof(*n);
-  ch = (char)pop_up_list(&temp, "Method", n, key, nmeth, nmeth, METHOD, 10,
+  ch = (char)pop_up_list(main_win, "Method", n, key, nmeth, nmeth, METHOD, 10,
                          DCURY + 8, meth_hint, main_status_bar);
   for (i = 0; i < nmeth; i++)
     if (ch == key[i])

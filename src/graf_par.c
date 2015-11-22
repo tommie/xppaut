@@ -1319,7 +1319,6 @@ int get_frz_index(Window w) {
 
   int i;
   int count = 0;
-  Window temp = main_win;
   for (i = 0; i < MAXFRZ; i++) {
     if (frz[i].use == 1 && w == frz[i].w) {
       n[count] = (char *)malloc(20);
@@ -1332,7 +1331,7 @@ int get_frz_index(Window w) {
   if (count == 0)
     return (-1);
   key[count] = 0;
-  ch = (char)pop_up_list(&temp, "Curves", n, key, count, 12, 0, 10,
+  ch = (char)pop_up_list(main_win, "Curves", n, key, count, 12, 0, 10,
                          8 * DCURY + 8, no_hint, main_status_bar);
   for (i = 0; i < count; i++)
     free(n[i]);

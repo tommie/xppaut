@@ -356,10 +356,9 @@ void do_stochast(void) {
                       "Power",     "fIt data",    "Stat",     "Liapunov",
                       "stAutocor", "Xcorrel etc", "spEc.dns", "2D-hist"};
   static char key[] = "ncdmvhofpislaxe2";
-  Window temp = main_win;
   char ch;
   int i;
-  ch = (char)pop_up_list(&temp, "Stochastic", n, key, 16, 10, 0, 10,
+  ch = (char)pop_up_list(main_win, "Stochastic", n, key, 16, 10, 0, 10,
                          2 * DCURY + 8, stoch_hint, main_status_bar);
   for (i = 0; i < 16; i++)
     if (ch == key[i])
@@ -373,10 +372,9 @@ void get_pmap_pars(void) {
   static char *map[] = {"(N)one", "(S)ection", "(M)ax/min", "(P)eriod"};
   static char mkey[] = "nsmp";
   char ch;
-  Window temp = main_win;
   int i;
 
-  ch = (char)pop_up_list(&temp, "Poincare map", map, mkey, 4, 13, POIMAP, 10,
+  ch = (char)pop_up_list(main_win, "Poincare map", map, mkey, 4, 13, POIMAP, 10,
                          6 * DCURY + 8, map_hint, main_status_bar);
 
   for (i = 0; i < 4; i++)
@@ -389,11 +387,10 @@ void get_pmap_pars(void) {
 
 void set_col_par(void) {
   char ch;
-  Window tempw = main_win;
   static char *n[] = {"(N)o color", "(V)elocity", "(A)nother quantity"};
   static char key[] = "nva";
   int i;
-  ch = (char)pop_up_list(&tempw, "Color code", n, key, 3, 11, 0, 10,
+  ch = (char)pop_up_list(main_win, "Color code", n, key, 3, 11, 0, 10,
                          12 * DCURY + 8, color_hint, main_status_bar);
   for (i = 0; i < 3; i++)
     if (ch == key[i])
@@ -403,13 +400,12 @@ void set_col_par(void) {
 }
 
 void make_adj(void) {
-  Window temp = main_win;
   static char *n[] = {"(N)ew adj", "(M)ake H",     "(A)djoint", "(O)rbit",
                       "(H)fun",    "(P)arameters", "(R)ange"};
   static char key[] = "nmaohpr";
   char ch;
   int i;
-  ch = (char)pop_up_list(&temp, "Adjoint", n, key, 7, 10, 0, 10, 11 * DCURY + 8,
+  ch = (char)pop_up_list(main_win, "Adjoint", n, key, 7, 10, 0, 10, 11 * DCURY + 8,
                          adj_hint, main_status_bar);
   for (i = 0; i < 7; i++)
     if (ch == key[i])
@@ -494,13 +490,12 @@ void do_gr_objs(void) {
   static char *elist[] = {"(M)ove", "(C)hange", "(D)elete"};
   static char ekey[] = "mcd";
   static char etitle[] = "Edit";
-  Window temp = main_win;
-  ch = (char)pop_up_list(&temp, title, list, key, 7, 10, 0, 10, 10 * DCURY + 8,
+  ch = (char)pop_up_list(main_win, title, list, key, 7, 10, 0, 10, 10 * DCURY + 8,
                          text_hint, main_status_bar);
   if (ch == 27)
     return;
   if (ch == 'e') {
-    ch = (char)pop_up_list(&temp, etitle, elist, ekey, 3, 9, 0, 10,
+    ch = (char)pop_up_list(main_win, etitle, elist, ekey, 3, 9, 0, 10,
                            10 * DCURY + 8,
 
                            edit_hint, main_status_bar);
@@ -526,10 +521,9 @@ void new_lookup(void) {
   static char *n[] = {"(E)dit", "(V)iew"};
   static char key[] = "ev";
   char ch;
-  Window temp = main_win;
   if (NTable == 0)
     return;
-  ch = (char)pop_up_list(&temp, "Tables", n, key, 2, 12, 1, 10, 11 * DCURY + 8,
+  ch = (char)pop_up_list(main_win, "Tables", n, key, 2, 12, 1, 10, 11 * DCURY + 8,
                          tab_hint, main_status_bar);
   if (ch == key[0])
     run_the_commands(M_UKE);
@@ -543,8 +537,7 @@ void find_bvp(void) {
   static char key[] = "rnsph";
   char ch;
   int i;
-  Window temp = main_win;
-  ch = (char)pop_up_list(&temp, "Bndry Value Prob", n, key, 5, 16, 1, 10,
+  ch = (char)pop_up_list(main_win, "Bndry Value Prob", n, key, 5, 16, 1, 10,
                          6 * DCURY + 8, bvp_hint, main_status_bar);
   if (ch == 27)
     return;
@@ -556,13 +549,12 @@ void find_bvp(void) {
 }
 
 void change_view(void) {
-  Window temp = main_win;
   static char *n[] = {"2D", "3D", "Array", "Toon"};
   static char key[] = "23at";
   char ch;
   int i;
 
-  ch = (char)pop_up_list(&temp, "Axes", n, key, 4, 5, 0, 10, 13 * DCURY + 8,
+  ch = (char)pop_up_list(main_win, "Axes", n, key, 4, 5, 0, 10, 13 * DCURY + 8,
                          view_hint, main_status_bar);
   for (i = 0; i < 4; i++)
     if (ch == key[i])
@@ -580,12 +572,11 @@ void do_windows(void) {
                           "(A)uto",   "(M)anual",   "(S)imPlot Off"};
   static char key[] = "ckdbams";
   static char title[] = "Make window";
-  Window temp = main_win;
   if (SimulPlotFlag == 0)
-    ch = (char)pop_up_list(&temp, title, list, key, 7, 11, 0, 10,
+    ch = (char)pop_up_list(main_win, title, list, key, 7, 11, 0, 10,
                            14 * DCURY + 8, half_hint, main_status_bar);
   else
-    ch = (char)pop_up_list(&temp, title, list2, key, 7, 11, 0, 10,
+    ch = (char)pop_up_list(main_win, title, list2, key, 7, 11, 0, 10,
                            14 * DCURY + 8, half_hint, main_status_bar);
   for (i = 0; i < 7; i++) {
     if (ch == key[i])
@@ -613,26 +604,25 @@ void add_a_curve(void) {
   static char keyc[] = "nphcbg";
   static char keyf[] = "fderkbco";
   static char keyk[] = "nk";
-  Window temp = main_win;
   char ch;
   int i, j;
-  ch = (char)pop_up_list(&temp, "Curves", na, keya, 10, 15, 0, 10,
+  ch = (char)pop_up_list(main_win, "Curves", na, keya, 10, 15, 0, 10,
                          8 * DCURY + 8, graf_hint, main_status_bar);
   for (i = 0; i < 10; i++)
     if (ch == keya[i])
       break;
   if (i == 6) {
     if (AutoFreezeFlag == 0)
-      ch = (char)pop_up_list(&temp, "Freeze", nf, keyf, 8, 15, 0, 10,
+      ch = (char)pop_up_list(main_win, "Freeze", nf, keyf, 8, 15, 0, 10,
                              8 * DCURY + 8, frz_hint, main_status_bar);
     else
-      ch = (char)pop_up_list(&temp, "Freeze", nf2, keyf, 8, 15, 0, 10,
+      ch = (char)pop_up_list(main_win, "Freeze", nf2, keyf, 8, 15, 0, 10,
                              8 * DCURY + 8, frz_hint, main_status_bar);
     for (j = 0; j < 8; j++)
       if (ch == keyf[j])
         break;
     if (j == 4) {
-      ch = (char)pop_up_list(&temp, "Key", nk, keyk, 2, 9, 0, 10, 8 * DCURY + 8,
+      ch = (char)pop_up_list(main_win, "Key", nk, keyk, 2, 9, 0, 10, 8 * DCURY + 8,
                              no_hint, main_status_bar);
       if (ch == keyk[0])
         com = M_GFKN;
@@ -644,7 +634,7 @@ void add_a_curve(void) {
     }
   } else {
     if (i == 9) {
-      ch = (char)pop_up_list(&temp, "Colormap", nc, keyc, 6, 15, 0, 10,
+      ch = (char)pop_up_list(main_win, "Colormap", nc, keyc, 6, 15, 0, 10,
                              8 * DCURY + 8, cmap_hint, main_status_bar);
       for (j = 0; j < 6; j++)
         if (ch == keyc[j])
@@ -667,8 +657,7 @@ void do_movie(void) {
                          "(A)utoplay", "(S)ave",  "(M)ake AniGif",
                          "(X)tra"};
   static char key[] = "crpasmx";
-  Window temp = main_win;
-  ch = (char)pop_up_list(&temp, "Kinescope", list, key, nkc, 11, 0, 10,
+  ch = (char)pop_up_list(main_win, "Kinescope", list, key, nkc, 11, 0, 10,
                          8 * DCURY + 8, kin_hint, main_status_bar);
   for (i = 0; i < nkc; i++)
     if (ch == key[i])
@@ -678,12 +667,11 @@ void do_movie(void) {
 }
 
 void do_torus(void) {
-  Window temp = main_win;
   static char *n[] = {"(A)ll", "(N)one", "(C)hoose"};
   static char key[] = "anc";
   char ch;
   int i;
-  ch = (char)pop_up_list(&temp, "Torus", n, key, 3, 9, 1 - TORUS, 10,
+  ch = (char)pop_up_list(main_win, "Torus", n, key, 3, 9, 1 - TORUS, 10,
                          4 * DCURY + 8, phas_hint, main_status_bar);
   for (i = 0; i < 3; i++)
     if (ch == key[i])
@@ -698,8 +686,7 @@ void window_zoom(void) {
   static char key[] = "wzofd";
   char ch;
   int i;
-  Window temp = main_win;
-  ch = (char)pop_up_list(&temp, "Window", n, key, 5, 13, 0, 10, 13 * DCURY + 8,
+  ch = (char)pop_up_list(main_win, "Window", n, key, 5, 13, 0, 10, 13 * DCURY + 8,
                          wind_hint, main_status_bar);
   for (i = 0; i < 5; i++)
     if (ch == key[i])
@@ -714,8 +701,7 @@ void direct_field(void) {
                       "(C)olorize", "(S)caled Dir.Fld"};
   static char key[] = "dfncs";
   char ch;
-  Window temp = main_win;
-  ch = (char)pop_up_list(&temp, "Two-D Fun", n, key, 5, 18, 0, 10,
+  ch = (char)pop_up_list(main_win, "Two-D Fun", n, key, 5, 18, 0, 10,
                          6 * DCURY + 8, flow_hint, main_status_bar);
 
   for (i = 0; i < 5; i++)
@@ -727,12 +713,11 @@ void direct_field(void) {
 
 void new_clines(void) {
   int i;
-  Window temp = main_win;
   static char *n[] = {"(N)ew",    "(R)estore", "(A)uto",
                       "(M)anual", "(F)reeze",  "(S)ave"};
   static char key[] = "nramfs";
   char ch;
-  ch = (char)pop_up_list(&temp, "Nullclines", n, key, 6, 10, 0, 10,
+  ch = (char)pop_up_list(main_win, "Nullclines", n, key, 6, 10, 0, 10,
                          6 * DCURY + 8, null_hint, main_status_bar);
   for (i = 0; i < 6; i++)
     if (ch == key[i])
@@ -742,12 +727,11 @@ void new_clines(void) {
 }
 
 void froz_cline_stuff(void) {
-  Window temp = main_win;
   static char *n[] = {"(F)reeze", "(D)elete all", "(R)ange", "(A)nimate"};
   static char key[] = "fdra";
   char ch;
   int i;
-  ch = (char)pop_up_list(&temp, "Freeze cline", n, key, 4, 10, 0, 10,
+  ch = (char)pop_up_list(main_win, "Freeze cline", n, key, 4, 10, 0, 10,
                          6 * DCURY + 8, null_freeze, main_status_bar);
   for (i = 0; i < 4; i++) {
     if (ch == key[i])
@@ -762,8 +746,7 @@ void find_equilibrium(void) {
   static char *n[] = {"(G)o", "(M)ouse", "(R)ange", "monte(C)ar"};
   static char key[] = "gmrc";
   char ch;
-  Window temp = main_win;
-  ch = (char)pop_up_list(&temp, "Equilibria", n, key, 4, 12, 1, 10,
+  ch = (char)pop_up_list(main_win, "Equilibria", n, key, 4, 12, 1, 10,
                          6 * DCURY + 8, sing_hint, main_status_bar);
   if (ch == 27)
     return;
@@ -778,14 +761,13 @@ void find_equilibrium(void) {
 
 void ini_data_menu(void) {
   int i;
-  Window temp = main_win;
   static char *n[] = {"(R)ange",   "(2)par range", "(L)ast",    "(O)ld",
                       "(G)o",      "(M)ouse",      "(S)hift",   "(N)ew",
                       "s(H)oot",   "(F)ile",       "form(U)la", "m(I)ce",
                       "DAE guess", "(B)ackward"};
   static char key[] = "r2logmsnhfuidb";
   char ch;
-  ch = (char)pop_up_list(&temp, "Integrate", n, key, 14, 13, 3, 10,
+  ch = (char)pop_up_list(main_win, "Integrate", n, key, 14, 13, 3, 10,
                          3 * DCURY + 8, ic_hint, main_status_bar);
 
   if (ch == 27)

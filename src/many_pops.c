@@ -117,7 +117,6 @@ static int MINI_W = 320;
 
 int select_table(void) {
   int i, j;
-  Window temp = main_win;
   char *n[MAX_TAB], key[MAX_TAB], ch;
   for (i = 0; i < NTable; i++) {
     n[i] = (char *)malloc(25);
@@ -125,7 +124,7 @@ int select_table(void) {
     sprintf(n[i], "%c: %s", key[i], my_table[i].name);
   }
   key[NTable] = 0;
-  ch = (char)pop_up_list(&temp, "Table", n, key, NTable, 12, 0, 10, 0, no_hint,
+  ch = (char)pop_up_list(main_win, "Table", n, key, NTable, 12, 0, 10, 0, no_hint,
                          main_status_bar);
   for (i = 0; i < NTable; i++)
     free(n[i]);
@@ -141,7 +140,6 @@ void get_intern_set(void) {
   char *n[MAX_INTERN_SET], key[MAX_INTERN_SET], ch;
   int i, j;
   int count = Nintern_set;
-  Window temp = main_win;
   if (count == 0)
     return;
   for (i = 0; i < Nintern_set; i++) {
@@ -150,7 +148,7 @@ void get_intern_set(void) {
     sprintf(n[i], "%c: %s", key[i], intern_set[i].name);
   }
   key[count] = 0;
-  ch = (char)pop_up_list(&temp, "Param set", n, key, count, 12, 0, 10, 0,
+  ch = (char)pop_up_list(main_win, "Param set", n, key, count, 12, 0, 10, 0,
                          no_hint, main_status_bar);
   for (i = 0; i < count; i++)
     free(n[i]);
@@ -352,9 +350,8 @@ static int select_marker_type(int *type) {
   int i;
   char *list[] = {"Box", "Diamond", "Triangle", "Plus", "X", "Circle"};
   static char key[] = "bdtpxc";
-  Window temp = main_win;
   char ch;
-  ch = (char)pop_up_list(&temp, "Markers", list, key, 6, 9, ival, 10,
+  ch = (char)pop_up_list(main_win, "Markers", list, key, 6, 9, ival, 10,
                          4 * DCURY + 8, no_hint, main_status_bar);
   if (ch == 27)
     return (0);

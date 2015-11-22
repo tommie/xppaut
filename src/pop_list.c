@@ -62,11 +62,11 @@ typedef struct {
 typedef struct {
   Window base, tit;
   Window *w;
-  char *title;
-  char **entries;
-  char **hints;
+  const char *title;
+  char * const *entries;
+  char * const *hints;
   int n, max;
-  char *key;
+  const char *key;
   int hot;
 
   X11StatusBar *sb;
@@ -1246,8 +1246,8 @@ static int pop_up_list_event(POP_UP *p, const XEvent *ev) {
 }
 
 /*  new pop_up_list   */
-int pop_up_list(Window *root, char *title, char **list, char *key, int n,
-                int max, int def, int x, int y, char **hints,
+int pop_up_list(Window root, const char *title, char * const *list, const char *key, int n,
+                int max, int def, int x, int y, char * const *hints,
                 X11StatusBar *sb) {
   POP_UP p;
   Window w;
@@ -1255,7 +1255,7 @@ int pop_up_list(Window *root, char *title, char **list, char *key, int n,
   int i, value;
   int width = DCURX * (max + 5);
   int length = (DCURY + 6) * (n + 2);
-  w = make_plain_window(*root, x, y, width, length, 2);
+  w = make_plain_window(root, x, y, width, length, 2);
   txt = XCreateFontCursor(display, XC_hand2);
   XDefineCursor(display, w, txt);
   p.base = w;

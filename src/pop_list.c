@@ -1216,7 +1216,7 @@ static int pop_up_list_event(POP_UP *p, const XEvent *ev) {
   case KeyPress:
     return get_key_press(ev);
 
-  case ButtonPress:
+  case ButtonRelease:
     for (int i = 0; i < p->n; i++) {
       if (ev->xbutton.window == p->w[i]) {
         return (int)p->key[i];

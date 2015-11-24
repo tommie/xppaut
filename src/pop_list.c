@@ -63,8 +63,8 @@ typedef struct {
   Window base, tit;
   Window *w;
   const char *title;
-  char * const *entries;
-  char * const *hints;
+  char *const *entries;
+  char *const *hints;
   int n, max;
   const char *key;
   int hot;
@@ -610,178 +610,89 @@ static void make_sbox_windows(STRING_BOX *sb, int row, int col, char *title,
   XRaiseWindow(display, base);
 }
 
-Window make_fancy_window(Window root, int x, int y, int width, int height,
-                         int bw, int fc, int bc) {
+static void draw_gradient(Pixmap pmap, int width, int height) {
+  int xx, yy;
+  double cosine;
+  XColor bcolour, col2, diffcol;
+  Colormap cmap = DefaultColormap(display, DefaultScreen(display));
+  XParseColor(display, cmap, UserWhite, &bcolour);
+  XParseColor(display, cmap, UserBlack, &diffcol);
+
+  for (yy = 0; yy < height; yy += 1) {
+    if (yy < 1.0) {
+      col2.red = 65535;
+      col2.green = 65355;
+      col2.blue = 65355;
+    } else {
+      if (yy < (height / 2.0)) {
+        cosine = 1.0;
+      } else if ((height - yy) <= 1.0) {
+        cosine = 0.1;
+      } else {
+        cosine = 0.93;
+      }
+      col2.red = bcolour.red * cosine;
+      col2.green = bcolour.green * cosine;
+      col2.blue = bcolour.blue * cosine;
+    }
+
+    XAllocColor(display, cmap, &col2);
+    XSetForeground(display, gc, col2.pixel);
+
+    for (xx = 1; xx < width - 1; xx += 1) {
+      XDrawPoint(display, pmap, gc, xx, yy);
+    }
+
+    /*Now do xx=0 and xx=width-1*/
+    xx = 0;
+    col2.red = 65535;
+    col2.green = 65355;
+    col2.blue = 65355;
+    XAllocColor(display, cmap, &col2);
+    XSetForeground(display, gc, col2.pixel);
+    XDrawPoint(display, pmap, gc, xx, yy);
+    xx = width - 1;
+    cosine = 0.1;
+    col2.red = bcolour.red * cosine;
+    col2.green = bcolour.green * cosine;
+    col2.blue = bcolour.blue * cosine;
+
+    XAllocColor(display, cmap, &col2);
+    XSetForeground(display, gc, col2.pixel);
+    XDrawPoint(display, pmap, gc, xx, yy);
+  }
+}
+
+Window make_plain_unmapped_window(Window root, int x, int y, int width,
+                                  int height, int bw) {
   Window win;
   win = XCreateSimpleWindow(display, root, x, y, width, height, bw, MyForeColor,
                             MyBackColor);
 
-  if (UserGradients == 1) {
-
-    Pixmap pmap = XCreatePixmap(display, root, width, height,
-                                DefaultDepth(display, DefaultScreen(display)));
-
-    int xx, yy;
-    double cosine;
-    /*double l2rads;*/
-    xx = 0;
-
-    XColor bcolour, col2, diffcol;
-    Colormap cmap = DefaultColormap(display, DefaultScreen(display));
-    XParseColor(display, cmap, UserWhite, &bcolour);
-    XParseColor(display, cmap, UserBlack, &diffcol);
-
-    /*l2rads = 3.1415926535897932384/(1.0*height);
-    */
-
-    /*win=XCreateSimpleWindow(display,root,x,y,width,height,
-           bw,diffcol.pixel,bcolour.pixel);
-    */
-
-    for (yy = 0; yy < height; yy += 1) {
-
-      if (yy < 1.0) {
-        col2.red = 65535;
-        col2.green = 65355;
-        col2.blue = 65355;
-      } else {
-        if (yy < (height / 2.0)) {
-          cosine = 1.0;
-        } else if ((height - yy) <= 1.0) {
-          cosine = 0.1;
-        } else {
-          cosine = 0.93;
-        }
-        col2.red = bcolour.red * cosine;
-        col2.green = bcolour.green * cosine;
-        col2.blue = bcolour.blue * cosine;
-      }
-
-      XAllocColor(display, cmap, &col2);
-      XSetForeground(display, gc, col2.pixel);
-
-      for (xx = 1; xx < width - 1; xx += 1) {
-
-        XDrawPoint(display, pmap, gc, xx, yy);
-      }
-
-      /*Now do xx=0 and xx=width-1*/
-      xx = 0;
-      col2.red = 65535;
-      col2.green = 65355;
-      col2.blue = 65355;
-      XAllocColor(display, cmap, &col2);
-      XSetForeground(display, gc, col2.pixel);
-      XDrawPoint(display, pmap, gc, xx, yy);
-      xx = width - 1;
-      cosine = 0.1;
-      col2.red = bcolour.red * cosine;
-      col2.green = bcolour.green * cosine;
-      col2.blue = bcolour.blue * cosine;
-
-      XAllocColor(display, cmap, &col2);
-      XSetForeground(display, gc, col2.pixel);
-      XDrawPoint(display, pmap, gc, xx, yy);
-    }
-
-    XSetWindowBackgroundPixmap(display, win, pmap);
-    XFreePixmap(display, pmap);
-  }
-
+  if (root == RootWindow(display, screen))
+    XSetWMProtocols(display, win, &deleteWindowAtom, 1);
   XSelectInput(display, win, ExposureMask | KeyPressMask | ButtonPressMask |
                                  StructureNotifyMask | ButtonReleaseMask |
                                  ButtonMotionMask | LeaveWindowMask |
                                  EnterWindowMask);
-  XMapWindow(display, win);
 
-  return (win);
+  return win;
 }
 
 Window make_unmapped_window(Window root, int x, int y, int width, int height,
                             int bw) {
-  Window win;
-  win = XCreateSimpleWindow(display, root, x, y, width, height, bw, MyForeColor,
-                            MyBackColor);
-
-  /*Gradient stuff*/
+  Window win = make_plain_unmapped_window(root, x, y, width, height, bw);
 
   if (UserGradients == 1) {
-
     Pixmap pmap = XCreatePixmap(display, root, width, height,
                                 DefaultDepth(display, DefaultScreen(display)));
 
-    int xx, yy;
-    double cosine;
-    /*double l2rads;
-    */
-    xx = 0;
-
-    XColor bcolour, col2, diffcol;
-    Colormap cmap = DefaultColormap(display, DefaultScreen(display));
-    XParseColor(display, cmap, UserWhite, &bcolour);
-    XParseColor(display, cmap, UserBlack, &diffcol);
-
-    /*l2rads = 3.1415926535897932384/(1.0*height);*/
-
-    /* win=XCreateSimpleWindow(display,root,x,y,width,height,
-            bw,diffcol.pixel,bcolour.pixel);
-     */
-
-    for (yy = 0; yy < height; yy += 1) {
-
-      if (yy < 1.0) {
-        col2.red = 65535;
-        col2.green = 65355;
-        col2.blue = 65355;
-      } else {
-        if (yy < (height / 2.0)) {
-          cosine = 1.0;
-        } else if ((height - yy) <= 1.0) {
-          cosine = 0.1;
-        } else {
-          cosine = 0.93;
-        }
-        col2.red = bcolour.red * cosine;
-        col2.green = bcolour.green * cosine;
-        col2.blue = bcolour.blue * cosine;
-      }
-
-      XAllocColor(display, cmap, &col2);
-      XSetForeground(display, gc, col2.pixel);
-
-      for (xx = 1; xx < width - 1; xx += 1) {
-
-        XDrawPoint(display, pmap, gc, xx, yy);
-      }
-
-      /*Now do xx=0 and xx=width-1*/
-      xx = 0;
-      col2.red = 65535;
-      col2.green = 65355;
-      col2.blue = 65355;
-      XAllocColor(display, cmap, &col2);
-      XSetForeground(display, gc, col2.pixel);
-      XDrawPoint(display, pmap, gc, xx, yy);
-      xx = width - 1;
-      cosine = 0.1;
-      col2.red = bcolour.red * cosine;
-      col2.green = bcolour.green * cosine;
-      col2.blue = bcolour.blue * cosine;
-
-      XAllocColor(display, cmap, &col2);
-      XSetForeground(display, gc, col2.pixel);
-      XDrawPoint(display, pmap, gc, xx, yy);
-    }
+    draw_gradient(pmap, width, height);
     XSetWindowBackgroundPixmap(display, win, pmap);
     XFreePixmap(display, pmap);
   }
 
-  XSelectInput(display, win, ExposureMask | KeyPressMask | ButtonPressMask |
-                                 StructureNotifyMask | ButtonReleaseMask |
-                                 ButtonMotionMask | LeaveWindowMask |
-                                 EnterWindowMask);
-
-  return (win);
+  return win;
 }
 
 static void bin_prnt_byte(int x, int *arr) {
@@ -803,104 +714,30 @@ static void bin_prnt_byte(int x, int *arr) {
 Window make_unmapped_icon_window(Window root, int x, int y, int width,
                                  int height, int bw, int icx, int icy,
                                  unsigned char *icdata) {
-  Window win;
-  win = XCreateSimpleWindow(display, root, x, y, width, height, bw, MyForeColor,
-                            MyBackColor);
-
-  /*Gradient stuff*/
-
+  Window win = make_plain_unmapped_window(root, x, y, width, height, bw);
   Pixmap pmap = XCreatePixmap(display, root, width, height,
                               DefaultDepth(display, DefaultScreen(display)));
-  int xx, yy;
-  XColor bcolour, col2, diffcol;
   Colormap cmap = DefaultColormap(display, DefaultScreen(display));
-  XParseColor(display, cmap, UserWhite, &bcolour);
-  XParseColor(display, cmap, UserBlack, &diffcol);
 
   if (UserGradients == 1) {
-
-    double cosine;
-
-    /*double l2rads;
-    */
-    xx = 0;
-
-    /*l2rads = 3.1415926535897932384/(1.0*height);*/
-
-    /* win=XCreateSimpleWindow(display,root,x,y,width,height,
-            bw,diffcol.pixel,bcolour.pixel);
-     */
-
-    for (yy = 0; yy < height; yy += 1) {
-
-      if (yy < 1.0) {
-        col2.red = 65535;
-        col2.green = 65355;
-        col2.blue = 65355;
-      } else {
-        if (yy < (height / 2.0)) {
-          cosine = 1.0;
-        } else if ((height - yy) <= 1.0) {
-          cosine = 0.1;
-        } else {
-          cosine = 0.93;
-        }
-        col2.red = bcolour.red * cosine;
-        col2.green = bcolour.green * cosine;
-        col2.blue = bcolour.blue * cosine;
-      }
-
-      XAllocColor(display, cmap, &col2);
-      XSetForeground(display, gc, col2.pixel);
-
-      for (xx = 1; xx < width - 1; xx += 1) {
-        XDrawPoint(display, pmap, gc, xx, yy);
-      }
-
-      /*Now do xx=0 and xx=width-1*/
-      xx = 0;
-      col2.red = 65535;
-      col2.green = 65355;
-      col2.blue = 65355;
-      XAllocColor(display, cmap, &col2);
-      XSetForeground(display, gc, col2.pixel);
-      XDrawPoint(display, pmap, gc, xx, yy);
-      xx = width - 1;
-      cosine = 0.1;
-      col2.red = bcolour.red * cosine;
-      col2.green = bcolour.green * cosine;
-      col2.blue = bcolour.blue * cosine;
-
-      XAllocColor(display, cmap, &col2);
-      XSetForeground(display, gc, col2.pixel);
-      XDrawPoint(display, pmap, gc, xx, yy);
-    }
+    draw_gradient(pmap, width, height);
   } else {
-    col2.red = bcolour.red;
-    col2.green = bcolour.green;
-    col2.blue = bcolour.blue;
-    XAllocColor(display, cmap, &col2);
-    XSetForeground(display, gc, col2.pixel);
+    XColor bcolor;
 
-    for (yy = 0; yy < height; yy += 1) {
-      for (xx = 0; xx < width; xx += 1) {
-        XDrawPoint(display, pmap, gc, xx, yy);
-      }
-    }
+    XParseColor(display, cmap, UserWhite, &bcolor);
+    XAllocColor(display, cmap, &bcolor);
+    XSetForeground(display, gc, bcolor.pixel);
+    XDrawRectangle(display, pmap, gc, 0, 0, width, height);
   }
 
   int z = 0, row = 0, col = 0;
 
-  if (icdata == NULL) {
-    /*Don't do anything...*/
+  if (icdata != NULL) {
+    XColor diffcol;
 
-  } else {
-
-    col2.red = diffcol.red;
-    col2.green = diffcol.green;
-    col2.blue = diffcol.blue;
-    XAllocColor(display, cmap, &col2);
-    XSetForeground(display, gc, col2.pixel);
+    XParseColor(display, cmap, UserBlack, &diffcol);
+    XAllocColor(display, cmap, &diffcol);
+    XSetForeground(display, gc, diffcol.pixel);
 
     unsigned char *ps = icdata;
 
@@ -941,56 +778,28 @@ Window make_unmapped_icon_window(Window root, int x, int y, int width,
   XSetWindowBackgroundPixmap(display, win, pmap);
   XFreePixmap(display, pmap);
 
-  XSelectInput(display, win, ExposureMask | KeyPressMask | ButtonPressMask |
-                                 StructureNotifyMask | ButtonReleaseMask |
-                                 ButtonMotionMask | LeaveWindowMask |
-                                 EnterWindowMask);
-
-  return (win);
-}
-
-Window make_plain_unmapped_window(Window root, int x, int y, int width,
-                                  int height, int bw) {
-  Window win;
-  win = XCreateSimpleWindow(display, root, x, y, width, height, bw, MyForeColor,
-                            MyBackColor);
-
-  XSelectInput(display, win, ExposureMask | KeyPressMask | ButtonPressMask |
-                                 StructureNotifyMask | ButtonReleaseMask |
-                                 ButtonMotionMask | LeaveWindowMask |
-                                 EnterWindowMask);
-
-  return (win);
+  return win;
 }
 
 Window make_icon_window(Window root, int x, int y, int width, int height,
                         int bw, int icx, int icy, unsigned char *icdata) {
-  Window win;
-  win = make_unmapped_icon_window(root, x, y, width, height, bw, icx, icy,
-                                  icdata);
-  if (root == RootWindow(display, screen))
-    XSetWMProtocols(display, win, &deleteWindowAtom, 1);
+  Window win = make_unmapped_icon_window(root, x, y, width, height, bw, icx,
+                                         icy, icdata);
   XMapWindow(display, win);
-  return (win);
+  return win;
 }
 
 Window make_window(Window root, int x, int y, int width, int height, int bw) {
-  Window win;
-  win = make_unmapped_window(root, x, y, width, height, bw);
-  if (root == RootWindow(display, screen))
-    XSetWMProtocols(display, win, &deleteWindowAtom, 1);
+  Window win = make_unmapped_window(root, x, y, width, height, bw);
   XMapWindow(display, win);
-  return (win);
+  return win;
 }
 
 Window make_plain_window(Window root, int x, int y, int width, int height,
                          int bw) {
-  Window win;
-  win = make_plain_unmapped_window(root, x, y, width, height, bw);
-  if (root == RootWindow(display, screen))
-    XSetWMProtocols(display, win, &deleteWindowAtom, 1);
+  Window win = make_plain_unmapped_window(root, x, y, width, height, bw);
   XMapWindow(display, win);
-  return (win);
+  return win;
 }
 
 void make_icon(const char *icon, int wid, int hgt, Window w) {
@@ -1246,9 +1055,9 @@ static int pop_up_list_event(POP_UP *p, const XEvent *ev) {
 }
 
 /*  new pop_up_list   */
-int pop_up_list(Window root, const char *title, char * const *list, const char *key, int n,
-                int max, int def, int x, int y, char * const *hints,
-                X11StatusBar *sb) {
+int pop_up_list(Window root, const char *title, char *const *list,
+                const char *key, int n, int max, int def, int x, int y,
+                char *const *hints, X11StatusBar *sb) {
   POP_UP p;
   Window w;
   Cursor txt;

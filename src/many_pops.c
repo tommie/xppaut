@@ -33,6 +33,7 @@
 #include "base/timeutil.h"
 #include "bitmap/graph.bitmap"
 #include "ui-x11/rubber.h"
+#include "ui-x11/window.h"
 
 /* --- Macros --- */
 #define MAXLAB 50

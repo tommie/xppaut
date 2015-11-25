@@ -7,8 +7,8 @@
 
 #include "load_eqn.h"
 #include "main.h"
-#include "pop_list.h"
 #include "bitmap/info.bitmap"
+#include "ui-x11/window.h"
 
 /* --- Macros --- */
 #define BUT_MASK                                                               \

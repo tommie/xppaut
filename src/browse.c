@@ -29,6 +29,7 @@
 #include "base/timeutil.h"
 #include "bitmap/browse.bitmap"
 #include "ui-x11/file-selector.h"
+#include "ui-x11/window.h"
 
 /* --- Macros --- */
 #define MYMASK                                                                 \

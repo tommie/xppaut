@@ -7,11 +7,11 @@
 #include <X11/Xutil.h>
 
 #include "editutil.h"
+#include "window.h"
 #include "../ggets.h"
 #include "../main.h"
 #include "../many_pops.h"
 #include "../mykeydef.h"
-#include "../pop_list.h"
 #include "../read_dir.h"
 #include "../strutil.h"
 #include "../base/timeutil.h"

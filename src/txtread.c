@@ -12,9 +12,9 @@
 #include "main.h"
 #include "mykeydef.h"
 #include "numerics.h"
-#include "pop_list.h"
 #include "base/timeutil.h"
 #include "bitmap/txtview.bitmap"
+#include "ui-x11/window.h"
 
 /* --- Macros --- */
 #define xds(a)                                                                 \

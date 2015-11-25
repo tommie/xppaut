@@ -10,8 +10,8 @@
 #include "load_eqn.h"
 #include "main.h"
 #include "parserslow.h"
-#include "pop_list.h"
 #include "base/timeutil.h"
+#include "ui-x11/window.h"
 
 /* --- Macros --- */
 #define MYMASK                                                                 \

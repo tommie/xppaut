@@ -46,6 +46,7 @@
 #include "solver/volterra2.h"
 #include "ui-x11/editutil.h"
 #include "ui-x11/file-selector.h"
+#include "ui-x11/window.h"
 
 /* --- Macros --- */
 #define BOXEVENT                                                               \

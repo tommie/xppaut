@@ -65,6 +65,7 @@
 #include "txtread.h"
 #include "userbut.h"
 #include "bitmap/pp.bitmap"
+#include "ui-x11/window.h"
 
 /* --- Macros --- */
 #define lowbit(x) ((x) & (~(x) + 1))

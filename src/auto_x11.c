@@ -25,6 +25,7 @@
 #include "base/timeutil.h"
 #include "bitmap/auto.bitmap"
 #include "ui-x11/status-bar.h"
+#include "ui-x11/window.h"
 
 /* --- Macros --- */
 /* golden mean  */

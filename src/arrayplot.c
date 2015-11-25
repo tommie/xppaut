@@ -52,6 +52,7 @@
 #include "base/timeutil.h"
 #include "bitmap/array.bitmap"
 #include "ui-x11/file-selector.h"
+#include "ui-x11/window.h"
 
 /* --- Types --- */
 typedef struct {

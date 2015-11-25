@@ -11,11 +11,11 @@
 #include "load_eqn.h"
 #include "main.h"
 #include "mykeydef.h"
-#include "pop_list.h"
 #include "solver.h"
 #include "base/timeutil.h"
 #include "bitmap/eqns.bitmap"
 #include "bitmap/equilib.bitmap"
+#include "ui-x11/window.h"
 
 /* --- Macros --- */
 #define xds(a)                                                                 \

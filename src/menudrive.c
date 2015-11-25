@@ -36,6 +36,7 @@
 #include "txtread.h"
 #include "base/timeutil.h"
 #include "bitmap/alert.bitmap"
+#include "ui-x11/window.h"
 
 /* --- Types --- */
 typedef struct {

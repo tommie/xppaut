@@ -8,6 +8,7 @@
 #include "ggets.h"
 #include "main.h"
 #include "pop_list.h"
+#include "ui-x11/window.h"
 
 /* --- Macros --- */
 #define BUT_MASK                                                               \

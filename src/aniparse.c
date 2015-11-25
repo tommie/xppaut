@@ -100,6 +100,7 @@ want to alter the ordering below
 #include "base/timeutil.h"
 #include "bitmap/aniwin.bitmap"
 #include "ui-x11/file-selector.h"
+#include "ui-x11/window.h"
 
 /* --- Macros --- */
 /* maximum variables you can change per grabbable */

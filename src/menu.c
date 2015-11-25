@@ -8,7 +8,7 @@
 #include "main.h"
 #include "many_pops.h"
 #include "menus.h"
-#include "pop_list.h"
+#include "ui-x11/window.h"
 
 /* --- Types --- */
 typedef struct {

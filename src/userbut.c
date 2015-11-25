@@ -7,7 +7,7 @@
 #include "ggets.h"
 #include "kbs.h"
 #include "main.h"
-#include "pop_list.h"
+#include "ui-x11/window.h"
 
 /* --- Macros --- */
 #define USERBUTCOLOR 24

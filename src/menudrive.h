@@ -139,24 +139,22 @@
 #define M_FR 202
 #define M_FA 203
 #define M_FC 204
-#define M_FS 205
-#define M_FB 206
-#define M_FH 207
-#define M_FQ 208
-#define M_FT 209
-#define M_FI 210
-#define M_FG 211
+#define M_FE 205
+#define M_FS 206
+#define M_FB 207
+#define M_FH 208
+#define M_FQ 209
+#define M_FT 210
+#define M_FI 211
+#define M_FG 212
+#define M_FL 213
+#define M_FX 214
+#define M_FU 215
 
-#define M_FER 212
-#define M_FEF 213
-#define M_FES 214
-#define M_FEL 215
-
-#define M_FX 216
-#define M_FU 217
-
-/* CLONE change ! */
-#define M_FL 218
+#define M_FER 220
+#define M_FEF 221
+#define M_FES 222
+#define M_FEL 223
 
 /*  some numerics commands */
 
@@ -197,19 +195,23 @@
 #define M_UKE 350
 #define M_UKV 351
 
-/*  one shot numerics commands */
-
 #define M_UT 400
 #define M_US 401
 #define M_UR 402
 #define M_UD 403
 #define M_UN 404
-#define M_UV 405
-#define M_UI 406
-#define M_UO 407
-#define M_UB 408
+#define M_UI 405
+#define M_UO 406
+#define M_UB 407
+#define M_UM 408
 #define M_UE 409
 #define M_UC 410
+#define M_UH 411
+#define M_UP 412
+#define M_UU 413
+#define M_UK 414
+#define M_UV 415
+#define M_UA 416
 
 /* --- Functions --- */
 void FlushDisplay(void);
@@ -224,8 +226,10 @@ void clear_draw_window(void);
 void clear_screens(void);
 void clr_all_scrns(void);
 void direct_field(void);
+void do_file_pop_up(void);
 void do_gr_objs(void);
 void do_movie(void);
+void do_numerics_pop_up(void);
 void do_stochast(void);
 void do_torus(void);
 void do_tutorial();

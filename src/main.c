@@ -45,7 +45,6 @@
 #include "ggets.h"
 #include "graf_par.h"
 #include "graphics.h"
-#include "help_defs.h"
 #include "init_conds.h"
 #include "integrate.h"
 #include "load_eqn.h"
@@ -614,7 +613,6 @@ static void do_events(unsigned int min_wid, unsigned int min_hgt) {
       PointerMotionMask | ButtonReleaseMask | ButtonPressMask
 
   blank_screen(main_win);
-  help();
   if (RunImmediately == 1) {
     run_the_commands(4);
     RunImmediately = 0;
@@ -665,232 +663,128 @@ void redraw_all(void) {
 }
 
 void commander(int ch) {
-  switch (help_menu) {
-  case MAIN_HELP: {
-    switch (ch) {
-    case 'i':
-      flash(0);
-      /*  initial data  */
-      ini_data_menu();
+  switch (ch) {
+  case 'i':
+    flash(0);
+    /*  initial data  */
+    ini_data_menu();
 
-      flash(0);
-      break;
-    case 'c':
-      flash(1);
-      /* continue */
-      cont_integ();
+    flash(0);
+    break;
+  case 'c':
+    flash(1);
+    /* continue */
+    cont_integ();
 
-      flash(1);
-      break;
-    case 'n':
-      flash(2);
-      /*nullclines */
-      /* test_color_info(); */
-      new_clines();
-      flash(2);
-      break;
-    case 'd':
-      flash(3);
-      /*dir fields */
-      direct_field();
+    flash(1);
+    break;
+  case 'n':
+    flash(2);
+    /*nullclines */
+    /* test_color_info(); */
+    new_clines();
+    flash(2);
+    break;
+  case 'd':
+    flash(3);
+    /*dir fields */
+    direct_field();
 
-      flash(3);
-      break;
-    case 'w':
-      flash(4);
-      /* window */
-      window_zoom();
-      flash(4);
-      break;
-    case 'a':
-      flash(5);
-      /*phase-space */
-      do_torus();
-      flash(5);
-      break;
-    case 'k':
-      flash(6);
-      /*kinescope */
-      do_movie();
-      flash(6);
-      break;
-    case 'g':
-      flash(7);
-      flash(7);
-      add_a_curve();
-      break;
-    case 'u':
-      flash(8);
-      flash(8);
-      help_num();
-      break;
-    case 'f':
-      flash(9);
-      /* files */
-      flash(9);
-      help_file();
-      break;
-    case 'p':
-      flash(10);
-      /*parameters */
-      /* change_par(-1); */
-      new_param();
-      flash(10);
-      break;
-    case 'e':
-      flash(11);
-      /*erase */
-      clear_screens();
-      flash(11);
-      break;
-    case 'h':
-    case 'm':
-      do_windows();
-      /*half windows */
-      flash(12);
-      break;
-    case 't':
-      flash(13);
-      /*text */
-      do_gr_objs();
-      flash(13);
-      break;
-    case 's':
-      flash(14);
-      /*sing pts */
-      find_equilibrium();
-      flash(14);
-      break;
-    case 'v':
-      flash(15);
-      /*view_axes */
-      change_view();
-      flash(15);
-      break;
-    case 'b':
-      find_bvp();
-      break;
+    flash(3);
+    break;
+  case 'w':
+    flash(4);
+    /* window */
+    window_zoom();
+    flash(4);
+    break;
+  case 'a':
+    flash(5);
+    /*phase-space */
+    do_torus();
+    flash(5);
+    break;
+  case 'k':
+    flash(6);
+    /*kinescope */
+    do_movie();
+    flash(6);
+    break;
+  case 'g':
+    flash(7);
+    flash(7);
+    add_a_curve();
+    break;
+  case 'u':
+    flash(8);
+    do_numerics_pop_up();
+    flash(8);
+    break;
+  case 'f':
+    flash(9);
+    do_file_pop_up();
+    flash(9);
+    break;
+  case 'p':
+    flash(10);
+    /*parameters */
+    /* change_par(-1); */
+    new_param();
+    flash(10);
+    break;
+  case 'e':
+    flash(11);
+    /*erase */
+    clear_screens();
+    flash(11);
+    break;
+  case 'h':
+  case 'm':
+    do_windows();
+    /*half windows */
+    flash(12);
+    break;
+  case 't':
+    flash(13);
+    /*text */
+    do_gr_objs();
+    flash(13);
+    break;
+  case 's':
+    flash(14);
+    /*sing pts */
+    find_equilibrium();
+    flash(14);
+    break;
+  case 'v':
+    flash(15);
+    /*view_axes */
+    change_view();
+    flash(15);
+    break;
+  case 'b':
+    find_bvp();
+    break;
 
-    case 'x':
-      flash(16);
-      /*x vs t */
-      x_vs_t();
-      flash(16);
-      break;
-    case 'r':
-      flash(17);
-      /*restore*/
-      redraw_them_all();
-      flash(17);
-      break;
-    case '3':
-      get_3d_par();
-      break;
-    case 'y':
-      /*  test_test(); */
-      break;
-
-    } /* End main switch  */
-
-  } /* MAIN HELP ENDS  */ break;
-
-  case NUM_HELP: {
-    get_num_par(ch);
-  } /* end num case   */ break;
-
-  case FILE_HELP: {
-    switch (ch) {
-    case 't':
-      do_transpose();
-      break;
-    case 'g':
-      get_intern_set();
-      break;
-    case 'i':
-      TipsFlag = 1 - TipsFlag;
-      break;
-    case 'p':
-      flash(0);
-      /* file stuff */
-      /* do_info(stdout); */
-      make_txtview();
-      flash(0);
-      break;
-    case 'w':
-      flash(1);
-      /* write set */
-      do_lunch(WRITEM);
-      flash(1);
-      break;
-    case 's':
-      flash(2);
-      /* make eqn */
-      file_inf();
-      flash(2);
-      break;
-    case 'a':
-      flash(3);
-/* AUTO !! */
-#ifdef AUTO
-      do_auto_win();
-#endif
-      flash(3);
-      break;
-    case 'c':
-      flash(4);
-      /* calculator */
-      q_calc();
-
-      flash(4);
-      break;
-    case 'r':
-      flash(5);
-      /* read set */
-      do_lunch(READEM);
-      flash(5);
-      break;
-    case 'e':
-      flash(6);
-      /* script */
-      edit_menu();
-      /*  Insert generic code here ...  */
-      flash(6);
-      break;
-    case 'b':
-      tfBell = 1 - tfBell;
-      break;
-    case 'h':
-      /* c_hints(); */
-      xpp_hlp();
-      /*	   make_key_stroke(); */
-
-      break;
-    case 'q':
-      flash(7);
-      if (yes_no_box())
-        bye_bye();
-
-      /*  if(are_you_sure())bye_bye();  */
-
-      /* quit */
-      flash(7);
-      break;
-    /* CLONE ! */
-    case 'l':
-      clone_ode();
-      break;
-    case 'x':
-      edit_xpprc();
-      break;
-    case 'u':
-      do_tutorial();
-      break;
-    } /* end file switch  */
-    help();
-  } /*  end file case   */ break;
-
-  } /* end help_menu switch  */
-  /* redraw_menu(); */
+  case 'x':
+    flash(16);
+    /*x vs t */
+    x_vs_t();
+    flash(16);
+    break;
+  case 'r':
+    flash(17);
+    /*restore*/
+    redraw_them_all();
+    flash(17);
+    break;
+  case '3':
+    get_3d_par();
+    break;
+  case 'y':
+    /*  test_test(); */
+    break;
+  }
 }
 
 static Window init_win(unsigned int bw, char *icon_name, char *win_name, int x,

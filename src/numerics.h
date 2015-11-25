@@ -9,9 +9,8 @@ extern int cv_bandupper;
 /* --- Functions --- */
 void chk_delay(void);
 void compute_one_period(double period, double *x, char *name);
-void get_num_par(int ch);
+void do_numerics_com(int com);
 void get_pmap_pars_com(int l);
-void quick_num(int com);
 void set_col_par_com(int i);
 void set_delay(void);
 void set_total(double total);

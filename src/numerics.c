@@ -23,6 +23,7 @@
 #include "menu.h"
 #include "menudrive.h"
 #include "menus.h"
+#include "numerics.h"
 #include "parserslow.h"
 #include "pop_list.h"
 #include "pp_shoot.h"
@@ -43,27 +44,21 @@ void check_pos(int *j) {
     *j = 1;
 }
 
-void quick_num(int com) {
-  char key[] = "tsrdnviobec";
-  if (com >= 0 && com < 11)
-    get_num_par(key[com]);
-}
-
 void set_total(double total) {
   int n;
   n = (total / fabs(DELTA_T)) + 1;
   TEND = n * fabs(DELTA_T);
 }
 
-void get_num_par(int ch) {
+void do_numerics_com(int com) {
   double temp;
   int tmp;
-  switch (ch) {
-  case 'a':
+  switch (com) {
+  case M_UA:
     make_adj();
     break;
 
-  case 't':
+  case M_UT:
     flash(0);
     /* total */
     new_float("total :", &TEND);
@@ -75,19 +70,19 @@ void get_num_par(int ch) {
 
     flash(0);
     break;
-  case 's':
+  case M_US:
     flash(1);
     /* start */
     new_float("start time :", &T0);
     flash(1);
     break;
-  case 'r':
+  case M_UR:
     flash(2);
     /* transient */
     new_float("transient :", &TRANS);
     flash(2);
     break;
-  case 'd':
+  case M_UD:
     flash(3);
     /* DT */
     temp = DELTA_T;
@@ -113,7 +108,7 @@ void get_num_par(int ch) {
      } */
     flash(3);
     break;
-  case 'n':
+  case M_UN:
     flash(4);
     /* ncline */
     new_int("ncline mesh :", &NMESH);
@@ -122,7 +117,7 @@ void get_num_par(int ch) {
 
     flash(4);
     break;
-  case 'v':
+  case M_UV:
     /*   new_int("Number Left :", &BVP_NL);
        new_int("Number Right :", &BVP_NR); */
 
@@ -132,7 +127,7 @@ void get_num_par(int ch) {
     new_float("Epsilon :", &BVP_EPS);
     reset_bvp();
     break;
-  case 'i':
+  case M_UI:
     flash(5);
     /* sing pt */
     new_int("Maximum iterates :", &EVEC_ITER);
@@ -144,7 +139,7 @@ void get_num_par(int ch) {
 
     flash(5);
     break;
-  case 'o':
+  case M_UO:
     flash(6);
     /* noutput */
     new_int("n_out :", &NJMP);
@@ -152,7 +147,7 @@ void get_num_par(int ch) {
 
     flash(6);
     break;
-  case 'b':
+  case M_UB:
     flash(7);
     /* bounds */
     new_float("Bounds :", &BOUND);
@@ -160,7 +155,7 @@ void get_num_par(int ch) {
 
     flash(7);
     break;
-  case 'm':
+  case M_UM:
     flash(8);
     /* method */
     {
@@ -203,7 +198,7 @@ void get_num_par(int ch) {
     }
     flash(8);
     break;
-  case 'e':
+  case M_UE:
     flash(9);
     /* delay */
     if (NDELAYS == 0)
@@ -222,7 +217,7 @@ void get_num_par(int ch) {
 
     flash(9);
     break;
-  case 'c':
+  case M_UC:
     flash(10);
     /* color */
     if (COLOR == 0)
@@ -230,41 +225,34 @@ void get_num_par(int ch) {
     set_col_par();
     flash(10);
     break;
-  case 'h':
+  case M_UH:
     flash(11);
     do_stochast();
     flash(11);
     break;
-  case 'f':
-    flash(11);
-    /* FFT */
-    flash(11);
-    break;
-  case 'p':
+  case M_UP:
     flash(12);
     /*Poincare map */
     get_pmap_pars();
     flash(12);
     break;
-  case 'u':
+  case M_UU:
     flash(13);
     /* ruelle */
     ruelle();
     flash(13);
     break;
-  case 'k':
+  case M_UK:
     flash(14);
     /*lookup table */
     new_lookup();
     flash(14);
     break;
-  case 27:
-    TEND = fabs(TEND);
-    alloc_meth();
-    help();
-    break;
+  }
 
-  } /* End num switch */
+  /* TODO: Move these into the commands where they are needed. */
+  TEND = fabs(TEND);
+  alloc_meth();
 }
 
 void chk_delay(void) {

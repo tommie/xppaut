@@ -25,12 +25,9 @@ typedef struct {
 /* --- Forward Declarations --- */
 static void add_menu(Window base, int j, int n, char **names, char *key,
                      char **hint);
-static void show_menu(int j);
-static void unshow_menu(int j);
 
 /* --- Data --- */
-int help_menu;
-static MENUDEF my_menus[3];
+static MENUDEF my_menus[1];
 
 void flash(int num)
 {}
@@ -64,52 +61,12 @@ void create_the_menus(Window base)
   char key[30];
   strcpy(key, "icndwakgufpemtsvxr3b");
   add_menu(base, MAIN_MENU, MAIN_ENTRIES, main_menu, key, main_hint);
-  strcpy(key, "tsrdniobmechpukva");
-  key[17] = 27;
-  key[18] = 0;
-  add_menu(base, NUM_MENU, NUM_ENTRIES, num_menu, key, num_hint);
-  /* CLONE */
-  strcpy(key, "pwracesbhqtiglxu");
-  add_menu(base, FILE_MENU, FILE_ENTRIES, fileon_menu, key, file_hint);
-  help_menu = -1;
-}
-
-static void show_menu(int j)
-{
-  XRaiseWindow(display, my_menus[j].base);
-  my_menus[j].visible = 1;
-  help_menu = j;
-}
-
-static void unshow_menu(int j)
-{
-  if (j < 0)
-    return;
-  my_menus[j].visible = 0;
-}
-
-void help(void) {
-  unshow_menu(help_menu);
-  show_menu(MAIN_MENU);
-}
-
-void help_num(void) {
-  unshow_menu(help_menu);
-  show_menu(NUM_MENU);
-}
-
-void help_file(void) {
-  if (tfBell)
-    my_menus[FILE_MENU].names = fileon_menu;
-  else
-    my_menus[FILE_MENU].names = fileoff_menu;
-  unshow_menu(help_menu);
-  show_menu(FILE_MENU);
+  my_menus[0].visible = 1;
 }
 
 void menu_crossing(Window win, int yn)
 {
-  int i, n, j = help_menu;
+  int i, n, j = 0;
   char **z;
   if (j < 0)
     return;
@@ -129,7 +86,7 @@ void menu_crossing(Window win, int yn)
 
 void menu_expose(Window win)
 {
-  int i, n, j = help_menu;
+  int i, n, j = 0;
   char **z;
   if (j < 0)
     return;
@@ -159,7 +116,7 @@ void menu_expose(Window win)
 
 void menu_button(Window win)
 {
-  int i, n, j = help_menu;
+  int i, n, j = 0;
   if (j < 0)
     return;
   if (my_menus[j].visible == 0)
@@ -175,7 +132,7 @@ void menu_button(Window win)
 }
 
 void draw_help(void) {
-  int i, j = help_menu, n;
+  int i, j = 0, n;
   /*char **z;
   */
   if (j < 0)

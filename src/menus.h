@@ -3,11 +3,9 @@
 
 /* --- Macros --- */
 #define MAIN_MENU 0
-#define FILE_MENU 1
-#define NUM_MENU 2
 #define MAIN_ENTRIES 20
 #define FILE_ENTRIES 16
-#define NUM_ENTRIES 18
+#define NUM_ENTRIES 17
 
 /* --- Data --- */
 extern char *main_menu[];

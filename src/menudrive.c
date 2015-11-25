@@ -318,8 +318,8 @@ void run_the_commands(int com) {
     do_windows_com(com - M_MC);
     return;
   }
-  /* CLONE */
-  if (com >= M_FP && com <= M_FL) {
+
+  if (com >= M_FP && com <= M_FU) {
     do_file_com(com);
     return;
   }
@@ -347,8 +347,8 @@ void run_the_commands(int com) {
     get_pmap_pars_com(com - M_UPN);
   if (com >= M_UHN && com <= M_UH2)
     do_stochast_com(com - M_UHN);
-  if (com >= M_UT && com <= M_UC)
-    quick_num(com - M_UT);
+  if (com >= M_UT && com <= M_UA)
+    do_numerics_com(com);
 }
 
 void do_stochast(void) {
@@ -415,6 +415,18 @@ void make_adj(void) {
     run_the_commands(M_UAN + i);
 }
 
+void do_file_pop_up(void) {
+  static char key[] = "pwracesbhqtiglxu";
+  int ch = pop_up_list(main_win, "File", (tfBell ? fileon_menu : fileoff_menu), key, FILE_ENTRIES, 10, 0, 10,
+                       10 * DCURY + 8, file_hint, main_status_bar);
+  for (int i = 0; i < FILE_ENTRIES; i++) {
+    if (ch == key[i]) {
+      run_the_commands(M_FP + i);
+      break;
+    }
+  }
+}
+
 static void do_file_com(int com) {
   switch (com) {
   case M_FT:
@@ -443,6 +455,9 @@ static void do_file_com(int com) {
   case M_FC:
     q_calc();
     break;
+  case M_FE:
+    edit_menu();
+    break;
   case M_FR:
     do_lunch(READEM);
     break;
@@ -450,8 +465,7 @@ static void do_file_com(int com) {
     tfBell = 1 - tfBell;
     break;
   case M_FH:
-    /*xpp_hlp();
-*/
+    xpp_hlp();
     break;
   case M_FX:
     edit_xpprc();
@@ -463,21 +477,21 @@ static void do_file_com(int com) {
     if (yes_no_box())
       bye_bye();
     break;
-  case M_FER:
-    edit_rhs();
-    break;
-  case M_FEF:
-    edit_functions();
-    break;
-  case M_FES:
-    save_as();
-    break;
-  case M_FEL:
-    load_new_dll();
-    break;
   case M_FL:
     clone_ode();
     break;
+  }
+}
+
+void do_numerics_pop_up(void) {
+  static char key[] = "tsrdniobmechpukva";
+  int ch = pop_up_list(main_win, "Numerics", num_menu, key, NUM_ENTRIES, 10, 0, 10,
+                       9 * DCURY + 8, num_hint, main_status_bar);
+  for (int i = 0; i < NUM_ENTRIES; i++) {
+    if (ch == key[i]) {
+      run_the_commands(M_UT + i);
+      break;
+    }
   }
 }
 

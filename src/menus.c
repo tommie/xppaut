@@ -1,6 +1,5 @@
 #include "menus.h"
 
-/* CLONE */
 char *main_menu[]={
   "XPP","Initialconds","Continue","Nullcline",
   "Dir.field/flow","Window/zoom","phAsespace",
@@ -9,23 +8,21 @@ char *main_menu[]={
   "Sing pts","Viewaxes","Xi vs t","Restore","3d-params",
   "Bndryval"};
 
-char *num_menu[]={"NUMERICS","Total","Start time","tRansient",
-                  "Dt","Ncline ctrl","sIng pt ctrl","nOutput","Bounds","Method",
-                  "dElay","Color code","stocHast","Poincare map","rUelle plot",
-                  "looKup","bndVal","Averaging","[Esc]-exit"};
-/* CLONE change */
+char *num_menu[]={
+  "Total","Start time","tRansient",
+  "Dt","Ncline ctrl","sIng pt ctrl","nOutput","Bounds","Method",
+  "dElay","Color code","stocHast","Poincare map","rUelle plot",
+  "looKup","bndVal","Averaging"};
 
 char *fileon_menu[]={
-  "FILE","Prt src","Write set","Read set",
+  "Prt src","Write set","Read set",
   "Auto","Calculator","Edit","Save info",
   "Bell off","Help","Quit","Transpose","tIps","Get par set","cLone",".Xpprc","tUtorial"};
 
 char *fileoff_menu[]={
-  "FILE","Prt src","Write set","Read set",
+  "Prt src","Write set","Read set",
   "Auto","Calculator","Edit","Save info",
   "Bell on","Help","Quit","Transpose","tIps","Get par set","cLone",".Xpprc","tUtorial"};
-
-/* end CLONE change */
 
 /* hints for the main menus */
 char *main_hint[]=

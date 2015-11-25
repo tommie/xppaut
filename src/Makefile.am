@@ -56,7 +56,6 @@ noinst_HEADERS = \
 	ggets.h \
 	graf_par.h \
 	graphics.h \
-	help_defs.h \
 	histogram.h \
 	homsup.h \
 	init_conds.h \

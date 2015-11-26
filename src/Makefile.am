@@ -152,6 +152,7 @@ ui_x11_headers = \
 	ui-x11/editutil.h \
 	ui-x11/events.h \
 	ui-x11/file-selector.h \
+	ui-x11/menu.h \
 	ui-x11/rubber.h \
 	ui-x11/status-bar.h \
 	ui-x11/torus-box.h \
@@ -336,6 +337,7 @@ ui_x11_sources = \
 	ui-x11/editutil.c \
 	ui-x11/events.c \
 	ui-x11/file-selector.c \
+	ui-x11/menu.c \
 	ui-x11/rubber.c \
 	ui-x11/status-bar.c \
 	ui-x11/torus-box.c \

@@ -722,7 +722,6 @@ void zoom_in(int i1, int j1, int i2, int j2) {
   }
   check_windows();
   redraw_the_graph();
-  draw_help();
 }
 
 void zoom_out(int i1, int j1, int i2, int j2) {
@@ -787,7 +786,6 @@ void zoom_out(int i1, int j1, int i2, int j2) {
   }
   check_windows();
   redraw_the_graph();
-  draw_help();
 }
 
 void graph_all(int *list, int n, int type) {

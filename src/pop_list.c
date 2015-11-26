@@ -16,6 +16,7 @@
 #include "base/timeutil.h"
 #include "bitmap/alert.bitmap"
 #include "bitmap/info.bitmap"
+#include "ui-x11/menu.h"
 #include "ui-x11/window.h"
 
 /* --- Macros --- */
@@ -59,18 +60,9 @@ typedef struct {
   int n;
 } SCRBOX_LIST;
 
-/*  This is a new improved pop_up widget */
 typedef struct {
-  Window base, tit;
-  Window *w;
-  const char *title;
-  char *const *entries;
-  char *const *hints;
-  int n, max;
-  const char *key;
-  int hot;
-
-  X11StatusBar *sb;
+  Window top;
+  X11Menu *menu;
 } POP_UP;
 
 typedef struct {
@@ -776,110 +768,47 @@ int yes_no_box(void) {
   return (0);
 }
 
-static void draw_pop_up(const POP_UP *p, Window w) {
-  int i;
+static void pop_up_list_select(void *cookie, int key) {
+  int *v = cookie;
 
-  if (w == p->tit) {
-    set_fore();
-    bar(0, 0, DCURX * (p->max + 5), (DCURY + 7), w);
-    set_back();
-    Ftext(DCURX * 2, 4, p->title, w);
-    set_fore();
-    return;
-  }
-  for (i = 0; i < p->n; i++) {
-    if (w == p->w[i]) {
-      Ftext(DCURX / 2, 3, p->entries[i], w);
-      if (i == p->hot)
-        Ftext(DCURX * (p->max + 1), 4, "X", w);
-      return;
-    }
-  }
+  *v = key;
 }
 
-static int pop_up_list_event(POP_UP *p, const XEvent *ev) {
-  switch (ev->type) {
-  case Expose:
-  case MapNotify:
-    do_expose(*ev);
-    draw_pop_up(p, ev->xexpose.window);
-    break;
-
-  case KeyPress:
-    return get_key_press(ev);
-
-  case ButtonRelease:
-    for (int i = 0; i < p->n; i++) {
-      if (ev->xbutton.window == p->w[i]) {
-        return (int)p->key[i];
-      }
-    }
-
-    break;
-
-  case EnterNotify:
-    for (int i = 0; i < p->n; i++) {
-      if (ev->xcrossing.window == p->w[i]) {
-        XSetWindowBorderWidth(display, p->w[i], 1);
-        if (TipsFlag)
-          x11_status_bar_set_text(p->sb, p->hints[i]);
-      }
-    }
-    break;
-
-  case LeaveNotify:
-    for (int i = 0; i < p->n; i++)
-      if (ev->xcrossing.window == p->w[i])
-        XSetWindowBorderWidth(display, p->w[i], 0);
-    break;
-  }
-
-  return 0;
-}
-
-/*  new pop_up_list   */
-int pop_up_list(Window root, const char *title, char *const *list,
-                const char *key, int n, int max, int def, int x, int y,
-                char *const *hints, X11StatusBar *sb) {
-  POP_UP p;
-  Window w;
-  Cursor txt;
-  int i, value;
+int pop_up_list(Window root, const char *title, char * const *list, const char *key, int n,
+                int max, int def, int x, int y, char * const *hints,
+                X11StatusBar *sb) {
   int width = DCURX * (max + 5);
-  int length = (DCURY + 6) * (n + 2);
-  w = make_plain_window(root, x, y, width, length, 2);
-  txt = XCreateFontCursor(display, XC_hand2);
-  XDefineCursor(display, w, txt);
-  p.base = w;
-  p.entries = list;
-  p.title = title;
-  p.n = n;
-  p.hints = hints;
-  p.sb = sb;
-  p.max = max;
-  p.key = key;
-  p.hot = def;
-  value = (int)key[def];
-  p.w = (Window *)malloc(n * sizeof(Window));
-  p.tit = make_window(w, 0, 0, width, DCURY + 7, 0);
-  for (i = 0; i < n; i++) {
-    p.w[i] = make_window(w, DCURX, DCURY + 10 + i * (DCURY + 6),
-                         DCURX * (max + 3), DCURY + 3, 0);
-    XSelectInput(display, p.w[i], BUT_MASK);
-  }
+  int length = (DCURY + 5) * (n + 1);
+  Window w = make_plain_window(root, x, y, width, length, 2);
+  X11MenuDescr descr;
 
-  for (;;) {
+  descr.title = (char *)title;
+  descr.entries = calloc(n, sizeof(*descr.entries));
+  if (!descr.entries) return -1;
+  for (int i = 0; i < n; ++i) {
+    descr.entries[i].label = list[i];
+    descr.entries[i].hint = hints[i];
+    descr.entries[i].key = key[i];
+  }
+  descr.num_entries = n;
+  descr.def_key = def;
+
+  int value = 0;
+  X11Menu *menu = x11_menu_alloc(&descr, w, 0, 0, width, sb, pop_up_list_select, &value);
+  if (!menu) return -1;
+
+  while (!value) {
     XEvent ev;
 
     XNextEvent(display, &ev);
-    value = pop_up_list_event(&p, &ev);
-    if (value)
-      break;
+    if (ev.type == Expose)
+      do_expose(ev);
+    x11_menu_event(menu, &ev);
   }
 
-  XDestroyWindow(display, p.base);
-  free(p.w);
-  if (value == 13)
-    value = (int)key[def];
+  x11_menu_free(menu);
+  free(descr.entries);
+  XDestroyWindow(display, w);
+
   return value;
 }

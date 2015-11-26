@@ -867,7 +867,7 @@ void do_expose(XEvent ev) {
   draw_eq_box(ev.xany.window);
   do_box_expose(ev.xany.window);
   expose_slides(ev.xany.window);
-  menu_expose(ev.xany.window);
+  main_menu_event(&ev);
 #ifdef AUTO
   display_auto(ev.xany.window);
 #endif

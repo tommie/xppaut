@@ -504,6 +504,8 @@ static void xpp_events(void *cookie, const XEvent *ev) {
   txt_view_events(*ev);
   do_ani_events(*ev);
   top_button_events(*ev);
+  if (ev->type != Expose)
+    main_menu_event(ev);
   switch (ev->type) {
   /* case ClientMessage:
            if(report.xclient.data.l[0]==deleteWindowAtom){
@@ -557,6 +559,12 @@ static void xpp_events(void *cookie, const XEvent *ev) {
     if (used)
       break;
 #endif
+    break;
+
+  case KeyRelease:
+    /* Use KeyRelease to avoid KeyRelease ending up seomewhere else when
+     * popping up new windows.
+     */
     if (ev->xkey.window == main_win || ev->xkey.window == draw_win)
       commander(get_key_press(ev));
 
@@ -565,7 +573,6 @@ static void xpp_events(void *cookie, const XEvent *ev) {
     enter_eq_stuff(ev->xcrossing.window, 2);
     enter_slides(ev->xcrossing.window, 1);
     box_enter_events(ev->xcrossing.window, 1);
-    menu_crossing(ev->xcrossing.window, 1);
 #ifdef AUTO
     auto_enter(ev->xcrossing.window, 2);
 #endif
@@ -574,7 +581,6 @@ static void xpp_events(void *cookie, const XEvent *ev) {
     enter_eq_stuff(ev->xcrossing.window, 1);
     enter_slides(ev->xcrossing.window, 0);
     box_enter_events(ev->xcrossing.window, 0);
-    menu_crossing(ev->xcrossing.window, 0);
 #ifdef AUTO
     auto_enter(ev->xcrossing.window, 1);
 #endif
@@ -589,7 +595,6 @@ static void xpp_events(void *cookie, const XEvent *ev) {
   case ButtonPress:
     /* check_box_cursor(); */
     if (!rotate3dcheck(*ev)) {
-      menu_button(ev->xbutton.window);
       /* box_select_events(ev->xbutton.window,&i1); */
       box_buttons(ev->xbutton.window);
 
@@ -1020,11 +1025,11 @@ static void make_pops(void) {
   };
 
   XGetGeometry(display, main_win, &wn, &x, &y, &w, &h, &bw, &d);
-  create_the_menus(main_win);
-  command_pop = XCreateSimpleWindow(display, main_win, 0, DCURYs + 4, w - 2,
-                                    DCURY + 4, 2, MyForeColor, MyBackColor);
   main_status_bar =
       x11_status_bar_alloc(main_win, 0, h - DCURY - 4, w - 2, DCURY);
+  main_menu_create(main_win);
+  command_pop = XCreateSimpleWindow(display, main_win, 0, DCURYs + 4, w - 2,
+                                    DCURY + 4, 2, MyForeColor, MyBackColor);
   if (!main_status_bar)
     exit(1);
   XCreateFontCursor(display, XC_hand2);

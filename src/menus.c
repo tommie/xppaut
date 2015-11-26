@@ -1,7 +1,7 @@
 #include "menus.h"
 
 char *main_menu[]={
-  "XPP","Initialconds","Continue","Nullcline",
+  "Initialconds","Continue","Nullcline",
   "Dir.field/flow","Window/zoom","phAsespace",
   "Kinescope","Graphic stuff","nUmerics","File",
   "Parameters","Erase","Makewindow","Text,etc",

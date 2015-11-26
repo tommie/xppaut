@@ -2,7 +2,6 @@
 #define XPPAUT_MENUS_H
 
 /* --- Macros --- */
-#define MAIN_MENU 0
 #define MAIN_ENTRIES 20
 #define FILE_ENTRIES 16
 #define NUM_ENTRIES 17

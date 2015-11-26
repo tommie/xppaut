@@ -1,13 +1,5 @@
 #include "menus.h"
 
-char *main_menu[]={
-  "Initialconds","Continue","Nullcline",
-  "Dir.field/flow","Window/zoom","phAsespace",
-  "Kinescope","Graphic stuff","nUmerics","File",
-  "Parameters","Erase","Makewindow","Text,etc",
-  "Sing pts","Viewaxes","Xi vs t","Restore","3d-params",
-  "Bndryval"};
-
 char *num_menu[]={
   "Total","Start time","tRansient",
   "Dt","Ncline ctrl","sIng pt ctrl","nOutput","Bounds","Method",
@@ -23,29 +15,6 @@ char *fileoff_menu[]={
   "Prt src","Write set","Read set",
   "Auto","Calculator","Edit","Save info",
   "Bell on","Help","Quit","Transpose","tIps","Get par set","cLone",".Xpprc","tUtorial"};
-
-/* hints for the main menus */
-char *main_hint[]=
-  { "Integrate the equations",
-    "Continue integration for specified time",
-    "Draw nullclines",
-    "Direction fields and flows of the phaseplane",
-    "Change the size of two-dimensional view",
-    "Set up periodic/torus phase space",
-    "Take snapshots of the screen",
-    "Adding graphs,hard copy, etc",
-    "Numerics options",
-    "Quit, save stuff, etc",
-    "Change problem parameters",
-    "Clear screen",
-    "Create other windows",
-    "Add fancy text and lines,arrows",
-    "Find fixed points and stability",
-    "Change 2 or 3d views",
-    "Plot variable vs time",
-    "Redraw the graph ",
-    "Set parameters for 3D view",
-    "Run boundary value solver" };
 
 
 char *file_hint[]={

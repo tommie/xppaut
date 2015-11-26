@@ -59,7 +59,6 @@ void do_numerics_com(int com) {
     break;
 
   case M_UT:
-    flash(0);
     /* total */
     new_float("total :", &TEND);
     FOREVER = 0;
@@ -67,23 +66,16 @@ void do_numerics_com(int com) {
       FOREVER = 1;
       TEND = -TEND;
     }
-
-    flash(0);
     break;
   case M_US:
-    flash(1);
     /* start */
     new_float("start time :", &T0);
-    flash(1);
     break;
   case M_UR:
-    flash(2);
     /* transient */
     new_float("transient :", &TRANS);
-    flash(2);
     break;
   case M_UD:
-    flash(3);
     /* DT */
     temp = DELTA_T;
     new_float("Delta t :", &DELTA_T);
@@ -106,16 +98,12 @@ void do_numerics_com(int com) {
        reset_memory();
        INFLAG=0;
      } */
-    flash(3);
     break;
   case M_UN:
-    flash(4);
     /* ncline */
     new_int("ncline mesh :", &NMESH);
     /* new_float("Error :",&NULL_ERR); */
     check_pos(&NMESH);
-
-    flash(4);
     break;
   case M_UV:
     /*   new_int("Number Left :", &BVP_NL);
@@ -128,7 +116,6 @@ void do_numerics_com(int com) {
     reset_bvp();
     break;
   case M_UI:
-    flash(5);
     /* sing pt */
     new_int("Maximum iterates :", &EVEC_ITER);
     check_pos(&EVEC_ITER);
@@ -136,27 +123,18 @@ void do_numerics_com(int com) {
     new_float("Jacobian epsilon :", &NEWT_ERR);
     if (NFlags > 0)
       new_float("SMIN :", &STOL);
-
-    flash(5);
     break;
   case M_UO:
-    flash(6);
     /* noutput */
     new_int("n_out :", &NJMP);
     check_pos(&NJMP);
-
-    flash(6);
     break;
   case M_UB:
-    flash(7);
     /* bounds */
     new_float("Bounds :", &BOUND);
     BOUND = fabs(BOUND);
-
-    flash(7);
     break;
   case M_UM:
-    flash(8);
     /* method */
     {
       Method m = get_method();
@@ -196,10 +174,8 @@ void do_numerics_com(int com) {
         new_int("Upper band:", &cv_bandupper);
       }
     }
-    flash(8);
     break;
   case M_UE:
-    flash(9);
     /* delay */
     if (NDELAYS == 0)
       break;
@@ -214,39 +190,27 @@ void do_numerics_com(int com) {
       }
     } else
       free_delay();
-
-    flash(9);
     break;
   case M_UC:
-    flash(10);
     /* color */
     if (COLOR == 0)
       break;
     set_col_par();
-    flash(10);
     break;
   case M_UH:
-    flash(11);
     do_stochast();
-    flash(11);
     break;
   case M_UP:
-    flash(12);
     /*Poincare map */
     get_pmap_pars();
-    flash(12);
     break;
   case M_UU:
-    flash(13);
     /* ruelle */
     ruelle();
-    flash(13);
     break;
   case M_UK:
-    flash(14);
     /*lookup table */
     new_lookup();
-    flash(14);
     break;
   }
 

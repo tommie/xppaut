@@ -10,9 +10,6 @@
 /* --- Data --- */
 static X11Menu *g_main_menu;
 
-void flash(int num)
-{}
-
 static void main_menu_select(void *cookie, int key) {
   if (key > 0)
     commander(key);

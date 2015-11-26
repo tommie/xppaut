@@ -670,118 +670,80 @@ void redraw_all(void) {
 void commander(int ch) {
   switch (ch) {
   case 'i':
-    flash(0);
     /*  initial data  */
     ini_data_menu();
-
-    flash(0);
     break;
   case 'c':
-    flash(1);
     /* continue */
     cont_integ();
-
-    flash(1);
     break;
   case 'n':
-    flash(2);
     /*nullclines */
     /* test_color_info(); */
     new_clines();
-    flash(2);
     break;
   case 'd':
-    flash(3);
     /*dir fields */
     direct_field();
-
-    flash(3);
     break;
   case 'w':
-    flash(4);
     /* window */
     window_zoom();
-    flash(4);
     break;
   case 'a':
-    flash(5);
     /*phase-space */
     do_torus();
-    flash(5);
     break;
   case 'k':
-    flash(6);
     /*kinescope */
     do_movie();
-    flash(6);
     break;
   case 'g':
-    flash(7);
-    flash(7);
     add_a_curve();
     break;
   case 'u':
-    flash(8);
     do_numerics_pop_up();
-    flash(8);
     break;
   case 'f':
-    flash(9);
     do_file_pop_up();
-    flash(9);
     break;
   case 'p':
-    flash(10);
     /*parameters */
     /* change_par(-1); */
     new_param();
-    flash(10);
     break;
   case 'e':
-    flash(11);
     /*erase */
     clear_screens();
-    flash(11);
     break;
   case 'h':
   case 'm':
     do_windows();
     /*half windows */
-    flash(12);
     break;
   case 't':
-    flash(13);
     /*text */
     do_gr_objs();
-    flash(13);
     break;
   case 's':
-    flash(14);
     /*sing pts */
     find_equilibrium();
-    flash(14);
     break;
   case 'v':
-    flash(15);
     /*view_axes */
     change_view();
-    flash(15);
     break;
   case 'b':
     find_bvp();
     break;
 
   case 'x':
-    flash(16);
     /*x vs t */
     x_vs_t();
-    flash(16);
     break;
   case 'r':
-    flash(17);
     /*restore*/
     redraw_them_all();
-    flash(17);
     break;
   case '3':
     get_3d_par();

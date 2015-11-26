@@ -4,7 +4,6 @@
 #include <X11/Xlib.h>
 
 /* --- Functions --- */
-void flash(int num);
 void main_menu_create(Window base);
 void main_menu_event(const XEvent *ev);
 

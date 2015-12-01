@@ -154,25 +154,6 @@ char *frz_hint[]={
   "Automatically freeze after each integration",
 };
 
-char *stoch_hint[]={
-  "Seed random number generator",
-  "Run many simulations to get average trajectory",
-  "Get data from last simulation",
-  "Load average trajectory from many runs",
-  "Load variance of from many runs",
-  "Compute histogram",
-  "Reload last histogram",
-  "Fourier series of trajectory",
-  "Power spectrum/phase",
-  "Fit data from file to trajectory",
-  "Get mean/variance of single trajectory",
-  "Compute maximal Liapunov exponent",
-  "Compute spike-time autocorrel",
-  "Compute correlations - subtracting mean",
-  "Compute windowed spectral density",
-  "Compute two-variable histograms"
-};
-
 char *bvp_hint[]={
   "Solve BVP over range of parameters",
   "Don't show any but final step",

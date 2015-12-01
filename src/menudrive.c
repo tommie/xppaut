@@ -38,6 +38,9 @@
 #include "bitmap/alert.bitmap"
 #include "ui-x11/window.h"
 
+/* --- Macros --- */
+#define XPPAUT_ENTRY(k, l, h) { .key = k, .label = l, .hint = h }
+
 /* --- Types --- */
 typedef struct {
   Window w;
@@ -351,22 +354,48 @@ void run_the_commands(int com) {
     do_numerics_com(com);
 }
 
-void do_stochast(void) {
-  static char *n[] = {"New seed",  "Compute",     "Data",     "Mean",
-                      "Variance",  "Histogram",   "Old hist", "Fourier",
-                      "Power",     "fIt data",    "Stat",     "Liapunov",
-                      "stAutocor", "Xcorrel etc", "spEc.dns", "2D-hist"};
-  static char key[] = "ncdmvhofpislaxe2";
-  char ch;
-  int i;
-  ch = (char)pop_up_list(main_win, "Stochastic", n, key, 16, 10, 0, 10,
-                         2 * DCURY + 8, stoch_hint, main_status_bar);
-  for (i = 0; i < 16; i++)
-    if (ch == key[i])
-      break;
+static int index_of_key(const X11MenuDescr *descr, int key) {
+  for (int i = 0; i < descr->num_entries; ++i) {
+    if (key == descr->entries[i].key)
+      return i;
+  }
 
-  if (i >= 0 && i < 16)
-    run_the_commands(M_UHN + i);
+  return -1;
+}
+
+void do_stochast(void) {
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('n', "(N)ew seed", "Seed random number generator"),
+    XPPAUT_ENTRY('c', "(C)ompute", "Run many simulations to get average trajectory"),
+    XPPAUT_ENTRY('d', "(D)ata", "Get data from last simulation"),
+    XPPAUT_ENTRY('m', "(M)ean", "Load average trajectory from many runs"),
+    XPPAUT_ENTRY('v', "(V)ariance", "Load variance of from many runs"),
+    XPPAUT_ENTRY('h', "(H)istogram", "Compute histogram"),
+    XPPAUT_ENTRY('o', "(O)ld hist", "Reload last histogram"),
+    XPPAUT_ENTRY('f', "(F)ourier", "Fourier series of trajectory"),
+    XPPAUT_ENTRY('p', "(P)ower", "Power spectrum/phase"),
+    XPPAUT_ENTRY('i', "F(i)t data", "Fit data from file to trajectory"),
+    XPPAUT_ENTRY('s', "(S)tat", "Get mean/variance of single trajectory"),
+    XPPAUT_ENTRY('l', "(L)iapunov", "Compute maximal Liapunov exponent"),
+    XPPAUT_ENTRY('a', "ST (A)utocor", "Compute spike-time autocorrel"),
+    XPPAUT_ENTRY('x', "(X)correl etc", "Compute correlations - subtracting mean"),
+    XPPAUT_ENTRY('e', "Sp(e)c.dns", "Compute windowed spectral density"),
+    XPPAUT_ENTRY('2', "(2)D-hist", "Compute two-variable histograms"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Stochastic",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 2 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
+
+  if (i < 0)
+    return;
+
+  run_the_commands(M_UHN + i);
 }
 
 void get_pmap_pars(void) {

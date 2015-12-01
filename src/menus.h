@@ -21,7 +21,6 @@ extern char *kin_hint[];
 extern char *graf_hint[];
 extern char *cmap_hint[];
 extern char *frz_hint[];
-extern char *stoch_hint[];
 extern char *bvp_hint[];
 extern char *adj_hint[];
 extern char *map_hint[];

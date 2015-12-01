@@ -17,7 +17,6 @@ extern char *view_hint[];
 extern char *half_hint[];
 extern char *sing_hint[];
 extern char *meth_hint[];
-extern char *tab_hint[];
 extern char *edrh_hint[];
 extern char *auto_hint[];
 extern char *no_hint[];

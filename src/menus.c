@@ -142,8 +142,6 @@ char *meth_hint[]={
   "Rosenbrock(2,3) - good with discontinuties",
   "Symplectic - x''=F(x)"};
 
-char *tab_hint[]={"Edit the lookup tables","View a table in the data browser"};
-
 char *edrh_hint[]={
   "Edit right-hand sides and auxiliaries",
   "Edit function definitions",

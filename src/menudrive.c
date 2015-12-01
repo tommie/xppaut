@@ -645,17 +645,24 @@ void edit_object(void) {
 }
 
 void new_lookup(void) {
-  static char *n[] = {"(E)dit", "(V)iew"};
-  static char key[] = "ev";
-  char ch;
-  if (NTable == 0)
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('e', "(E)dit", "Edit the lookup tables"),
+    XPPAUT_ENTRY('v', "(V)iew", "View a table in the data browser"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Tables",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 11 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
+
+  if (i < 0)
     return;
-  ch = (char)pop_up_list(main_win, "Tables", n, key, 2, 12, 1, 10, 11 * DCURY + 8,
-                         tab_hint, main_status_bar);
-  if (ch == key[0])
-    run_the_commands(M_UKE);
-  if (ch == key[1])
-    run_the_commands(M_UKV);
+
+  run_the_commands(M_UKE + i);
 }
 
 void find_bvp(void) {

@@ -16,7 +16,6 @@
 #include "base/timeutil.h"
 #include "bitmap/alert.bitmap"
 #include "bitmap/info.bitmap"
-#include "ui-x11/menu.h"
 #include "ui-x11/window.h"
 
 /* --- Macros --- */
@@ -768,34 +767,31 @@ int yes_no_box(void) {
   return (0);
 }
 
-static void pop_up_list_select(void *cookie, int key) {
+static void pop_up_menu_select(void *cookie, int key) {
   int *v = cookie;
 
   *v = key;
 }
 
-int pop_up_list(Window root, const char *title, char * const *list, const char *key, int n,
-                int max, int def, int x, int y, char * const *hints,
+int pop_up_menu(Window root, int x, int y, const X11MenuDescr *descr,
                 X11StatusBar *sb) {
-  int width = DCURX * (max + 5);
-  int length = (DCURY + 5) * (n + 1);
-  Window w = make_plain_window(root, x, y, width, length, 2);
-  X11MenuDescr descr;
+  int maxlen = 0;
 
-  descr.title = (char *)title;
-  descr.entries = calloc(n, sizeof(*descr.entries));
-  if (!descr.entries) return -1;
-  for (int i = 0; i < n; ++i) {
-    descr.entries[i].label = list[i];
-    descr.entries[i].hint = hints[i];
-    descr.entries[i].key = key[i];
+  for (int i = 0; i < descr->num_entries; ++i) {
+    int l = strlen(descr->entries[i].label);
+
+    if (l > maxlen)
+      maxlen = l;
   }
-  descr.num_entries = n;
-  descr.def_key = def;
 
+  int width = DCURX * (maxlen + 5);
+  int height = (DCURY + 5) * (descr->num_entries + 1);
+  Window w = make_plain_window(root, x, y, width, height, 2);
   int value = 0;
-  X11Menu *menu = x11_menu_alloc(&descr, w, 0, 0, width, sb, pop_up_list_select, &value);
-  if (!menu) return -1;
+  X11Menu *menu =
+      x11_menu_alloc(descr, w, 0, 0, width, sb, pop_up_menu_select, &value);
+  if (!menu)
+    return -1;
 
   while (!value) {
     XEvent ev;
@@ -807,8 +803,32 @@ int pop_up_list(Window root, const char *title, char * const *list, const char *
   }
 
   x11_menu_free(menu);
-  free(descr.entries);
   XDestroyWindow(display, w);
 
   return value;
+}
+
+int pop_up_list(Window root, const char *title, char *const *list,
+                const char *key, int n, int unused_max, int def, int x, int y,
+                char *const *hints, X11StatusBar *sb) {
+  X11MenuDescr descr;
+
+  descr.title = (char *)title;
+  descr.entries = calloc(n, sizeof(*descr.entries));
+  if (!descr.entries)
+    return -1;
+
+  for (int i = 0; i < n; ++i) {
+    descr.entries[i].label = list[i];
+    descr.entries[i].hint = hints[i];
+    descr.entries[i].key = key[i];
+  }
+  descr.num_entries = n;
+  descr.def_key = def;
+
+  int ret = pop_up_menu(root, x, y, &descr, sb);
+
+  free(descr.entries);
+
+  return ret;
 }

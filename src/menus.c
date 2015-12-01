@@ -162,16 +162,6 @@ char *bvp_hint[]={
   "Set up special homoclinic stuff"
 };
 
-char *adj_hint[]={
-  "Compute a new adjoint function",
-  "Compute averaging interaction function",
-  "Load computed adjoint",
-  "Load computed orbit",
-  "Load computed interaction function",
-  "Adjoint numerical parameters",
-  "Range over stuff to computte many adjoints"
-};
-
 
 char *view_hint[]={
   "Two-dimensional view settings",

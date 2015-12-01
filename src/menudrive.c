@@ -444,18 +444,29 @@ void set_col_par(void) {
 }
 
 void make_adj(void) {
-  static char *n[] = {"(N)ew adj", "(M)ake H",     "(A)djoint", "(O)rbit",
-                      "(H)fun",    "(P)arameters", "(R)ange"};
-  static char key[] = "nmaohpr";
-  char ch;
-  int i;
-  ch = (char)pop_up_list(main_win, "Adjoint", n, key, 7, 10, 0, 10, 11 * DCURY + 8,
-                         adj_hint, main_status_bar);
-  for (i = 0; i < 7; i++)
-    if (ch == key[i])
-      break;
-  if (i >= 0 && i < 7)
-    run_the_commands(M_UAN + i);
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('n', "(N)ew adj", "Compute a new adjoint function"),
+    XPPAUT_ENTRY('m', "(M)ake H", "Compute averaging interaction function"),
+    XPPAUT_ENTRY('a', "(A)djoint", "Load computed adjoint"),
+    XPPAUT_ENTRY('o', "(O)rbit", "Load computed orbit"),
+    XPPAUT_ENTRY('h', "(H)fun", "Load computed interaction function"),
+    XPPAUT_ENTRY('p', "(P)arameters", "Adjoint numerical parameters"),
+    XPPAUT_ENTRY('r', "(R)ange", "Range over stuff to computte many adjoints"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Adjoint",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 11 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
+
+  if (i < 0)
+    return;
+
+  run_the_commands(M_UAN + i);
 }
 
 void do_file_pop_up(void) {

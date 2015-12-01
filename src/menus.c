@@ -1,34 +1,5 @@
 #include "menus.h"
 
-char *num_menu[]={
-  "Total","Start time","tRansient",
-  "Dt","Ncline ctrl","sIng pt ctrl","nOutput","Bounds","Method",
-  "dElay","Color code","stocHast","Poincare map","rUelle plot",
-  "looKup","bndVal","Averaging"};
-
-char *num_hint[]={
-  "Total time to integrate eqns",
-  "Starting time -- T0",
-  "Time to integrate before storing",
-  "Time step to use",
-  "Mesh for nullclines",
-  "Numerical parameters for fixed points",
-  "Number of steps per plotted point",
-  "Maximum allowed size of any variable",
-  "Integration method",
-  "Maximum delay and delay related stuff",
-  "Color trajectories according to velocity,etc",
-  "Curve fitting, FFT, mean, variance, seed, etc",
-  "Define Poincare map parameters",
-  "Define shifted plots",
-  "Modify lookup tables",
-  "Numerical setup for boundary value solver",
-  "Compute adjoint and averaged functions",
-  "Return to main menu"
-};
-
-/* other hints  */
-
 char *null_hint[]={
   "Compute new nullclines",
   "Redraw last nullclines",

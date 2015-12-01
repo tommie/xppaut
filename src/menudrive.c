@@ -561,15 +561,39 @@ static void do_file_com(int com) {
 }
 
 void do_numerics_pop_up(void) {
-  static char key[] = "tsrdniobmechpukva";
-  int ch = pop_up_list(main_win, "Numerics", num_menu, key, NUM_ENTRIES, 10, 0, 10,
-                       9 * DCURY + 8, num_hint, main_status_bar);
-  for (int i = 0; i < NUM_ENTRIES; i++) {
-    if (ch == key[i]) {
-      run_the_commands(M_UT + i);
-      break;
-    }
-  }
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('t', "(T)otal", "Total time to integrate eqns"),
+    XPPAUT_ENTRY('s', "(S)tart time", "Starting time -- T0"),
+    XPPAUT_ENTRY('r', "T(r)ansient", "Time to integrate before storing"),
+    XPPAUT_ENTRY('d', "(D)t", "Time step to use"),
+    XPPAUT_ENTRY('n', "(N)cline ctrl", "Mesh for nullclines"),
+    XPPAUT_ENTRY('i', "S(i)ng pt ctrl", "Numerical parameters for fixed points"),
+    XPPAUT_ENTRY('o', "# (O)utput", "Number of steps per plotted point"),
+    XPPAUT_ENTRY('b', "(B)ounds", "Maximum allowed size of any variable"),
+    XPPAUT_ENTRY('m', "(M)ethod", "Integration method"),
+    XPPAUT_ENTRY('e', "D(e)lay", "Maximum delay and delay related stuff"),
+    XPPAUT_ENTRY('c', "(C)olor code", "Color trajectories according to velocity,etc"),
+    XPPAUT_ENTRY('h', "Stoc(h)astic", "Curve fitting, FFT, mean, variance, seed, etc"),
+    XPPAUT_ENTRY('p', "(P)oincare ma", "Define Poincare map parameters"),
+    XPPAUT_ENTRY('u', "R(u)elle plot", "Define shifted plots"),
+    XPPAUT_ENTRY('k', "Loo(k)up", "Modify lookup tables"),
+    XPPAUT_ENTRY('v', "Bnd(v)al", "Numerical setup for boundary value solver"),
+    XPPAUT_ENTRY('a', "(A)veraging", "Compute adjoint and averaged functions"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Numerics",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 9 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
+
+  if (i < 0)
+    return;
+
+  run_the_commands(M_UT + i);
 }
 
 void do_gr_objs(void) {

@@ -1,12 +1,7 @@
 #ifndef XPPAUT_MENUS_H
 #define XPPAUT_MENUS_H
 
-/* --- Macros --- */
-#define NUM_ENTRIES 17
-
 /* --- Data --- */
-extern char *num_menu[];
-extern char *num_hint[];
 extern char *null_hint[];
 extern char *null_freeze[];
 extern char *ic_hint[];

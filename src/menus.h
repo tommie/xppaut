@@ -2,14 +2,10 @@
 #define XPPAUT_MENUS_H
 
 /* --- Macros --- */
-#define FILE_ENTRIES 16
 #define NUM_ENTRIES 17
 
 /* --- Data --- */
 extern char *num_menu[];
-extern char *fileon_menu[];
-extern char *fileoff_menu[];
-extern char *file_hint[];
 extern char *num_hint[];
 extern char *null_hint[];
 extern char *null_freeze[];

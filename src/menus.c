@@ -6,37 +6,6 @@ char *num_menu[]={
   "dElay","Color code","stocHast","Poincare map","rUelle plot",
   "looKup","bndVal","Averaging"};
 
-char *fileon_menu[]={
-  "Prt src","Write set","Read set",
-  "Auto","Calculator","Edit","Save info",
-  "Bell off","Help","Quit","Transpose","tIps","Get par set","cLone",".Xpprc","tUtorial"};
-
-char *fileoff_menu[]={
-  "Prt src","Write set","Read set",
-  "Auto","Calculator","Edit","Save info",
-  "Bell on","Help","Quit","Transpose","tIps","Get par set","cLone",".Xpprc","tUtorial"};
-
-
-char *file_hint[]={
-  "Display source and active comments",
-  "Save information for restart",
-  "Read information for restart",
-  "Run AUTO, the bifurcation package",
-  "A little calculator -- press ESC to exit",
-  "Edit right-hand sides or functions or auxiliaries",
-  "Save info about simulation in human readable format",
-  "Turn bell on/off",
-  "Browser help",
-  "Duh!",
-  "Transpose storage",
-  "Turn off these silly tips",
-  "Set predefined parameters",
-  "Clone the ode file",
-  "Edit your .xpprc preferences file",
-  "Run a quick tutorial on XPPAUT"
-};
-
-
 char *num_hint[]={
   "Total time to integrate eqns",
   "Starting time -- T0",

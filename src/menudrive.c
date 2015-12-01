@@ -470,15 +470,38 @@ void make_adj(void) {
 }
 
 void do_file_pop_up(void) {
-  static char key[] = "pwracesbhqtiglxu";
-  int ch = pop_up_list(main_win, "File", (tfBell ? fileon_menu : fileoff_menu), key, FILE_ENTRIES, 10, 0, 10,
-                       10 * DCURY + 8, file_hint, main_status_bar);
-  for (int i = 0; i < FILE_ENTRIES; i++) {
-    if (ch == key[i]) {
-      run_the_commands(M_FP + i);
-      break;
-    }
-  }
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('p', "(P)rt src", "Display source and active comments"),
+    XPPAUT_ENTRY('w', "(W)rite set", "Save information for restart"),
+    XPPAUT_ENTRY('r', "(R)ead set", "Read information for restart"),
+    XPPAUT_ENTRY('a', "(A)uto", "Run AUTO, the bifurcation package"),
+    XPPAUT_ENTRY('c', "(C)alculator", "A little calculator -- press ESC to exit"),
+    XPPAUT_ENTRY('e', "(E)dit", "Edit right-hand sides or functions or auxiliaries"),
+    XPPAUT_ENTRY('s', "(S)ave info", "Save info about simulation in human readable format"),
+    XPPAUT_ENTRY('b', "(B)ell toggle", "Turn bell on/off"),
+    XPPAUT_ENTRY('h', "(H)elp", "Browser help"),
+    XPPAUT_ENTRY('q', "(Q)uit", "Duh!"),
+    XPPAUT_ENTRY('t', "(T)ranspose", "Transpose storage"),
+    XPPAUT_ENTRY('i', "T(i)ps toggle", "Turn off these silly tips"),
+    XPPAUT_ENTRY('g', "(G)et par set", "Set predefined parameters"),
+    XPPAUT_ENTRY('l', "C(l)one", "Clone the ode file"),
+    XPPAUT_ENTRY('x', ".(X)pprc", "Edit your .xpprc preferences file"),
+    XPPAUT_ENTRY('u', "T(u)torial", "Run a quick tutorial on XPPAUT"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "File",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 10 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
+
+  if (i < 0)
+    return;
+
+  run_the_commands(M_FP + i);
 }
 
 static void do_file_com(int com) {

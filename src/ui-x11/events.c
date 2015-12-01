@@ -311,7 +311,7 @@ int x11_events_listen(X11Events *evs, Window w, long mask, X11EventsFunc func,
       sel_mask |= cb->event_mask;
   }
 
-  if (w != X11_EVENTS_ANY_WINDOW && XSelectInput(evs->display, w, sel_mask))
+  if (w != X11_EVENTS_ANY_WINDOW && !XSelectInput(evs->display, w, sel_mask))
     return 1;
 
   X11EventsCb *cb = x11_events_cbs_append(&evs->cbs);

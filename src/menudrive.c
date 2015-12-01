@@ -666,20 +666,27 @@ void new_lookup(void) {
 }
 
 void find_bvp(void) {
-  static char *n[] = {"(R)ange", "(N)o show", "(S)how", "(P)eriodic",
-                      "(H)omoclinic"};
-  static char key[] = "rnsph";
-  char ch;
-  int i;
-  ch = (char)pop_up_list(main_win, "Bndry Value Prob", n, key, 5, 16, 1, 10,
-                         6 * DCURY + 8, bvp_hint, main_status_bar);
-  if (ch == 27)
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('r', "(R)ange", "Solve BVP over range of parameters"),
+    XPPAUT_ENTRY('n', "(N)o show", "Don't show any but final step"),
+    XPPAUT_ENTRY('s', "(S)how", "Show each step of iteration"),
+    XPPAUT_ENTRY('p', "(P)eriodic", "Solve BVP with periodic conditions"),
+    XPPAUT_ENTRY('h', "(H)omoclinic", "Set up special homoclinic stuff"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Bndry Value Prob",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 6 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
+
+  if (i < 0)
     return;
-  for (i = 0; i < 5; i++)
-    if (ch == key[i])
-      break;
-  if (i >= 0 && i < 5)
-    run_the_commands(M_BR + i);
+
+  run_the_commands(M_BR + i);
 }
 
 void change_view(void) {

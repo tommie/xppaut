@@ -94,14 +94,6 @@ char *frz_hint[]={
   "Automatically freeze after each integration",
 };
 
-char *bvp_hint[]={
-  "Solve BVP over range of parameters",
-  "Don't show any but final step",
-  "Show each step of iteration",
-  "Solve BVP with periodic conditions",
-  "Set up special homoclinic stuff"
-};
-
 
 char *view_hint[]={
   "Two-dimensional view settings",

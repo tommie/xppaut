@@ -48,7 +48,7 @@ X11StatusBar *x11_status_bar_alloc(Window parent, int x, int y, unsigned int w,
 
   ret->w = XCreateSimpleWindow(display, parent, x, y, w, h, 2, MyForeColor,
                                MyBackColor);
-  ret->text = NULL;
+  ret->text = strdup("");
   ret->draw =
       (h < DCURY ? x11_status_bar_draw_small : x11_status_bar_draw_normal);
   x11_events_listen(g_x11_events, ret->w, EV_MASK, x11_status_bar_event, ret);

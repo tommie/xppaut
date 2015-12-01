@@ -94,15 +94,6 @@ char *frz_hint[]={
   "Automatically freeze after each integration",
 };
 
-char *half_hint[]={
-  "Create new window",
-  "Delete all but main window",
-  "Delete last window",
-  "Place current window at bottom",
-  "Automatically redraw",
-  "Redraw only when requested",
-  "Plot all graphs simultaneously -- slows you down"};
-
 char *sing_hint[]={
   "Find fixed points over range of parameter",
   " ",

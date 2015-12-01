@@ -713,27 +713,29 @@ void change_view(void) {
 }
 
 void do_windows(void) {
-  int i;
-  char ch;
-  static char *list[] = {"(C)reate", "(K)ill all", "(D)estroy",   "(B)ottom",
-                         "(A)uto",   "(M)anual",   "(S)imPlot On"};
-  static char *list2[] = {"(C)reate", "(K)ill all", "(D)estroy",    "(B)ottom",
-                          "(A)uto",   "(M)anual",   "(S)imPlot Off"};
-  static char key[] = "ckdbams";
-  static char title[] = "Make window";
-  if (SimulPlotFlag == 0)
-    ch = (char)pop_up_list(main_win, title, list, key, 7, 11, 0, 10,
-                           14 * DCURY + 8, half_hint, main_status_bar);
-  else
-    ch = (char)pop_up_list(main_win, title, list2, key, 7, 11, 0, 10,
-                           14 * DCURY + 8, half_hint, main_status_bar);
-  for (i = 0; i < 7; i++) {
-    if (ch == key[i])
-      break;
-  }
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('c', "(C)reate", "Create new window"),
+    XPPAUT_ENTRY('k', "(K)ill all", "Delete all but main window"),
+    XPPAUT_ENTRY('d', "(D)estroy", "Delete last window"),
+    XPPAUT_ENTRY('b', "(B)ottom", "Place current window at bottom"),
+    XPPAUT_ENTRY('a', "(A)uto", "Automatically redraw"),
+    XPPAUT_ENTRY('m', "(M)anual", "Redraw only when requested"),
+    XPPAUT_ENTRY('s', "(S)imPlot toggle", "Plot all graphs simultaneously -- slows you down"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Make window",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 14 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i >= 0 && i < 7)
-    run_the_commands(M_MC + i);
+  if (i < 0)
+    return;
+
+  run_the_commands(M_MC + i);
 }
 
 void add_a_curve(void) {

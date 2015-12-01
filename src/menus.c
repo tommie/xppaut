@@ -119,22 +119,6 @@ char *half_hint[]={
   "Redraw only when requested",
   "Plot all graphs simultaneously -- slows you down"};
 
-char *text_hint[]={
-  "Create text labels in different fonts ",
-  "Add arrows to trajectories",
-  "Create lines with arrowheads",
-  "Add squares, circles, etc to plot",
-  "Change properties, delete, or move existing add-on",
-  "Delete all text, markers, arrows",
-  "Create many markers based on browser data"
-};
-
-char *edit_hint[]={
-  "Move the selected item",
-  "Change properties of selected item",
-  "Delete selected item"
-};
-
 char *sing_hint[]={
   "Find fixed points over range of parameter",
   " ",

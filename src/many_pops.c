@@ -634,9 +634,9 @@ void do_gr_objs_com(int com) {
   case 6:
     add_markers();
     break;
-  /*case 4:
-  edit_object();
-  break; */
+  case 4:
+    edit_object();
+    break;
   case 5:
     destroy_label(draw_win);
     destroy_grob(draw_win);

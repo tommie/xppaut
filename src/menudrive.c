@@ -597,40 +597,51 @@ void do_numerics_pop_up(void) {
 }
 
 void do_gr_objs(void) {
-  char ch;
-  int i;
-  static char *list[] = {"(T)ext", "(A)rrow",      "(P)ointer", "(M)arker",
-                         "(E)dit", "(D)elete all", "marker(S)"};
-  static char key[] = "tapmeds";
-  static char title[] = "Text,etc";
-  static char *elist[] = {"(M)ove", "(C)hange", "(D)elete"};
-  static char ekey[] = "mcd";
-  static char etitle[] = "Edit";
-  ch = (char)pop_up_list(main_win, title, list, key, 7, 10, 0, 10, 10 * DCURY + 8,
-                         text_hint, main_status_bar);
-  if (ch == 27)
-    return;
-  if (ch == 'e') {
-    ch = (char)pop_up_list(main_win, etitle, elist, ekey, 3, 9, 0, 10,
-                           10 * DCURY + 8,
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('t', "(T)ext", "Create text labels in different fonts "),
+    XPPAUT_ENTRY('a', "(A)rrow", "Add arrows to trajectories"),
+    XPPAUT_ENTRY('p', "(P)ointer", "Create lines with arrowheads"),
+    XPPAUT_ENTRY('m', "(M)arker", "Add squares, circles, etc to plot"),
+    XPPAUT_ENTRY('e', "(E)dit", "Change properties, delete, or move existing add-on"),
+    XPPAUT_ENTRY('d', "(D)elete all", "Delete all text, markers, arrows"),
+    XPPAUT_ENTRY('s', "Marker(s)", "Create many markers based on browser data"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Text,etc",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 10 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
 
-                           edit_hint, main_status_bar);
-
-    if (ch == 27)
-      return;
-    for (i = 0; i < 3; i++) {
-      if (ch == ekey[i])
-        break;
-    }
-    if (i >= 0 && i < 3)
-      run_the_commands(M_TEM + i);
+  if (i < 0)
     return;
-  }
-  for (i = 0; i < 7; i++)
-    if (ch == key[i])
-      break;
-  if (i >= 0 && i < 7)
-    run_the_commands(M_TT + i);
+
+  run_the_commands(M_TT + i);
+}
+
+void edit_object(void) {
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('m', "(M)ove", "Move the selected item"),
+    XPPAUT_ENTRY('c', "(C)hange", "Change properties of selected item"),
+    XPPAUT_ENTRY('d', "(D)elete", "Delete selected item"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Edit",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 10 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
+
+  if (i < 0)
+    return;
+
+  run_the_commands(M_TEM + i);
 }
 
 void new_lookup(void) {

@@ -15,8 +15,6 @@ extern char *frz_hint[];
 extern char *bvp_hint[];
 extern char *view_hint[];
 extern char *half_hint[];
-extern char *text_hint[];
-extern char *edit_hint[];
 extern char *sing_hint[];
 extern char *meth_hint[];
 extern char *tab_hint[];

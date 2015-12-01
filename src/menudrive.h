@@ -235,6 +235,7 @@ void do_torus(void);
 void do_tutorial();
 void do_windows(void);
 void drw_all_scrns(void);
+void edit_object(void);
 void edit_xpprc();
 void find_bvp(void);
 void find_equilibrium(void);

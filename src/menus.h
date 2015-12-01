@@ -23,7 +23,6 @@ extern char *cmap_hint[];
 extern char *frz_hint[];
 extern char *bvp_hint[];
 extern char *adj_hint[];
-extern char *map_hint[];
 extern char *view_hint[];
 extern char *half_hint[];
 extern char *text_hint[];

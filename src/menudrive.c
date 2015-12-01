@@ -399,20 +399,26 @@ void do_stochast(void) {
 }
 
 void get_pmap_pars(void) {
-  static char *map[] = {"(N)one", "(S)ection", "(M)ax/min", "(P)eriod"};
-  static char mkey[] = "nsmp";
-  char ch;
-  int i;
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('n', "(N)one", "Turn off Poincare map"),
+    XPPAUT_ENTRY('s', "(S)ection", "Define section for Poincare map"),
+    XPPAUT_ENTRY('m', "(M)ax/min", "Compute Poincare map on maximum/minimum of variable"),
+    XPPAUT_ENTRY('p', "(P)eriod", "Compute map based on period between events"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Poincare map",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 6 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
 
-  ch = (char)pop_up_list(main_win, "Poincare map", map, mkey, 4, 13, POIMAP, 10,
-                         6 * DCURY + 8, map_hint, main_status_bar);
+  if (i < 0)
+    return;
 
-  for (i = 0; i < 4; i++)
-    if (ch == mkey[i])
-      break;
-
-  if (i >= 0 && i < 4)
-    run_the_commands(M_UPN + i);
+  run_the_commands(M_UPN + i);
 }
 
 void set_col_par(void) {

@@ -172,13 +172,6 @@ char *adj_hint[]={
   "Range over stuff to computte many adjoints"
 };
 
-char *map_hint[]={
-  "Turn off Poincare map",
-  "Define section for Poincare map",
-  "Compute Poincare map on maximum/minimum of variable",
-  "Compute map based on period between events",
-};
-
 
 char *view_hint[]={
   "Two-dimensional view settings",

@@ -94,14 +94,6 @@ char *frz_hint[]={
   "Automatically freeze after each integration",
 };
 
-
-char *view_hint[]={
-  "Two-dimensional view settings",
-  "Three-dimensional view settings",
-  "Plot array ",
-  "Animation window"
-};
-
 char *half_hint[]={
   "Create new window",
   "Delete all but main window",

@@ -690,18 +690,26 @@ void find_bvp(void) {
 }
 
 void change_view(void) {
-  static char *n[] = {"2D", "3D", "Array", "Toon"};
-  static char key[] = "23at";
-  char ch;
-  int i;
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('2', "(2)D", "Two-dimensional view settings"),
+    XPPAUT_ENTRY('3', "(3)D", "Three-dimensional view settings"),
+    XPPAUT_ENTRY('a', "(A)rray", "Plot array"),
+    XPPAUT_ENTRY('t', "(T)oon", "Animation window"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Axes",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 13 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
 
-  ch = (char)pop_up_list(main_win, "Axes", n, key, 4, 5, 0, 10, 13 * DCURY + 8,
-                         view_hint, main_status_bar);
-  for (i = 0; i < 4; i++)
-    if (ch == key[i])
-      break;
-  if (i >= 0 && i < 4)
-    run_the_commands(M_V2 + i);
+  if (i < 0)
+    return;
+
+  run_the_commands(M_V2 + i);
 }
 
 void do_windows(void) {

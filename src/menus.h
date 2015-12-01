@@ -29,7 +29,6 @@ extern char *text_hint[];
 extern char *edit_hint[];
 extern char *sing_hint[];
 extern char *meth_hint[];
-extern char *color_hint[];
 extern char *tab_hint[];
 extern char *edrh_hint[];
 extern char *auto_hint[];

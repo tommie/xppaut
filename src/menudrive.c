@@ -422,17 +422,25 @@ void get_pmap_pars(void) {
 }
 
 void set_col_par(void) {
-  char ch;
-  static char *n[] = {"(N)o color", "(V)elocity", "(A)nother quantity"};
-  static char key[] = "nva";
-  int i;
-  ch = (char)pop_up_list(main_win, "Color code", n, key, 3, 11, 0, 10,
-                         12 * DCURY + 8, color_hint, main_status_bar);
-  for (i = 0; i < 3; i++)
-    if (ch == key[i])
-      break;
-  if (i >= 0 && i < 3)
-    run_the_commands(i + M_UCN);
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('n', "(N)o color", ""),
+    XPPAUT_ENTRY('v', "(V)elocity", "Color according to magnitude of derivative"),
+    XPPAUT_ENTRY('a', "(A)nother quantity", "Color according to height of Z-axis"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Color code",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 12 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
+
+  if (i < 0)
+    return;
+
+  run_the_commands(M_UCN + i);
 }
 
 void make_adj(void) {

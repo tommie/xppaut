@@ -228,12 +228,6 @@ char *meth_hint[]={
   "Rosenbrock(2,3) - good with discontinuties",
   "Symplectic - x''=F(x)"};
 
-char *color_hint[]={
-  " ",
-  "Color according to magnitude of derivative",
-  "Color according to height of Z-axis"
-};
-
 char *tab_hint[]={"Edit the lookup tables","View a table in the data browser"};
 
 char *edrh_hint[]={

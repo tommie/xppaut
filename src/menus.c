@@ -70,16 +70,6 @@ char *cmap_hint[]={
   "blue-violet-red",
   "black-white"
 };
-char *frz_hint[]={
-  "Permanently keep main curve -- even after reintegrating",
-  "Delete specified frozen curve",
-  "Edit specified frozen curve",
-  "Remove all frozen curves",
-  "Toggle key on/off",
-  "Import bifurcation data",
-  "Clear imported bifurcation curve",
-  "Automatically freeze after each integration",
-};
 
 char *sing_hint[]={
   "Find fixed points over range of parameter",

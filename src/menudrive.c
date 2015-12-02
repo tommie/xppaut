@@ -768,25 +768,30 @@ void add_a_curve(void) {
 }
 
 void freeze(void) {
-  static char *nf[] = {"(F)reeze", "(D)elete",   "(E)dit",    "(R)emove all",
-                       "(K)ey",    "(B)if.Diag", "(C)lr. BD", "(O)n freeze"};
-  static char *nf2[] = {"(F)reeze", "(D)elete",   "(E)dit",    "(R)emove all",
-                        "(K)ey",    "(B)if.Diag", "(C)lr. BD", "(O)ff freeze"};
-  static char keyf[] = "fderkbco";
-  char ch;
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('f', "(F)reeze", "Permanently keep main curve -- even after reintegrating"),
+    XPPAUT_ENTRY('d', "(D)elete", "Delete specified frozen curve"),
+    XPPAUT_ENTRY('e', "(E)dit", "Edit specified frozen curve"),
+    XPPAUT_ENTRY('r', "(R)emove all", "Remove all frozen curves"),
+    XPPAUT_ENTRY('k', "(K)ey", "Toggle key on/off"),
+    XPPAUT_ENTRY('b', "(B)if.Diag", "Import bifurcation data"),
+    XPPAUT_ENTRY('c', "(C)lr. BD", "Clear imported bifurcation curve"),
+    XPPAUT_ENTRY('o', "Freeze t(o)ggle", "Automatically freeze after each integration"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Freeze",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 8 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
 
-  if (AutoFreezeFlag == 0)
-    ch = (char)pop_up_list(main_win, "Freeze", nf, keyf, 8, 15, 0, 10,
-                           8 * DCURY + 8, frz_hint, main_status_bar);
-  else
-    ch = (char)pop_up_list(main_win, "Freeze", nf2, keyf, 8, 15, 0, 10,
-                           8 * DCURY + 8, frz_hint, main_status_bar);
-  for (int i = 0; i < 8; i++) {
-    if (ch == keyf[i]) {
-      run_the_commands(M_GFF + i);
-      break;
-    }
-  }
+  if (i < 0)
+    return;
+
+  run_the_commands(M_GFF + i);
 }
 
 void key_frz(void) {

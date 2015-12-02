@@ -914,19 +914,27 @@ void window_zoom(void) {
 }
 
 void direct_field(void) {
-  int i;
-  static char *n[] = {"(D)irect Field", "(F)low", "(N)o dir. fld.",
-                      "(C)olorize", "(S)caled Dir.Fld"};
-  static char key[] = "dfncs";
-  char ch;
-  ch = (char)pop_up_list(main_win, "Two-D Fun", n, key, 5, 18, 0, 10,
-                         6 * DCURY + 8, flow_hint, main_status_bar);
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('d', "(D)irect Field", "Draw vector field for 2D section"),
+    XPPAUT_ENTRY('f', "(F)low", "Draw regular series of trajectories"),
+    XPPAUT_ENTRY('n', "(N)o dir. fld.", ""),
+    XPPAUT_ENTRY('c', "(C)olorize", "Color the PP on a grid"),
+    XPPAUT_ENTRY('s', "(S)caled Dir.Fld", "Draw only directions"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Two-D Fun",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 6 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
 
-  for (i = 0; i < 5; i++)
-    if (ch == key[i])
-      break;
-  if (i >= 0 && i < 5)
-    run_the_commands(M_DD + i);
+  if (i < 0)
+    return;
+
+  run_the_commands(M_DD + i);
 }
 
 void new_clines(void) {

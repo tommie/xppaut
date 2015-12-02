@@ -31,14 +31,6 @@ char *ic_hint[]={
   "Integrate backwards"
 };
 
-char *flow_hint[]={
-  "Draw vector field for 2D section",
-  "Draw regular series of trajectories",
-  " ",
-  "Color the PP on a grid",
-  "Draw only directions"
-};
-
 char *sing_hint[]={
   "Find fixed points over range of parameter",
   " ",

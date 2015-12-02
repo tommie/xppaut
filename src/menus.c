@@ -1,21 +1,5 @@
 #include "menus.h"
 
-char *ic_hint[]={
-  "Integrate over a range of parameters, init data, etc",
-  "Integrate over range of 2 parameters,init data, etc",
-  "Pick up from last step of previous solution",
-  "Use current initial data",
-  "Use current initial data",
-  "Specify initial data with mouse",
-  "Pick up from last step and shift T to latest time",
-  "Input new initial data",
-  "Use the initial data from last shooting from fixed pt",
-  "Read init data from file",
-  "Type in function of 't' for t^th equation",
-  "Repeated ICs using mouse ","Guess new values for DAE",
-  "Integrate backwards"
-};
-
 char *meth_hint[]={
   "Discrete time -- difference equations",
   "Euler method",

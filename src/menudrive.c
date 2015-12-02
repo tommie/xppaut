@@ -1009,25 +1009,36 @@ void find_equilibrium(void) {
 }
 
 void ini_data_menu(void) {
-  int i;
-  static char *n[] = {"(R)ange",   "(2)par range", "(L)ast",    "(O)ld",
-                      "(G)o",      "(M)ouse",      "(S)hift",   "(N)ew",
-                      "s(H)oot",   "(F)ile",       "form(U)la", "m(I)ce",
-                      "DAE guess", "(B)ackward"};
-  static char key[] = "r2logmsnhfuidb";
-  char ch;
-  ch = (char)pop_up_list(main_win, "Integrate", n, key, 14, 13, 3, 10,
-                         3 * DCURY + 8, ic_hint, main_status_bar);
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('r', "(R)ange", "Integrate over a range of parameters, init data, etc"),
+    XPPAUT_ENTRY('2', "(2)par range", "Integrate over range of 2 parameters,init data, etc"),
+    XPPAUT_ENTRY('l', "(L)ast", "Pick up from last step of previous solution"),
+    XPPAUT_ENTRY('o', "(O)ld", "Use current initial data"),
+    XPPAUT_ENTRY('g', "(G)o", "Use current initial data"),
+    XPPAUT_ENTRY('m', "(M)ouse", "Specify initial data with mouse"),
+    XPPAUT_ENTRY('s', "(S)hift", "Pick up from last step and shift T to latest time"),
+    XPPAUT_ENTRY('n', "(N)ew", "Input new initial data"),
+    XPPAUT_ENTRY('h', "S(h)hoot", "Use the initial data from last shooting from fixed pt"),
+    XPPAUT_ENTRY('f', "(F)ile", "Read init data from file"),
+    XPPAUT_ENTRY('u', "Form(u)la", "Type in function of 't' for t^th equation"),
+    XPPAUT_ENTRY('i', "M(i)ce", "Repeated ICs using mouse "),
+    XPPAUT_ENTRY('d', "(D)AE guess", "Guess new values for DAE"),
+    XPPAUT_ENTRY('b', "(B)ackward", "Integrate backwards"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Integrate",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 3 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
 
-  if (ch == 27)
+  if (i < 0)
     return;
 
-  for (i = 0; i < 14; i++) {
-    if (ch == key[i])
-      break;
-  }
-
-  run_the_commands(i);
+  run_the_commands(M_IR + i);
 }
 
 void new_param(void) { run_the_commands(M_P); }

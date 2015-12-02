@@ -9,7 +9,6 @@ extern char *wind_hint[];
 extern char *flow_hint[];
 extern char *phas_hint[];
 extern char *kin_hint[];
-extern char *graf_hint[];
 extern char *cmap_hint[];
 extern char *frz_hint[];
 extern char *sing_hint[];

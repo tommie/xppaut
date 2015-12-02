@@ -739,21 +739,32 @@ void do_windows(void) {
 }
 
 void add_a_curve(void) {
-  static char *na[] = {"(A)dd curve",  "(D)elete last", "(R)emove all",
-                       "(E)dit curve", "(P)ostscript",  "S(V)G",
-                       "(F)reeze",     "a(X)es opts",   "exp(O)rt data",
-                       "(C)olormap"};
-  static char keya[] = "adrepvfxoc";
-  char ch;
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('a', "(A)dd curve", "Add another curve to the current plot"),
+    XPPAUT_ENTRY('d', "(D)elete last", "Delete last added plot"),
+    XPPAUT_ENTRY('r', "(R)emove all", "Remove all the added plots except the main one"),
+    XPPAUT_ENTRY('e', "(E)dit curve", "Edit parameters for a plot"),
+    XPPAUT_ENTRY('p', "(P)ostscript", "Create a postscript file of current plot"),
+    XPPAUT_ENTRY('v', "S(V)G", "Create a styleable svg file of current plot"),
+    XPPAUT_ENTRY('f', "(F)reeze", "Options for permanently saving curve"),
+    XPPAUT_ENTRY('x', "A(x)es opts", "Axes label sizes and zero axes for postscript"),
+    XPPAUT_ENTRY('o', "Exp(o)rt data", "Export the numbers used in the graphs on the screen"),
+    XPPAUT_ENTRY('c', "(C)olormap", "Change colormap"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Curves",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 8 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
 
-  ch = (char)pop_up_list(main_win, "Curves", na, keya, 10, 15, 0, 10,
-                         8 * DCURY + 8, graf_hint, main_status_bar);
-  for (int i = 0; i < 10; i++) {
-    if (ch == keya[i]){
-      run_the_commands(M_GA + i);
-      break;
-    }
-  }
+  if (i < 0)
+    return;
+
+  run_the_commands(M_GA + i);
 }
 
 void freeze(void) {

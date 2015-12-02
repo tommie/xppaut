@@ -53,15 +53,6 @@ char *phas_hint[]={
   "Choose circle variables"
 };
 
-char *kin_hint[]={
-  "Grab a screen shot",
-  "Clear all screen shots",
-  "Manually cycle thru screenshots",
-  "Continuously cycle through screen shots",
-  "Dump the screen shots to disk",
-  "Make animated gif file from screenshots"
-};
-
 char *sing_hint[]={
   "Find fixed points over range of parameter",
   " ",

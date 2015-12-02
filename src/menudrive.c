@@ -841,20 +841,28 @@ void change_cmap(void) {
 }
 
 void do_movie(void) {
-  int i;
-  char ch;
-  int nkc = 6;
-  static char *list[] = {"(C)apture",  "(R)eset", "(P)layback",
-                         "(A)utoplay", "(S)ave",  "(M)ake AniGif",
-                         "(X)tra"};
-  static char key[] = "crpasmx";
-  ch = (char)pop_up_list(main_win, "Kinescope", list, key, nkc, 11, 0, 10,
-                         8 * DCURY + 8, kin_hint, main_status_bar);
-  for (i = 0; i < nkc; i++)
-    if (ch == key[i])
-      break;
-  if (i >= 0 && i < nkc)
-    run_the_commands(i + M_KC);
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('c', "(C)apture", "Grab a screen shot"),
+    XPPAUT_ENTRY('r', "(R)eset", "Clear all screen shots"),
+    XPPAUT_ENTRY('p', "(P)layback", "Manually cycle thru screenshots"),
+    XPPAUT_ENTRY('a', "(A)utoplay", "Continuously cycle through screen shots"),
+    XPPAUT_ENTRY('s', "(S)ave", "Dump the screen shots to disk"),
+    XPPAUT_ENTRY('m', "(M)ake AniGif", "Make animated gif file from screenshots"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Kinescope",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 8 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
+
+  if (i < 0)
+    return;
+
+  run_the_commands(M_KC + i);
 }
 
 void do_torus(void) {

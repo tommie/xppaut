@@ -816,19 +816,28 @@ void key_frz(void) {
 }
 
 void change_cmap(void) {
-  static char *nc[] = {"(N)ormal", "(P)eriodic", "(H)ot",
-                       "(C)ool",   "(B)lue-red", "(G)ray"};
-  static char keyc[] = "nphcbg";
-  char ch;
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('n', "(N)ormal", " blue-green-red"),
+    XPPAUT_ENTRY('p', "(P)eriodic", "red-...-violet-red"),
+    XPPAUT_ENTRY('h', "(H)ot", "black-red-yellow-white"),
+    XPPAUT_ENTRY('c', "(C)ool", "pale cyan->pale yellow"),
+    XPPAUT_ENTRY('b', "(B)lue-red", "blue-violet-red"),
+    XPPAUT_ENTRY('g', "(G)ray", "black-white"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Colormap",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 8 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
 
-  ch = (char)pop_up_list(main_win, "Colormap", nc, keyc, 6, 15, 0, 10,
-                         8 * DCURY + 8, cmap_hint, main_status_bar);
-  for (int i = 0; i < 6; i++) {
-    if (ch == keyc[i]) {
-      run_the_commands(M_GCN + i);
-      break;
-    }
-  }
+  if (i < 0)
+    return;
+
+  run_the_commands(M_GCN + i);
 }
 
 void do_movie(void) {

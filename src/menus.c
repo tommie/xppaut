@@ -62,15 +62,6 @@ char *kin_hint[]={
   "Make animated gif file from screenshots"
 };
 
-char *cmap_hint[]={
-  " blue-green-red",
-  "red-...-violet-red",
-  "black-red-yellow-white",
-  "pale cyan->pale yellow",
-  "blue-violet-red",
-  "black-white"
-};
-
 char *sing_hint[]={
   "Find fixed points over range of parameter",
   " ",

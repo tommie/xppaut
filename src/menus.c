@@ -1,11 +1,5 @@
 #include "menus.h"
 
-char *null_freeze[]={
-  "Freeze current clines",
-  "Delete all frozen clines",
-  "Range freeze a bunch of clines",
-  "Animate nullclines"
-};
 char *ic_hint[]={
   "Integrate over a range of parameters, init data, etc",
   "Integrate over range of 2 parameters,init data, etc",

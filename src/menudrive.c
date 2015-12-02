@@ -963,18 +963,26 @@ void new_clines(void) {
 }
 
 void froz_cline_stuff(void) {
-  static char *n[] = {"(F)reeze", "(D)elete all", "(R)ange", "(A)nimate"};
-  static char key[] = "fdra";
-  char ch;
-  int i;
-  ch = (char)pop_up_list(main_win, "Freeze cline", n, key, 4, 10, 0, 10,
-                         6 * DCURY + 8, null_freeze, main_status_bar);
-  for (i = 0; i < 4; i++) {
-    if (ch == key[i])
-      break;
-  }
-  if (i >= 0 && i < 4)
-    run_the_commands(M_NFF + i);
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('f', "(F)reeze", "Freeze current clines"),
+    XPPAUT_ENTRY('d', "(D)elete all", "Delete all frozen clines"),
+    XPPAUT_ENTRY('r', "(R)ange", "Range freeze a bunch of clines"),
+    XPPAUT_ENTRY('a', "(A)nimate", "Animate nullclines"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Freeze cline",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 6 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
+
+  if (i < 0)
+    return;
+
+  run_the_commands(M_NFF + i);
 }
 
 void find_equilibrium(void) {

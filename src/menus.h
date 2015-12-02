@@ -2,7 +2,6 @@
 #define XPPAUT_MENUS_H
 
 /* --- Data --- */
-extern char *null_freeze[];
 extern char *ic_hint[];
 extern char *sing_hint[];
 extern char *meth_hint[];

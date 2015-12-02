@@ -795,18 +795,24 @@ void freeze(void) {
 }
 
 void key_frz(void) {
-  static char *nk[] = {"(N)o key", "(K)ey"};
-  static char keyk[] = "nk";
-  char ch;
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('n', "(N)o key", ""),
+    XPPAUT_ENTRY('k', "(K)ey", ""),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Key",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 8 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
 
-  ch = (char)pop_up_list(main_win, "Key", nk, keyk, 2, 9, 0, 10, 8 * DCURY + 8,
-                         no_hint, main_status_bar);
-  for (int i = 0; i < 2; i++) {
-    if (ch == keyk[i]) {
-      run_the_commands(M_GFKN + i);
-      break;
-    }
-  }
+  if (i < 0)
+    return;
+
+  run_the_commands(M_GFKN + i);
 }
 
 void change_cmap(void) {

@@ -16,12 +16,6 @@ char *ic_hint[]={
   "Integrate backwards"
 };
 
-char *sing_hint[]={
-  "Find fixed points over range of parameter",
-  " ",
-  "Use mouse to guess fixed point",
-  "Monte carlo search for fixed points"};
-
 char *meth_hint[]={
   "Discrete time -- difference equations",
   "Euler method",

@@ -986,21 +986,26 @@ void froz_cline_stuff(void) {
 }
 
 void find_equilibrium(void) {
-  int i;
-  static char *n[] = {"(G)o", "(M)ouse", "(R)ange", "monte(C)ar"};
-  static char key[] = "gmrc";
-  char ch;
-  ch = (char)pop_up_list(main_win, "Equilibria", n, key, 4, 12, 1, 10,
-                         6 * DCURY + 8, sing_hint, main_status_bar);
-  if (ch == 27)
-    return;
-  for (i = 0; i < 4; i++) {
-    if (ch == key[i])
-      break;
-  }
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('g', "(G)o", "Find fixed points over range of parameter"),
+    XPPAUT_ENTRY('m', "(M)ouse", ""),
+    XPPAUT_ENTRY('r', "(R)ange", "Use mouse to guess fixed point"),
+    XPPAUT_ENTRY('c', "Monte (C)ar", "Monte carlo search for fixed points"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Equilibria",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 6 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i > -1 && i < 4)
-    run_the_commands(i + M_SG);
+  if (i < 0)
+    return;
+
+  run_the_commands(M_SG + i);
 }
 
 void ini_data_menu(void) {

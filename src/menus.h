@@ -3,7 +3,6 @@
 
 /* --- Data --- */
 extern char *ic_hint[];
-extern char *sing_hint[];
 extern char *meth_hint[];
 extern char *edrh_hint[];
 extern char *auto_hint[];

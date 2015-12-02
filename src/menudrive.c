@@ -739,65 +739,74 @@ void do_windows(void) {
 }
 
 void add_a_curve(void) {
-  int com = -1;
   static char *na[] = {"(A)dd curve",  "(D)elete last", "(R)emove all",
                        "(E)dit curve", "(P)ostscript",  "S(V)G",
                        "(F)reeze",     "a(X)es opts",   "exp(O)rt data",
                        "(C)olormap"};
-  static char *nc[] = {"(N)ormal", "(P)eriodic", "(H)ot",
-                       "(C)ool",   "(B)lue-red", "(G)ray"};
+  static char keya[] = "adrepvfxoc";
+  char ch;
+
+  ch = (char)pop_up_list(main_win, "Curves", na, keya, 10, 15, 0, 10,
+                         8 * DCURY + 8, graf_hint, main_status_bar);
+  for (int i = 0; i < 10; i++) {
+    if (ch == keya[i]){
+      run_the_commands(M_GA + i);
+      break;
+    }
+  }
+}
+
+void freeze(void) {
   static char *nf[] = {"(F)reeze", "(D)elete",   "(E)dit",    "(R)emove all",
                        "(K)ey",    "(B)if.Diag", "(C)lr. BD", "(O)n freeze"};
   static char *nf2[] = {"(F)reeze", "(D)elete",   "(E)dit",    "(R)emove all",
                         "(K)ey",    "(B)if.Diag", "(C)lr. BD", "(O)ff freeze"};
-  static char *nk[] = {"(N)o key", "(K)ey"};
-  static char keya[] = "adrepvfxoc";
-  static char keyc[] = "nphcbg";
   static char keyf[] = "fderkbco";
-  static char keyk[] = "nk";
   char ch;
-  int i, j;
-  ch = (char)pop_up_list(main_win, "Curves", na, keya, 10, 15, 0, 10,
-                         8 * DCURY + 8, graf_hint, main_status_bar);
-  for (i = 0; i < 10; i++)
-    if (ch == keya[i])
+
+  if (AutoFreezeFlag == 0)
+    ch = (char)pop_up_list(main_win, "Freeze", nf, keyf, 8, 15, 0, 10,
+                           8 * DCURY + 8, frz_hint, main_status_bar);
+  else
+    ch = (char)pop_up_list(main_win, "Freeze", nf2, keyf, 8, 15, 0, 10,
+                           8 * DCURY + 8, frz_hint, main_status_bar);
+  for (int i = 0; i < 8; i++) {
+    if (ch == keyf[i]) {
+      run_the_commands(M_GFF + i);
       break;
-  if (i == 6) {
-    if (AutoFreezeFlag == 0)
-      ch = (char)pop_up_list(main_win, "Freeze", nf, keyf, 8, 15, 0, 10,
-                             8 * DCURY + 8, frz_hint, main_status_bar);
-    else
-      ch = (char)pop_up_list(main_win, "Freeze", nf2, keyf, 8, 15, 0, 10,
-                             8 * DCURY + 8, frz_hint, main_status_bar);
-    for (j = 0; j < 8; j++)
-      if (ch == keyf[j])
-        break;
-    if (j == 4) {
-      ch = (char)pop_up_list(main_win, "Key", nk, keyk, 2, 9, 0, 10, 8 * DCURY + 8,
-                             no_hint, main_status_bar);
-      if (ch == keyk[0])
-        com = M_GFKN;
-      if (ch == keyk[1])
-        com = M_GFKK;
-    } else {
-      if (j >= 0 && j < 8)
-        com = M_GFF + j;
-    }
-  } else {
-    if (i == 9) {
-      ch = (char)pop_up_list(main_win, "Colormap", nc, keyc, 6, 15, 0, 10,
-                             8 * DCURY + 8, cmap_hint, main_status_bar);
-      for (j = 0; j < 6; j++)
-        if (ch == keyc[j])
-          break;
-      if (j >= 0 && j < 6)
-        com = M_GCN + j;
-    } else {
-      if (i >= 0 && i < 10)
-        com = M_GA + i;
     }
   }
-  run_the_commands(com);
+}
+
+void key_frz(void) {
+  static char *nk[] = {"(N)o key", "(K)ey"};
+  static char keyk[] = "nk";
+  char ch;
+
+  ch = (char)pop_up_list(main_win, "Key", nk, keyk, 2, 9, 0, 10, 8 * DCURY + 8,
+                         no_hint, main_status_bar);
+  for (int i = 0; i < 2; i++) {
+    if (ch == keyk[i]) {
+      run_the_commands(M_GFKN + i);
+      break;
+    }
+  }
+}
+
+void change_cmap(void) {
+  static char *nc[] = {"(N)ormal", "(P)eriodic", "(H)ot",
+                       "(C)ool",   "(B)lue-red", "(G)ray"};
+  static char keyc[] = "nphcbg";
+  char ch;
+
+  ch = (char)pop_up_list(main_win, "Colormap", nc, keyc, 6, 15, 0, 10,
+                         8 * DCURY + 8, cmap_hint, main_status_bar);
+  for (int i = 0; i < 6; i++) {
+    if (ch == keyc[i]) {
+      run_the_commands(M_GCN + i);
+      break;
+    }
+  }
 }
 
 void do_movie(void) {

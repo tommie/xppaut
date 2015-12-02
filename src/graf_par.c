@@ -972,9 +972,9 @@ void freeze_com(int c) {
   case 3:
     kill_frz();
     break;
-  /*case 4:
-  key_frz();
-  break; */
+  case 4:
+    key_frz();
+    break;
   case 5:
     frz_bd();
     break;
@@ -1378,16 +1378,18 @@ void add_a_curve_com(int c) {
   case 5:
     create_svg();
     break;
-  /* case 6: freeze();
-     break; */
+  case 6:
+    freeze();
+    break;
   case 7:
     axes_opts();
     break;
   case 8:
     export_graf_data();
     break;
-    /*  case 9: change_cmap();
-        break; */
+  case 9:
+    change_cmap();
+    break;
   }
   check_flags();
   redraw_the_graph();

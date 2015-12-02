@@ -363,6 +363,17 @@ static int index_of_key(const X11MenuDescr *descr, int key) {
   return -1;
 }
 
+static void pop_up_and_run(int base, int y, const X11MenuDescr *descr) {
+  int key = pop_up_menu(main_win, 10, y * DCURY + 8, descr,
+                        main_status_bar);
+  int i = index_of_key(descr, key);
+
+  if (i < 0)
+    return;
+
+  run_the_commands(base + i);
+}
+
 void do_stochast(void) {
   static const X11MenuEntry ENTRIES[] = {
     XPPAUT_ENTRY('n', "(N)ew seed", "Seed random number generator"),
@@ -388,14 +399,8 @@ void do_stochast(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 2 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_UHN + i);
+  pop_up_and_run(M_UHN, 2, &MENU_DESCR);
 }
 
 void get_pmap_pars(void) {
@@ -411,14 +416,8 @@ void get_pmap_pars(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 6 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_UPN + i);
+  pop_up_and_run(M_UPN, 6, &MENU_DESCR);
 }
 
 void set_col_par(void) {
@@ -433,14 +432,8 @@ void set_col_par(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 12 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_UCN + i);
+  pop_up_and_run(M_UCN, 12, &MENU_DESCR);
 }
 
 void make_adj(void) {
@@ -459,14 +452,8 @@ void make_adj(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 11 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_UAN + i);
+  pop_up_and_run(M_UAN, 11, &MENU_DESCR);
 }
 
 void do_file_pop_up(void) {
@@ -494,14 +481,8 @@ void do_file_pop_up(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 10 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_FP + i);
+  pop_up_and_run(M_FP, 10, &MENU_DESCR);
 }
 
 static void do_file_com(int com) {
@@ -586,14 +567,8 @@ void do_numerics_pop_up(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 9 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_UT + i);
+  pop_up_and_run(M_UT, 9, &MENU_DESCR);
 }
 
 void do_gr_objs(void) {
@@ -612,14 +587,8 @@ void do_gr_objs(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 10 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_TT + i);
+  pop_up_and_run(M_TT, 10, &MENU_DESCR);
 }
 
 void edit_object(void) {
@@ -634,14 +603,8 @@ void edit_object(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 10 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_TEM + i);
+  pop_up_and_run(M_TEM, 10, &MENU_DESCR);
 }
 
 void new_lookup(void) {
@@ -655,14 +618,8 @@ void new_lookup(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 11 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_UKE + i);
+  pop_up_and_run(M_UKE, 11, &MENU_DESCR);
 }
 
 void find_bvp(void) {
@@ -679,14 +636,8 @@ void find_bvp(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 6 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_BR + i);
+  pop_up_and_run(M_BR, 6, &MENU_DESCR);
 }
 
 void change_view(void) {
@@ -702,14 +653,8 @@ void change_view(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 13 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_V2 + i);
+  pop_up_and_run(M_V2, 13, &MENU_DESCR);
 }
 
 void do_windows(void) {
@@ -728,14 +673,8 @@ void do_windows(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 14 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_MC + i);
+  pop_up_and_run(M_MC, 14, &MENU_DESCR);
 }
 
 void add_a_curve(void) {
@@ -757,14 +696,8 @@ void add_a_curve(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 8 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_GA + i);
+  pop_up_and_run(M_GA, 8, &MENU_DESCR);
 }
 
 void freeze(void) {
@@ -784,14 +717,8 @@ void freeze(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 8 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_GFF + i);
+  pop_up_and_run(M_GFF, 8, &MENU_DESCR);
 }
 
 void key_frz(void) {
@@ -805,14 +732,8 @@ void key_frz(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 8 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_GFKN + i);
+  pop_up_and_run(M_GFKN, 8, &MENU_DESCR);
 }
 
 void change_cmap(void) {
@@ -830,14 +751,8 @@ void change_cmap(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 8 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_GCN + i);
+  pop_up_and_run(M_GCN, 8, &MENU_DESCR);
 }
 
 void do_movie(void) {
@@ -855,14 +770,8 @@ void do_movie(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 8 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_KC + i);
+  pop_up_and_run(M_KC, 8, &MENU_DESCR);
 }
 
 void do_torus(void) {
@@ -871,7 +780,7 @@ void do_torus(void) {
     XPPAUT_ENTRY('n', "(N)one", "No variable on circle"),
     XPPAUT_ENTRY('c', "(C)hoose", "Choose circle variables"),
   };
-  static X11MenuDescr menu_descr = {
+  X11MenuDescr menu_descr = {
     .title = "Torus",
     .entries = (X11MenuEntry *)ENTRIES,
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
@@ -879,14 +788,7 @@ void do_torus(void) {
   };
   menu_descr.def_key = (TORUS ? 'a' : 'n');
 
-  int key = pop_up_menu(main_win, 10, 4 * DCURY + 8, &menu_descr,
-                        main_status_bar);
-  int i = index_of_key(&menu_descr, key);
-
-  if (i < 0)
-    return;
-
-  run_the_commands(M_AA + i);
+  pop_up_and_run(M_AA, 4, &menu_descr);
 }
 
 void window_zoom(void) {
@@ -903,14 +805,8 @@ void window_zoom(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 13 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_WW + i);
+  pop_up_and_run(M_WW, 13, &MENU_DESCR);
 }
 
 void direct_field(void) {
@@ -927,14 +823,8 @@ void direct_field(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 6 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_DD + i);
+  pop_up_and_run(M_DD, 6, &MENU_DESCR);
 }
 
 void new_clines(void) {
@@ -952,14 +842,8 @@ void new_clines(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 6 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_NN + i);
+  pop_up_and_run(M_NN, 6, &MENU_DESCR);
 }
 
 void froz_cline_stuff(void) {
@@ -975,14 +859,8 @@ void froz_cline_stuff(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 6 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_NFF + i);
+  pop_up_and_run(M_NFF, 6, &MENU_DESCR);
 }
 
 void find_equilibrium(void) {
@@ -998,14 +876,8 @@ void find_equilibrium(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 6 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_SG + i);
+  pop_up_and_run(M_SG, 6, &MENU_DESCR);
 }
 
 void ini_data_menu(void) {
@@ -1031,14 +903,8 @@ void ini_data_menu(void) {
     .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
     .def_key = -1,
   };
-  int key = pop_up_menu(main_win, 10, 3 * DCURY + 8, &MENU_DESCR,
-                        main_status_bar);
-  int i = index_of_key(&MENU_DESCR, key);
 
-  if (i < 0)
-    return;
-
-  run_the_commands(M_IR + i);
+  pop_up_and_run(M_IR, 3, &MENU_DESCR);
 }
 
 void new_param(void) { run_the_commands(M_P); }

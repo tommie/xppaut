@@ -31,14 +31,6 @@ char *ic_hint[]={
   "Integrate backwards"
 };
 
-char *wind_hint[]={
-  "Manually choose 2D view",
-  "Zoom into with mouse",
-  "Zoom out with mouse",
-  "Let XPP automatically choose window",
-  "Reset to default view"
-};
-
 char *flow_hint[]={
   "Draw vector field for 2D section",
   "Draw regular series of trajectories",

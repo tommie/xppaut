@@ -890,18 +890,27 @@ void do_torus(void) {
 }
 
 void window_zoom(void) {
-  static char *n[] = {"(W)indow", "(Z)oom In", "Zoom (O)ut", "(F)it",
-                      "(D)efault"};
-  static char key[] = "wzofd";
-  char ch;
-  int i;
-  ch = (char)pop_up_list(main_win, "Window", n, key, 5, 13, 0, 10, 13 * DCURY + 8,
-                         wind_hint, main_status_bar);
-  for (i = 0; i < 5; i++)
-    if (ch == key[i])
-      break;
-  if (i >= 0 && i < 5)
-    run_the_commands(M_WW + i);
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('w', "(W)indow", "Manually choose 2D view"),
+    XPPAUT_ENTRY('z', "(Z)oom In", "Zoom into with mouse"),
+    XPPAUT_ENTRY('o', "Zoom (O)ut", "Zoom out with mouse"),
+    XPPAUT_ENTRY('f', "(F)it", "Let XPP automatically choose window"),
+    XPPAUT_ENTRY('d', "(D)efault", "Reset to default view"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Window",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 13 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
+
+  if (i < 0)
+    return;
+
+  run_the_commands(M_WW + i);
 }
 
 void direct_field(void) {

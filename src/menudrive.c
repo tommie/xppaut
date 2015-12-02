@@ -938,18 +938,28 @@ void direct_field(void) {
 }
 
 void new_clines(void) {
-  int i;
-  static char *n[] = {"(N)ew",    "(R)estore", "(A)uto",
-                      "(M)anual", "(F)reeze",  "(S)ave"};
-  static char key[] = "nramfs";
-  char ch;
-  ch = (char)pop_up_list(main_win, "Nullclines", n, key, 6, 10, 0, 10,
-                         6 * DCURY + 8, null_hint, main_status_bar);
-  for (i = 0; i < 6; i++)
-    if (ch == key[i])
-      break;
-  if (i >= 0 && i < 6)
-    run_the_commands(M_NN + i);
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('n', "(N)ew", "Compute new nullclines"),
+    XPPAUT_ENTRY('r', "(R)estore", "Redraw last nullclines"),
+    XPPAUT_ENTRY('a', "(A)uto", "Set automatic redraw -- X redraws when needed"),
+    XPPAUT_ENTRY('m', "(M)anual", "Only redraw when asked (Redraw)"),
+    XPPAUT_ENTRY('f', "(F)reeze", "Freeze multiple nullclines"),
+    XPPAUT_ENTRY('s', "(S)ave", "Save nullcline values to a file"),
+  };
+  static const X11MenuDescr MENU_DESCR = {
+    .title = "Nullclines",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  int key = pop_up_menu(main_win, 10, 6 * DCURY + 8, &MENU_DESCR,
+                        main_status_bar);
+  int i = index_of_key(&MENU_DESCR, key);
+
+  if (i < 0)
+    return;
+
+  run_the_commands(M_NN + i);
 }
 
 void froz_cline_stuff(void) {

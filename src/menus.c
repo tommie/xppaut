@@ -1,14 +1,5 @@
 #include "menus.h"
 
-char *null_hint[]={
-  "Compute new nullclines",
-  "Redraw last nullclines",
-  "Set automatic redraw -- X redraws when needed",
-  "Only redraw when asked (Redraw)",
-  "Freeze multiple nullclines",
-  "Save nullcline values to a file"
-};
-
 char *null_freeze[]={
   "Freeze current clines",
   "Delete all frozen clines",

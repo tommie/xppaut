@@ -47,12 +47,6 @@ char *flow_hint[]={
   "Draw only directions"
 };
 
-char *phas_hint[]={
-  "Each variable is on a circle",
-  "No variable on circle",
-  "Choose circle variables"
-};
-
 char *sing_hint[]={
   "Find fixed points over range of parameter",
   " ",

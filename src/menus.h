@@ -7,7 +7,6 @@ extern char *null_freeze[];
 extern char *ic_hint[];
 extern char *wind_hint[];
 extern char *flow_hint[];
-extern char *phas_hint[];
 extern char *sing_hint[];
 extern char *meth_hint[];
 extern char *edrh_hint[];

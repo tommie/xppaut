@@ -866,17 +866,27 @@ void do_movie(void) {
 }
 
 void do_torus(void) {
-  static char *n[] = {"(A)ll", "(N)one", "(C)hoose"};
-  static char key[] = "anc";
-  char ch;
-  int i;
-  ch = (char)pop_up_list(main_win, "Torus", n, key, 3, 9, 1 - TORUS, 10,
-                         4 * DCURY + 8, phas_hint, main_status_bar);
-  for (i = 0; i < 3; i++)
-    if (ch == key[i])
-      break;
-  if (i >= 0 && i < 3)
-    run_the_commands(M_AA + i);
+  static const X11MenuEntry ENTRIES[] = {
+    XPPAUT_ENTRY('a', "(A)ll", "Each variable is on a circle"),
+    XPPAUT_ENTRY('n', "(N)one", "No variable on circle"),
+    XPPAUT_ENTRY('c', "(C)hoose", "Choose circle variables"),
+  };
+  static X11MenuDescr menu_descr = {
+    .title = "Torus",
+    .entries = (X11MenuEntry *)ENTRIES,
+    .num_entries = sizeof(ENTRIES) / sizeof(*ENTRIES),
+    .def_key = -1,
+  };
+  menu_descr.def_key = (TORUS ? 'a' : 'n');
+
+  int key = pop_up_menu(main_win, 10, 4 * DCURY + 8, &menu_descr,
+                        main_status_bar);
+  int i = index_of_key(&menu_descr, key);
+
+  if (i < 0)
+    return;
+
+  run_the_commands(M_AA + i);
 }
 
 void window_zoom(void) {

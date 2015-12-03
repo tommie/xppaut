@@ -19,8 +19,6 @@
 #define M_ID 12
 #define M_IB 13
 
-#define MAX_M_I 13
-
 #define M_C 20
 
 #define M_NN 31
@@ -30,10 +28,10 @@
 #define M_NF 35
 #define M_NS 36
 
-#define M_NFF 37
-#define M_NFD 38
-#define M_NFR 39
-#define M_NFA 40
+#define M_NFF 40
+#define M_NFD 41
+#define M_NFR 42
+#define M_NFA 43
 
 #define M_SG 50
 #define M_SM 51
@@ -119,6 +117,7 @@
 #define M_TE 164
 #define M_TD 165
 #define M_TS 166
+
 #define M_TEM 170
 #define M_TEC 171
 #define M_TED 172

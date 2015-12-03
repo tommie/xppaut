@@ -212,146 +212,74 @@ void clr_all_scrns(void) {
 }
 
 void run_the_commands(int com) {
-  if (com < 0)
-    return;
-  if (com <= MAX_M_I) {
-    do_init_data(com);
-    return;
-  }
-  if (com == M_C) {
-    cont_integ();
-    return;
-  }
-
-  if (com >= M_SG && com <= M_SC) {
-    find_equilib_com(com - M_SG);
-    return;
-  }
-  if (com >= M_NFF && com <= M_NFA) {
-    froz_cline_stuff_com(com - M_NFF);
-    return;
-  }
-
-  if (com >= M_NN && com <= M_NS) {
-    new_clines_com(com - M_NN);
-    return;
-  }
-
-  if (com >= M_DD && com <= M_DS) {
+  /* Sorted in reverse numerical order. */
+  if (com >= M_UT)
+    do_numerics_com(com);
+  else if (com >= M_UKE)
+    new_lookup_com(com - M_UKE);
+  else if (com >= M_UHN)
+    do_stochast_com(com - M_UHN);
+  else if (com >= M_UPN)
+    get_pmap_pars_com(com - M_UPN);
+  else if (com >= M_UCN)
+    set_col_par_com(com - M_UCN);
+  else if (com >= M_UAN)
+    make_adj_com(com - M_UAN);
+  /* M_FER missing */
+  else if (com >= M_FP)
+    do_file_com(com);
+  else if (com >= M_BR)
+    find_bvp_com(com - M_BR);
+  else if (com >= M_V2)
+    change_view_com(com - M_V2);
+  else if (com >= M_TEM)
+    edit_object_com(com - M_TEM);
+  else if (com >= M_TT)
+    do_gr_objs_com(com - M_TT);
+  else if (com >= M_MC)
+    do_windows_com(com - M_MC);
+  else if (com == M_3)
+    get_3d_par_com();
+  else if (com == M_X)
+    xi_vs_t();
+  else if (com == M_R)
+    drw_all_scrns();
+  else if (com == M_EE) {
+    clr_all_scrns();
+    DF_FLAG = 0;
+  } else if (com == M_P)
+    new_parameter();
+  else if (com >= M_GCN) {
+    change_cmap_com(com - M_GCN);
+    redraw_dfield();
+  } else if (com >= M_GFKK)
+    key_frz_com(com - M_GFKN);
+  else if (com >= M_GFF)
+    freeze_com(com - M_GFF);
+  else if (com >= M_GA)
+    add_a_curve_com(com - M_GA);
+  else if (com >= M_KC)
+    do_movie_com(com - M_KC);
+  else if (com >= M_AA)
+    do_torus_com(com - M_AA);
+  else if (com >= M_WW)
+    window_zoom_com(com - M_WW);
+  else if (com >= M_DD) {
     direct_field_com(com - M_DD);
-    if ((com - M_DD) == 1)
+    if (com == M_DF)
       return;
     create_new_cline();
     redraw_the_graph();
-    /*redraw_dfield();*/
-    /*create_new_cline();
-    run_now();*/
-    /*redraw_all();
-    */
-    return;
-  }
-
-  if (com >= M_WW && com <= M_WD) {
-    window_zoom_com(com - M_WW);
-    return;
-  }
-
-  if (com >= M_AA && com <= M_AC) {
-    do_torus_com(com - M_AA);
-    return;
-  }
-
-  if (com >= M_KC && com <= M_KM) {
-    do_movie_com(com - M_KC);
-    return;
-  }
-
-  if (com >= M_GA && com <= M_GC) {
-    add_a_curve_com(com - M_GA);
-    return;
-  }
-
-  if (com >= M_GFF && com <= M_GFO) {
-    freeze_com(com - M_GFF);
-    return;
-  }
-
-  if (com >= M_GCN && com <= M_GCG) {
-    change_cmap_com(com - M_GCN);
-    redraw_dfield();
-
-    return;
-  }
-
-  if (com == M_GFKK || com == M_GFKN) {
-    key_frz_com(com - M_GFKN);
-    return;
-  }
-  if (com == M_UKE || com == M_UKV) {
-    new_lookup_com(com - M_UKE);
-    return;
-  }
-  if (com == M_R) {
-    drw_all_scrns();
-    return;
-  }
-
-  if (com == M_EE) {
-    clr_all_scrns();
-    DF_FLAG = 0;
-    return;
-  }
-
-  if (com == M_X) {
-    xi_vs_t();
-    return;
-  }
-
-  if (com == M_3) {
-    get_3d_par_com();
-    return;
-  }
-
-  if (com == M_P) {
-    new_parameter();
-    return;
-  }
-
-  if (com >= M_MC && com <= M_MS) {
-    do_windows_com(com - M_MC);
-    return;
-  }
-
-  if (com >= M_FP && com <= M_FU) {
-    do_file_com(com);
-    return;
-  }
-
-  if (com >= M_TT && com <= M_TS) {
-    do_gr_objs_com(com - M_TT);
-    return;
-  }
-  if (com >= M_TEM && com <= M_TED) {
-    edit_object_com(com - M_TEM);
-    return;
-  }
-  if (com >= M_BR && com <= M_BH) {
-    find_bvp_com(com - M_BR);
-    return;
-  }
-
-  if (com >= M_V2 && com <= M_VT)
-    change_view_com(com - M_V2);
-  if (com >= M_UAN && com <= M_UAR)
-    make_adj_com(com - M_UAN);
-  if (com >= M_UCN && com <= M_UCA)
-    set_col_par_com(com - M_UCN);
-  if (com >= M_UPN && com <= M_UPP)
-    get_pmap_pars_com(com - M_UPN);
-  if (com >= M_UHN && com <= M_UH2)
-    do_stochast_com(com - M_UHN);
-  if (com >= M_UT && com <= M_UA)
-    do_numerics_com(com);
+  } else if (com >= M_SG)
+    find_equilib_com(com - M_SG);
+  else if (com >= M_NFF)
+    froz_cline_stuff_com(com - M_NFF);
+  else if (com >= M_NN)
+    new_clines_com(com - M_NN);
+  else if (com == M_C)
+    cont_integ();
+  else if (com >= M_IR)
+    do_init_data(com);
 }
 
 static int index_of_key(const X11MenuDescr *descr, int key) {

@@ -619,7 +619,7 @@ static void do_events(unsigned int min_wid, unsigned int min_hgt) {
 
   blank_screen(main_win);
   if (RunImmediately == 1) {
-    run_the_commands(4);
+    run_the_commands(M_IG);
     RunImmediately = 0;
   }
 

@@ -20,7 +20,6 @@ AC_PROG_RANLIB
 AC_CHECK_LIB([X11], [XOpenDisplay])
 AC_CHECK_LIB([dl], [dlopen])
 AC_CHECK_LIB([m], [floor])
-AM_PATH_CHECK
 
 # Checks for header files.
 AC_PATH_X

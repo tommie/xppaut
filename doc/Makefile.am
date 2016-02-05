@@ -13,7 +13,7 @@ dist_doc_DATA = \
 	xpp_sum.pdf
 
 EXTRA_DIST = \
-	batch.txt \
+	batch.tex \
 	install.tex \
 	tree.tex \
 	xpp_doc.tex \

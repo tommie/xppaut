@@ -42,13 +42,17 @@ typedef struct {
 
 typedef struct {
 	       Window w,w_info;
+
 	       int Use;
+                int state;
 	       	int Restore;
 		int Nullrestore;
 		int x0;
 		int y0;
 		int Width;
 		int Height;
+                int x11Wid;
+  int x11Hgt;
 		int nvars;
 		double rm[3][3];
 		double min_scale,color_scale;

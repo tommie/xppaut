@@ -7,7 +7,7 @@
 #include <string.h>
 /* command-line stuff for xpp */
 #include <stdio.h>
-#define NCMD 41 /* add new commands as needed  */
+#define NCMD 44 /* add new commands as needed  */
 
 #define MAKEC 0
 #define XORFX 1
@@ -50,6 +50,9 @@
 #define NOOUT 38
 #define DFDRAW 39
 #define NCDRAW 40
+#define DEFINE 41
+#define READSET 42
+#define WITH 43
 
 extern OptionsSet notAlreadySet;
 
@@ -73,7 +76,9 @@ char parfilename[XPP_MAX_NAME];
 char icfilename[XPP_MAX_NAME];
 char includefilename[MaxIncludeFiles][XPP_MAX_NAME];
 
-
+char readsetfile[XPP_MAX_NAME];
+int externaloptionsflag=0;
+char externaloptionsstring[1024];
 int NincludedFiles=0;
 extern char UserBlack[8];
 extern char UserWhite[8];
@@ -177,9 +182,12 @@ VOCAB my_cmd[NCMD]=
   {"-version",8},
   {"-mkplot",7},
   {"-plotfmt",8},
-  {"-noout",5},
+  {"-noout",6},
   {"-dfdraw",7},
   {"-ncdraw",7},
+  {"-def",4},
+  {"-readset",8},
+  {"-with",5},
  };
 
 
@@ -398,7 +406,7 @@ int argc;
      i++;
    }
    if(k==23){
-     printf("XPPAUT Version %g.%g\n",(float)MYSTR1,(float)MYSTR2);
+     printf("XPPAUT Version %g.%g\nCopyright 2015 Bard Ermentrout\n",(float)MYSTR1,(float)MYSTR2);
      exit(0);
    }
    if(k==24){
@@ -418,11 +426,52 @@ int argc;
      set_option("NCDRAW",argv[i+1],1,NULL);
      i++;
    }
+   if(k==28){
+     strcpy(readsetfile,argv[i+1]);
+     i++;
+     externaloptionsflag=1;
+
+   }
+   if(k==29){
+     strcpy(externaloptionsstring,argv[i+1]);
+     i++;
+     externaloptionsflag=2;
+   }
+	 
   
  }
 }
 
 
+int if_needed_load_ext_options()
+{
+  FILE *fp;
+  char myopts[1024];
+  char myoptsx[1026];
+  /*   printf("flag=%d file=%s\n",externaloptionsflag,readsetfile); */
+  if(externaloptionsflag==0)
+    return 1;
+  if(externaloptionsflag==1){
+    fp=fopen(readsetfile,"r");
+    if(fp==NULL){
+      plintf("%s external set not found\n",readsetfile);
+      return 0;
+    }
+    fgets(myopts,1024,fp);
+    sprintf(myoptsx,"$ %s",myopts);
+    plintf("Got this string: {%s}\n",myopts);
+    extract_action(myoptsx);
+    fclose(fp);
+    return 1;
+  }
+
+  if(externaloptionsflag==2){
+    sprintf(myoptsx,"$ %s",externaloptionsstring);
+    extract_action(myoptsx);
+    return 1;
+  }  
+  
+}
 int if_needed_select_sets()
 {
 	if(!select_intern_sets){return 1;}
@@ -605,6 +654,10 @@ int parse_it(com)
       return 26;
     case NCDRAW:
       return 27;
+    case READSET:
+      return 28;
+    case WITH:
+      return 29;
     case QSETS:
       XPPBatch=1;
       querysets=1;
@@ -662,10 +715,11 @@ int parse_it(com)
      plintf("  -anifile <filename>    Load an animation code file (.ani) \n");
      plintf("  -plotfmt <svg|ps>       Set Batch plot format\n");
      plintf("  -mkplot                Do a plot in batch mode \n");
-     plintf(" -ncdraw 1               Draw nullclines in batch \n");
-         plintf(" -dfdraw <1|2>       Draw dfields in batch  \n");
+     plintf(" -ncdraw 1|2               Draw nullclines in batch (1) to file (2) \n");
+     plintf(" -dfdraw 1-5       Draw dfields in batch (1-3) to file (4-5)  \n");
      plintf("  -version               Print XPPAUT version and exit \n");
-     
+     plintf("  -readset <filename>   Read in a set file like the internal sets\n");
+     plintf("  -with string   String must be surrounded with quotes; anything that is in an internal set is valid\n");
      plintf("\n");
 
      plintf("Environment variables:\n");

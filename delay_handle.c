@@ -176,6 +176,8 @@ double tau;
 			stop_integration();
 			return(0.0);
   			}
+ if(tau==0.0) /* check fro zero delay and ignore the rest */
+   return DelayWork[in+nodes*(LatestDelay%MaxDelay)];
   xa[1]=n1*dd;
   xa[0]=xa[1]-dd;
   xa[2]=xa[1]+dd;

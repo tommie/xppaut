@@ -147,7 +147,7 @@ void add_user_button(char *s)
   {
   	if (userbut[i].com == z)
 	{
-		plintf("But=%s:%s already implemented as button '%s'\n",bname,sc,userbut[i].bname);
+	  /*		plintf("But=%s:%s already implemented as button '%s'\n",bname,sc,userbut[i].bname); */
 		return;	
 	}
   }

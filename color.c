@@ -1,5 +1,5 @@
 #include "color.h"
-
+#include <stdio.h>
 #include <stdlib.h> 
 
 
@@ -27,7 +27,7 @@
 #define C_COOL 3
 #define C_REDBLUE 4
 #define C_GRAY 5
-#define C_BUDGIE 6
+#define C_CUBHLX 6
 
 extern int Xup;
 
@@ -42,7 +42,7 @@ extern unsigned int MyBackColor,MyForeColor,GrFore,GrBack;
 int periodic=0,spectral;
 int custom_color=0;
 #define MAX_COLORS 256
-#define COL_TOTAL 100
+#define COL_TOTAL 200
 /* int rfun(),gfun(),bfun();
 */
 
@@ -95,8 +95,11 @@ void make_cmaps(r,g,b,n,type)
 {
  double x;
  int i,i1,i2,i3;
- 
- 
+ double pii=3.1415926;
+ /* for CUBHLX  */
+ double start=.5,rots=-1.5,hue=1.2,gamma=1.;
+ double angle,amp;
+ double rr,gg,bb;
 
  switch(type){
  case C_NORM:
@@ -165,9 +168,63 @@ void make_cmaps(r,g,b,n,type)
      g[i]=i*256*255/n;
    }
    break;
- }    
+   /* https://www.mrao.cam.ac.uk/~dag/CUBEHELIX/ */
+ case C_CUBHLX:
+   for(i=0;i<n;i++){
+     x=(double) i/((double) n);
+     angle=2*pii*(start/3.0+1+rots*x);
+     x=pow(x,gamma);
+     amp=hue*x*(1-x)/2.0;
+     rr=x+amp*(-.14861*cos(angle)+1.78277*sin(angle));
+     gg=x+amp*(-.29227*cos(angle)-.90649*sin(angle));
+     bb=x+amp*(1.97294*cos(angle));
+     /* printf("%d %g %g %g\n",i,rr,gg,bb); */
+     if(rr<0.0)rr=0.0;
+     if(rr>1.0)rr=1.0;
+     if(gg<0.0)gg=0.0;
+     if(gg>1.0)gg=1.0;
+     if(bb<0.0)bb=0.0;
+     if(bb>1.0)bb=1.0;
+     r[i]=256*255*rr;
+     b[i]=256*255*bb;
+     g[i]=256*255*gg;
+   }
+   break;
+ }
 }
 
+/* this loads a color_map file and counts the 
+   entries. It then does a simple interpolation to fill  
+   n copies of rr,gg,bb
+*/
+int read_cmap_from_file(char *fname,int n, int *rr, int *gg, int *bb)
+{
+  float x,r[1000],g[1000],b[1000];
+  int i=0;
+  int m;
+  int j;
+  FILE *fp;
+  fp=fopen(fname,"r");
+  if(fp==NULL)
+    return 0;
+  while(!feof(fp)){
+
+    fscanf(fp,"%g %g %g %g \n",&x,&r[i],&g[i],&b[i]);
+    i++;
+  }
+  fclose(fp);
+  m=i;
+  printf(" read %d entries \n",m);
+  for(i=0;i<n;i++){
+    j= i*m/n;
+    rr[i]=256*255*r[j];
+    bb[i]=256*255*b[j];
+    gg[i]=256*255*g[j];
+  }
+  return m;  
+}
+  
+  
  int rfun(y,per)
   double y;
   int per;
@@ -198,6 +255,7 @@ int per;
 
 void NewColormap(int type)
 {
+  /*  printf(" My color map = %d\n",type); */
   if(TrueColorFlag==0){
    err_msg("New colormaps not supported without TrueColor");
    return;
@@ -222,6 +280,11 @@ void get_svg_color(int i,int *r,int *g,int *b)
   *b=color[i].blue/255;
 }
 
+int print_cust()
+{
+  printf("custom map =%d \n",custom_color);
+  return 1;
+}
 void MakeColormap()
 {
 
@@ -230,6 +293,7 @@ int	i;
 int clo=20;
 
 int r[256],g[256],b[256];
+
     cmap=(Colormap)NULL;
     color_min = 30;
     color_max = MAX_COLORS -1;

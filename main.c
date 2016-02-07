@@ -43,7 +43,7 @@
 
 
 /*
-    Copyright (C) 2002-2011  Bard Ermentrout & Daniel Dougherty
+    Copyright (C) 2002-2015  Bard Ermentrout & Daniel Dougherty
     
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -123,8 +123,9 @@ Atom deleteWindowAtom=0;
 int XPPBatch=0,batch_range=0;
 char batchout[256];
 char UserOUTFILE[256];
-
- int my_rhs(); 
+XKeyEvent createKeyEvent(Window w,Window wr,int p,int kc,int m);
+void scripty();
+int my_rhs(); 
 
  int DisplayHeight,DisplayWidth;
 int TrueColorFlag;
@@ -401,6 +402,9 @@ int argc;
   */
   
   do_comline(argc, argv);
+
+  
+
   /*We need to init_X here if there is no file on command line
   so that a file browser can be opened.
   */
@@ -413,8 +417,8 @@ int argc;
        /*Initialize what's needed to open a browser based on 
        the current options.
        */
-       do_vis_env();
-       set_all_vals();
+       do_vis_env(); 
+	 set_all_vals(); 
        init_X();
        /*       XSynchronize(display,1); */
        /*
@@ -425,15 +429,15 @@ int argc;
   }
   
 
-  load_eqn();   
+  load_eqn();
+
   OptionsSet *tempNS = (OptionsSet*)malloc(sizeof(OptionsSet));
   *tempNS = notAlreadySet;
   set_internopts(tempNS);
   free(tempNS);
   
   init_alloc_info();
-  do_vis_env();
-  
+      do_vis_env();
   set_all_vals();
   
  
@@ -482,67 +486,20 @@ if(XPPBatch){
      if_needed_load_par();
      if_needed_load_ic();
      if_needed_select_sets();
+     if_needed_load_ext_options();
      set_extra_graphs();
-       set_colorization_stuff();
+     set_colorization_stuff();
 
     batch_integrate();
+    silent_nullclines();
+    silent_dfields();
     exit(0);
   }
 
   gtitle_text(pptitle, main_win);
   Xup=1;
   MakeColormap();
-/* Moved to init_X()
-  main_win=init_win(4,icon_name,win_name,
-		    x,y,min_wid,min_hgt,argc,argv);
-  win=main_win;
-  FixWindowSize(main_win,SCALEX,SCALEY,FIX_MIN_SIZE);
-  periodic=1;
-  if(DefaultDepth(display,screen)>=8)COLOR=1;
-  else COLOR=0;
-  // if(DefaultDepth(display,screen)==4){
-  //   map16();
-  //   COLOR=1;
-  //   } 
-  
-  
-XSelectInput(display,win,ExposureMask|KeyPressMask|ButtonPressMask|
-              StructureNotifyMask|ButtonReleaseMask|ButtonMotionMask);
- load_fonts();
 
-DCURXb=XTextWidth(big_font,"W",1);
-DCURYb=big_font->ascent+big_font->descent;
-CURY_OFFb=big_font->ascent+1;
-DCURXs=XTextWidth(small_font,"W",1);
-DCURYs=small_font->ascent+small_font->descent;
-CURY_OFFs=small_font->ascent+1;
-
-
- Black=BlackPixel(display,screen);
-White=WhitePixel(display,screen);  
-//  Switch for reversed video
-MyForeColor=GrFore=Black;
-MyBackColor=GrBack=White;
-//  This is reversed  
-//MyForeColor=White;
-//MyBackColor=Black;
-if(PaperWhite==0){
-GrFore=White;
-GrBack=Black; 
-}
-getGC(&gc);
-getGC(&gc_graph);
-getGC(&small_gc);
-getGC(&font_gc);
- if(COLOR)MakeColormap(); 
-
- set_big_font(); 
-// set_small_font(); 
-
-XSetFont(display,small_gc,small_font->fid);
-
-// file_selector("Test",myfile,"*.ode");
-end move to init_X() */
 
 XMapWindow(display,main_win);
 
@@ -585,7 +542,7 @@ test_color_info();
   if_needed_load_set();
   if_needed_load_par();
   if_needed_load_ic();
-  
+  if_needed_load_ext_options();
 if(use_ani_file)
 {
 	new_vcr();
@@ -915,8 +872,93 @@ void set_small_font()
  XSetFont(display,gc,small_font->fid);
 }
 
+/* not sure what to do with this - but it works pretty well! 
+   it allows you to create a KB script and send it as 
+   fake presses to the X11 event handler
+   
+   special keypresses are
+   #t tab
+   #e escape
+   #b backspace
+   #d delete
+   #r return
+  so for example to change a parameter to some numbert and then
+   run the integration, you would script
+   "piapp#r#b#b#b#b.12#r#rig"
+ 
+   p calls parameter prompt
+   iapp#r  types in iapp with a return
+   #b#b#b#b deletes the current value (assuming no more than 4 numbers)
+   .12# types in the number
+   #r gets out of the parameter picker
+   ig  runs XPP
 
 
+
+*/
+int script_make(char *s,int *k)
+{
+  int l=strlen(s);
+  int i=0;
+  char c;
+  int j=0;
+  while(i<l){
+    c=s[i];
+    if(c=='#'){
+      i++;
+      c=s[i];
+      switch(c){
+      case 't':
+	k[j]=65289;
+	break;
+      case 'r':
+	k[j]=65293;
+	break;
+      case 'd':
+	k[j]=65288;
+	break;
+      case 'b':
+	k[j]=0xff08;
+	break;
+      case 'e':
+	k[j]=65307;
+	break;
+      case 'l':
+	k[j]=0xff0a;
+	break;
+      default:
+	k[j]=32;
+      }
+      j++;
+    }
+    else
+      {
+	k[j]=(int)c;
+	j++;
+      }
+    i++;
+  }
+  return j;
+}
+
+
+
+void scripty()
+{
+  /*  char scr[100]="piapp#r#b#b#b#b.12#r#rig"; */
+  /* char scr[100]="eir#t"; */
+  char scr[100]="edf#b#b8#r";
+  int bob[200];
+  XKeyEvent ev;
+  int i;
+  int k;
+  k=script_make(scr,bob);
+  for(i=0;i<k;i++){
+    ev=createKeyEvent(main_win,RootWindow(display,screen),1,bob[i],0);
+    XSendEvent(display,main_win,1,KeyPressMask,(XEvent *)&ev);
+  }
+}
+    
 
 void xpp_events(XEvent report,int min_wid,int min_hgt)
 {
@@ -941,15 +983,9 @@ void xpp_events(XEvent report,int min_wid,int min_hgt)
 	  break;
 	  }
 	  break; */
- case Expose:
- case MapNotify:
  
-	if(report.xany.window==command_pop)put_command("Command:");
-     do_expose(report);
-
-
-   break;
- case ConfigureNotify:
+ case ConfigureNotify: /* this needs to be fixed!!! */
+   /*    printf("CN %ld \n",report.xany.window); */
   resize_par_box(report.xany.window);  
   resize_my_browser(report.xany.window);
    resize_eq_list(report.xany.window);
@@ -973,7 +1009,14 @@ void xpp_events(XEvent report,int min_wid,int min_hgt)
   }
 
   break;
+ case Expose:
+ case MapNotify:
+   /*  printf("E %ld \n",report.xany.window); */
+	if(report.xany.window==command_pop)put_command("Command:");
+     do_expose(report);
 
+
+   break;
  case KeyPress:
    used=0;
                 box_keypress(report,&used);
@@ -1017,6 +1060,7 @@ void xpp_events(XEvent report,int min_wid,int min_hgt)
    do_motion_events(report);
    break;
  case ButtonRelease:
+
     slide_release(report.xbutton.window);
 
     break;
@@ -1208,7 +1252,7 @@ void commander(ch)
 		case '3': get_3d_par();
 			 break;
 		case 'y':
-		  /*  test_test(); */
+		  /* scripty();  */
 		  break;
 
 
@@ -1320,7 +1364,35 @@ Window make_unmapped_window(root,x,y,width,height,bw)
               StructureNotifyMask|ButtonReleaseMask|ButtonMotionMask);
          return(win);
          }
+
 	 */
+
+XKeyEvent createKeyEvent(Window win,
+                           Window winRoot, int press,
+                           int keycode, int modifiers)
+{
+   XKeyEvent event;
+
+   event.display     = display;
+   event.window      = win;
+   event.root        = winRoot;
+   event.subwindow   = None;
+   event.time        = CurrentTime;
+   event.x           = 1;
+   event.y           = 1;
+   event.x_root      = 1;
+   event.y_root      = 1;
+   event.same_screen = True;
+   event.keycode     = XKeysymToKeycode(display, keycode);
+   event.state       = modifiers;
+
+   if(press==1)
+      event.type = KeyPress;
+   else
+      event.type = KeyRelease;
+
+   return event;
+}
 
  Window init_win(bw,icon_name,win_name,
                  x,y,min_wid,min_hgt,argc,argv)
@@ -1340,10 +1412,12 @@ Window make_unmapped_window(root,x,y,width,height,bw)
  XIconSize *size_list;
   XSizeHints size_hints;
  char *display_name=NULL;
+
  if((display=XOpenDisplay(display_name))==NULL){
   plintf(" Failed to open X-Display \n");
    exit(-1);
  }
+ /*  printf("Display=%s\n",display_name); */
 /*   Remove after debugging is done */   
  /* XSynchronize(display,1); */
  screen=DefaultScreen(display);

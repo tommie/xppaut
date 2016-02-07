@@ -500,7 +500,7 @@ void one_gill_step(int meth,int nrxn,int *rxn,double *v)
     
 void do_stochast_com(int i)
 {
-  static char key[]="ncdmvhofpislare2";
+  static char key[]="ncdmvhofpislaxe2";
   char ch=key[i];
   
   if(ch==27)return;
@@ -548,7 +548,7 @@ void do_stochast_com(int i)
   case 'a':
      compute_stacor();
      break;
-  case 'r':
+  case 'x':
     compute_correl();
     break;
   case 'e':

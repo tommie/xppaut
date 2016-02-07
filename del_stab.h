@@ -10,7 +10,7 @@ void do_delay_sing(double *x, double eps, double err, double big, int maxit, int
 COMPLEX csum(COMPLEX z, COMPLEX w);
 COMPLEX cdif(COMPLEX z, COMPLEX w);
 COMPLEX cmlt(COMPLEX z, COMPLEX w);
-COMPLEX cdiv(COMPLEX z, COMPLEX w);
+COMPLEX cdivv(COMPLEX z, COMPLEX w);
 COMPLEX cexp2(COMPLEX z);
 void switch_rows(COMPLEX *z, int i1, int i2, int n);
 COMPLEX rtoc(double x, double y);

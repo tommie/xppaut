@@ -89,8 +89,8 @@ extern GC gc, gc_graph,small_gc;
 extern int COLOR,color_min;
 extern int xor_flag,DCURX,DCURY;
 int num_pops;
-int MINI_H=240;
-int MINI_W=320;
+int MINI_H=300;
+int MINI_W=450;
 
 extern int Xup;
 int ActiveWinList[MAXPOP];
@@ -913,7 +913,7 @@ void init_grafs(x,y,w,h)
 int x,y,w,h;
 {
  int i;
- 
+ int botmen=DCURYs+DCURYb+10+21*(DCURY+2);
  GrCol();
  for(i=0;i<MAXLAB;i++)
  {
@@ -935,6 +935,7 @@ int x,y,w,h;
  
   graph[0].w=XCreateSimpleWindow(display,main_win,x,y+4,w,h,2,GrFore,MyDrawWinColor);
  graph[0].w_info=info_pop;
+
  info_message=graph[0].gr_info;
  graph[0].Use=1;
  graph[0].Restore=1;
@@ -1022,6 +1023,7 @@ int rotate3dcheck(ev)
   XEvent z;
   int xini,yini,dx,dy;
   double theta,phi;
+  double xm,ym,xn,yn;
   if(w==draw_win&&MyGraph->ThreeDFlag){
     xini=ev.xbutton.x;
     yini=ev.xbutton.y;
@@ -1272,12 +1274,12 @@ int graph_used(int i)
  return graph[i].Use;
 } 
 
-void make_active(int i)
+void make_active(int i,int flag)
 {
  current_pop=i;
  MyGraph=&graph[current_pop];
   draw_win=MyGraph->w;
-  get_draw_area();
+  get_draw_area_flag(flag);
 }
 
 void select_window(w)

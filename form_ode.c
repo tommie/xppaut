@@ -606,6 +606,7 @@ int compiler(bob,fptr)
   ptr=bob;
   done=1;
   if(bob[0]=='@'){
+    /* printf("Storing opts from formode \n"); */
     stor_internopts(bob);
     if(ConvertStyle)
       fprintf(convertf,"%s\n",bob);
@@ -1432,7 +1433,7 @@ int nnn;
        }
     }
      
-   
+    /*    printf("calling search %s \n",old); */
     search_array(old,new,&jj1,&jj2,&is_array);
    jj=jj1;
    jjsgn=1;
@@ -1573,8 +1574,18 @@ int nnn;
        v.type=AUX_VAR;
      }
    
-   /* take care of special form for special */      
-     
+     /* take care of special form for vector */      
+     if(v.type==COMMAND && v.lhs[0]=='V' && v.lhs[1]=='E' && v.lhs[5]=='R')
+     {
+      find_char(v.rhs,"=",0,&i1);
+       strpiece(v.lhs,v.rhs,0,i1-1);
+       strcpy(big,v.rhs);
+       strpiece(v.rhs,big,i1+1,strlen(big));
+       v.type=VECTOR;
+
+
+     }
+        /* take care of special form for special */      
      if(v.type==COMMAND && v.lhs[0]=='S'&&v.lhs[1]=='P'&&v.lhs[5]=='A'){
        find_char(v.rhs,"=",0,&i1);
        strpiece(v.lhs,v.rhs,0,i1-1);
@@ -1821,6 +1832,10 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
     }
     if(v->type==EXPORT){
       add_export_list(v->lhs,v->rhs);
+    }
+    if(v->type==VECTOR){
+      add_vectorizer_name(v->lhs,v->rhs);
+
     }
     if(v->type==SPEC_FUN){
       add_special_name(v->lhs,v->rhs);
@@ -2086,6 +2101,13 @@ void compile_em() /* Now we try to keep track of markov, fixed, etc as
        naux++;
        plintf("%s=%s\n",v->lhs,v->rhs);
        break;
+     case VECTOR:
+       if(add_vectorizer(v->lhs,v->rhs)==0){
+	 plintf(" Illegal vector  %s \n",v->rhs);
+	 exit(0);
+       }
+
+       break;
      case SPEC_FUN:
        if(add_spec_fun(v->lhs,v->rhs)==0){
 	 plintf(" Illegal special function %s \n",v->rhs);
@@ -2226,6 +2248,7 @@ int parse_a_string(s1,v)
     return 0;
   }
   if(s1[0]=='@') {
+    /*    printf("internopts from parse string\n"); */
     stor_internopts(s1);
     return 0;
   }
@@ -2615,6 +2638,7 @@ void read_a_line(fp,s)
   while(ok){
     ok=0;
     fgets(temp,MAXEXPLEN,fp);
+
      nn=strlen(temp)+1;
      if((save_eqn[NLINES]=(char *)malloc(nn))==NULL)exit(0);
      strncpy(save_eqn[NLINES++],temp,nn);
@@ -2622,9 +2646,11 @@ void read_a_line(fp,s)
      /* plintf(" NLINES = %d \n",NLINES); */
     n=strlen(temp);
     for(i=n-1;i>=0;i--){
+
       if(temp[i]=='\\'){
 	ok=1;
 	ihat=i;
+
       }
     }
     if(ok==1)
@@ -2741,6 +2767,7 @@ int search_array(old,new,i1,i2,flag)
     }
     
   }
+  /*  printf(" I have extracted [%s] and [%s] \n",num1,num2); */
     *i1=atoi(num1);
     *i2=atoi(num2); 
      /* now we have the numbers and will get rid of the junk inbetween */

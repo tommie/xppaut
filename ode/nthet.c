@@ -4,7 +4,7 @@ int BoxMullerFlag;
 #define N 500
 double c[N],x[N],xp[N],s[N],sp[N];
 double drand48();
-#define TwoPi=6.283185307
+#define Tpi 6.283185307
 
 
 
@@ -42,8 +42,9 @@ rhs(double g,double a, double sig, double tau, double dt,double st)
     sp[i]=exp(-20*(1+c[i]))*(1-s[i])-s[i]/tau;
   }
   for(i=0;i<N;i++){
-    x[i]=fmod(x[i]+dt*xp[i],Tpi);
+    x[i]=fmod(x[i]+dt*xp[i],Tpi); 
     s[i]+=dt*sp[i];
+  }
 }
 
 one_step(double g,double a, double sig, double tau, double dt,double *stot,int ntran)

@@ -33,6 +33,17 @@ typedef struct  {
 }BIFUR;
 
 typedef struct {
+  int iad;
+  int mxbf;
+  int iid;
+  int itmx;
+  int itnw;
+  int nwtn;
+  int iads;
+
+} ADVAUTO;
+
+typedef struct {
   int package;
   int ibr,ntot,itp,lab;
   double norm,uhi[NAUTO],ulo[NAUTO],u0[NAUTO],ubar[NAUTO];
@@ -44,7 +55,7 @@ typedef struct {
 
 typedef struct diagram {
   int package;
-  int ibr,ntot,itp,lab;
+  int ibr,ntot,itp,lab,calc;
   double norm,*uhi,*ulo,*u0,*ubar,*evr,*evi;
   double par[20],per,torper;
   int index,nfpar;
@@ -92,7 +103,7 @@ void auto_xy_plot(double *x, double *y1, double *y2, double par1, double par2, d
 int plot_point(int flag2, int icp1, int icp2);
 void add_ps_point(double *par, double per, double *uhigh, double *ulow, double *ubar, double a, int type, int flag, int lab, int npar, int icp1, int icp2, int flag2, double *evr, double *evi);
 void auto_line(double x1i, double y1i, double x2i, double y2i);
-void add_point(double *par, double per, double *uhigh, double *ulow, double *ubar, double a, int type, int flag, int lab, int npar, int icp1, int icp2, int flag2, double *evr, double *evi);
+void add_point(double *par, double per, double *uhigh, double *ulow, double *ubar, double a, int type, int flag, int lab, int npar, int icp1, int icp2, int flag2,int icp3, int icp4, double *evr, double *evi);
 void get_bif_sym(char *at, int itp);
 void info_header(int flag2, int icp1, int icp2);
 void new_info(int ibr, int pt, char *ty, int lab, double *par, double norm, double u0, double per, int flag2, int icp1, int icp2);
@@ -105,11 +116,14 @@ void plot_stab(double *evr, double *evi, int n);
 int yes_reset_auto(void);
 int reset_auto(void);
 void auto_grab(void);
+
 void auto_start_diff_ss(void);
 void auto_start_at_bvp(void);
 void auto_start_at_per(void);
+void find_best_homo_shift(int n);
 void get_start_period(double *p);
 void get_start_orbit(double *u, double t, double p, int n);
+void get_shifted_orbit(double *u, double t, double p, int n);
 void auto_new_ss(void);
 void auto_new_discrete(void);
 void auto_extend_ss(void);
@@ -119,6 +133,9 @@ void per_doub_choice(void);
 void periodic_choice(void);
 void hopf_choice(void);
 void auto_new_per(void);
+void auto_start_at_homoclinic(void);
+int get_homo_info(int flg,int *nun,int *nst,double *ul, double *ur);
+void auto_extend_homoclinic(void);
 void auto_extend_bvp(void);
 void auto_switch_per(void);
 void auto_switch_bvp(void);
@@ -128,6 +145,7 @@ void auto_twopar_double(void);
 void auto_torus(void);
 void auto_2p_branch(int ips);
 void auto_branch_choice(int ibr, int ips);
+void auto_homo_choice(int itp);
 void auto_2p_fixper(void);
 void auto_2p_hopf(void);
 void auto_period_double(void);
@@ -147,6 +165,6 @@ void load_auto(void);
 int move_to_label(int mylab, int *nrow, int *ndim, FILE *fp);
 void get_a_row(double *u, double *t, int n, FILE *fp);
 void auto_file(void);
-
+int check_plot_type(int flag2,int icp1, int icp2);
 
 #endif

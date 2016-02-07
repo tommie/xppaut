@@ -17,6 +17,7 @@ yp=0
 export {x,y,a,b,c,d,t} {xp,yp}
 par a=1,b=1,c=1,d=1
 init x=1
+@ dll_lib=ex.so, dll_fun=vdp
 # @ dll_lib=example.so,dll_fun=vdp
 done
 ------------------ Cut below, save as example.c  -------------------------

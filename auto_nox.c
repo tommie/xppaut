@@ -1,18 +1,17 @@
 #include <string.h>
 #include "parserslow.h"
-#include "autlib1.h"
 #include "autevd.h"
 #include "run_auto.h"
 #include "auto_nox.h"
 #include "auto_x11.h"
 #include <libgen.h>
-#include "f2c.h"
+/* #include "f2c.h" */
+#include "auto_f2c.h"
+#include "auto_c.h"
 #include "graf_par.h"
 
 #include "load_eqn.h"
 
-/*#include "autlib1.h"
-*/
 #include "read_dir.h"
 #include "pp_shoot.h"
 
@@ -34,6 +33,7 @@
 #include "pop_list.h"
 
 
+
 #include "menudrive.h"
 #include <stdlib.h> 
 #include <stdio.h>
@@ -50,7 +50,9 @@
 
 #include "xpplim.h"
 #include "autlim.h"
+#include "xAuto.h" 
 
+#define MAXLINELENGTH 100000
 #define PACK_AUTO 0
 #define PACK_LBF 1
 #define PARAM_BOX 1
@@ -58,8 +60,8 @@
 #define RUBBOX 0
 #define RUBLINE 1
 
-#define RIGHT 6
-#define LEFT 2
+/* #define RIGHT 6
+   #define LEFT 2 */
 #define ESC 27
 #define TAB 10
 #define BAD 0
@@ -73,14 +75,21 @@
 #define OVERWRITE 0
 #define APPEND 1
 
-/* two parameter types */
+/* calculation types */
 
-#define LP2 1
-#define TR2 2
-#define BR2 3
-#define PD2 4
-#define FP2 5
-#define HB2 6
+int TypeOfCalc=0;
+#define LPE2 1
+#define LPP2 2
+#define HB2 3
+#define TR2 4
+#define BR2 5
+#define PD2 6
+#define FP2 7
+#define BV1 8
+#define EQ1 9
+#define PE1 10
+#define DI1 11
+#define HO2 12
 
 #define STD_WID 460       /* golden mean  */
 #define STD_HGT 284
@@ -99,7 +108,8 @@
 #define CSEQ 1
 #define CUEQ 2
 
-#define DISCRETE 0 
+#define DISCRETE 0
+extern XAUTO xAuto;
 extern int leng[MAXODE];
 extern int PS_Color;
 extern double TOR_PERIOD;
@@ -111,6 +121,9 @@ extern int xorfix;
 extern int NoBreakLine;
 extern char *auto_hint[],*aaxes_hint[],*afile_hint[],*arun_hint[],*no_hint[];
 extern int BVP_FLAG;
+
+extern int fp8_is_open;
+extern FILE *fp8;
 
 
 /*extern char *strdup(const char *s);
@@ -127,9 +140,25 @@ int SPc=26;
 int UPc=28;
 int HBc=0;
 int LPc=20;
+/*  two parameter colors  need to do this
+    LP is 20 (red)
+    HB  is  28 blue
+    TR  is  26 (green) 
+    PD  is 24  (orange)
+    BR  is  27 (turquoise)
+    FP  is 25  (olive)
+*/
 
+int LPP_color=0;
+int LPE_color=20;
+int HB_color=28;
+int TR_color=26;
+int PD_color=23;
+int BR_color=27;
+int FP_color=25;
+int HO_color=29;
 
-
+int RestartLabel=0;
 int auto_ntst=15,auto_nmx=200,auto_npr=50,auto_ncol=4;
 double auto_ds=.02,  auto_dsmax=.5,  auto_dsmin=.001;
 double auto_rl0=0.0,auto_rl1=2,auto_a0=0.0,auto_a1=1000.;
@@ -139,7 +168,7 @@ int auto_var=0;
 
 int is_3_there=0;
 
-int load_all_labeled_orbits=1;
+int load_all_labeled_orbits=0;
 
 
 ROTCHK blrtn;
@@ -154,18 +183,20 @@ extern DIAGRAM *bifd;
 
 extern int NBifs;
 int AutoTwoParam=0;
-int NAutoPar=5;
-int Auto_index_to_array[5];
-int AutoPar[5];
+int NAutoPar=8;
+int Auto_index_to_array[8];
+int AutoPar[8];
 
 
 extern int TipsFlag;
 extern unsigned int MyBackColor,MyForeColor,GrFore,GrBack;
 
+void auto_scroll_window();
 double atof();
 
 double outperiod[20];
-int UzrPar[20],NAutoUzr;
+integer UzrPar[20];
+int NAutoUzr;
 
 char *get_first();
 char *get_next();
@@ -193,15 +224,17 @@ int FromAutoFlag=0;
 extern int NODE,NEQ;
 extern int METHOD;
 
-extern int HOMOCLINIC_FLAG;
-
-
+int HomoFlag=0;
+int sparity=0;
+double homo_l[100],homo_r[100];
+double HOMO_SHIFT=0.0;
 extern char uvar_names[MAXODE][12];
 
 extern int storind;
 extern int DCURX,DCURXs,DCURY,DCURYs,CURY_OFFs,CURY_OFF;
 
 BIFUR Auto;
+ADVAUTO aauto;
 
 int NewPeriodFlag;
 
@@ -230,33 +263,64 @@ void colset(int type )
 
 void pscolset2(int flag2)
 {
-switch(flag2){
-  case HB2:
-          
-
-    set_linestyle(0);
-    
+   switch(flag2){
+  case LPE2:
+    set_linestyle(LPE_color-19);
     break;
-  case LP2:
-    set_linestyle(1);
+  case LPP2:
+    set_linestyle(LPP_color);
+    break;
+  case HB2:
+    set_linestyle(HB_color-19);
+    break;
+  case TR2:
+    set_linestyle(TR_color-19);
+    break;
+  case BR2:
+    set_linestyle(BR_color-19);
+    break;
+  case PD2:
+    set_linestyle(PD_color-19);
+    break;
+  case FP2:
+     set_linestyle(FP_color-19);
     break;
   default:
     set_linestyle(0);
   }
+
 
 }
 void colset2(int flag2)
 {
+  LineWidth(2);
   switch(flag2){
-  case HB2:
-    autocol(HBc);
+  case LPE2:
+    autocol(LPE_color);
     break;
-  case LP2:
-    autocol(LPc);
+  case LPP2:
+    autocol(LPP_color);
+    break;
+  case HB2:
+    autocol(HB_color);
+    break;
+  case TR2:
+    autocol(TR_color);
+    break;
+  case BR2:
+    autocol(BR_color);
+    break;
+  case PD2:
+    autocol(PD_color);
+    break;
+  case FP2:
+     autocol(FP_color);
     break;
   default:
     autocol(0);
   }
+
+
 }
 
 void storeautopoint(double x,double y)
@@ -378,11 +442,35 @@ int chk_auto_bnds(int ix,int iy)
   if((ix>=x1)&&(ix<x2)&&(iy>=y1)&&(iy<y2))return 1;
   return 0;
 }
-
+/*   File manipulation stuff  */
 void renamef(old,new)
 char *old,*new;
 {
  rename(old,new);
+}
+
+void cat_fp(fo)
+     FILE *fo;
+{
+  int c;  
+  rewind(fo);
+  while((c=getc(fo))!=EOF){
+     printf("%c",c);
+
+ }
+}
+void cat_file(f)
+     char *f;
+{
+  FILE *fo;
+  int c;
+  printf(" cat %s \n", f);
+   fo=fopen(f,"r");
+   while((c=getc(fo))!=EOF){
+     printf("%c",c);
+
+ }
+   fclose(fo);
 }
 
 void copyf(old,new)
@@ -392,10 +480,15 @@ char *old,*new;
  int c;
  fo=fopen(old,"r");
  fn=fopen(new,"w");
- while((c=getc(fo))!=EOF)
+ 
+
+ while((c=getc(fo))!=EOF){
  	putc(c,fn);
+
+ }
  fclose(fo);
  fclose(fn);
+ 
 }
 
 void appendf(old,new)
@@ -404,66 +497,101 @@ char *old,*new;
  FILE *fo,*fn;
  FILE *ft;
  int c;
+ /*  printf("Appending old=%s new=%s\n",old,new); */
  fo=fopen(old,"r");
  fn=fopen(new,"r");
  if(fn==NULL){
      fclose(fo);
+
      copyf(old,new);
      return;
  }
  ft=fopen(TMPSWAP,"w");
- 
+ if(ft==NULL){
+   printf("Can't open %s \n",TMPSWAP);
+   return;
+ }
  while((c=getc(fo))!= EOF)
  	putc(c,ft);
  fclose(fo);
  while((c=getc(fn))!=EOF)
        putc(c,ft);
  fclose(fn);
- fclose(ft); 
+ fclose(ft);
  copyf(TMPSWAP,new);
  deletef(TMPSWAP);
+
 }
 void deletef(old)
      char *old;
 {
     remove(old);
+
 }
 
 
 
-void close_auto(flg)
+void close_auto(flg)  /* labels compatible with A2K  */
      int flg;
 {
-  char string[200];
+  char string[1000];
+  /*    if(fp8_is_open){
+      fclose(fp8);
+      fp8_is_open=0;
+    }
+  */
   if(flg==0) {/*Overwrite*/
-    sprintf(string,"%s.p",this_auto_file);
+    sprintf(string,"%s.b",this_auto_file);
     renamef(fort7,string);
     sprintf(string,"%s.d",this_auto_file);
     renamef(fort9,string);
-    sprintf(string,"%s.q",this_auto_file);
+
+    sprintf(string,"%s.s",this_auto_file);
     renamef(fort8,string);
   }
   else {/*APPEND*/
-    sprintf(string,"%s.p",this_auto_file);
+    sprintf(string,"%s.b",this_auto_file);
     appendf(fort7,string);
     sprintf(string,"%s.d",this_auto_file); 
     appendf(fort9,string);  
-    sprintf(string,"%s.q",this_auto_file);
+    sprintf(string,"%s.s",this_auto_file);
     appendf(fort8,string);
+  }
+
     deletef(fort8);
+
+    fp8_is_open=0;
     deletef(fort7);
     deletef(fort9);
     deletef(fort3);
-    
- } 
+
+ 
 }
 
-
-void open_auto(flg)
-     int flg;
+void create_auto_file_name()
 {
   char string[200];
  char *basec,*bname,*dirc,*dname;
+
+  basec = strdup(this_file);
+  dirc  = strdup(this_file);
+  bname = (char*)basename(basec);
+  dname = (char*)dirname(dirc);
+  
+  char* HOME = getenv("HOME");
+  if (HOME == NULL)
+  {
+  	HOME = dname;
+  }
+ 
+  sprintf(this_auto_file,"%s/%s",HOME,bname);
+}
+  
+void open_auto(flg) /* compatible with new auto */
+     int flg;
+{
+  char string[200];
+  char *basec,*bname,*dirc,*dname;
 
   basec = strdup(this_file);
   dirc  = strdup(this_file);
@@ -482,39 +610,54 @@ void open_auto(flg)
   sprintf(fort8,"%s/%s",HOME,"fort.8");
   sprintf(fort9,"%s/%s",HOME,"fort.9");
   sprintf(TMPSWAP,"%s/%s",HOME,"__tmp__");
- 
   is_3_there=flg;
+
   if(flg==1){
-    sprintf(string,"%s.q",this_auto_file);
+    sprintf(string,"%s.s",this_auto_file);
     copyf(string,fort3);
   }
-  
+
 }
 
-
+/* MAIN Running routine  Assumes that Auto structure is set up */
 
 void do_auto(iold,isave,itp)
      int iold,isave;
      int itp;
 {
       redraw_auto_menus();
-    cnstnt_();
-    dfinit_();
-    set_auto();
-    FLOWK=1;  /*  set to 0 for old */
-    open_auto(iold);
+      
+    set_auto(); /* this sets up all the continuation initialization 
+                   it is equivalent to reading in auto parameters
+                   and running init in auto 
+		*/
+ 
+    open_auto(iold); /* this copies the relevant files .s  to fort.3 */
+    go_go_auto(); /* this complets the initialization and calls the 
+                      main routines 
+		  */
     /* plintf("AUTO opened it==%d\n",itp); */
-    run_aut(Auto.nfpar,itp);
-    close_auto(isave);
-      ping();
+    /*     run_aut(Auto.nfpar,itp); THIS WILL CHANGE TO gogoauto stuff */ 
+    close_auto(isave); /* this copies fort.8 to the .s file and other 
+                          irrelevant stuff 
+		       */
+    
+    if(RestartLabel!=0){
+      printf("RestartLabel=%d itp=%d ips=%d nfpar=%d ilp=%d isw=%d isp=%d A2p=%d \n",RestartLabel,Auto.itp, Auto.ips,Auto.nfpar,Auto.ilp,Auto.isw,Auto.isp,AutoTwoParam);
+      Auto.irs=RestartLabel;
+      RestartLabel=0;
+      do_auto(iold,isave, Auto.itp);
+      
+    }
+     ping();
       redraw_params();
 }
 
 
-void set_auto()
+void set_auto() /* Caution - need to include NICP here */
 {
   NAutoUzr=Auto.nper;
-  init_auto(NODE,Auto.nbc,Auto.ips,Auto.irs,Auto.ilp,Auto.ntst,Auto.isp,
+  init_auto(NODE,Auto.nfpar,Auto.nbc,Auto.ips,Auto.irs,Auto.ilp,Auto.ntst,Auto.isp,
 	    Auto.isw,Auto.nmx,Auto.npr,Auto.ds,Auto.dsmin,
 	    Auto.dsmax,Auto.rl0,Auto.rl1,Auto.a0,Auto.a1,Auto.icp1,
 	    Auto.icp2,Auto.icp3,Auto.icp4,Auto.icp5,Auto.nper,Auto.epsl,Auto.epsu,Auto.epss,Auto.ncol);
@@ -539,7 +682,7 @@ int auto_par_to_name(index,s)
     sprintf(s,"T");
     return(1);
   }
-  if(index<0||index>4)return(0);
+  if(index<0||index>8)return(0);
   sprintf(s,"%s",upar_names[AutoPar[index]]);
   return(1);
 }
@@ -560,9 +703,12 @@ void auto_per_par()
 		       Auto.hinttxt);
   for(i=0;i<10;i++)
     if(ch==key[i])Auto.nper=i;
+  NAutoUzr=Auto.nper;
   if(Auto.nper>0){
     for(i=0;i<9;i++){
       auto_par_to_name(Auto.uzrpar[i],bob);
+
+
       sprintf(values[i],"%s=%g",bob,Auto.period[i]);
     }
     status=do_string_box(9,5,2,"AutoPer",n,values,45);
@@ -584,25 +730,28 @@ void auto_per_par()
   
 }
 
-
+/* auto parameters are 1-8 (0-7) and since there are only 8, need to associate them
+   with real xpp parameters for which there may be many 
+*/
 void auto_params()
 {
-  static char *n[]={"*2Par1","*2Par2","*2Par3","*2Par4","*2Par5"};
+  static char *n[]={"*2Par1","*2Par2","*2Par3","*2Par4","*2Par5","*2Par6","*2Par7","*2Par8"};
   int status,i,in;
-  char values[5][MAX_LEN_SBOX];
-  for(i=0;i<5;i++){
+  char values[8][MAX_LEN_SBOX];
+  for(i=0;i<8;i++){
     if(i<NAutoPar)  sprintf(values[i],"%s",upar_names[AutoPar[i]]);
     else values[i][0]='\0';/*sprintf(values[i],"");*/
   }
-  status=do_string_box(5,5,1,"Parameters",n,values,38);
+  status=do_string_box(8,8,1,"Parameters",n,values,38);
   if(status!=0){
-    for(i=0;i<5;i++){
+    for(i=0;i<8;i++){
       if(i<NAutoPar){
 	in=find_user_name(PARAM_BOX,values[i]);
 	if(in>=0){
 	  AutoPar[i]=in;
 	  in=get_param_index(values[i]);
 	  Auto_index_to_array[i]=in;
+	  /* printf("%d -> %d %s\n",i,in, values[i]); */
 	}
       }
     }
@@ -613,9 +762,9 @@ void auto_num_par()
 {
   static char *n[]={"Ntst","Nmax","NPr","Ds","Dsmin","Ncol","EPSL",
 		    "Dsmax","Par Min","Par Max","Norm Min","Norm Max",
-                    "EPSU","EPSS"};
+                    "EPSU","EPSS","IAD","MXBF","IID","ITMX","ITNW","NWTN","IADS"};
   int status;
-  char values[14][MAX_LEN_SBOX];
+  char values[21][MAX_LEN_SBOX];
   sprintf(values[0],"%d",Auto.ntst);
   sprintf(values[1],"%d",Auto.nmx);
   sprintf(values[2],"%d",Auto.npr);
@@ -630,8 +779,16 @@ void auto_num_par()
   sprintf(values[6],"%g",Auto.epsl);
   sprintf(values[12],"%g",Auto.epsu);
   sprintf(values[13],"%g",Auto.epss);
- 
-  status=do_string_box(14,7,2,"AutoNum",n,values,25);
+  sprintf(values[14],"%d",aauto.iad);
+  sprintf(values[15],"%d",aauto.mxbf);
+  sprintf(values[16],"%d",aauto.iid);
+  sprintf(values[17],"%d",aauto.itmx);
+  sprintf(values[18],"%d",aauto.itnw);
+  sprintf(values[19],"%d",aauto.nwtn);
+  sprintf(values[20],"%d",aauto.iads); 
+
+  
+  status=do_string_box(21,7,3,"AutoNum",n,values,25);
   if(status!=0){
     Auto.ntst=atoi(values[0]);
     Auto.nmx=atoi(values[1]);
@@ -647,6 +804,15 @@ void auto_num_par()
     Auto.epsl=atof(values[6]);
     Auto.epsu=atof(values[12]);
     Auto.epss=atof(values[13]);
+    aauto.iad=atoi(values[14]);
+    aauto.mxbf=atoi(values[15]);
+    aauto.iid=atoi(values[16]);
+    aauto.itmx=atoi(values[17]);
+    aauto.itnw=atoi(values[18]);
+    aauto.nwtn=atoi(values[19]);
+    aauto.iads=atoi(values[20]); 
+
+    
   }
 
 }    
@@ -658,8 +824,8 @@ void auto_plot_par()
 
   static char *m[]={"Hi","Norm","hI-lo","Period","Two par","(Z)oom in","Zoom (O)ut",
 		      "last 1 par", "last 2 par","Fit",
-		  "fRequency","Average","Default"};
-  static char key[]="hniptzo12frad";
+		    "fRequency","Average","Default","Scroll"};
+  static char key[]="hniptzo12frads";
   char ch;
 
 
@@ -670,9 +836,10 @@ void auto_plot_par()
   int ii1,ii2,ji1,ji2;
   int i1=Auto.var+1;
   char n1[15];
-  ch=(char)auto_pop_up_list("Plot Type",m,key,13,10,Auto.plot,10,50,
+  ch=(char)auto_pop_up_list("Plot Type",m,key,14,10,Auto.plot,10,50,
 		       aaxes_hint,Auto.hinttxt);
-
+  if(ch==ESC) 
+    return;
   for(i=0;i<5;i++)
     if(ch==key[i])Auto.plot=i;
     if(ch==key[10])Auto.plot=10;
@@ -716,7 +883,12 @@ void auto_plot_par()
     redraw_diagram();
     return;
   }
-  
+  if(ch==key[13]){
+    auto_scroll_window();
+    redraw_diagram();
+    /* printf("I am done scrolling!!"); */
+    return;
+  }
   ind_to_sym(i1,n1);
   sprintf(values[0],"%s",n1);
   sprintf(values[1],"%s",upar_names[AutoPar[Auto.icp1]]);
@@ -737,6 +909,7 @@ void auto_plot_par()
       for(i=0;i<NAutoPar;i++){
 	if(i1==AutoPar[i]){
 	  Auto.icp1=i;
+
 	}
       }
     }
@@ -931,7 +1104,7 @@ void add_ps_point(par,per,uhigh,ulow,ubar,a,type,flg,lab,npar,icp1,icp2,flag2,
      int lab;
 {
   double x,y1,y2,par1,par2=0;
-  
+  int type1=type;
   par1=par[icp1];
   if(icp2<NAutoPar)par2=par[icp2];
   auto_xy_plot(&x,&y1,&y2,par1,par2,per,uhigh,ulow,ubar,a);
@@ -948,13 +1121,20 @@ void add_ps_point(par,per,uhigh,ulow,ubar,a,type,flg,lab,npar,icp1,icp2,flag2,
   
     return;
   }
-  switch(type){
+
+  if((flag2>0)&&(Auto.plot==P_P))
+   type1=CSEQ;
+  switch(type1){
  
   case CSEQ:
     if(Auto.plot==PE_P||Auto.plot==FR_P)break;
     if(icp1!=Auto.icp1)break;
     if(flag2>0&&Auto.icp2!=icp2)break;
-    if(PS_Color)set_linestyle(1);
+
+    if(PS_Color){
+      set_linestyle(1);
+      if(flag2>0)pscolset2(flag2);
+    }
     else 
       set_linestyle(8);
     line_abs((float)x,(float)y1,(float)Auto.lastx,(float)Auto.lasty);
@@ -1026,19 +1206,37 @@ void auto_line(x1i,y1i,x2i,y2i)
  
   set_scale(xmin,ymin,xmax,ymax);
 }
-void add_point(par,per,uhigh,ulow,ubar,a,type,flg,lab,npar,icp1,icp2,flag2,
+/* this bit of code is for writing points - it only saves what is
+   in the current view
+
+*/
+int check_plot_type(int flag2,int icp1, int icp2)
+{
+  if(flag2==0 && Auto.plot==P_P)
+    return 0;
+  if(flag2>0  && Auto.plot!=P_P)
+    return 0; 
+  if(icp1!=Auto.icp1)
+    return 0;
+  if(flag2>0 && icp2!=icp2)
+    return 0;
+  return 1;
+
+} 
+/* main plotting code  */ 
+void add_point(par,per,uhigh,ulow,ubar,a,type,flg,lab,npar,icp1,icp2,icp3,icp4,flag2,
 	  evr,evi)
      double *par,per,*uhigh,*ulow,*ubar,a,*evr,*evi;
-     int type,icp1,icp2,flag2;
+     int type,icp1,icp2,icp3,icp4,flag2;
      int flg,lab,npar;
 {
   double x,y1,y2,par1,par2=0;
-  int ix,iy1,iy2;
+  int ix,iy1,iy2,type1=type;
   char bob[5];
   sprintf(bob,"%d",lab);
   par1=par[icp1];
   if(icp2<NAutoPar)par2=par[icp2];
-  auto_xy_plot(&x,&y1,&y2,par1,par2,per,uhigh,ulow,ubar,a);
+auto_xy_plot(&x,&y1,&y2,par1,par2,per,uhigh,ulow,ubar,a); /* figure out who sits on axes */
   if(flg==0){
     Auto.lastx=x;
     Auto.lasty=y1;
@@ -1047,19 +1245,21 @@ void add_point(par,per,uhigh,ulow,ubar,a,type,flg,lab,npar,icp1,icp2,flag2,
   iy1=IYVal(y1);
   iy2=IYVal(y2);
   autobw();
-  if(flag2==0&&Auto.plot==P_P)
+if(flag2==0&&Auto.plot==P_P) /* if the point was a 1 param run and we are in 2 param plot, skip */
     {
        plot_stab(evr,evi,NODE);
        refreshdisplay();
        return;
      }
-  if(flag2>0&&Auto.plot!=P_P){
+if(flag2>0&&Auto.plot!=P_P){ /* two parameter and not in two parameter plot, just skip it */
     plot_stab(evr,evi,NODE);
     refreshdisplay();
     return;
   }
 
-  switch(type){
+ if((flag2>0)&&(Auto.plot==P_P))
+   type1=CSEQ;
+ switch(type1){
   
   case CSEQ:
     if(Auto.plot==PE_P||Auto.plot==FR_P)break;
@@ -1327,11 +1527,13 @@ void init_auto_win()
     outperiod[i]=Auto.period[i];
     UzrPar[i]=10;
   }
-  NAutoPar=5;
-  if(NUPAR<5)NAutoPar=NUPAR;
+  NAutoPar=8;
+  if(NUPAR<8)NAutoPar=NUPAR;
   for(i=0;i<NAutoPar;i++)AutoPar[i]=i;
-  for(i=0;i<NAutoPar;i++)
+  for(i=0;i<NAutoPar;i++){
     Auto_index_to_array[i]=get_param_index(upar_names[AutoPar[i]]);
+    /* printf("%d -> %d, %s \n",i,Auto_index_to_array[i],upar_names[AutoPar[i]]); */
+  }
   Auto.nper=0;
   grabpt.flag=0;  /*  no point in buffer  */
   Auto.exist=0;
@@ -1339,6 +1541,7 @@ void init_auto_win()
   for(i=0;i<NODE;i++)
     blrtn.nrot[i]=0;
  blrtn.torper=TOR_PERIOD;
+ create_auto_file_name();
  
 /*  Control -- done automatically   */
   Auto.irs=0;
@@ -1348,7 +1551,7 @@ void init_auto_win()
   Auto.isw=1;
   Auto.nbc=NODE;
   Auto.nfpar=1;
-
+  HomoFlag=0;
 /*  User controls this      */
   Auto.ncol=auto_ncol;
   Auto.ntst=auto_ntst;
@@ -1386,7 +1589,15 @@ void init_auto_win()
   Auto.icp5=1;
   keep_last_plot(1);
   keep_last_plot(2);
-  
+  aauto.iad=3;
+  aauto.mxbf=5;
+  aauto.iid=2;
+  aauto.itmx=8;
+  aauto.itnw=7;
+  aauto.nwtn=3;
+  aauto.iads=1;
+  xAuto.nunstab=1;
+  xAuto.nstab=NODE-1;
 }
 
 void plot_stab(evr,evi,n)
@@ -1425,11 +1636,11 @@ int yes_reset_auto()
  FromAutoFlag=0;
     NBifs=1;
     grabpt.flag=0;
-    sprintf(string,"%s.p",this_auto_file);
+    sprintf(string,"%s.b",this_auto_file);
     deletef(string);
     sprintf(string,"%s.d",this_auto_file);
     deletef(string);
-    sprintf(string,"%s.q",this_auto_file);
+    sprintf(string,"%s.s",this_auto_file);
     deletef(string);
     mark_flag=0;
     return 1;
@@ -1495,68 +1706,57 @@ void auto_next()
    */ 
 } 
 
-
-/*  these are the menu's for AUTO    */
-
-/* Start a new point for bifurcation diagram   */
-
-void auto_start_diff_ss()
-{
-  Auto.ips=1;
-  if(METHOD==DISCRETE)Auto.ips=-1;
-  Auto.irs=0;
-  Auto.itp=0;
-  Auto.ilp=1;
-  Auto.isw=1;
-  Auto.isp=1;
-  Auto.nfpar=1;
-  AutoTwoParam=0;
-  do_auto(NO_OPEN_3,APPEND,Auto.itp);
-}
-
-void auto_start_at_bvp()
-{
-  int opn=NO_OPEN_3,cls=OVERWRITE;
- compile_bvp();
-  if(BVP_FLAG==0)
-    return; 
- 
- Auto.ips=4;
-  Auto.irs=0;
-  Auto.itp=0;
-  Auto.ilp=1;
-  Auto.isw=1;
-  Auto.isp=2;
-  Auto.nfpar=1;
-  AutoTwoParam=0;
-  NewPeriodFlag=2;
-  do_auto(opn,cls,Auto.itp);
-}
-
-
-void auto_start_at_per()
-{
-  int opn=NO_OPEN_3,cls=OVERWRITE;
-  
-
-  Auto.ips=2;
-  Auto.irs=0;
-  Auto.itp=0;
-  Auto.ilp=1;
-  Auto.isw=1;
-  Auto.isp=2;
-  Auto.nfpar=1;
-  AutoTwoParam=0;
-  NewPeriodFlag=1;
-  do_auto(opn,cls,Auto.itp);
-}
-
 void get_start_period(p)
      double *p;
 {
  *p=storage[0][storind-1];
 }
-
+void find_best_homo_shift(int n)
+/* this code looks for the best value
+    of the shift to be close as possible to the saddle 
+    point of the homoclinic when starting from a 
+    long periodic orbit
+*/
+{
+  int i,j;
+  double dmin=10000.0;
+  double d;
+  double tshift=0.0;
+  for(i=0;i<storind;i++){
+    d=0.0;
+    for(j=0;j<n;j++){
+      d+=fabs(storage[j+1][i]-homo_l[j]);
+    }
+    if(d<dmin){
+      dmin=d;
+      tshift=storage[0][i];
+    }
+  }
+  HOMO_SHIFT=tshift;
+  printf("shifting %g\n",HOMO_SHIFT);
+}
+void get_shifted_orbit(u,t,p,n)
+     double t,p,*u;
+     int n;
+{
+  double ts,t1,t2;
+  int i,i1,i2,ip,j;
+  double v1,v2,lam;
+  if(t>1.0)t-=1.0;
+  if(t<0.0)t+=1.0;
+  ts=fmod(t*p+HOMO_SHIFT,p);
+  for(i=0;i<storind;i++){
+    ip=(i+1)%storind;
+    if((ts>=storage[0][i])&&(ts<storage[0][ip])){
+      i1=i;
+      i2=ip;
+      lam=ts-storage[0][i];
+      for(j=0;j<n;j++)
+	u[j]=(1.0-lam)*storage[j+1][i1]+lam*storage[j+1][i2];
+      break;
+    }
+  }
+}
 void get_start_orbit(u,t,p,n)
      double t,p;
      double *u;
@@ -1571,110 +1771,22 @@ void get_start_orbit(u,t,p,n)
   i2=i1+1;
   if(i2>=storind)i2-=storind;
   lam=(tnorm-(double)i1);
+
    for(j=0;j<n;j++)
     u[j]=(1.0-lam)*storage[j+1][i1]+lam*storage[j+1][i2];
 }
   
-  
-void auto_new_ss()
-{
-  int ans;
-  int opn=NO_OPEN_3,cls=OVERWRITE;
-  NewPeriodFlag=0;
-  if(NBifs>1){
-    ans=reset_auto();
-    if ((ans!=0) || (ans!=1))
-    {
-       plintf("Boolean response expected.\n");	
-    }
-   /* if(ans==0){
-      opn=OPEN_3;
-      cls=APPEND;
-    } */
-  }
-  Auto.ips=1;
-  Auto.irs=0;
-  Auto.itp=0;
-  Auto.ilp=1;
-  Auto.isw=1;
-  Auto.isp=1;
-  Auto.nfpar=1;
-   AutoTwoParam=0; 
-  do_auto(opn,cls,Auto.itp);
-}
-
-
-void auto_new_discrete()
-{
-  int ans;
-  int opn=NO_OPEN_3,cls=OVERWRITE;
-  NewPeriodFlag=0;
-  if(NBifs>1){
-    ans=reset_auto();
-    if ((ans!=0) || (ans!=1))
-    {
-       plintf("Boolean response expected.\n");	
-    }
-   /* if(ans==0){
-      opn=OPEN_3;
-      cls=APPEND;
-    } */
-  }
-  Auto.ips=-1;
-  Auto.irs=0;
-  Auto.itp=0;
-  Auto.ilp=1;
-  Auto.isw=1;
-  Auto.isp=1;
-  Auto.nfpar=1;
-   AutoTwoParam=0; 
-  do_auto(opn,cls,Auto.itp);
-}
- 
-void auto_extend_ss()
-{
-
-  /*Prevent crash on hopf of infinite period. here
-  
-  Typical abort message after crash is currently something like:
-  
-  fmt: read unexpected character
-  apparent state: unit 3 named ~/fort.3
-  last format: (4x,1p7e18.10)
-  lately reading sequential formatted external IO
-  
-  */
-  
-  if (isinf(grabpt.per))
-  {
-  	respond_box("Okay","Can't continue infinite period Hopf!");
-  	return;
-  } 
-  
-  
-  Auto.irs=grabpt.lab;
-  Auto.itp=grabpt.itp;
-  Auto.nfpar=grabpt.nfpar;
-  Auto.ilp=1;
-  Auto.isw=1;
-  Auto.ips=1;
-  if(METHOD==DISCRETE)
-    Auto.ips=-1;
-  Auto.isp=1;
-  AutoTwoParam=0;
-  do_auto(OPEN_3,APPEND,Auto.itp);
-}
-
 void auto_start_choice()
 {
-  static char *m[]={"Steady state","Periodic","Bdry Value","Homoclinic"};
-  static  char key[]="spbh";
+  static char *m[]={"Steady state","Periodic","Bdry Value","Homoclinic","hEteroclinic"};
+  static  char key[]="spbhe";
   char ch;
+  HomoFlag=0;
   if(METHOD==DISCRETE){
     auto_new_discrete();
     return;
   }
-  ch=(char)auto_pop_up_list("Start",m,key,4,13,0,10,10,arun_hint,
+  ch=(char)auto_pop_up_list("Start",m,key,5,13,0,10,10,arun_hint,
 		       Auto.hinttxt);
    if(ch=='s'){
     auto_new_ss();
@@ -1690,21 +1802,24 @@ void auto_start_choice()
    return;
  }
  if(ch=='h'){
-   if(HOMOCLINIC_FLAG==0)
-     set_up_homoclinic();
-   if(HOMOCLINIC_FLAG==0){
-     err_msg("Homoclinic stuff not set up right");
+   HomoFlag=1;
+   auto_start_at_homoclinic();
      return;
    }
      
-   Auto.nbc=NODE-1;
+ /*  Auto.nbc=NODE-1;
    auto_start_at_bvp();
+   } */
+ if(ch=='e'){
+   HomoFlag=2;
+   auto_start_at_homoclinic();
+   return;
  }
- 
 
   redraw_auto_menus();
 }
- 
+
+
 void torus_choice()
 {
   static char *m[]={"Two Param","Fixed period","Extend"};
@@ -1803,259 +1918,8 @@ void hopf_choice()
   }
   redraw_auto_menus();
 }
-    
-void auto_new_per() /* same for extending periodic  */
-{
-  blrtn.torper=grabpt.torper;
-  
-  /*Prevent crash on hopf of infinite period. here
-  
-  Typical abort message after crash is currently something like:
-  
-  fmt: read unexpected character
-  apparent state: unit 3 named ~/fort.3
-  last format: (4x,1p7e18.10)
-  lately reading sequential formatted external IO
-  
-  */
-  
-  if (isinf(grabpt.per))
-  {
-  	respond_box("Okay","Can't continue infinite period Hopf.");
-  	return;
-  } 	
-
-  Auto.irs=grabpt.lab;
-  Auto.itp=grabpt.itp;
-  Auto.nfpar=grabpt.nfpar;
-  Auto.ilp=1;
-  Auto.isw=1;
-  Auto.isp=2;
-  Auto.ips=2;
-    AutoTwoParam=0;
-  do_auto(OPEN_3,APPEND,Auto.itp);
-}
-
-void auto_extend_bvp() /* extending bvp */
-{
-  Auto.irs=grabpt.lab;
-  Auto.itp=grabpt.itp;
-  Auto.nfpar=grabpt.nfpar;
-  Auto.ilp=1;
-  Auto.isw=1;
-  Auto.isp=2;
-  Auto.ips=4;
-    AutoTwoParam=0;
-  do_auto(OPEN_3,APPEND,Auto.itp);
-}
 
 
-
-void auto_switch_per()
-{
-  blrtn.torper=grabpt.torper;
-  Auto.irs=grabpt.lab;
-  Auto.itp=grabpt.itp;
-  Auto.nfpar=grabpt.nfpar;
-  Auto.ilp=1;
-  Auto.isw=-1;
-  Auto.isp=2;
-  Auto.ips=2;
-  AutoTwoParam=0;
-  do_auto(OPEN_3,APPEND,Auto.itp);
-}
-
-void auto_switch_bvp()
-{
- 
-  Auto.irs=grabpt.lab;
-  Auto.itp=grabpt.itp;
-  Auto.nfpar=grabpt.nfpar;
-  Auto.ilp=1;
-  Auto.isw=-1;
-  Auto.isp=2;
-  Auto.ips=4;
-  AutoTwoParam=0;
-  do_auto(OPEN_3,APPEND,Auto.itp);
-}
-
-void auto_switch_ss()
-{
-  Auto.irs=grabpt.lab;
-  Auto.itp=grabpt.itp;
-  Auto.nfpar=grabpt.nfpar;
-  Auto.ilp=1;
-  Auto.isw=-1;
-  Auto.isp=1;
-  Auto.ips=1;
-  if(METHOD==DISCRETE)
-    Auto.ips=-1;
-  AutoTwoParam=0;
-  do_auto(OPEN_3,APPEND,Auto.itp);
-}
-
-void auto_2p_limit(ips)
-     int ips;
-{
-  blrtn.torper=grabpt.torper;
-  Auto.irs=grabpt.lab;
-  Auto.itp=grabpt.itp;
-  Auto.nfpar=2;
-  Auto.ilp=1;
-  Auto.isw=2;
-  Auto.isp=2;
-  Auto.ips=ips;
-  AutoTwoParam=LP2;
-  /* plintf(" IPS = %d \n",ips); */
-  do_auto(OPEN_3,APPEND,Auto.itp);
-}
-
-void auto_twopar_double()
-{
-  blrtn.torper=grabpt.torper;
-  Auto.irs=grabpt.lab;
-  Auto.itp=grabpt.itp;
-  Auto.nfpar=2;
-  AutoTwoParam=PD2;
-  Auto.ips=2;
-  Auto.ilp=1;
-  Auto.isw=2;
-  Auto.isp=2;
-  do_auto(OPEN_3,APPEND,Auto.itp);
-}
-
-void auto_torus()
-{
-  blrtn.torper=grabpt.torper;
-  Auto.irs=grabpt.lab;
-  Auto.itp=grabpt.itp;
-  Auto.nfpar=2;
-  AutoTwoParam=TR2;
-  Auto.ips=2;
-  Auto.ilp=1;
-  Auto.isw=2;
-  Auto.isp=2;
-  do_auto(OPEN_3,APPEND,Auto.itp);
-}
-
-void auto_2p_branch(ips)
-     int ips;
-{
- blrtn.torper=grabpt.torper;
-  Auto.irs=grabpt.lab;
-  Auto.itp=grabpt.itp;
-  Auto.nfpar=2;
-  Auto.ilp=1;
-  Auto.isw=2;
-  Auto.isp=2;
-  Auto.ips=ips;
-  if(METHOD==DISCRETE)
-    Auto.ips=-1;
-  AutoTwoParam=BR2;
-  do_auto(OPEN_3,APPEND,Auto.itp);
-}
-
-void auto_branch_choice(ibr,ips)
-     int ibr,ips;
-{
-
-  static char *m[]={"Switch","Extend","New Point","Two Param"};
-  static  char key[]="sent";
-  char ch;
-  ch=(char)auto_pop_up_list("Branch Pt",m,key,4,10,0,10,10,
-		       no_hint,Auto.hinttxt);
-  if(ch=='s'){
-    if(ibr<0&&ips==2)
-      auto_switch_per();
-    else 
-      if(ips==4)
-	auto_switch_bvp();
-      else
-	auto_switch_ss();
-    return;
-  }
-  if(ch=='e'){
-    auto_extend_ss();
-    return;
-  }
-  if(ch=='n'){
-    auto_new_ss();
-    return;
-  }
-  if(ch=='t'){
-    auto_2p_branch(ips);
-    /* auto_2p_limit(ips); */
-    return;
-  }
-  redraw_auto_menus();
-}
-    
-void auto_2p_fixper()
-{
-  Auto.irs=grabpt.lab;
-  Auto.itp=grabpt.itp;
-  Auto.nfpar=2;
-  Auto.ilp=1;
-  Auto.isw=2;
-  Auto.isp=2;
-  Auto.ips=3;
-  AutoTwoParam=FP2;
-  do_auto(OPEN_3,APPEND,Auto.itp);
-}
-
-void auto_2p_hopf()
-{
-
-  /*Prevent crash on hopf of infinite period. here
-  
-  Typical abort message after crash is currently something like:
-  
-  fmt: read unexpected character
-  apparent state: unit 3 named ~/fort.3
-  last format: (4x,1p7e18.10)
-  lately reading sequential formatted external IO
-  
-  */
-  
-  if (isinf(grabpt.per))
-  {
-  	respond_box("Okay","Can't continue infinite period Hopf.");
-  	return;
-  } 
-  
-  Auto.irs=grabpt.lab;
-  Auto.itp=grabpt.itp;
-  Auto.nfpar=2;
-  Auto.ilp=1;
-  Auto.isw=2;
-  Auto.isp=2;
-  Auto.ips=1;
-  if(METHOD==DISCRETE)
-    Auto.ips=-1;
-  AutoTwoParam=HB2;
-  do_auto(OPEN_3,APPEND,Auto.itp);
-}
-
-void auto_period_double()
-{
- blrtn.torper=grabpt.torper;
-  Auto.ntst=2*Auto.ntst;
-  Auto.irs=grabpt.lab;
-  Auto.nfpar=grabpt.nfpar;
-  Auto.itp=grabpt.itp;
-  Auto.ilp=1;
-  Auto.isw=-1;
-  Auto.isp=2;
-  Auto.ips=2;
-  AutoTwoParam=0;
-  do_auto(OPEN_3,APPEND,Auto.itp);
-}
-
-void auto_err(s)
-     char *s;
-{
-  respond_box("OK",s);
-}
 void auto_run()
 {
   int itp1,itp2,itp,ips;
@@ -2074,7 +1938,7 @@ void auto_run()
   itp1=itp%10;
   itp2=itp/10;
   ips=Auto.ips;
-/*   plintf(" itp= %d %d\n",itp1,itp2); */
+  /*  printf(" ips=%d itp=%d itp1= %d itp2=%d\n",ips,itp,itp1,itp2); */
   if(itp1==3||itp2==3){  /* its a HOPF Point  */
     hopf_choice();
     ping();return;
@@ -2083,13 +1947,21 @@ void auto_run()
     per_doub_choice();
     ping();return;
   }
+  if(ips==9){
+    auto_homo_choice(itp);
+    ping(); return;
+  }
   if(itp1==2||itp2==2){ /* limit point */
      Auto.ips=1;
      auto_2p_limit(Auto.ips);
     ping();return;
   }
   if(itp1==5||itp2==5){ /* limit pt of periodic or BVP */
-    /* Auto.ips=2; */
+    if(Auto.ips!=4)
+      Auto.ips=2;  /* this is a bit dangerous - the idea is that
+                      if you are doing BVPs, then that is all you are
+                      doing  
+		   */
     auto_2p_limit(Auto.ips);
     ping(); return;
   }
@@ -2130,6 +2002,646 @@ void auto_run()
   }
 }
 
+void auto_homo_choice(int itp)
+{
+  /* printf("in choice: itp=%d\n",itp); */
+  if(itp!=5)
+    auto_extend_homoclinic();
+  
+}
+void auto_branch_choice(ibr,ips)
+     int ibr,ips;
+{
+
+  static char *m[]={"Switch","Extend","New Point","Two Param"};
+  static  char key[]="sent";
+  char ch;
+  int ipsuse;
+  ch=(char)auto_pop_up_list("Branch Pt",m,key,4,10,0,10,10,
+		       no_hint,Auto.hinttxt);
+  if(ch=='s'){
+    if(ibr<0&&ips==2)
+      auto_switch_per();
+    else 
+      if(ips==4)
+	auto_switch_bvp();
+      else
+	auto_switch_ss();
+    return;
+  }
+  if(ch=='e'){
+    auto_extend_ss();
+    return;
+  }
+  if(ch=='n'){
+    auto_new_ss();
+    return;
+  }
+  if(ch=='t'){
+ 
+    ipsuse=1;
+    if(ips==4)
+      ipsuse=4;
+    if(ibr<0)
+      ipsuse=2;
+    auto_2p_branch(ipsuse);
+    /* auto_2p_limit(ips); */
+    return;
+  }
+  redraw_auto_menus();
+}
+
+
+/*  RUN AUTO HERE */
+/*  these are for setting the parameters to run for different choices    */
+
+/*  Just a short recall of the AUTO parameters
+   NBC = 0 unless it really is a BVP problem (not periodics or heteroclinics)
+   NICP = 1 for 1 parameter and 2 fro 2 parameter and the rest will 
+            be taken care of in AUTO  and I think 2 for hetero?
+   ILP = 1 (0) detection (no) of folds usually 1
+   ISP = 2  detect all special points! but I think maybe set to 0, 1 for 
+            BVP I think 
+            for 2 parameter continuation ?
+   ISW = -1 branch switching 1 is for normal 2 for two parameter of folds, tori,HB, PD!!
+
+   IPS   1 - std for steady states of ODEs
+         -1 maps
+         2 periodic orbits
+         4 BVP  (set NBC=NODE)
+         9 Homoclinic
+         
+   
+for example   2 P continuation of HB
+              IPS=1 ILP=1 NICP=2 ISP=0 ISW=2 
+BVP problem   IPS=4, NICP=1 NBC=NODE ISP=1 ISW=1 ILP=1
+
+discrete dynamical system with two par of Hopf
+first IPS=-1 ISP=ISW=1  then 
+NICP=2, ISW=2 at Hopf
+
+
+
+
+*/   
+
+/* Start a new point for bifurcation diagram   */
+
+void auto_start_diff_ss()
+{
+  TypeOfCalc=EQ1;
+  Auto.ips=1;
+  if(METHOD==DISCRETE)Auto.ips=-1;
+  Auto.irs=0;
+  Auto.itp=0;
+  Auto.ilp=1;
+  Auto.isw=1;
+  Auto.isp=1;
+  Auto.nfpar=1;
+  AutoTwoParam=0;
+  do_auto(NO_OPEN_3,APPEND,Auto.itp);
+}
+
+void auto_start_at_bvp()
+{
+  int opn=NO_OPEN_3,cls=OVERWRITE;
+ compile_bvp();
+  if(BVP_FLAG==0)
+    return; 
+  TypeOfCalc=BV1;
+ Auto.ips=4;
+  Auto.irs=0;
+  Auto.itp=0;
+  Auto.ilp=1;
+  Auto.isw=1;
+  Auto.isp=2;
+
+  Auto.nfpar=1;
+  AutoTwoParam=0;
+  NewPeriodFlag=2;
+  do_auto(opn,cls,Auto.itp);
+}
+
+
+void auto_start_at_per()
+{
+  int opn=NO_OPEN_3,cls=OVERWRITE;
+  
+  TypeOfCalc=PE1;
+  Auto.ips=2;
+  Auto.irs=0;
+  Auto.itp=0;
+  Auto.ilp=1;
+  Auto.isw=1;
+
+  Auto.isp=2;
+  Auto.nfpar=1;
+  AutoTwoParam=0;
+  NewPeriodFlag=1;
+  do_auto(opn,cls,Auto.itp);
+}
+
+
+  
+void auto_new_ss()
+{
+  int ans;
+  int opn=NO_OPEN_3,cls=OVERWRITE;
+  NewPeriodFlag=0;
+
+  if(NBifs>1){
+    ans=reset_auto();
+    if ((ans!=0) || (ans!=1))
+    {
+       plintf("Boolean response expected.\n");	
+    }
+   /* if(ans==0){
+      opn=OPEN_3;
+      cls=APPEND;
+    } */
+  }
+      TypeOfCalc=EQ1;
+  Auto.ips=1;
+  Auto.irs=0;
+  Auto.itp=0;
+  Auto.ilp=1;
+  Auto.isw=1;
+  Auto.isp=1;
+  Auto.nfpar=1;
+   AutoTwoParam=0;
+  do_auto(opn,cls,Auto.itp);
+}
+
+
+void auto_new_discrete()
+{
+  int ans;
+  int opn=NO_OPEN_3,cls=OVERWRITE;
+  NewPeriodFlag=0;
+  if(NBifs>1){
+    ans=reset_auto();
+    if ((ans!=0) || (ans!=1))
+    {
+       plintf("Boolean response expected.\n");	
+    }
+   /* if(ans==0){
+      opn=OPEN_3;
+      cls=APPEND;
+    } */
+  }
+  TypeOfCalc=DI1;
+  Auto.ips=-1;
+  Auto.irs=0;
+  Auto.itp=0;
+  Auto.ilp=1;
+  Auto.isw=1;
+  Auto.isp=1;
+  Auto.nfpar=1;
+   AutoTwoParam=0; 
+  do_auto(opn,cls,Auto.itp);
+}
+ 
+void auto_extend_ss()
+{
+
+  /*Prevent crash on hopf of infinite period. here
+  
+  Typical abort message after crash is currently something like:
+  
+  fmt: read unexpected character
+  apparent state: unit 3 named ~/fort.3
+  last format: (4x,1p7e18.10)
+  lately reading sequential formatted external IO
+  
+  */
+  
+  if (isinf(grabpt.per))
+  {
+  	respond_box("Okay","Can't continue infinite period Hopf!");
+  	return;
+  } 
+  
+      TypeOfCalc=EQ1;
+  Auto.irs=grabpt.lab;
+  Auto.itp=grabpt.itp;
+  Auto.nfpar=grabpt.nfpar;
+  Auto.ilp=1;
+  Auto.isw=1;
+  Auto.ips=1;
+  if(METHOD==DISCRETE)
+    Auto.ips=-1;
+  Auto.isp=1;
+  AutoTwoParam=0;
+  do_auto(OPEN_3,APPEND,Auto.itp);
+}
+
+int get_homo_info(int flg,int *nun,int *nst,double *ul, double *ur)
+{
+  char **s;
+  char v[100][MAX_LEN_SBOX];
+  int n=2+2*NODE;
+  int i;
+  int flag=0;
+  s=(char **)malloc(n *sizeof(char *));
+  for(i=0;i<n;i++){
+   s[i]=(char *)malloc(100);
+
+  }
+  sprintf(s[0],"dim unstable");
+  sprintf(v[0],"%d",*nun);
+  sprintf(s[NODE+1],"dim stable");
+  sprintf(v[NODE+1],"%d",*nst);
+  for(i=0;i<NODE;i++){
+    sprintf(s[i+1],"%s_L",uvar_names[i]);
+    sprintf(v[i+1],"%g",ul[i]);
+    sprintf(s[i+2+NODE],"%s_R",uvar_names[i]);
+    sprintf(v[i+2+NODE],"%g",ur[i]);
+  }
+ 
+  flag=do_string_box(n,n/2,2,"Homoclinic info",s,v,16); 
+  if(flag!=0){
+    *nun=atoi(v[0]);
+    *nst=atoi(v[NODE+1]);
+    for(i=0;i<NODE;i++){
+      ul[i]=atof(v[i+1]);
+      if(HomoFlag==2)
+	ur[i]=atof(v[i+2+NODE]);
+    }
+  }
+  for(i=0;i<n;i++){
+    free(s[i]);
+
+  }
+  free(s);
+
+  return flag;
+}
+
+void three_parameter_homoclinic()
+{
+Auto.irs=grabpt.lab;
+  Auto.itp=grabpt.itp;
+
+      TypeOfCalc=HO2;
+  AutoTwoParam=HO2;
+  NewPeriodFlag=1;
+  Auto.ips=9;
+
+  Auto.nfpar=3;
+  Auto.ilp=0;
+  Auto.isw=1;
+  Auto.isp=0;
+  Auto.nbc=0;
+  
+  if(HomoFlag==1)
+    xAuto.iequib=1;
+  if(HomoFlag==2)
+    xAuto.iequib=-2;
+
+  
+  
+  do_auto(OPEN_3,APPEND,Auto.itp);
+
+
+  
+}
+
+
+
+
+
+void auto_extend_homoclinic()
+{
+   Auto.irs=grabpt.lab;
+  Auto.itp=grabpt.itp;
+
+      TypeOfCalc=HO2;
+  AutoTwoParam=HO2;
+  NewPeriodFlag=1;
+  Auto.ips=9;
+
+  Auto.nfpar=2;
+  Auto.ilp=1;
+  Auto.isw=1;
+  Auto.isp=0;
+  Auto.nbc=0;
+  
+  if(HomoFlag==1)
+    xAuto.iequib=1;
+  if(HomoFlag==2)
+    xAuto.iequib=-2;
+
+  
+  
+  do_auto(OPEN_3,APPEND,Auto.itp);
+
+
+  
+}
+
+
+
+    
+void auto_start_at_homoclinic()
+{
+  int opn=NO_OPEN_3,cls=OVERWRITE;
+  int flag;
+  Auto.irs=0;
+  Auto.itp=0;
+    TypeOfCalc=HO2;
+
+
+  AutoTwoParam=HO2;
+  NewPeriodFlag=1;
+  Auto.ips=9;
+
+  Auto.nfpar=2;
+  Auto.ilp=1; /* maybe 1 someday also in extend homo, but for now, no 3 param allowed    */
+  Auto.isw=1;
+  Auto.isp=0;
+  Auto.nbc=0;
+  
+  if(HomoFlag==1){
+    xAuto.iequib=1;
+    find_best_homo_shift(NODE);
+  }
+  if(HomoFlag==2)
+    xAuto.iequib=-2;
+  flag=get_homo_info(HomoFlag,&xAuto.nunstab,&xAuto.nstab,homo_l,homo_r);
+  if(flag)do_auto(opn,close,Auto.itp);
+
+  
+}
+    
+void auto_new_per() /* same for extending periodic  */
+{
+  blrtn.torper=grabpt.torper;
+  
+  /*Prevent crash on hopf of infinite period. here
+  
+  Typical abort message after crash is currently something like:
+  
+  fmt: read unexpected character
+  apparent state: unit 3 named ~/fort.3
+  last format: (4x,1p7e18.10)
+  lately reading sequential formatted external IO
+  
+  */
+  
+  if (isinf(grabpt.per))
+  {
+  	respond_box("Okay","Can't continue infinite period Hopf.");
+  	return;
+  } 	
+      TypeOfCalc=PE1;
+  Auto.irs=grabpt.lab;
+  Auto.itp=grabpt.itp;
+  /* Auto.nfpar=grabpt.nfpar; */
+  Auto.nfpar=1;
+  Auto.ilp=1;
+  Auto.isw=1; /* -1 */
+  Auto.isp=2;
+  Auto.ips=2;
+    AutoTwoParam=0;
+  do_auto(OPEN_3,APPEND,Auto.itp);
+}
+
+void auto_extend_bvp() /* extending bvp */
+{
+      TypeOfCalc=BV1;
+  Auto.irs=grabpt.lab;
+  Auto.itp=grabpt.itp;
+  Auto.nfpar=grabpt.nfpar;
+  Auto.ilp=1;
+  Auto.isw=1;
+  Auto.isp=2;
+  Auto.ips=4;
+    AutoTwoParam=0;
+  do_auto(OPEN_3,APPEND,Auto.itp);
+}
+
+
+
+void auto_switch_per()
+{
+      TypeOfCalc=PE1;
+  blrtn.torper=grabpt.torper;
+  Auto.irs=grabpt.lab;
+  Auto.itp=grabpt.itp;
+  Auto.nfpar=1; /*grabpt.nfpar;*/
+  Auto.ilp=1;
+  Auto.isw=-1;
+  Auto.isp=2;
+  Auto.ips=2;
+  AutoTwoParam=0;
+  do_auto(OPEN_3,APPEND,Auto.itp);
+}
+
+void auto_switch_bvp()
+{
+     TypeOfCalc=BV1;
+  Auto.irs=grabpt.lab;
+  Auto.itp=grabpt.itp;
+  Auto.nfpar=grabpt.nfpar;
+  Auto.ilp=1;
+  Auto.isw=-1;
+  Auto.isp=2;
+  Auto.ips=4;
+  AutoTwoParam=0;
+  do_auto(OPEN_3,APPEND,Auto.itp);
+}
+
+void auto_switch_ss()
+{
+      TypeOfCalc=EQ1;
+  Auto.irs=grabpt.lab;
+  Auto.itp=grabpt.itp;
+  Auto.nfpar=grabpt.nfpar;
+  Auto.ilp=1;
+  Auto.isw=-1;
+  Auto.isp=1;
+  Auto.ips=1;
+  if(METHOD==DISCRETE)
+    Auto.ips=-1;
+  AutoTwoParam=0;
+  do_auto(OPEN_3,APPEND,Auto.itp);
+}
+
+void auto_2p_limit(ips)
+     int ips;
+{
+  int ipsuse=1;
+  int itp1,itp2;
+  blrtn.torper=grabpt.torper;
+  Auto.irs=grabpt.lab;
+  itp1=(grabpt.itp)%10;
+  itp2=abs(grabpt.itp)/10;
+  Auto.itp=grabpt.itp;
+  Auto.nfpar=2;
+  Auto.ilp=0; /* was 1 */
+  Auto.isw=2;
+  Auto.isp=0; /* was 2 */
+  /* fix ips now */
+  if(ips==4)
+    ipsuse=4;
+  else {
+    if((itp1==5)||(itp2==5))
+      ipsuse=2;
+  }
+
+  
+  Auto.ips=ipsuse;
+  AutoTwoParam=LPP2;
+  if(ipsuse==1){
+    TypeOfCalc=LPE2;
+    AutoTwoParam=LPE2;
+  }
+  else{
+    TypeOfCalc=LPP2;
+    AutoTwoParam=LPP2;
+  }
+  /* printf("ips=%d  itp=%d \n",Auto.ips,Auto.itp); */
+  /* plintf(" IPS = %d \n",ips); */
+  do_auto(OPEN_3,APPEND,Auto.itp);
+}
+
+void auto_twopar_double()
+{
+
+  blrtn.torper=grabpt.torper;
+  Auto.irs=grabpt.lab;
+  Auto.itp=grabpt.itp;
+  Auto.nfpar=2;
+  AutoTwoParam=PD2;
+  TypeOfCalc=PD2;
+  Auto.ips=2;
+  Auto.ilp=0;
+  Auto.isw=2;
+  Auto.isp=0;
+  do_auto(OPEN_3,APPEND,Auto.itp);
+}
+
+void auto_torus()
+{
+  blrtn.torper=grabpt.torper;
+  Auto.irs=grabpt.lab;
+  Auto.itp=grabpt.itp;
+  Auto.nfpar=2;
+  AutoTwoParam=TR2;
+  TypeOfCalc=TR2;
+  Auto.ips=2;
+  Auto.ilp=0;
+  Auto.isw=2;
+  Auto.isp=0;
+  do_auto(OPEN_3,APPEND,Auto.itp);
+}
+
+void auto_2p_branch(ips)
+     int ips;
+{
+ int ipsuse=1;
+  int itp1,itp2; 
+ blrtn.torper=grabpt.torper;
+  Auto.irs=grabpt.lab;
+  itp1=(grabpt.itp)%10;
+  itp2=abs(grabpt.itp)/10;
+  Auto.itp=grabpt.itp;
+  Auto.nfpar=2;
+  Auto.ilp=0; /* was 1 */
+  Auto.isw=2;
+  Auto.isp=0; /* was 2 */
+  if(ips==4)
+    ipsuse=4;
+  else {
+    if((itp1==6)||(itp2==6))
+      ipsuse=2;
+  }
+
+  
+  Auto.ips=ipsuse;
+  if(METHOD==DISCRETE)
+    Auto.ips=-1;
+  AutoTwoParam=BR2;
+      TypeOfCalc=BR2;
+  do_auto(OPEN_3,APPEND,Auto.itp);
+}
+
+    
+void auto_2p_fixper()
+{
+  Auto.irs=grabpt.lab;
+  Auto.itp=grabpt.itp;
+  Auto.nfpar=2;
+  Auto.ilp=1; /* was1 */
+  Auto.isw=1;
+  Auto.isp=0;
+  Auto.ips=2;
+  AutoTwoParam=FP2;
+  TypeOfCalc=FP2;
+  do_auto(OPEN_3,APPEND,Auto.itp);
+}
+
+void auto_2p_hopf()
+{
+
+  /*Prevent crash on hopf of infinite period. here
+  
+  Typical abort message after crash is currently something like:
+  
+  fmt: read unexpected character
+  apparent state: unit 3 named ~/fort.3
+  last format: (4x,1p7e18.10)
+  lately reading sequential formatted external IO
+  
+  */
+  
+  if (isinf(grabpt.per))
+  {
+  	respond_box("Okay","Can't continue infinite period Hopf.");
+  	return;
+  } 
+  
+  Auto.irs=grabpt.lab;
+  Auto.itp=grabpt.itp;
+  Auto.nfpar=2;
+  Auto.ilp=0; /* was 1 */
+  Auto.isw=2;
+  Auto.isp=0;
+  Auto.ips=1;
+  if(METHOD==DISCRETE)
+    Auto.ips=-1;
+  AutoTwoParam=HB2;
+    TypeOfCalc=HB2;
+  do_auto(OPEN_3,APPEND,Auto.itp);
+}
+
+void auto_period_double()
+{
+
+ blrtn.torper=grabpt.torper;
+  Auto.ntst=2*Auto.ntst;
+  Auto.irs=grabpt.lab;
+  Auto.nfpar=1; /* grabpt.nfpar; */
+
+  Auto.itp=grabpt.itp;
+  Auto.ilp=1;
+  Auto.isw=-1;
+  TypeOfCalc=PE1;
+  Auto.isp=2;
+  Auto.ips=2;
+  AutoTwoParam=0;
+  do_auto(OPEN_3,APPEND,Auto.itp);
+}
+
+
+/**********   END RUN AUTO *********************/
+
+void auto_err(s)
+     char *s;
+{
+  respond_box("OK",s);
+}
+
 void load_auto_orbit()
 {
   load_auto_orbitx(grabpt.ibr,grabpt.flag,grabpt.lab,grabpt.per);
@@ -2145,9 +2657,9 @@ void load_auto_orbit()
   int nrow,ndim,label,flg;
   /* printf("Loading orbit ibr=%d ips=%d flag=%d\n",grabpt.ibr,Auto.ips, grabpt.flag);  */
    
-  if((ibr>0&&(Auto.ips!=4)&&(Auto.ips!=3))||flag==0)return; 
+  if((ibr>0&&(Auto.ips!=4)&&(Auto.ips!=3)&&(Auto.ips!=9))||flag==0)return; 
    /* either nothing grabbed or just a fixed point and that is already loaded */
-  sprintf(string,"%s.q",this_auto_file);
+  sprintf(string,"%s.s",this_auto_file);
   fp=fopen(string,"r");
   if(fp==NULL){
     auto_err("No such file");
@@ -2159,6 +2671,7 @@ void load_auto_orbit()
   nstor=ndim;
   if(ndim>NODE)nstor=NODE;
   if(flg==0){
+    printf("Could not find label %d in file %s \n",label,string);
     auto_err("Cant find labeled pt");
     fclose(fp);
     return;
@@ -2233,6 +2746,7 @@ void save_auto_numerics(fp)
  fprintf(fp,"%d %d %d \n",Auto.ntst,Auto.nmx,Auto.npr);
  fprintf(fp,"%g %g %g \n",Auto.ds,Auto.dsmin,Auto.dsmax);
  fprintf(fp,"%g %g %g %g\n",Auto.rl0,Auto.rl1,Auto.a0,Auto.a1);
+ fprintf(fp,"%d %d %d %d %d %d %d\n",aauto.iad,aauto.mxbf,aauto.iid,aauto.itmx,aauto.itnw,aauto.nwtn,aauto.iads);
 }
 
 
@@ -2248,14 +2762,17 @@ void load_auto_numerics(fp)
  }
  fscanf(fp,"%d ",&NAutoUzr);
   for(i=0;i<9;i++){
+    Auto.nper=NAutoUzr;
     fscanf(fp,"%lg %d\n",&outperiod[i],&UzrPar[i]);
     Auto.period[i]=outperiod[i];
     Auto.uzrpar[i]=UzrPar[i];
+    /*    printf("%g %d\n",Auto.period[i],Auto.uzrpar[i]); */
   }
  
  fscanf(fp,"%d %d %d \n",&Auto.ntst,&Auto.nmx,&Auto.npr);
  fscanf(fp,"%lg %lg %lg \n",&Auto.ds,&Auto.dsmin,&Auto.dsmax);
  fscanf(fp,"%lg %lg %lg %lg\n",&Auto.rl0,&Auto.rl1,&Auto.a0,&Auto.a1);
+ fscanf(fp,"%d %d %d %d %d %d %d\n",&aauto.iad,&aauto.mxbf,&aauto.iid,&aauto.itmx,&aauto.itnw,&aauto.nwtn,&aauto.iads);
 }
 
 void save_auto_graph(fp)
@@ -2272,15 +2789,15 @@ void load_auto_graph(fp)
 	&Auto.var,&Auto.plot);
 }
   
-void save_q_file(fp)
+void save_q_file(fp)  /* I am keeping the name q_file even though they are s_files */
      FILE *fp;
 {
   char string[500];
   FILE *fq;
-  sprintf(string,"%s.q",this_auto_file);
+  sprintf(string,"%s.s",this_auto_file);
   fq=fopen(string,"r");
   if(fq==NULL){
-    auto_err("Couldnt open q-file");
+    auto_err("Couldnt open s-file");
     return;
   }
   while(!feof(fq)){
@@ -2296,17 +2813,19 @@ void make_q_file(fp)
 {
   char string[500];
   FILE *fq;
-  sprintf(string,"%s.q",this_auto_file);
+  sprintf(string,"%s.s",this_auto_file);
   fq=fopen(string,"w");
+
   if(fq==NULL){
-    auto_err("Couldnt open q-file");
+    auto_err("Couldnt open s-file");
     return;
   }
   
   while(!feof(fp)){
     fgets(string,500,fp);
-    if(!noinfo(string))
+    if(!noinfo(string)){
       fputs(string,fq);
+    }
   }
   fclose(fq);
 }
@@ -2364,9 +2883,9 @@ int move_to_label(mylab,nrow,ndim,fp)
 {
   int ibr,ntot,itp,lab,nfpar,isw,ntpl,nar,nskip;
   int i;
-  char line[500];
+  char line[MAXLINELENGTH];
   while(1){
-    fgets(line,500,fp);
+    fgets(line,MAXLINELENGTH,fp);
     sscanf(line,"%d%d %d %d %d %d %d %d %d",
 	   &ibr,&ntot,&itp,&lab,&nfpar,&isw,&ntpl,&nar,&nskip);
     if(mylab==lab){
@@ -2375,7 +2894,7 @@ int move_to_label(mylab,nrow,ndim,fp)
       return(1);
     }
     for(i=0;i<nskip;i++)
-      fgets(line,500,fp);
+      fgets(line,MAXLINELENGTH,fp);
     if(feof(fp))break;
   }
   return(0);

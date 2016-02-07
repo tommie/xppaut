@@ -15,7 +15,7 @@
 
 
 
-#define MAX_N_SBOX 20
+#define MAX_N_SBOX 22
 #define MAX_LEN_SBOX 25 
 
 

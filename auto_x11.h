@@ -20,7 +20,7 @@ void traverse_diagram(void);
 void clear_auto_info(void);
 void draw_auto_info(char *bob, int x, int y);
 void refreshdisplay(void);
-int byeauto_(int *nt, int *iflag);
+int byeauto_(int *iflag);
 void Circle(int x, int y, int r);
 void autocol(int col);
 void autobw(void);

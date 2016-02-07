@@ -168,7 +168,7 @@ COMPLEX cmlt(z,w)
   return sum;
 }
 
-COMPLEX cdiv(z,w)
+COMPLEX cdivv(z,w)
      COMPLEX z,w;
 {
   COMPLEX sum;
@@ -261,7 +261,7 @@ COMPLEX cdeterm(z,n)
     if(imax>j)sign=cmlt(rtoc(-1.0,0.0),sign);
     zd=Z(j,j);
     for(i=j+1;i<n;i++){
-      mult=cdiv(Z(i,j),zd);
+      mult=cdivv(Z(i,j),zd);
       for(k=j+1;k<n;k++){
 	Z(i,k)=cdif(Z(i,k),cmlt(mult,Z(j,k)));
       }
@@ -281,7 +281,7 @@ COMPLEX cxdeterm(z,n)
   for(j=0;j<n;j++){
     ajj=Z(j,j);
     for(i=j+1;i<n;i++){
-      mult=cdiv(Z(i,j),ajj);
+      mult=cdivv(Z(i,j),ajj);
       for(k=j+1;k<n;k++){
         Z(i,k)=cdif(Z(i,k),cmlt(mult,Z(j,k)));
       }

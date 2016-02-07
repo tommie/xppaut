@@ -140,5 +140,7 @@ int add_grab_task(char *lhs, char *rhs, int igrab, int which);
 void draw_grab_points(void);
 void free_grabber(void);
 int check_ani_pause(XEvent ev);
-
+void do_ani_slider_motion(Window w,int x);
+void draw_ani_slider(Window w,int x);
+void redraw_ani_slider(void);
 #endif

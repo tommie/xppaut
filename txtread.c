@@ -39,7 +39,7 @@ typedef struct {
 extern char *save_eqn[MAXLINES];
 extern ACTION comments[MAXCOMMENTS];
 extern int n_comments,NLINES;
-
+extern int tfBell;
 extern Display *display;
 extern int screen;
 extern GC gc, small_gc;
@@ -123,10 +123,12 @@ void enter_txtview(Window w,int val)
 
 void do_txt_action(char *s)
 {
-
+  int tb=tfBell;
+  tfBell=1;
  get_graph();
  extract_action(s);
  ping();
+ tfBell=tb;
   chk_delay();
   redraw_params();
   redraw_ics();

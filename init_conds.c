@@ -79,7 +79,7 @@ extern int NLINES;
 extern Display *display;
 extern int screen,Xup;
 extern GC gc, small_gc;
-extern Window main_win;
+extern Window main_win,draw_win;
 extern int DCURX,DCURXs,DCURY,DCURYs,CURY_OFFs,CURY_OFF;
 extern int NDELAYS;
 /*extern char UserBGBitmap[100];*/
@@ -1352,6 +1352,7 @@ void do_slide_motion(w,x,p,s)
 	if(s<300) {clr_all_scrns();
 	redraw_dfield();
 	create_new_cline();
+	draw_label(draw_win);
 	SuppressBounds=1;
 	run_now();
 	SuppressBounds=sp;}

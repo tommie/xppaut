@@ -777,7 +777,80 @@ void get_3d_par_noper()
 	     
 }
 
+void update_view(float xlo,float xhi, float ylo, float yhi)
+{
+              MyGraph->xlo=xlo;
+	      MyGraph->ylo=ylo;
+	      MyGraph->xhi=xhi;
+	      MyGraph->yhi=yhi;
+	      if(MyGraph->grtype<5){
+	      MyGraph->xmin=MyGraph->xlo;
+	      MyGraph->xmax=MyGraph->xhi;
+	      MyGraph->ymin=MyGraph->ylo;
+	      MyGraph->ymax=MyGraph->yhi;
+	      }
+	      check_windows();
+            
+ redraw_the_graph();
 
+}
+void scroll_window()
+{
+  XEvent ev;
+  int i=0,j=0;
+  int state=0;
+  float x,y,x0,y0;
+  float xlo=MyGraph->xlo;
+  float ylo=MyGraph->ylo;
+    float xhi=MyGraph->xhi;
+  float yhi=MyGraph->yhi;
+  float dx,dy;
+  int alldone=0;
+  XSelectInput(display,draw_win,
+   KeyPressMask|ButtonPressMask|ButtonReleaseMask|
+		PointerMotionMask|ButtonMotionMask|ExposureMask);
+  while(!alldone){
+   XNextEvent(display,&ev);
+   switch(ev.type){
+   case KeyPress:
+     alldone=1;
+     break;
+   case Expose:
+     do_expose(ev);
+     break;
+   case ButtonPress:
+     if(state==0){
+     i=ev.xkey.x;
+     j=ev.xkey.y;
+     scale_to_real(i,j,&x0,&y0);
+     state=1;
+    
+     }
+     break;
+   case MotionNotify:
+     if(state==1){
+     i=ev.xmotion.x;
+     j=ev.xmotion.y;
+     scale_to_real(i,j,&x,&y);
+     dx=-(x-x0)/2;
+     dy=-(y-y0)/2;
+
+     update_view(xlo+dx,xhi+dx,ylo+dy,yhi+dy);
+     }
+     break;
+   case ButtonRelease:
+     state=0;
+     xlo=xlo+dx;
+     xhi=xhi+dx;
+     ylo=ylo+dy;
+     yhi=yhi+dy;
+     break;
+
+   }
+  }
+}
+
+    
 void window_zoom_com(int c)
 {
  int i1,i2,j1,j2;
@@ -804,6 +877,8 @@ void window_zoom_com(int c)
 		      break; 
 	    case 4: default_window();
 		      break;
+            case 5: scroll_window();
+                      break;
             }
  set_normal_scale();
 }
@@ -1475,13 +1550,13 @@ void frz_bd()
 void read_bd(fp)
      FILE *fp;
 {
-  int oldtype,type,oldbr,br,ncrv=0,len;
+  int oldtype,type,oldbr,br,ncrv=0,len,f2;
   float x[8000],ylo[8000],yhi[8000];
   len=0;
-  fscanf(fp,"%g %g %g %d %d ",&x[len],&ylo[len],&yhi[len],&oldtype,&oldbr);
+  fscanf(fp,"%g %g %g %d %d %d",&x[len],&ylo[len],&yhi[len],&oldtype,&oldbr,&f2);
   len++;
   while(!feof(fp)){
-    fscanf(fp,"%g %g %g %d %d ",&x[len],&ylo[len],&yhi[len],&type,&br);
+    fscanf(fp,"%g %g %g %d %d %d",&x[len],&ylo[len],&yhi[len],&type,&br,&f2);
     if(type==oldtype&&br==oldbr)
       len++; 
     else {

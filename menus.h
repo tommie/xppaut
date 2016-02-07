@@ -152,7 +152,8 @@ char *wind_hint[]={
 "Zoom into with mouse",
 "Zoom out with mouse",
 "Let XPP automatically choose window",
-"Reset to default view"
+"Reset to default view",
+"Scroll around the view"
 };
 
 char *flow_hint[]={
@@ -197,7 +198,8 @@ char *cmap_hint[]={
  "black-red-yellow-white",
  "pale cyan->pale yellow",
  "blue-violet-red",
- "black-white"
+ "black-white",
+ "helical luminence corrected"
 };
 char *frz_hint[]={
 "Permanently keep main curve -- even after reintegrating",
@@ -352,7 +354,8 @@ char *aaxes_hint[]={
 "Let XPP determine the bounds of the plot",
 "Plot frequency vs parameter",
 "Plot average of orbit vs parameter",
-"Return to default bounds of the plot"
+"Return to default bounds of the plot",
+"Scroll around the plot"
 };
 
 char *afile_hint[]={
@@ -388,7 +391,8 @@ char *arun_hint[]={
   "Start at fixed point",
   "Start at periodic orbit",
   "Start at solution to boundary value problem",
-  "Use integral phase condn for homoclinics"
+  "Start at homoclinics",
+  "Start at a heteroclinic",
 }; 
 
 char *browse_hint[]={

@@ -64,7 +64,7 @@ DLFUN dlf;
 
 void *dlhandle;
 double (*fun)();
-
+int dll_loaded=0;
 void auto_load_dll()
 {
   if(dll_flag==3){
@@ -87,6 +87,43 @@ void load_new_dll()
   sprintf(dlf.libname,"%s/%s",cur_dir,dlf.libfile);
   new_string("Function name:",dlf.fun);
   dlf.loaded=0;
+}
+
+#define MAXW 50
+
+void get_import_values(int n, double *ydot, char *soname, char *sofun,
+		       int ivar, double *wgt[MAXW],
+		       double *var, double *con)
+{
+  int i;
+  char sofullname[256];
+  char *error;
+  if(dll_loaded==1){
+    fun(n,ivar,con,var,wgt,ydot);
+    return;
+  }
+  if(dll_loaded==-1)
+    return;
+  printf("soname = %s  sofun = %s \n",soname,sofun);
+  get_directory(cur_dir);
+  sprintf(sofullname,"%s/%s",cur_dir,soname);
+  dlhandle=dlopen (sofullname, RTLD_LAZY);
+  if(!dlhandle){
+    plintf(" Cant find the library %s\n",soname);
+      dll_loaded=-1;
+      return;
+    }
+  dlerror();
+  *(void **) (&fun)=dlsym(dlhandle,sofun);
+  error=dlerror();
+  if(error!= NULL){
+    plintf("Problem with function.. %s\n",sofun);
+       dlf.loaded=-1;
+       return;
+     }
+     dll_loaded=1;
+     fun(n,ivar,con,var,wgt,ydot);
+
 }
 int my_fun(double *in, double *out, int nin,int nout,double *v,double *c)
 {
@@ -124,6 +161,13 @@ int my_fun(double *in, double *out, int nin,int nout,double *v,double *c)
   return(1);
 }  
 #else
+
+void get_import_values(int n, double *ydot, char *soname, char *sofun,
+		       int ivar, double *wgt[MAXW],
+		       double *var, double *con)
+{
+
+}
 load_new_dll()
 {
 

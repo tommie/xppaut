@@ -643,7 +643,7 @@ void set_all_vals()
   fclose(fp);
  } 
 
- custom_color=0;
+
  init_range();
  init_trans();
  init_my_aplot();
@@ -818,9 +818,9 @@ void add_intern_set(name,does)
 void extract_action(char *ptr)
 {
   char name[256],value[256];
- char tmp[512];
+ char tmp[2048];
   char *junk,*mystring;
-  /* plintf("ptr=%s \n",ptr); */
+  /* plintf("ptr=%s \n",ptr);  */
   strcpy(tmp,ptr);
   junk=get_first(tmp," ");
   if (junk == NULL)
@@ -1079,8 +1079,10 @@ void check_for_xpprc()
   while(!feof(fp)){
     bob[0]='\0';
     fgets(bob,255,fp);
-    if(bob[0]=='@')
+    if(bob[0]=='@'){
       stor_internopts(bob);
+
+    }
   }
   fclose(fp);
 }
@@ -1184,6 +1186,7 @@ void set_option(s1,s2,force,mask)
   if(msc("MWCOLOR",s1)){
     if ((notAlreadySet.UserMainWinColor||force) || ((mask!=NULL)&&(mask->UserMainWinColor==1)))
     {
+      /* printf("Setting MWCOLOR=%s\n",s2); */
         sprintf(UserMainWinColor,"#%s",s2);
 	notAlreadySet.UserMainWinColor=0;
     }
@@ -1346,8 +1349,9 @@ if(msc("UMC",s1)){
      if ((notAlreadySet.COLORMAP||force) || ((mask!=NULL)&&(mask->COLORMAP==1)))
      {
    		i=atoi(s2);
-   		if(i<6)custom_color=i;
+   		if(i<7)custom_color=i;
 		notAlreadySet.COLORMAP=0;
+
      }
    return;
  }
@@ -2195,7 +2199,7 @@ if(msc("TUTORIAL",s1)){
      if ((notAlreadySet.SLIDER1||force) || ((mask!=NULL)&&(mask->SLIDER1==1)))
      {
 	strncpy(SLIDER1VAR,s2,20);
-	SLIDER1VAR[20]= '\0';
+	SLIDER1VAR[19]= '\0';
 	notAlreadySet.SLIDER1=0;
      }
     return;
@@ -2205,7 +2209,7 @@ if(msc("S2",s1)){
      if ((notAlreadySet.SLIDER2||force) || ((mask!=NULL)&&(mask->SLIDER2==1)))
      {
     	strncpy(SLIDER2VAR,s2,20);
-	SLIDER2VAR[20]= '\0';
+	SLIDER2VAR[19]= '\0';
 	notAlreadySet.SLIDER2=0;
      }
     return;
@@ -2214,7 +2218,7 @@ if(msc("S2",s1)){
      if ((notAlreadySet.SLIDER3||force) || ((mask!=NULL)&&(mask->SLIDER3==1)))
      {	
      	strncpy(SLIDER3VAR,s2,20);
-	SLIDER3VAR[20]= '\0';
+	SLIDER3VAR[19]= '\0';
 	notAlreadySet.SLIDER3=0;
      }
     return;

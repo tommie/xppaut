@@ -49,7 +49,7 @@ int NDELAYS=0;
 /*double pow2(); */
 double get_delay();
 double delay_stab_eval();
-double lookup(),network_value();
+double lookup(),network_value(),vector_value();
 double atof(),poidev();
 double ndrand48();
 double ker_val();
@@ -325,7 +325,6 @@ char *junk;
 {
  int len;
  char string[100];
- 
  if(duplicate_name(junk)==1)return(1);
  if(NCON>=MAXPAR)
  {
@@ -381,6 +380,8 @@ int add_con(name,value)
 char *name;
 double value;
 {
+
+  /*  printf("Adding constant %s # %d\n",name,NCON); */
  if(NCON>=MAXPAR)
  {
   if(ERROUT)printf("too many constants !!\n");
@@ -507,6 +508,29 @@ int *command, *length;
  /*  for(i=0;i<*length;i++)printf("%d \n",command[i]);  */
    return(0);
 }
+
+int add_vector_name(int index,char *name)
+{
+  
+char string[50];
+  int len=strlen(name);
+  plintf(" Adding vectorizer %s %d \n",name,index);
+  if(duplicate_name(name)==1)return(1);  
+  convert(name,string);
+  printf(" 1\n");
+  if(len>MXLEN)len=MXLEN;
+  strncpy(my_symb[NSYM].name,string,len);
+  my_symb[NSYM].name[len]='\0';
+  my_symb[NSYM].len=len;
+  my_symb[NSYM].pri=10;
+  my_symb[NSYM].arg=1;
+  my_symb[NSYM].com=COM(VECTYPE,index);
+
+  NSYM++;
+  return(0);
+   
+}
+
 
 int add_net_name(index,name)
      int index;
@@ -1245,7 +1269,7 @@ int function_sym(int token) /* functions should have ( after them  */
     if(i1==FUN1TYPE&&!unary_sym(token))return(1); /* single variable functions */
   if(i1==FUN2TYPE&&!binary_sym(token))return(1); /* two-variable function */
   /* ram this was: if(i1==UFUN||i1==7||i1==6||i1==5)return(1); recall: 5 was bad */
-  if (i1 == UFUNTYPE || i1 == TABTYPE || i1 == NETTYPE) return(1);
+  if (i1 == UFUNTYPE || i1 == TABTYPE || i1==VECTYPE||i1 == NETTYPE) return(1);
   if(token==DELSHFTSYM||token==DELSYM||token==SHIFTSYM||token==ISHIFTSYM||com==MYIF||com==MYTHEN||com==MYELSE
      ||com==SUMSYM||com==ENDSUM)return(1);
   return(0);
@@ -1290,7 +1314,7 @@ int gives_number(token)
   if(i1==FUN2TYPE&&!binary_sym(token))return(1); /* two-variable function */
   /* !! */ 
   /* ram: 5 issue; was if(i1==8||isvar(i1)||iscnst(i1)||i1==7||i1==6||i1==5||isker(i1)||i1==UFUN)return(1); */
-  if (i1 == USTACKTYPE || isvar(i1) || iscnst(i1) || i1 == TABTYPE || i1 == NETTYPE || isker(i1) || i1 == UFUNTYPE) return(1);
+  if (i1 == USTACKTYPE || isvar(i1) || iscnst(i1) || i1 == TABTYPE || i1==VECTYPE||i1 == NETTYPE || isker(i1) || i1 == UFUNTYPE) return(1);
   if(com==MYIF||token==DELSHFTSYM||token==DELSYM||token==SHIFTSYM||token==ISHIFTSYM||com==SUMSYM)return(1);
   return(0);
 }
@@ -1825,6 +1849,10 @@ double z;
 }
 */
 
+double hom_bcs(int i)
+{
+  return 0.0; /* this is deprecated so no longer used */
+}
 void one_arg()
 {
  fun1[0]=sin;
@@ -2113,6 +2141,7 @@ double x,y;
 	    }
      case CONTYPE: 
               PUSH(constants[in]);break;
+    case VECTYPE: PUSH(vector_value(POP,in)); break;	      
      case NETTYPE:  PUSH(network_value(POP,in));break;
      case TABTYPE: PUSH(lookup(POP,in));break;
             

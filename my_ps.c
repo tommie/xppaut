@@ -84,7 +84,7 @@ char *PS_header[]={
 "/LT7 { PL [2 dl 2 dl 2 dl 2 dl 2 dl 4 dl] 0 .9 0 DL } def\n",
 "/LT8 { stroke 16. setlinewidth [] 0 .85 .85 DL } def\n", /* really fat line */
 "/LT9 { stroke 16. setlinewidth [4 dl 2 dl] 0 0 1 DL } def\n",
-"/LTc { stroke 16. setlinewidth [2 dl 3 dl] .95 .4 0 DL } def\n",
+"/LTc { stroke 16. setlinewidth [2 dl 3 dl] .62 .125 .93 DL } def\n",
 "/M {moveto} def\n",
 "/L {lineto} def\n",
 "/R {rlineto} def\n",

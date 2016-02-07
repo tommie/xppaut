@@ -9,7 +9,7 @@
 int get_auto_str(char *xlabel, char *ylabel);
 int draw_ps_axes(void);
 int draw_bif_axes(void);
-int byeauto_(int *nt, int *iflag);
+int byeauto_(int *iflag);
 int IXVal(double x);
 int IYVal(double y);
 int Circle(int x, int y, int r);

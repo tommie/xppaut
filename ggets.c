@@ -264,8 +264,8 @@ int get_key_press(ev)
        KeySym ks;
 
        XLookupString((XKeyEvent *)ev,buf,maxlen,&ks,&comp);
-       /*printf(" ks=%d buf[0]=%d char=%c \n",ks,(int)buf[0],buf[0]); 
-	*/
+       /*       printf(" ks=%d buf[0]=%d char=%c \n",ks,(int)buf[0],buf[0]); */
+       
    /*    plintf("h=%d e=%d ks=%d \n",XK_Home,XK_End,ks); */
 	if(ks==XK_Escape)return(ESC);
 	if((ks==XK_Return)||(ks==XK_KP_Enter)||
@@ -671,6 +671,7 @@ void edit_command_string(ev,name,value,done,pos,col)
 			break;
  		case KeyPress:
       		 ch=get_key_press(&ev);
+		 /* printf("ch= %ld \n",ch); */
 		 edit_window(command_pop,pos,value,col,done,ch);
 
 		

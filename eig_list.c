@@ -71,6 +71,8 @@ struct{
 } eq_list;
 
  
+extern int HomoFlag,sparity;
+extern double homo_l[100],homo_r[100];
 
 void draw_eq_list(w)
 Window w;
@@ -243,7 +245,21 @@ void eq_box_import()
   int n=eq_box.n,i;
   for(i=0;i<n;i++)
     last_ic[i]=eq_box.y[i];
-  
+
+
+  if(n<20){
+    if(sparity==0){
+      for(i=0;i<n;i++)
+	homo_l[i]=eq_box.y[i];
+      printf("Saved to left equilibrium\n");
+    }
+    if(sparity==1){
+      for(i=0;i<n;i++)
+	homo_r[i]=eq_box.y[i];
+      printf("Saved to right equilibrium\n");
+    }
+    sparity=1-sparity;
+  }
    redraw_ics();
 }
 

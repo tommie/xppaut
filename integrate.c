@@ -116,7 +116,7 @@ extern int aplot_range;
 extern int Nintern_2_use;
 extern int AdjRange;
 
-
+extern Window draw_win;
 extern char this_internset[XPP_MAX_NAME];
 
 int MakePlotFlag=0;
@@ -197,7 +197,7 @@ int STOP_FLAG=0;
 int PSLineStyle;
  struct {
          char item[30];
-	 int steps,shoot,col,movie;
+   int steps,shoot,col,movie,mc;
 	 double plow,phigh;
        } eq_range;
 
@@ -264,6 +264,7 @@ void dump_range(fp,f)
 void init_range()
 {
  eq_range.col=-1;
+ eq_range.mc=0;
  eq_range.shoot=0;
  eq_range.steps=10;
  eq_range.plow=0.0;
@@ -316,8 +317,8 @@ int set_up_eq_range()
 {
 static char *n[]={"*2Range over","Steps","Start","End",
 		     "Shoot (Y/N)",
-		     "Stability col","Movie (Y/N)"};
- char values[7][MAX_LEN_SBOX];
+		  "Stability col","Movie (Y/N)","Monte Carlo (Y/N)"};
+ char values[8][MAX_LEN_SBOX];
  int status,i;
  static  char *yn[]={"N","Y"};
  sprintf(values[0],"%s",eq_range.item);
@@ -327,9 +328,10 @@ static char *n[]={"*2Range over","Steps","Start","End",
  sprintf(values[4],"%s",yn[eq_range.shoot]);
  sprintf(values[5],"%d",eq_range.col);
  sprintf(values[6],"%s",yn[eq_range.movie]);
+sprintf(values[7],"%s",yn[eq_range.mc]);
 
  
- status=do_string_box(7,7,1,"Range Equilibria",n,values,45);
+ status=do_string_box(8,8,1,"Range Equilibria",n,values,45);
  if(status!=0){
    strcpy(eq_range.item,values[0]);
    i=find_user_name(PARAM,eq_range.item);
@@ -346,6 +348,8 @@ static char *n[]={"*2Range over","Steps","Start","End",
    else eq_range.shoot=0;
    if(values[6][0]=='Y'||values[6][0]=='y')eq_range.movie=1;
    else eq_range.movie=0;
+    if(values[7][0]=='Y'||values[6][0]=='y')eq_range.mc=1;
+   else eq_range.mc=0;
    eq_range.col=atoi(values[5]);
    if(eq_range.col<=1||eq_range.col>(NEQ+1))eq_range.col=-1;
  
@@ -679,6 +683,7 @@ double *x;
 {
  double parlo,parhi,dpar,temp;
  int npar,stabcol,i,j,ierr;
+ int mc;
  char bob[256];
  float stabinfo;
 
@@ -692,7 +697,7 @@ double *x;
  npar=eq_range.steps;
  dpar=(parhi-parlo)/(double)npar;
  stabcol=eq_range.col;
-
+ mc=eq_range.mc;
  storind=0;
  DelayErr=0;
  ENDSING=0;
@@ -700,6 +705,10 @@ double *x;
  PAUSER=0;
  SHOOT=eq_range.shoot;
  reset_browser();
+ if(mc==1){
+   eq_range.movie=1;
+   SHOOT=0;
+ }
  if(eq_range.movie)reset_film();
  for(i=0;i<=npar;i++)
    {
@@ -711,22 +720,28 @@ double *x;
       sprintf(bob,"%s=%.16g",eq_range.item,temp);
       bottom_msg(2,bob);
       evaluate_derived();
+      if(mc) {
+	do_monte_carlo_search(0,0,1);
+      }
+      else {
       if(DelayFlag)
 	do_delay_sing(x,NEWT_ERR,EVEC_ERR,BOUND,EVEC_ITER,
 		      NODE,&ierr,&stabinfo);
       else do_sing(x,NEWT_ERR,EVEC_ERR,BOUND,EVEC_ITER,
 		   NODE,&ierr,&stabinfo);
+      }
       if(eq_range.movie){
+	draw_label(draw_win);
         put_text_x11(5,10,bob);
 	if(film_clip()==0)err_msg("Out of film");
       }
-
+      if(mc==0){
       storage[0][storind]=temp;
       for(j=0;j<NODE;j++)storage[j+1][storind]=(float)x[j];
       for(j=NODE;j<NODE+NMarkov;j++)storage[j+1][storind]=0.0;
       if(stabcol>0)storage[stabcol-1][storind]=stabinfo;
 
-      storind++;
+      storind++;}
       if(ENDSING==1)break;
     }
     refresh_browser(storind);
@@ -899,6 +914,9 @@ if(fabs(MyTime)>=TRANS&&STORFLAG==1&&POIMAP==0)
 
  if(range.movie){
    put_text_x11(5,10,bob);
+   redraw_dfield();
+	create_new_cline();
+   draw_label(draw_win);
    if(film_clip()==0){err_msg("Out of film");break;}
  }
  refresh_browser(storind);
@@ -2332,7 +2350,7 @@ poi:    for(i=0;i<NEQ;i++)oldx[i]=x[i];
      
           if(!(fabs(*t)<TRANS)&&Xup)
 	  {
-             plot_the_graphs(xv,xvold,NODE,NEQ,fabs(dt*NJMP),torcross);
+	    plot_the_graphs(xv,xvold,NODE,NEQ,fabs(dt*NJMP),torcross,0);
 
 	  }
 
@@ -2476,7 +2494,7 @@ int ip,np=MyGraph->nvars;
 }
 	
 
-void plot_the_graphs(float *xv,float *xvold,int node,int neq,double ddt,int *tc)
+void plot_the_graphs(float *xv,float *xvold,int node,int neq,double ddt,int *tc,int flag)
 {
   int i;
   int ic=current_pop;
@@ -2487,10 +2505,10 @@ void plot_the_graphs(float *xv,float *xvold,int node,int neq,double ddt,int *tc)
  
  
  for(i=0;i<num_pops;i++){
-     make_active(ActiveWinList[i]);
+   make_active(ActiveWinList[i],flag);
      plot_one_graph(xv,xvold,node,neq,ddt,tc);
  }
- make_active(ic);
+ make_active(ic,flag);
 }
 
 void plot_one_graph(float *xv,float *xvold,int node,int neq,double ddt,int *tc)

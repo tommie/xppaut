@@ -6,8 +6,10 @@
 #include "parserslow.h"
 #include "tabular.h"
 
-#include <stdlib.h> 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
 /* 
   n is the number of values to return
   ncon is the number of connections each guy gets
@@ -23,7 +25,7 @@
 ODE FILE CALL:
    
 special f=sparse( n, ncon, w,index,rootname)
-special f=conv(type,n,ncon,w,rootname)
+special f=sconv(type,n,ncon,w,rootname)
 index,w are tables that are loaded by the "tabular"
 command.
 rootname here is the name of the root quantity.
@@ -64,6 +66,23 @@ special stot=sparse(51,5,w,con,v0)
 v[0..50]'=f(v[j],w[j])-gsyn*stot([j])*(v([j])-vsyn)
 
 more stuff:
+special k= delmmult(n,m,w,tau,root)
+          w has n*m values and tau has n*m delays
+          n is the length of root (cols) and m is number of rows
+          k(i) = sum(j=0,n-1) w[i*n+j] delay(root(j),tau[i*n+j])
+          Note delays can only work on variables and not on 
+          fixed  values
+special k=delsparse(m,nc,w,index,tau,root)
+          m is the number of return values
+          nc is number of connections per node. Must be the sam
+          w is  n*nc is weights
+          index is  m*nc that has the indices of connections
+
+          tau is m*nc is list of delays
+      
+       k[i]=sum( 0<=j < nc) w[j+nc*i]*delay(root[c[j+nc*i]],tau[j+nc*i])
+ 
+
 special f=mmult(n,m,w,root)  -- note that here m is the number of return
                           values and n is the size of input root
 f[j] = sum(i=0,n-1)of(w(i+n*j)*root(i)) j=0,..,m-1
@@ -93,6 +112,26 @@ if type=-1 mx(2)=minimum mx(3)=index
 if type=0 mx(0)=maximum mx(1)=index,mx(2)=minimum mx(3)=index
           
 
+special ydot=import(soname,sofun,nret,root,w1,w2,...wm)
+  
+ run right hand side in C 
+ soname is shared object library say mlnet.so
+ sofun  is shared object function 
+ nret is the number of return values
+ root is the name of the first variable
+
+
+
+sofun(int nret, int root, double *con, double *var, double *z[50],double *ydot)
+
+*z[50] contains a list of pointers  z[0] -> w1, .... 50 is hard coded
+
+
+NOTE that the user-defined parameters start at #6 and are in order
+including derived parameters but XPP takes care of this so start at 0
+
+ 
+ 
 
 */
 
@@ -100,9 +139,15 @@ if type=0 mx(0)=maximum mx(1)=index,mx(2)=minimum mx(3)=index
 #include <math.h>
 #include <stdio.h>
 
-extern int NODE;
+#define EVEN 0
+#define ZERO 1
+#define PERIODIC 2
+#define MAXW 50
+extern int NODE,NDELAYS;
+extern double get_delay(int in,double td);
 
-
+void get_import_values();
+int parse_import();
 #define IC 2
  extern int fftn (int /* ndim */,
 		    const int /* dims */[],
@@ -113,6 +158,17 @@ extern int NODE;
 
 
 /* simple network stuff */
+
+#define MAXVEC 100
+
+typedef struct {
+  char name[20];
+  int root,length,il,ir;
+} VECTORIZER;
+
+
+VECTORIZER my_vec[MAXVEC];
+int n_vector=0;
 
 typedef struct {
   double xlo,xhi,dx;
@@ -131,12 +187,16 @@ extern TABULAR my_table[MAX_TAB];
 typedef struct {
   int type,ncon,n;
   char name[20];
+  char soname[256],sofun[256];
+  
   int root,root2;
   int f[20];
   int iwgt;
   int *gcom; /* for group commands */
-  double *values,*weight,*index;
+
+  double *values,*weight,*index,*taud; /* for delays  */
   double *fftr,*ffti,*dr,*di;
+  double *wgtlist[MAXW];
 } NETWORK;
 
 #define CONVE 0
@@ -154,14 +214,17 @@ typedef struct {
 #define GILLTYPE 25
 #define INTERP 30 
 #define FINDEXT 35  /* find extrema in list of variables */
+#define DEL_MUL 40  /* for delayed coupled networks  - global coupling */
+#define DEL_SPAR 41 /* sparse with unequal in degree and delays  */
+#define IMPORT  50 /* not really a network type   */
 
-
-extern double variables[];
+extern double variables[],constants[];
 
 char *get_first(/* char *string,char *src */);
 char *get_next(/* char *src */);
 
 double evaluate();
+
 
 NETWORK my_net[MAXNET];
 int n_network=0;
@@ -177,6 +240,65 @@ double net_interp(double x, int i)
   
 
 }
+
+int add_vectorizer(char *name,char *rhs)
+{
+  int i,ivar,il,ir;
+  int ind;
+  int len;
+  int flag;
+  
+  char rootname[100];
+  for(i=0;i<n_vector;i++)
+       if(strcmp(name,my_vec[i].name)==0)break;  
+
+  ind=i;
+  flag=get_vector_info(rhs,name,&ivar,&len,&il,&ir);
+
+  if(flag==0)return 0;
+  
+    my_vec[ind].root=ivar;
+    my_vec[ind].length=len;
+    my_vec[ind].il=il;
+    my_vec[ind].ir=ir;
+    plintf("adding vector %s based on variable %d of length %d ends %d %d\n",
+	   name,ivar,len,il,ir);
+ 
+  return 1;
+
+}  
+void add_vectorizer_name(char *name, char *rhs)
+{
+  if(n_vector>=MAXVEC){
+    plintf("Too many vectors \n");
+    exit(0);
+  }
+  strcpy(my_vec[n_vector].name,name);
+  if(add_vector_name( n_vector,name))
+    exit(0);
+  n_vector++;
+
+}
+double vector_value(x,i)
+     double x;
+     int i;
+{
+  int il=my_vec[i].il,ir=my_vec[i].ir,n=my_vec[i].length,k=(int)x;
+  int root=my_vec[i].root;
+  if((k>=0)&&(k<n))  return variables[root+k];
+  if(il==PERIODIC)return variables[root+((k+n)%n)];
+  if(k<0){
+    if(il==ZERO)return 0.0;
+    return variables[root-k-1];
+  }
+  if(k>=n){
+    if(ir==ZERO)return 0.0;
+    return variables[2*n-k-1+root];
+  }
+
+
+
+}  
 double network_value(x, i)
     double x;
     int i;
@@ -202,14 +324,15 @@ int add_spec_fun(name,rhs)
      char *name;
      char *rhs;
 {
-  int i,ind,elen;
+  int i,ind,elen,err;
   int type;
-  int iwgt,iind,ivar,ivar2;
+  int iwgt,itau,iind,ivar,ivar2;
   int ntype,ntot,ncon,ntab;
   char *str;
   char junk[256];
-  char rootname[20],wgtname[20],indname[20];
+  char rootname[20],wgtname[20],tauname[20],indname[20];
   char root2name[20],fname[20];
+  char sofun[256],soname[256],*tname[MAXW];
   type=is_network(rhs);
     if(type==0)return 0;
   plintf("type=%d \n",type);
@@ -393,8 +516,8 @@ int add_spec_fun(name,rhs)
        init_net(my_net[ind].values,ntot);
     my_net[ind].weight=my_table[iwgt].y;
     my_net[ind].type=ntype;
-    my_net[ind].root=ivar;
-    my_net[ind].root2=ivar2;
+    my_net[ind].root=my_net[ind].f[0]; /* this is strange - I am adding the compiled names */
+    my_net[ind].root2=my_net[ind].f[1];
     my_net[ind].n=ntot;
     my_net[ind].ncon=ncon;
     plintf(" Added net %s type %d len=%d x %d using %s %s(var[%d],var[%d]) \n",
@@ -473,8 +596,8 @@ int add_spec_fun(name,rhs)
     my_net[ind].index=my_table[iind].y;
 
     my_net[ind].type=ntype;
-    my_net[ind].root=ivar;
-    my_net[ind].root2=ivar2;
+    my_net[ind].root=my_net[ind].f[0]; /* this is strange - I am adding the compiled names */
+    my_net[ind].root2=my_net[ind].f[1];
     my_net[ind].n=ntot;
     my_net[ind].ncon=ncon;
     plintf(" Sparse %s len=%d x %d using %s %s(var[%d],var[%d]) and %s\n",
@@ -649,13 +772,16 @@ int add_spec_fun(name,rhs)
       plintf(" bad function %s \n",fname);
       return 0;
     }
+    /*for(i=0;i<elen;i++)
+      printf("%d %d \n",i,my_net[ind].f[i]);
+    */
     my_net[ind].values=(double *)malloc((ncon+1)*sizeof(double));
     init_net(my_net[ind].values,ncon);
     my_net[ind].weight=my_table[iwgt].y;
 
     my_net[ind].type=ntype;
-    my_net[ind].root=ivar;
-    my_net[ind].root2=ivar2;
+    my_net[ind].root=my_net[ind].f[0]; /* this is strange - I am adding the compiled names */
+    my_net[ind].root2=my_net[ind].f[1];
     my_net[ind].n=ncon;
     my_net[ind].ncon=ntot;
     plintf(" Added fmmult %s len=%d x %d using %s %s(var[%d],var[%d])\n",
@@ -731,6 +857,184 @@ int add_spec_fun(name,rhs)
     my_net[ind].root=ivar;
     plintf("Added interpolator %s length %d on %s \n",name,my_net[ind].n,rootname); 
     return 1;
+
+   case IMPORT:
+     ntype=IMPORT;
+     for(i=0;i<MAXW;i++)
+       tname[i]=(char *)malloc(25);
+     err=parse_import(rhs,soname,sofun,&ncon,rootname,&ntab,tname);
+     my_net[ind].values=(double *)malloc((ncon+1)*sizeof(double));
+     init_net(my_net[ind].values,ncon);
+     my_net[ind].n=ncon;
+     ivar=get_var_index(rootname);
+     if(ivar<0){
+      plintf(" In %s , %s is not valid variable\n",
+	     name,rootname);
+      return 0;
+    }
+     strcpy(my_net[ind].soname,soname);
+     strcpy(my_net[ind].sofun,sofun);
+     my_net[ind].root=ivar;
+     my_net[ind].type=ntype;
+     my_net[ind].ncon=0;
+     for(i=0;i<ntab;i++){
+       iwgt=find_lookup(tname[i]);
+       plintf("Found %s\n",tname[i]);
+       if(iwgt<0){
+	 plintf("in network %s,  %s is not a table \n",
+		name,wgtname);
+	 return 0;
+       }
+       my_net[ind].wgtlist[i]=my_table[iwgt].y;
+     }
+     for(i=0;i<MAXW;i++)
+       free(tname[i]);
+     plintf(" Added import %s len=%d  with %s %s var[%d] %d weights\n",
+	    name,my_net[ind].n,soname,sofun,ivar,ntab );
+     
+     return 1;
+   case DEL_MUL:
+
+    get_first(rhs,"(");
+    str=get_next(",");
+    ntype=DEL_MUL;
+    ntot=atoi(str);
+    
+    if(ntot<=0){
+      plintf(" %s must be positive int \n",str);
+      return 0;
+    }
+    str=get_next(",");
+    ncon=atoi(str);
+    
+    if(ncon<=0){
+       plintf(" %s must be positive int \n",str);
+      return 0;
+    }
+    str=get_next(",");
+    strcpy(wgtname,str);
+    iwgt=find_lookup(wgtname);
+    
+    if(iwgt<0){
+      plintf("in network %s,  %s is not a table \n",
+	     name,wgtname);
+      return 0;
+    }
+    str=get_next(",");
+    strcpy(tauname,str);
+    itau=find_lookup(tauname);
+    
+    if(itau<0){
+      plintf("in network %s,  %s is not a table \n",
+	     name,tauname);
+      return 0;
+    }
+
+     
+
+    str=get_next(")");
+    strcpy(rootname,str);
+       ivar=get_var_index(rootname);
+  
+
+   if(ivar<0){
+      plintf(" In %s , %s is not valid variable\n",
+	     name,rootname);
+      return 0;
+    }
+ 
+    my_net[ind].values=(double *)malloc((ncon+1)*sizeof(double));
+       init_net(my_net[ind].values,ncon);
+    my_net[ind].weight=my_table[iwgt].y;
+    my_net[ind].taud=my_table[itau].y;
+
+    my_net[ind].type=ntype;
+    my_net[ind].root=ivar;
+    my_net[ind].n=ncon;
+    my_net[ind].ncon=ntot;
+    plintf(" Added del_mul %s len=%d x %d using %s var[%d] with delay %s\n",
+	   name,ntot,ncon,wgtname,ivar,indname,tauname );
+    NDELAYS=1;
+    return 1;   
+    break;
+    return 0;
+  case DEL_SPAR:
+   get_first(rhs,"(");
+    str=get_next(",");
+    ntype=DEL_SPAR;
+    ntot=atoi(str);
+    
+    if(ntot<=0){
+      plintf(" %s must be positive int \n",str);
+      return 0;
+    }
+    str=get_next(",");
+    ncon=atoi(str);
+    
+    if(ncon<=0){
+       plintf(" %s must be positive int \n",str);
+      return 0;
+    }
+    str=get_next(",");
+    strcpy(wgtname,str);
+    iwgt=find_lookup(wgtname);
+    
+    if(iwgt<0){
+      plintf("in network %s,  %s is not a table \n",
+	     name,wgtname);
+      return 0;
+    }
+
+     str=get_next(",");
+    strcpy(indname,str);
+    iind=find_lookup(indname);
+    
+    if(iind<0){
+      plintf("in network %s,  %s is not a table \n",
+	     name,indname);
+      return 0;
+    }
+
+
+     str=get_next(",");
+    strcpy(tauname,str);
+    itau=find_lookup(tauname);
+    
+    if(itau<0){
+      plintf("in network %s,  %s is not a table \n",
+	     name,tauname);
+      return 0;
+    }
+
+    
+    str=get_next(")");
+    strcpy(rootname,str);
+       ivar=get_var_index(rootname);
+  
+
+   if(ivar<0){
+      plintf(" In %s , %s is not valid variable\n",
+	     name,rootname);
+      return 0;
+    }
+ 
+    my_net[ind].values=(double *)malloc((ntot+1)*sizeof(double));
+       init_net(my_net[ind].values,ntot);
+    my_net[ind].weight=my_table[iwgt].y;
+    my_net[ind].index=my_table[iind].y;
+    my_net[ind].taud=my_table[itau].y;
+    my_net[ind].type=ntype;
+    my_net[ind].root=ivar;
+    my_net[ind].n=ntot;
+    my_net[ind].ncon=ncon;
+    plintf(" Added sparse %s len=%d x %d using %s var[%d]  and %s with dely %s\n",
+	   name,ntot,ncon,wgtname,ivar,indname,tauname );
+    NDELAYS=1;
+    return 1;   
+    break;
+
+
+    return 0;
   case 10:
     /* 
        z=GILL(meth,rxn list)
@@ -750,6 +1054,10 @@ int add_spec_fun(name,rhs)
     ivar=atoi(str);
     str=get_next(")");
     my_net[ind].type=GILLTYPE;
+    if(ivar>0){
+      plintf(" Tau leaping not implemented yet. Changing to 0\n");
+      ivar=0;
+    }
     my_net[ind].iwgt=ivar;
     my_net[ind].gcom=(int *)malloc(1000*sizeof(int));
     if(gilparse(str,my_net[ind].gcom,&ivar2)==0)
@@ -825,6 +1133,9 @@ int is_network(s)
   if(s[0]=='G'&& s[1]=='I' &&s[2]=='L' &&s[3]=='L')return 10;
   if(s[0]=='I' && s[1]=='N' &&s[2]=='T' && s[3]=='E' && s[4]=='R')return INTERP;
   if(s[0]=='F' && s[1]=='I' &&s[2]=='N' && s[3]=='D' && s[4]=='E')return FINDEXT;
+   if(s[0]=='D' &&s[1]=='E' &&s[2]=='L' && s[3]=='M')return DEL_MUL;
+   if(s[0]=='D' &&s[1]=='E' &&s[2]=='L' && s[3]=='S')return DEL_SPAR;
+   if(s[0]=='I' &&s[1]=='M' &&s[2]=='P' && s[3]=='O')return IMPORT;  
   /* if(s[0]=='G'&& s[1]=='R' && s[2]=='O' && s[3]=='U')return 8; */
   return 0;
 }
@@ -845,17 +1156,19 @@ int ind;
    double ymin,ymax;
    int skip;
    int mmt;
+   int in0;
    double sum,z;
    int n=my_net[ind].n,*f;
    int ncon=my_net[ind].ncon;
-   double *w,*y,*cc,*values,*yp;
-   int twon=2*n,root2=my_net[ind].root2;
+   double *w,*y,*cc,*values,*yp,*tau;
+   int twon=2*n,root=my_net[ind].root,root2=my_net[ind].root2;
    cc=my_net[ind].index;
    w=my_net[ind].weight;
    values=my_net[ind].values;
-   y=&variables[my_net[ind].root];
+   /*  y=&variables[my_net[ind].root]; */
    switch(my_net[ind].type){
    case FINDEXT:
+     y=&variables[root];
      mmt=my_net[ind].iwgt;
      skip=ncon;
      imax=0;
@@ -903,6 +1216,7 @@ int ind;
      one_gill_step(my_net[ind].iwgt,my_net[ind].root,my_net[ind].gcom,my_net[ind].values);
      break;
    case CONVE:
+     y=&variables[root];
      for(i=0;i<n;i++){
        sum=0.0;
        for(j=-ncon;j<=ncon;j++){
@@ -916,7 +1230,7 @@ int ind;
      }
      break;
      case CONV0:
-
+     y=&variables[root];
      for(i=0;i<n;i++){
        sum=0.0;
        for(j=-ncon;j<=ncon;j++){
@@ -928,6 +1242,7 @@ int ind;
      }
      break;
      case CONVP:
+     y=&variables[root];
      for(i=0;i<n;i++){
        sum=0.0;
        for(j=-ncon;j<=ncon;j++){
@@ -938,15 +1253,32 @@ int ind;
      }
      break;
    case FFTCONP:
+     y=&variables[root];
     fft_conv(0,n,values,y,my_net[ind].fftr,my_net[ind].ffti,my_net[ind].dr,my_net[ind].di);
     break;
    
    case FFTCON0:
-           
+     y=&variables[root];           
       fft_conv(1,n,values,y,my_net[ind].fftr,my_net[ind].ffti,my_net[ind].dr,my_net[ind].di);
     break;
-     
+
+   case IMPORT:
+     get_import_values(n,values,my_net[ind].soname,my_net[ind].sofun,my_net[ind].root,my_net[ind].wgtlist,variables,&constants[6]);
+     break;
+   case DEL_MUL:
+     tau=my_net[ind].taud;
+     in0=my_net[ind].root;
+     for(j=0;j<n;j++){
+       sum=0.0;
+       for(i=0;i<ncon;i++){
+         ij=j*ncon+i;
+	 sum+=(w[ij]*get_delay(i+in0,tau[ij]));
+       }
+       values[j]=sum;
+     }
+     break;
    case MMULT:
+     y=&variables[root];
      for(j=0;j<n;j++){
        sum=0.0;
        for(i=0;i<ncon;i++){
@@ -956,7 +1288,22 @@ int ind;
        values[j]=sum;
      }
      break;
+   case DEL_SPAR:
+     tau=my_net[ind].taud;
+     in0=my_net[ind].root;
+      for(i=0;i<n;i++){
+       sum=0.0;
+       for(j=0;j<ncon;j++){
+	 ij=i*ncon+j;
+	 k=(int)cc[ij];
+         if(k>=0)
+	   sum+=(w[ij]*get_delay(k+in0,tau[ij]));
+       }
+       values[i]=sum;
+     }  
+      break;
    case SPARSE:
+     y=&variables[root];
      for(i=0;i<n;i++){
        sum=0.0;
        for(j=0;j<ncon;j++){
@@ -972,17 +1319,16 @@ int ind;
      /*     f stuff  */           
    case FCONVE:
      f=my_net[ind].f;
-     yp=&variables[root2];
+
      for(i=0;i<n;i++){
        sum=0.0;
-       /*f[3]=(int)(&yp[i]);*/
-       f[3]=lround(yp[i]);
+       f[1]=root+i;
        for(j=-ncon;j<=ncon;j++){
 	 k=abs(i+j);
 	 if(k<twon){
 	   if(k>=n)k=abs(twon-2-k);
-           /*f[1]=(int)(&y[k]);*/
-	   f[1]=lround(y[k]);
+           f[0]=root2+k;
+
 	   z=evaluate(f);
 	   sum+=(w[j+ncon]*z);
 	 }
@@ -992,16 +1338,15 @@ int ind;
      break;
    case FCONV0:
      f=my_net[ind].f;
-     yp=&variables[root2];
+     
      for(i=0;i<n;i++){
        sum=0.0;
-       /*f[3]=(int)(&yp[i]);*/
-       f[3]=lround(yp[i]);
+       f[1]=root+i;
        for(j=-ncon;j<=ncon;j++){
 	 k=i+j;
 	 if(k<n&&k>=0){
-	   /*f[1]=(int)(&y[k]);*/
-	   f[1]=lround(y[k]);
+	
+	   f[0]=root2+k;
 	   z=evaluate(f);
 	   sum+=(w[j+ncon]*z);
 	 }
@@ -1011,15 +1356,13 @@ int ind;
      break;
    case FCONVP:
      f=my_net[ind].f;
-     yp=&variables[root2];
+
      for(i=0;i<n;i++){
-       /*f[3]=(int)(&yp[i]);*/
-       f[3]=lround(yp[i]);
+       f[1]=root+i;
        sum=0.0;
        for(j=-ncon;j<=ncon;j++){
 	 k=((twon+i+j)%n);
-	 /*f[1]=(int)(&y[k]);*/
-	 f[1]=lround(y[k]);
+	 f[0]=root2+k;
 	 z=evaluate(f);
 	 sum+=(w[j+ncon]*z);
        }
@@ -1028,17 +1371,15 @@ int ind;
      break;
    case FSPARSE:
      f=my_net[ind].f;
-     yp=&variables[root2];
+
      for(i=0;i<n;i++){
-       /*f[3]=(int)(&yp[i]);*/
-       f[3]=lround(yp[i]);
+       f[1]=root+i;
        sum=0.0;
        for(j=0;j<ncon;j++){
 	 ij=i*ncon+j;
 	 k=(int)cc[ij];
          if(k>=0){
-	   /*f[1]=(int)(&y[k]);*/
-	   f[1]=lround(y[k]);
+	   f[0]=root2+k;
 	   z=evaluate(f);
 	   sum+=(w[ij]*z);
 	 }
@@ -1048,19 +1389,22 @@ int ind;
      break;
    case FMMULT:
      f=my_net[ind].f;
-     yp=&variables[root2];
+
      for(j=0;j<n;j++){
-       /*f[3]=(int)(&yp[j]);*/
-       f[3]=lround(yp[j]);
+
+       f[1]=root+j;
+
        sum=0.0;
        for(i=0;i<ncon;i++){
 	 ij=j*ncon+i;
-	 /*f[1]=(int)(&y[i]);*/
-	 f[1]=lround(y[i]);
+
+         f[0]=root2+i;
+         
 	 z=evaluate(f);
+
 	 sum+=(w[ij]*z);
        }
-       
+
        values[j]=sum;
      }
      break;
@@ -1280,6 +1624,161 @@ int g_namelist(char *s,char *root,int *flag,int *i1,int*i2)
   return 1;
 }
  
+
+
+
+int getimpstr(char *in,int *i,char *out)
+{
+  int j=0;
+  int done=1;
+  char c;
+  int k=0;
+  while(done>0)
+    {
+      c=in[*i];
+
+      if((c==',')||(c==')'))
+	{
+	  out[j]=0;
+	  *i=*i+1;
+	  done=0;
+	  if(c==')')k=1;
+	  else k=0;
+
+
+	}
+      else {
+	out[j]=c;
+        j++;
+        *i=*i+1;
+      }
+      
+    }
+
+  return k;
+}
+
+int import_error()
+{
+  printf("k=import(soname,sofun,nret,var0,w1,...,wm)");
+  return 0;
+}
+int parse_import(char *s,  char *soname,char *sofun,int *n, char *vname,int *m, char *tname[MAXW])
+{
+  char temp[256];
+  int j;
+  char c;
+  
+  int i=0;
+  int done=1;
+  
+  
+  while(done>0){
+    c=s[i];
+    i++;
+    if(c=='(')
+      done=0;
+  }
+
+  j=getimpstr(s,&i,temp);
+  strcpy(soname,temp);
+  if(j==1)return(import_error());
+
+  j=getimpstr(s,&i,temp);
+  strcpy(sofun,temp);
+  if(j==1)return(import_error());
+
+  j=getimpstr(s,&i,temp);
+  *n=atoi(temp);
+  if(j==1||*n<=0)return(import_error());
+
+  j=getimpstr(s,&i,temp);
+  strcpy(vname,temp);
+  /*  plintf("%s %s %d %s\n",soname,sofun,*n,vname); */
+  *m=0;
+  if(j==1){
+    printf("No weights....\n");
+    return(1);
+  } 
+
+    done=1;
+   
+  while(done>0){
+    j=getimpstr(s,&i,temp);
+    strcpy(tname[*m],temp);
+    *m=*m+1;
+    if(j==1)done=0;
+  }
+  return 1;
+}
+
+
+int get_vector_info(char *str, char *name,int *root, int *length, int *il, int *ir)
+{
+
+  int i=0;
+  int ivar;
+  int n=strlen(str);
+  char c;
+  int j;
+  char temp[100];
+  de_space(str);
+  for(i=0;i<n;i++)
+    if(str[i]=='(')break;
+  i++;
+  j=0;
+  while(1){
+    c=str[i];
+    if(c==','){
+      i++;
+      break;
+    }
+    temp[j]=c;
+    i++;
+    j++;
+  }
+  temp[j]=0;
+  ivar=get_var_index(temp);
+  
+   
+  if(ivar<0){
+    plintf(" In vector %s , %s is not valid variable\n",
+	     name,temp);
+    return 0;
+    }
+  *root=ivar; 
+  j=0;
+  while(1){
+    c=str[i];
+    if(c==','){
+      i++;
+      break;
+    }
+    temp[j]=c;
+    i++;
+    j++;
+  }
+    temp[j]=0;
+  n=atoi(temp);
+
+  *length=n;
+  *il=PERIODIC;
+  if(str[i]=='e'|| str[i]=='E')
+    *il=EVEN;
+  if(str[i]=='z'|| str[i]=='Z')
+    *il=ZERO;
+  i++;
+  i++;
+  *ir=PERIODIC;
+   
+  if(str[i]=='e'|| str[i]=='E')
+    *ir=EVEN;
+  if(str[i]=='z'|| str[i]=='Z')
+    *ir=ZERO;
+
+
+  return 1;
+}
 
 
 

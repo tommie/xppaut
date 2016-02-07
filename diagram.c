@@ -14,13 +14,12 @@
 #include "load_eqn.h"
 #define DALLOC(a) (double *)malloc((a)*sizeof(double))
 
-
+extern int TypeOfCalc;
 extern ROTCHK blrtn;
 extern int PS_Color;  
 
 extern float **storage;
 extern int storind;
-
 #define PACK_AUTO 0
 #define PACK_LBF 1
 extern int AutoTwoParam;
@@ -50,8 +49,8 @@ void start_diagram(n)
   DiagFlag=0;
 }
 
-int find_diagram(irs,n,index,ibr,ntot,itp,nfpar,a,uhi,ulo,u0,par,per,icp1,icp2)
-     int *index,*ibr,*ntot,*itp,*nfpar,*icp1,*icp2,irs,n;
+int find_diagram(irs,n,index,ibr,ntot,itp,nfpar,a,uhi,ulo,u0,par,per,icp1,icp2,icp3,icp4)
+     int *index,*ibr,*ntot,*itp,*nfpar,*icp1,*icp2,*icp3,*icp4,irs,n;
      double *par,*per,*a;
      double *uhi,*ulo,*u0;
 {
@@ -76,6 +75,8 @@ int find_diagram(irs,n,index,ibr,ntot,itp,nfpar,a,uhi,ulo,u0,par,per,icp1,icp2)
     par=d->par;
     *icp1=d->icp1;
     *icp2=d->icp2;
+    *icp3=d->icp3;
+    *icp4=d->icp4;
     *per=d->per;
     for(i=0;i<n;i++){
       u0[i]=d->u0[i];
@@ -88,39 +89,44 @@ int find_diagram(irs,n,index,ibr,ntot,itp,nfpar,a,uhi,ulo,u0,par,per,icp1,icp2)
 }
     
 void edit_start(ibr,ntot,itp,lab,nfpar,a,uhi,ulo,u0,ubar,
-par,per,n,icp1,icp2,evr,evi)
-     int ibr,ntot,itp,lab,nfpar,n,icp1,icp2;
+		par,per,n,icp1,icp2,icp3,icp4,evr,evi)
+     int ibr,ntot,itp,lab,nfpar,n,icp1,icp2,icp3,icp4;
      double *par,per,a;
      double *evr,*evi;
      double *uhi,*ulo,*u0,*ubar;
 {
   edit_diagram(bifd,ibr,ntot,itp,lab,nfpar,a,uhi,ulo,u0,ubar,
-	       par,per,n,icp1,icp2,AutoTwoParam,evr,evi,blrtn.torper);
+	       par,per,n,icp1,icp2,icp3,icp4,AutoTwoParam,evr,evi,blrtn.torper);
 }
 
 void edit_diagram(d,ibr,ntot,itp,lab,nfpar,a,uhi,ulo,u0,ubar,
-	     par,per,n,icp1,icp2,
+		  par,per,n,icp1,icp2,icp3,icp4,
 	     flag2,evr,evi,tp)
      DIAGRAM *d;
-     int ibr,ntot,itp,lab,nfpar,n,icp1,icp2,flag2;
+     int ibr,ntot,itp,lab,nfpar,n,icp1,icp2,icp3,icp4,flag2;
      double *par,per,a;
      double *uhi,*ulo,*u0,*ubar;
      double *evr,*evi,tp;
 {
   int i;
+  d->calc=TypeOfCalc;
   d->ibr=ibr;
   d->ntot=ntot;
   d->itp=itp;
   d->lab=lab;
   d->nfpar=nfpar;
   d->norm=a;
-  for(i=0;i<5;i++)d->par[i]=par[i];
+  for(i=0;i<8;i++){
+    d->par[i]=par[i];
+    /*  printf("%d %g\n",i,par[i]); */
+  }
 
   d->per=per;
  
   d->icp1=icp1;
   d->icp2=icp2;
-
+  d->icp3=icp3;
+  d->icp4=icp4;
   d->flag2=flag2;
   for(i=0;i<n;i++){
     d->ulo[i]=ulo[i];
@@ -134,8 +140,8 @@ void edit_diagram(d,ibr,ntot,itp,lab,nfpar,a,uhi,ulo,u0,ubar,
 }
   
 void add_diagram(ibr,ntot,itp,lab,nfpar,a,uhi,ulo,u0,ubar,
-	    par,per,n,icp1,icp2,flag2,evr,evi)
-     int ibr,ntot,itp,lab,n,icp1,icp2,flag2,nfpar;
+		 par,per,n,icp1,icp2,icp3,icp4,flag2,evr,evi)
+     int ibr,ntot,itp,lab,n,icp1,icp2,icp3,icp4,flag2,nfpar;
      double *par,per,a;
      double *uhi,*ulo,*u0,*ubar;
      double *evr,*evi;
@@ -159,7 +165,7 @@ void add_diagram(ibr,ntot,itp,lab,nfpar,a,uhi,ulo,u0,ubar,
  dnew->index=NBifs;
  NBifs++;
  edit_diagram(dnew,ibr,ntot,itp,lab,nfpar,a,uhi,ulo,u0,ubar,par,per,n,
-	      icp1,icp2,flag2,evr,evi,blrtn.torper);
+	      icp1,icp2,icp3,icp4,flag2,evr,evi,blrtn.torper);
  
 }
 
@@ -211,7 +217,7 @@ void redraw_diagram()
     if(d->ntot==1)flag=0;
     else flag=1;
     add_point(d->par,d->per,d->uhi,d->ulo,d->ubar,d->norm,type,flag,
-	      d->lab,d->nfpar,d->icp1,d->icp2,d->flag2,d->evr,d->evi);
+	      d->lab,d->nfpar,d->icp1,d->icp2,d->icp3,d->icp4,d->flag2,d->evr,d->evi);
     d=d->next;
     if(d==NULL)break;
   }
@@ -226,7 +232,7 @@ void write_info_out()
   /*int flag=0
   */
   int status;
-  int icp1,icp2;
+  int icp1,icp2,icp3,icp4;
   double *par;
   double par1,par2=0,*uhigh,*ulow,per;
   /*double a,*ubar,*u0;*/
@@ -266,8 +272,8 @@ void write_info_out()
     else 
       par2=par1;
      
-    fprintf(fp,"%d %d %g %g %g ",
-	    type,d->ibr,par1,par2,per);
+    fprintf(fp,"%d %d %d %g %g %g ",
+	    type,d->ibr,d->flag2,par1,par2,per);
     for(i=0;i<NODE;i++)
       fprintf(fp,"%g ",uhigh[i]);
     for(i=0;i<NODE;i++)
@@ -446,11 +452,17 @@ void write_pts()
     par1=par[icp1];
     if(icp2<NAutoPar)
       par2=par[icp2];
-     auto_xy_plot(&x,&y1,&y2,par1,par2,per,uhigh,ulow,ubar,a); 
-    fprintf(fp,"%g %g %g %d %d \n",
-	    x,y1,y2,type,abs(d->ibr));
-    d=d->next;
-    if(d==NULL)break;
+
+    /* now we have to check is the diagram parameters correspond to the 
+       current view 
+    */
+    if(check_plot_type(d->flag2,icp1,icp2)==1){
+      auto_xy_plot(&x,&y1,&y2,par1,par2,per,uhigh,ulow,ubar,a); 
+      fprintf(fp,"%g %g %g %d %d %d\n",
+	      x,y1,y2,type,abs(d->ibr),d->flag2);
+    }
+      d=d->next;
+      if(d==NULL)break;
   }
   fclose(fp);
 }
@@ -576,10 +588,10 @@ int save_diagram(fp,n)
     return(-1);
   d=bifd;
   while(1){
-    fprintf(fp,"%d %d %d %d %d %d %d %d %d\n", 
-	    d->ibr,d->ntot,d->itp,d->lab,d->index,d->nfpar,
-	    d->icp1,d->icp2,d->flag2);
-    for(i=0;i<5;i++)fprintf(fp,"%g ",d->par[i]);
+    fprintf(fp,"%d %d %d %d %d %d %d %d %d %d %d %d\n", 
+	    d->calc,d->ibr,d->ntot,d->itp,d->lab,d->index,d->nfpar,
+	    d->icp1,d->icp2,d->icp3,d->icp4,d->flag2);
+    for(i=0;i<8;i++)fprintf(fp,"%g ",d->par[i]);
     fprintf(fp,"%g %g \n",d->norm,d->per);
     
     for(i=0;i<n;i++)fprintf(fp,"%f %f %f %f %f %f\n",d->u0[i],d->uhi[i],d->ulo[i],
@@ -599,10 +611,10 @@ int load_diagram(fp,node)
      FILE *fp;
      int node;
 {
-  double u0[NAUTO],uhi[NAUTO],ulo[NAUTO],ubar[NAUTO],evr[NAUTO],evi[NAUTO],norm,par[5],per;
+  double u0[NAUTO],uhi[NAUTO],ulo[NAUTO],ubar[NAUTO],evr[NAUTO],evi[NAUTO],norm,par[8],per;
   int i,flag=0;
   int n;
-  int ibr,ntot,itp,lab,index,nfpar,icp1,icp2,flag2;
+  int calc,ibr,ntot,itp,lab,index,nfpar,icp1,icp2,icp3,icp4,flag2;
   fscanf(fp,"%d",&n);
   if(n==0){
 /*    start_diagram(NODE); */
@@ -610,22 +622,22 @@ int load_diagram(fp,node)
   }
     
   while(1){
-    fscanf(fp,"%d %d %d %d %d %d %d %d %d ",
-	   &ibr,&ntot,&itp,&lab,&index,&nfpar,
-	   &icp1,&icp2,&flag2);
-    for(i=0;i<5;i++)fscanf(fp,"%lg ",&par[i]);
+    fscanf(fp,"%d %d %d %d %d %d %d %d %d %d %d %d",
+	   &calc,&ibr,&ntot,&itp,&lab,&index,&nfpar,
+	   &icp1,&icp2,&icp3,&icp4,&flag2);
+    for(i=0;i<8;i++)fscanf(fp,"%lg ",&par[i]);
     fscanf(fp,"%lg %lg ",&norm,&per);
     for(i=0;i<node;i++)fscanf(fp,"%lg %lg %lg %lg %lg %lg",&u0[i],&uhi[i],&ulo[i],
 			      &ubar[i],&evr[i],&evi[i]);
     if(flag==0){
       edit_start(ibr,ntot,itp,lab,nfpar,norm,uhi,ulo,u0,ubar,par,per,node,
-		 icp1,icp2,evr,evi);
+		 icp1,icp2,icp3,icp4,evr,evi);
       flag=1;
       DiagFlag=1;
     }
     else
       add_diagram(ibr,ntot,itp,lab,nfpar,norm,uhi,ulo,u0,ubar,par,per,node,
-		  icp1,icp2,flag2,evr,evi);
+		  icp1,icp2,icp3,icp4,flag2,evr,evi);
     if(index>=n)break;
   }
     return(1);

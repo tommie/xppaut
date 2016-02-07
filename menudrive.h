@@ -52,6 +52,7 @@
 #define M_WO 72
 #define M_WF 73
 #define M_WD 74
+#define M_WS 75
 
 #define M_AA 80
 #define M_AN 81
@@ -97,6 +98,7 @@
 #define M_GCC 133
 #define M_GCB 134
 #define M_GCG 135
+#define M_GCU 136
 
 
 
@@ -200,7 +202,7 @@
 #define M_UHS 340
 #define M_UHL 341
 #define M_UHA 342
-#define M_UHR 343
+#define M_UHX 343
 #define M_UHE 344
 #define M_UH2 345
 

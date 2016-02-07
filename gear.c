@@ -719,12 +719,12 @@ void get_evec(a,anew,b,bp, n, maxit,
 	double *a,*ev,*work;   
    {
 
-      orthes(n,1,n,a,work);
-      hqr(n,1,n,a,ev,ierr);
+      orthesx(n,1,n,a,work);
+      hqrx(n,1,n,a,ev,ierr);
       }
 
 
-     void hqr( n, low, igh,h,ev,ierr)
+     void hqrx( n, low, igh,h,ev,ierr)
       int n,low,igh,*ierr;
       double *h,*ev;
       {
@@ -875,7 +875,7 @@ l330:
 l1000:
      *ierr = en;
 }
-      void orthes(n,low,igh,a,ort)
+      void orthesx(n,low,igh,a,ort)
       int n,low,igh;
       double *a,*ort;
       {
@@ -980,6 +980,32 @@ int n;
     for(j=0;j<n;j++)
     {
     dermat[j*n+i]=(yp[j]-y[j])/r;
+    /*    plintf("dm=%g \n",dermat[j*n+i]); */
+    }
+
+  }
+}
+
+void getjactrans(double *x,double *y,double *yp,double *xp, double eps, double *dermat, int n)
+
+{
+ int i,j,k;
+ double r;
+   rhs(0.0,x,y,n);
+  for(i=0;i<n;i++)
+  {
+    /*    plintf(" y=%g x=%g\n",y[i],x[i]); */
+    for(k=0;k<n;k++) xp[k]=x[k];
+    r=eps*amax(eps,fabs(x[i]));
+    xp[i]=xp[i]+r;
+    rhs(0.0,xp,yp,n);
+    /* 
+       for(j=0;j<n;j++)
+       plintf(" r=%g yp=%g xp=%g\n",r,yp[j],xp[j]);
+    */
+    for(j=0;j<n;j++)
+    {
+    dermat[j+n*i]=(yp[j]-y[j])/r;
     /*    plintf("dm=%g \n",dermat[j*n+i]); */
     }
 

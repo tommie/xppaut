@@ -56,11 +56,11 @@ AUTO, using the values of one program in the other and vice-versa.  I
 have put a ``friendly'' face on AUTO as well.  You do not need to know
 much about it to play around with it.
 
-XPP has the capabilities for handling up to 590 differential equations. 
+XPP has the capabilities for handling up to 5000 differential equations. 
  There are solvers for delay and stiff differential equations a well as
  some code for boundary value problems.  Difference equations are also
  handled.  Up to 10 graphics windows can be visible at once and a variety
- of color combinations is supported.  PostScript output
+ of color combinations is supported.  PostScript/SVG output
  is supported.  Post processing is easy and includes the ability to make
  histograms, FFTs and applying functions to columns of your data.
 Equilibria
@@ -72,7 +72,7 @@ Equilibria
  that is what I do for a living. Equations with Dirac delta functions
 are allowable.
 
-With Version 3.0, I have added an animation package that allows you to
+There is an animation package that allows you to
 create animated versions of your simulations, such as a little
 pendulum moving back and forth or lamprey swimming. The new window for
 animations is produced by invoking the {\tt (V)iew axes} {\tt (T)oon}
@@ -110,13 +110,8 @@ document.
 
 
 
-
-XPP has been successfully compiled on a SPARC II under OpenLook, a SPARC
- 1.5 running generic X, a NeXT running X11R4, a DEC 5000, a PC using
-Linux, and SGI and an HP 730. It also runs under Win95/NT/98 if you
-have an X-Server. 
-  I cannot vouch for other platforms but it has been compiled on the
- IBM RS6000. Building XPP requires only the standard C compiler,
+XPP has been compiled on most UNIX machines and works fine now on Windows, Macs, and Linux.
+Building XPP requires only the standard C compiler,
  and Xlib.  Look at the any README files that come with the
 distribution for solutions to common compilation problems.
 
@@ -130,21 +125,15 @@ integration although these can also be changed within the program.
 The graphics and postprocessing are all done within
  the program using the mouse and various menus and buttons.  The impatient
  user should look at some sample {\tt *.ode} files instead of actually reading 
-the documentation.  In addition, XPP uses a file called {\tt default.opt} that
- describes initialization and memory options for the program. This is
-not necessary as all of the information contained in this file can now
-be included in ODE file.
+the documentation.  There are many command line arguments and options that can be added to set up numerics. There is also a resource file .xpprc that you can add to your home directory.  Look at xpp\_sum.pdf for details on this.  The documentaion here is pretty incomplete, but covers much of the basics. There is a book from SIAM available and you can also look at the included tree.pdf file that gives a description of {\em every} command.
+
+ 
 \addcontentsline{toc}{subsection}{Interface}
 \begin{center}
 {\Large Notes on the Interface }
 \end{center}
-This interface is crude by most standards and it is rather ugly as
-well. I had originally thought to do the whole thing using the
-OpenLook Widget Set but found that many of the systems to which I
-wanted to port XPP did not have the set.  The present design is
-completely portable.  Someday I will redo it in something like Motif.   
-
-The text editing is also somewhat restricted.  There is as yet no cut
+The interface is pretty simplistic and idiosyncratic.  Since the source code is available, if you really hate it, you can rewrite it.  You can customize fonts etc (see xpp\_sum.pdf).  
+The text editing is also somewhat restricted.  There is  no cut
 and paste.  However,
 one can use the {\tt Home,End} keys to move the text cursor to the
 beginning and end of the line.  The left and right arrow keys let you
@@ -164,21 +153,13 @@ Almost every command has a keyboard shortcut.  These are given below.
 
 XPP is distributed as is.  The author makes no claims as to the performance
  of the program.  Anyone is allowed to modify and distribute XPP as long as
- the original code is also made available.  
+ the original code is also made available. See the LICENSE file for the full caveats.  
 
 \tc{Acknowledgments}
 \begin{center}
 Acknowledgements
 \end{center}
-The porting of XPP to UNIX and X has been partially supported by NSF
-in the sense that they gave me the SPARC 2.  MSRI in Berkeley gave me
-use of a lovely office facing the bay and a workstation on which the
-majority of the port was made in the Summer of 1992.  The original
-version of PhasePlane benefitted by countless colleagues whose endless
-requests for features and whose constant use led to the version that
-you see now.  Of these I would like to specifically cite John Rinzel and
-Artie Sherman at the NIH for being the main guinea pigs for the
-earliest versions.
+Artie Sherman, John Rinzel for many suggestions. Daniel Dougherty and Robert McDougal for contribution actual code!  Also Sebius Doedel for making AUTO available.  I want to also thank Bart Oldmann for some pointers on the porting of the most recent AUTO version.
 
 Please let me know of any bugs or other stuff that you'd like to see
 incorporated into XPP.  I will usually fix them quickly.  
@@ -273,13 +254,7 @@ Here is my {\tt .xpprc} file:
 
 \section{ODE Files}
 
-{\bf NOTE.}  {\em The latest version of XPP has a greatly improved
-parser. Any versions 1.6 and above will have this parser built into
-them.  The new parser is compatible with the old format for ODE files
-so that it will read any old style files.  Thus, for users of previous
-versions, you can still use all of the old files.
-However, the old style parser will no longer be described in the
-documentation.}  A command line option lets you convert old-style to
+{\bf NOTE.}  {\em Pre 1992, XPP used a different form for ODE files. I no longer document them}  A command line option lets you convert old-style to
 new style format.
 
 
@@ -318,7 +293,7 @@ number as its first character (this makes the parser think that the
 format of the ODE file is the old style.)  The last line should be the
 word ``done.''  The names of all parameters must be declared with
 optional values (the default sets them to 0.) There can be as many as
-you can fit on each line (up to 200 parameters) but they must be
+you can fit on each line (up to 2000 parameters) but they must be
 separated by commas or spaces and the ``='' sign must have {\em no} spaces on
 either side of it.  
 
@@ -339,7 +314,7 @@ As you have probably guessed, comments have the form:
 \end{verbatim}
 
 The ``@'' sign tells XPP that you want to preset some of the internal
-parameters for numerical integration and graphing.
+parameters for numerical integration and graphing, AUTO, etc. Please put a space after the ``@'' on each line or it wont work.
   In this case, we have told XPP
 to integrate the equations until t=100 with a timestep of 0.25 and to
 set the high value for the x-axis to 100.  You can, of course, change
@@ -366,6 +341,7 @@ xppaut $1 -xorfix
 \end{verbatim}
 thus alleviating problems my display has with the exclusive or drawing
 required for ``zooming'' in and other things.)
+Several distributions such as for the Mac and Windows let you drag and drop.
 
 When you type one of the above lines, then the program fires up. It
 reads the ODE file and if there are any errors, it reports them and
@@ -491,6 +467,7 @@ special <name>=conv(type,npts,ncon,wgt,rootname)
                mmult(n,m,w,root)
                fmmult(n,m,w,root1,root2,function)
 	       gill(0,rxnlist)
+               findext(type,n,skip,root)
 ...
 only <name2>,<name2>,...
 ...	

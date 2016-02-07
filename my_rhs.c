@@ -21,10 +21,11 @@ extern int NVAR,NODE;
 
 double evaluate(/* int *ar */);
 
-int MAIN__()
+/* int MAIN__()
 {
 	return(0);
 }
+*/
 int main(argc,argv)
      char **argv;
      int argc;
@@ -45,8 +46,11 @@ void extra(y__y, t,nod,neq)
   SETVAR(i+1,y__y[i]);
   for(i=nod+FIX_VAR;i<nod+FIX_VAR+NMarkov;i++)SETVAR(i+1,y__y[i-FIX_VAR]);
   for(i=nod;i<nod+FIX_VAR;i++)
-  SETVAR(i+1,evaluate(my_ode[i])); 
-  do_in_out(); 
+  SETVAR(i+1,evaluate(my_ode[i]));
+  /* I dont think this is generally needed  */
+  
+  /* do_in_out();   */
+  
   for(i=nod+NMarkov;i<neq;i++)
   y__y[i]=evaluate(my_ode[i+FIX_VAR-NMarkov]);
 }
@@ -76,6 +80,7 @@ void set_fix_rhs(t,y)
   for(i=NODE;i<NODE+FIX_VAR;i++)
     SETVAR(i+1,evaluate(my_ode[i]));
   eval_all_nets();
+
   do_in_out(); 
 }
 
@@ -98,6 +103,7 @@ int neq;
     eval_all_nets();
     
     do_daes();
+
     do_in_out(); 
  for(i=0;i<NODE;i++)
   {

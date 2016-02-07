@@ -19,7 +19,7 @@
 
 
 
-#include "homsup.h"
+
 #include <stdlib.h> 
 #include <stdio.h>
 #include <string.h>
@@ -49,7 +49,7 @@
 
 extern int DCURY;
 extern int RANGE_FLAG;
-int HOMOCLINIC_FLAG=0,Homo_n;
+
 extern int INFLAG;
 
 extern int NUPAR;
@@ -87,23 +87,6 @@ double atof();
 
 double evaluate();
 
-typedef struct {
-  int nunstab,nstab,n; /* dimension of unstable, stable, phasespace */
-  int eleft,eright; /* addresses of variables holding left and right
-                       equilibria */
-  int u0; /* address of first phase variable */
-  double cprev[1600],a[400];
-  int iflag[4];	
-  double fb[400]; /* values of the boundary projections 
-                     first nstab are proj to unstable mfld
-                     at left ane then the proj to the stabl
-		     mfld on the right */ 
-                   
-
-} HOMOCLIN;
-
-extern HOMOCLIN my_hom;
-
 
 
 
@@ -116,8 +99,7 @@ void do_bc(y__0,t0,y__1,t1,f,n)
 {
  int n0=PrimeStart;
  int i;
-  if(HOMOCLINIC_FLAG)
-    do_projection(y__0,t0,y__1,t1);
+
  SETVAR(0,t0);
  SETVAR(n0,t1);
 
@@ -290,42 +272,6 @@ double *ystart,*yend;
 
 }
 
-int set_up_homoclinic()
-{
-  static char *n[]={"*1Left Eq.","*1Right Eq.","NUnstable","NStable"};
-   char values[4][MAX_LEN_SBOX];
- int status,i;
-  sprintf(values[0],"%s",uvar_names[my_hom.eleft]);
-  sprintf(values[1],"%s",uvar_names[my_hom.eright]);
-  sprintf(values[2],"%d",my_hom.nunstab);
-  sprintf(values[3],"%d",my_hom.nstab);
-  status=do_string_box(4,4,1,"Homoclinic info",n,values,45);
-  HOMOCLINIC_FLAG=0;
-  if(status!=0){
-    i=find_user_name(IC,values[0]);
-    if(i>-1)
-      my_hom.eleft=i;
-    else {
-      err_msg("No such variable");
-      return 0;
-    }
-    i=find_user_name(IC,values[1]);
-    if(i>-1)
-      my_hom.eright=i;
-    else {
-      err_msg("No such variable");
-      return 0;
-    }
-    my_hom.nunstab=atoi(values[2]);
-    my_hom.nstab=atoi(values[3]);
-    my_hom.n=my_hom.nstab+my_hom.nunstab;
-    Homo_n=my_hom.n;
-    HOMOCLINIC_FLAG=1;
-    for(i=0;i<4;i++)
-      my_hom.iflag[i]=0;
-  }
-  return 1;
-}
 
 
 int set_up_periodic(ipar,ivar,sect,ishow)
@@ -397,9 +343,6 @@ void find_bvp_com(int com)
  switch(com){
  case 0:
    do_sh_range(ystart,yend);
-   return;
- case 4:
-   set_up_homoclinic();
    return;
  case 3:
    if(NUPAR==0)goto bye;

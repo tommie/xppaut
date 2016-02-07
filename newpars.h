@@ -36,6 +36,8 @@
 
 #define GROUP 27
 
+#define VECTOR 28
+
 #define NAMLEN 10
 #define MAXARG 20
 #define MAXEXPLEN 1024

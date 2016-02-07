@@ -10,7 +10,7 @@ either have your system administrator install it for you or download a
 precompiled binary for your computer. There are compiled versions
 available for Ubuntu Linux, Windows, and Mac OSX. Installation for the
 iPad/iPhone simply involves downloading it from the iTunes store like any
-other app. All files are currently available at the \XPP website: 
+other app. All files (except iOS versions) are currently available at the \XPP website: 
 \begin{verbatim}
 http://www.math.pitt.edu/~bard/xpp/xpp.html
 \end{verbatim} 
@@ -59,10 +59,8 @@ fixes. Also, there are many comments in the Makefiles that are
 included with the package. 
 I have not yet found a computer on which I cannot compile the
 program. A common problem is the wrong path to the X Windows
-libraries. {\bf WARNING:} I compile using {\tt -m32} flags that
-compile to a 32 bit architecture. You may try compiling to a 64 bit
-architecture, but I have had lots of problems getting AUTO to run on
-in the 64 bit compiled version, so I advise against it. 
+libraries. 
+
 \item{\bf Step 5.} Once you have
 compiled it, just move the executable to someplace in your path. (The
 usual is {\tt /usr/local/bin} but you must have root privileges to do
@@ -70,17 +68,18 @@ this.) \XPP needs no environment information, however, you can change
 lots of aspects using the  {\tt .xpprc} file which is described below. 
 \item {\bf Step 6.}  If you have root privileges, you can type {\tt
 make install} from the command line and \XPP will be installed in
-default directories. 
+default directories. (Don't know if this works on Windows or Macs!)
 \end{description}
 
 \subsection{Binaries.} I generally compile a version for UBUNTU linux
-and you can find the binary there. It will probably work on any
+and you can find the binary on my web site. It will probably work on any
 Intel-based Linux system.  Download a Linux binary and then create a
 folder (directory) called {\tt xppaut}. Move the downloaded file into
 your directory. Then type 
 \begin{verbatim}
-tar zxvf xppaut7.0-ubuntu32.tgz
+tar zxvf xppaut***.tgz
 \end{verbatim}
+where the {\tt ***} means whatever version that you have downloaded
 and you should see the binary {\tt xppaut} which you can move into a
 globally accessible directory if you want such as {\tt
 /usr/local/bin}. (The name of the binary file may be diferent depending on the version.) 

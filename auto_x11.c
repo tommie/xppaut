@@ -81,8 +81,8 @@ extern Window command_pop;
 extern double TEND;
 extern int AutoTwoParam;
 extern int NAutoPar;
-extern int Auto_index_to_array[5];
-extern int AutoPar[5];
+extern int Auto_index_to_array[8];
+extern int AutoPar[8];
 
 extern int xorfix;
 
@@ -589,7 +589,7 @@ void traverse_diagram()
   if(done==1){
     grabpt.ibr=d->ibr;
     grabpt.lab=d->lab;
-    for(i=0;i<5;i++)
+    for(i=0;i<8;i++)
     grabpt.par[i]=d->par[i];
     grabpt.icp1=d->icp1;
     grabpt.icp2=d->icp2;
@@ -634,8 +634,8 @@ void refreshdisplay()
   XFlush(display);
 }
 
-int byeauto_(nt,iflag)
-     int *nt,*iflag;
+int byeauto_(iflag)
+     int *iflag;
 {
   XEvent event;
   Window w;
@@ -763,6 +763,93 @@ void FillCircle(x,y,r)
     XFillArc(display, AutoW.canvas, small_gc, x - r2, y - r2, wh, wh, 0, 360*64);
 
 }
+
+
+void auto_update_view(float xlo,float xhi, float ylo, float yhi)
+{
+              Auto.xmin=xlo;
+	      Auto.ymin=ylo;
+	      Auto.xmax=xhi;
+	      Auto.ymax=yhi;
+	      redraw_diagram();
+
+}
+void auto_scroll_window()
+{
+  XEvent ev;
+  int i=0,j=0;
+  int i0=0,j0=0;
+  int state=0;
+  float x,y,x0,y0;
+  float xlo=Auto.xmin;
+  float ylo=Auto.ymin;
+  float xhi=Auto.xmax;
+  float yhi=Auto.ymax;
+  float dx,dy;
+  int alldone=0;
+  /*    printf("xin: %g %g %g %g\n",xlo,xhi,ylo,yhi); */
+  XSelectInput(display,AutoW.canvas,
+   KeyPressMask|ButtonPressMask|ButtonReleaseMask|
+		PointerMotionMask|ButtonMotionMask|ExposureMask);
+  while(!alldone){
+   XNextEvent(display,&ev);
+   switch(ev.type){
+   case KeyPress:
+     alldone=1;
+     break;
+   case Expose:
+     do_expose(ev);
+     break;
+   case ButtonPress:
+     if(state==0){
+     i0=ev.xkey.x;
+     j0=ev.xkey.y;
+
+     /*  x0=Auto.xmin+(double)(i-Auto.x0)*(Auto.xmax-Auto.xmin)/(double)Auto.wid;
+	 y0=Auto.ymin+(double)(Auto.y0-j+Auto.hgt)*(Auto.ymax-Auto.ymin)/(double)Auto.hgt;
+	 printf("%d %d %g %g \n",i,j,x0,y0); */
+        state=1;
+    
+     }
+     break;
+   case MotionNotify:
+     if(state==1){
+       i0=ev.xmotion.x;
+       j0=ev.xmotion.y;
+       dx=0.0;
+       dy=0.0;
+             auto_update_view(xlo+dx,xhi+dx,ylo+dy,yhi+dy);
+
+       state=2;
+       break;
+     }
+     if(state==2){
+     i=ev.xmotion.x;
+     j=ev.xmotion.y;
+     /* x=Auto.xmin+(double)(i-Auto.x0)*(Auto.xmax-Auto.xmin)/(double)Auto.wid;
+    y=Auto.ymin+(double)(Auto.y0-j+Auto.hgt)*(Auto.ymax-Auto.ymin)/(double)Auto.hgt;
+    printf("%d %d %g %g \n",i,j,x,y,x0,y0);
+     dx=-(x-x0)/2;
+     dy=-(y-y0)/2; */
+     dx=(float)(i0-i)*(Auto.xmax-Auto.xmin)/(float)Auto.wid;
+     dy=(float)(j-j0)*(Auto.ymax-Auto.ymin)/(float)Auto.hgt;
+     /*    printf("%d %d %d %d %g %g\n",i,j,i0,j0,dx,dy); */
+      auto_update_view(xlo+dx,xhi+dx,ylo+dy,yhi+dy);
+     
+     }
+     break;
+   case ButtonRelease:
+     state=0;
+     xlo=xlo+dx;
+     xhi=xhi+dx;
+     ylo=ylo+dy;
+     yhi=yhi+dy;
+     break;
+
+   }
+  }
+}
+
 
 
 

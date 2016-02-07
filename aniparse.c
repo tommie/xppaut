@@ -193,11 +193,12 @@ ANI_COM my_ani[MAX_ANI_LINES];
 
 typedef struct {
 Window base, wfile,wgo,wpause,wreset,wfast,wslow,wmpeg;
-  Window wfly,kill;
+  Window wfly,kill,slider;
 Window wup,wdn,wskip;
   Window view,wgrab;
 int hgt,wid,iexist,ok;
 int pos,inc;
+  int slipos,sliwid;
 char file[XPP_MAX_NAME];
 /*char file[256];*/
 } VCR;
@@ -313,7 +314,9 @@ void create_vcr(name)
 
  base=make_plain_window(RootWindow(display,screen),0,0,5*12*DCURXs+8*DCURXs+4,20*(DCURYs+6),1);
  vcr.base=base;
-  size_hints.flags=PPosition|PSize;
+  size_hints.flags=PPosition|PSize|PMinSize;
+  size_hints.min_width=51*DCURXs;
+  size_hints.min_height=300;
  XStringListToTextProperty(&name,1,&winname);
  XStringListToTextProperty(&name,1,&iconname);
  XSetWMProperties(display,base,&winname,&iconname,NULL,0,&size_hints,NULL,NULL);
@@ -327,8 +330,9 @@ void create_vcr(name)
   vcr.wup = br_button(base,1,2,">>>>",0);
  vcr.wdn = br_button(base,1,3,"<<<<",0);
  vcr.wgrab=br_button(base,2,3,"Grab",0);
-
-
+ vcr.slider=make_window(base,DCURXs,7+4*DCURYs,48*DCURXs,DCURYs+4,1);
+ vcr.slipos=0;
+ vcr.sliwid=48*DCURXs;
  vcr.wpause = br_button(base,2,0,"Pause",0);
  vcr.wmpeg = br_button(base,2,1,"MPeg",0);
  vcr.kill=br_button(base,2,2,"Close",0);
@@ -417,6 +421,7 @@ void do_ani_events(ev)
    ani_border(ev.xexpose.window,1);
    break;
  case MotionNotify:
+   do_ani_slider_motion(ev.xmotion.window,ev.xmotion.x);
    if(ani_grab_flag == 0)break;
    ani_motion_stuff(ev.xmotion.window,ev.xmotion.x,ev.xmotion.y);
    break;
@@ -557,6 +562,8 @@ void ani_button(w)
   if(w==vcr.wreset){
     vcr.pos=0;
     reset_comets();
+    redraw_ani_slider();
+    ani_flip1(0);
   }
   if(w==vcr.kill){
     destroy_vcr();
@@ -588,6 +595,49 @@ void ani_create_mpeg()
     
 }
 
+void do_ani_slider_motion(Window w, int x)
+{
+  int l=48*DCURXs,x0=x;
+  int mr=my_browser.maxrow;
+  int k;
+  if(w!=vcr.slider)
+    return;
+  if(mr<2)return;
+  if(x0>l-2)x0=l-2;
+  vcr.slipos=x0;
+  draw_ani_slider(w,x0);
+  k=x0*mr/l;
+  vcr.pos=0;
+  ani_flip1(0);
+  ani_flip1(k);
+
+  
+}
+void redraw_ani_slider()
+{
+  int k=vcr.pos;
+  int l=48*DCURXs;
+  int xx;
+  int mr=my_browser.maxrow;
+  if(mr<2)return;
+  xx=(k*l)/mr;
+  draw_ani_slider(vcr.slider,xx);
+}
+void draw_ani_slider(Window w,int x)
+
+{
+  int hgt=DCURYs+4,l=48*DCURXs;
+  int x0=x-2,i;
+  if(x0<0)x0=0;
+  if(x0>(l-4))x0=l-4;
+  XClearWindow(display,w);
+  for(i=0;i<4;i++)
+    XDrawLine(display,w,small_gc,x0+i,0,x0+i,hgt);
+}
+
+
+
+
 void ani_expose(w)
 Window w;
 {
@@ -607,6 +657,9 @@ Window w;
     XDrawString(display,w,small_gc,5,CURY_OFFs,"Fast",4);
   if(w==vcr.wslow)
     XDrawString(display,w,small_gc,5,CURY_OFFs,"Slow",4);
+ 
+  if(w==vcr.slider)
+    draw_ani_slider(w,vcr.slipos);
   if(w==vcr.wpause)
     XDrawString(display,w,small_gc,5,CURY_OFFs,"Pause",5);
   if(w==vcr.wreset)
@@ -631,7 +684,7 @@ void ani_resize(x,y)
  if(ww==vcr.wid&&hh==vcr.hgt)return;
  XFreePixmap(display,ani_pixmap);
 
- vcr.hgt=4*((y-((3.5*(DCURYs+6))+5))/4);
+ vcr.hgt=5*((y-((4.5*(DCURYs+6))+5))/5);
  vcr.wid=4*((x-(2*4))/4);
  
  /*This little safety check prevents a <X Error of failed request:  BadValue>
@@ -643,7 +696,7 @@ void ani_resize(x,y)
  	vcr.wid = 1;
 	
 	
- XMoveResizeWindow(display,vcr.view,4,3.5*(DCURYs+6),vcr.wid,vcr.hgt);
+ XMoveResizeWindow(display,vcr.view,4,4.5*(DCURYs+6),vcr.wid,vcr.hgt);
  ani_pixmap=  XCreatePixmap(display,RootWindow(display,screen),vcr.wid,vcr.hgt,
 		  DefaultDepth(display,screen));
  if(ani_pixmap==0){
@@ -1926,6 +1979,7 @@ void render_ani()
 {
   int i;
   int type,flag;
+  redraw_ani_slider();
   for(i=0;i<n_anicom;i++){
     type=my_ani[i].type;
     flag=my_ani[i].flag;
